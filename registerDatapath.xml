@@ -1,0 +1,1062 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE registerDatapath [
+<!ELEMENT register_data (equivalence, function_equivalence, register_equivalence, datapath_map)>
+<!ELEMENT equivalence (bits+, mnemonic+)>
+<!ELEMENT bits (#PCDATA)>
+<!ELEMENT mnemonic (#PCDATA)>
+<!ELEMENT function_equivalence (bits+, mnemonic+)>
+<!ELEMENT bits (#PCDATA)>
+<!ELEMENT mnemonic (#PCDATA)>
+<!ELEMENT register_equivalence (bits+, mnemonic+)>
+<!ELEMENT bits (#PCDATA)>
+<!ELEMENT mnemonic (#PCDATA)>
+<!ELEMENT datapath_map (num_vertex+, name+, init+, end+, color_Itype+, color_Rtype+, color_Jtype+, color_LOADtype+, color_STOREtype, color_BRANCHtype, other_axis+, isMovingXaxis+, target_vertex+, is_text+)>
+<!ELEMENT num_vertex (#PCDATA)>
+<!ELEMENT init (#PCDATA)>
+<!ELEMENT end (#PCDATA)>
+<!ELEMENT color_Itype (#PCDATA)>
+<!ELEMENT color_Rtype (#PCDATA)>
+<!ELEMENT color_Jtype (#PCDATA)>
+<!ELEMENT color_LOADtype (#PCDATA)>
+<!ELEMENT color_STOREtype (#PCDATA)>
+<!ELEMENT color_BRANCHtype (#PCDATA)>
+<!ELEMENT other_axis (#PCDATA)>
+<!ELEMENT isMovingXaxis (#PCDATA)>
+<!ELEMENT target_vertex (#PCDATA)>
+<!ELEMENT is_text (#PCDATA)>
+]>
+
+<register_data>
+	<register_equivalence>
+		<bits>00000</bits>
+		<mnemonic>$zero</mnemonic>
+		
+		<bits>00001</bits>
+		<mnemonic>at</mnemonic>
+		
+		<bits>00010</bits>
+		<mnemonic>$v0</mnemonic>
+		
+		<bits>00011</bits>
+		<mnemonic>$v1</mnemonic>
+		
+		<bits>00100</bits>
+		<mnemonic>$a0</mnemonic>
+
+		<bits>00101</bits>
+		<mnemonic>$a1</mnemonic>
+	
+		<bits>00110</bits>
+		<mnemonic>$a2</mnemonic>
+
+		<bits>00111</bits>
+		<mnemonic>$a3</mnemonic>
+		
+		<bits>01000</bits>
+		<mnemonic>$t0</mnemonic>
+		
+		<bits>01001</bits>
+		<mnemonic>$t1</mnemonic>
+		
+		<bits>01010</bits>
+		<mnemonic>$t2</mnemonic>	
+
+		<bits>01011</bits>
+		<mnemonic>$t3</mnemonic>	
+
+		<bits>01100</bits>
+		<mnemonic>$t4</mnemonic>	
+
+		<bits>01101</bits>
+		<mnemonic>$t5</mnemonic>
+		
+		<bits>01110</bits>
+		<mnemonic>$t6</mnemonic>	
+		
+		<bits>01111</bits>
+		<mnemonic>$t7</mnemonic>	
+		
+		<bits>10000</bits>
+		<mnemonic>$s0</mnemonic>
+		
+		<bits>10001</bits>
+		<mnemonic>$s1</mnemonic>
+		
+		<bits>10010</bits>
+		<mnemonic>$s2</mnemonic>
+		
+		<bits>10011</bits>
+		<mnemonic>$s3</mnemonic>		
+		
+		<bits>10100</bits>
+		<mnemonic>$s4</mnemonic>
+		
+		<bits>10101</bits>
+		<mnemonic>$s5</mnemonic>
+						
+		<bits>11000</bits>
+		<mnemonic>$s6</mnemonic>
+		
+		<bits>10111</bits>
+		<mnemonic>$s7</mnemonic>	
+		
+		<bits>11000</bits>
+		<mnemonic>$t8</mnemonic>
+		
+		<bits>11001</bits>
+		<mnemonic>$t9</mnemonic>
+		
+		<bits>11010</bits>
+		<mnemonic>$k0</mnemonic>
+		
+		<bits>11011</bits>
+		<mnemonic>$k1</mnemonic>
+		
+		<bits>11100</bits>
+		<mnemonic>$gp</mnemonic>
+
+		<bits>11101</bits>
+		<mnemonic>$sp</mnemonic>	
+
+		<bits>11110</bits>
+		<mnemonic>$fp</mnemonic>	
+		
+		<bits>11111</bits>
+		<mnemonic>$ra</mnemonic>			
+	</register_equivalence>
+	
+	<datapath_map>
+		<num_vertex>0</num_vertex>
+		<name>init</name>
+		<init>1</init>
+		<end>2</end>
+		<color_Itype>100#100#100</color_Itype>
+		<color_Rtype>100#100#100</color_Rtype>
+		<color_Jtype>100#100#100</color_Jtype>
+		<color_LOADtype>100#100#100</color_LOADtype>
+		<color_STOREtype>100#100#100</color_STOREtype>
+		<color_BRANCHtype>100#100#100</color_BRANCHtype>
+		<other_axis>50</other_axis>
+		<isMovingXaxis>true</isMovingXaxis>
+		<target_vertex>1#2#38#39#40#41#42</target_vertex>
+		<is_text>false</is_text>
+		
+		<num_vertex>1</num_vertex>
+		<name>registerAdd1</name>
+		<init>1</init>
+		<end>700</end>
+		<color_Itype>0#205#0</color_Itype>
+		<color_Rtype>0#205#0</color_Rtype>
+		<color_Jtype>100#100#100</color_Jtype>
+		<color_LOADtype>0#205#0</color_LOADtype>
+		<color_STOREtype>0#205#0</color_STOREtype>
+		<color_BRANCHtype>0#205#0</color_BRANCHtype>
+		<other_axis>68</other_axis>
+		<isMovingXaxis>true</isMovingXaxis>
+		<target_vertex>58</target_vertex>
+		<is_text>false</is_text>
+		
+		<num_vertex>2</num_vertex>
+		<name>registerAdd2</name>
+		<init>1</init>
+		<end>700</end>
+		<color_Itype>0#0#255</color_Itype>
+		<color_Rtype>0#0#255</color_Rtype>
+		<color_Jtype>100#100#100</color_Jtype>
+		<color_LOADtype>0#0#255</color_LOADtype>
+		<color_STOREtype>0#0#255</color_STOREtype>
+		<color_BRANCHtype>0#0#255</color_BRANCHtype>
+		<other_axis>275</other_axis>
+		<isMovingXaxis>true</isMovingXaxis>
+		<target_vertex>59</target_vertex>
+		<is_text>false</is_text>
+		
+		<num_vertex>3</num_vertex>
+		<name>registerWrite</name>
+		<init>1</init>
+		<end>163</end>
+		<color_Itype>0#0#255</color_Itype>
+		<color_Rtype>0#255#255</color_Rtype>
+		<color_Jtype>100#100#100</color_Jtype>
+		<color_LOADtype>0#0#255</color_LOADtype>
+		<color_STOREtype>100#100#100</color_STOREtype>
+		<color_BRANCHtype>100#100#100</color_BRANCHtype>
+		<other_axis>346</other_axis>
+		<isMovingXaxis>true</isMovingXaxis>
+		<target_vertex>5</target_vertex>
+		<is_text>false</is_text>
+			
+		<num_vertex>4</num_vertex>
+		<name>registerData</name>
+		<init>1</init>
+		<end>270</end>
+		<color_Itype>16#78#139</color_Itype>
+		<color_Rtype>16#78#139</color_Rtype>
+		<color_Jtype>100#100#100</color_Jtype>
+		<color_LOADtype>00#255#255</color_LOADtype>
+		<color_STOREtype>100#100#100</color_STOREtype>
+		<color_BRANCHtype>100#100#100</color_BRANCHtype>
+		<other_axis>427</other_axis>
+		<isMovingXaxis>true</isMovingXaxis>
+		<target_vertex>6</target_vertex>
+		<is_text>false</is_text>
+		
+		<num_vertex>5</num_vertex>
+		<name>registerWrite</name>
+		<init>346</init>
+		<end>245</end>
+		<color_Itype>0#0#255</color_Itype>
+		<color_Rtype>0#255#255</color_Rtype>
+		<color_Jtype>100#100#100</color_Jtype>
+		<color_LOADtype>0#0#255</color_LOADtype>
+		<color_STOREtype>100#100#100</color_STOREtype>
+		<color_BRANCHtype>100#100#100</color_BRANCHtype>
+		<other_axis>163</other_axis>
+		<isMovingXaxis>false</isMovingXaxis>
+		<target_vertex>28#29#30#31#32</target_vertex>
+		<is_text>false</is_text>
+		
+		<num_vertex>6</num_vertex>
+		<name>registerData</name>
+		<init>427</init>
+		<end>252</end>
+		<color_Itype>16#78#139</color_Itype>
+		<color_Rtype>16#78#139</color_Rtype>
+		<color_Jtype>100#100#100</color_Jtype>
+		<color_LOADtype>00#255#255</color_LOADtype>
+		<color_STOREtype>100#100#100</color_STOREtype>
+		<color_BRANCHtype>100#100#100</color_BRANCHtype>
+		<other_axis>272</other_axis>
+		<isMovingXaxis>false</isMovingXaxis>
+		<target_vertex>7#8</target_vertex>
+		<is_text>false</is_text>
+		
+		<num_vertex>7</num_vertex>
+		<name>registerData</name>
+		<init>252</init>
+		<end>223</end>
+		<color_Itype>16#78#139</color_Itype>
+		<color_Rtype>16#78#139</color_Rtype>
+		<color_Jtype>100#100#100</color_Jtype>
+		<color_LOADtype>00#255#255</color_LOADtype>
+		<color_STOREtype>100#100#100</color_STOREtype>
+		<color_BRANCHtype>100#100#100</color_BRANCHtype>
+		<other_axis>272</other_axis>
+		<isMovingXaxis>false</isMovingXaxis>
+		<target_vertex>9#10</target_vertex>
+		<is_text>false</is_text>
+		
+		<num_vertex>8</num_vertex>
+		<name>inputReg32</name>
+		<init>272</init>
+		<end>375</end>
+		<color_Itype>16#78#139</color_Itype>
+		<color_Rtype>16#78#139</color_Rtype>
+		<color_Jtype>100#100#100</color_Jtype>
+		<color_LOADtype>00#255#255</color_LOADtype>
+		<color_STOREtype>100#100#100</color_STOREtype>
+		<color_BRANCHtype>100#100#100</color_BRANCHtype>
+		<other_axis>250</other_axis>
+		<isMovingXaxis>true</isMovingXaxis>
+		<target_vertex>38</target_vertex>
+		<is_text>false</is_text>
+		
+		<num_vertex>9</num_vertex>
+		<name>registerData</name>
+		<init>212</init>
+		<end>195</end>
+		<color_Itype>16#78#139</color_Itype>
+		<color_Rtype>16#78#139</color_Rtype>
+		<color_Jtype>100#100#100</color_Jtype>
+		<color_LOADtype>00#255#255</color_LOADtype>
+		<color_STOREtype>100#100#100</color_STOREtype>
+		<color_BRANCHtype>100#100#100</color_BRANCHtype>
+		<other_axis>272</other_axis>
+		<isMovingXaxis>false</isMovingXaxis>
+		<target_vertex>11#13</target_vertex>
+		<is_text>false</is_text>
+		
+		<num_vertex>10</num_vertex>
+		<name>inputReg31</name>
+		<init>278</init>
+		<end>375</end>
+		<color_Itype>16#78#139</color_Itype>
+		<color_Rtype>16#78#139</color_Rtype>
+		<color_Jtype>100#100#100</color_Jtype>
+		<color_LOADtype>00#255#255</color_LOADtype>
+		<color_STOREtype>100#100#100</color_STOREtype>
+		<color_BRANCHtype>100#100#100</color_BRANCHtype>
+		<other_axis>220</other_axis>
+		<isMovingXaxis>true</isMovingXaxis>
+		<target_vertex>39</target_vertex>
+		<is_text>false</is_text>
+		
+		<num_vertex>11</num_vertex>
+		<name>registerData</name>
+		<init>183</init>
+		<end>162</end>
+		<color_Itype>16#78#139</color_Itype>
+		<color_Rtype>16#78#139</color_Rtype>
+		<color_Jtype>100#100#100</color_Jtype>
+		<color_LOADtype>00#255#255</color_LOADtype>
+		<color_STOREtype>100#100#100</color_STOREtype>
+		<color_BRANCHtype>100#100#100</color_BRANCHtype>
+		<other_axis>272</other_axis>
+		<isMovingXaxis>false</isMovingXaxis>
+		<target_vertex>12#14</target_vertex>
+		<is_text>false</is_text>
+
+		<num_vertex>12</num_vertex>
+		<name>inputReg2</name>
+		<init>278</init>
+		<end>375</end>
+		<color_Itype>16#78#139</color_Itype>
+		<color_Rtype>16#78#139</color_Rtype>
+		<color_Jtype>100#100#100</color_Jtype>
+		<color_LOADtype>00#255#255</color_LOADtype>
+		<color_STOREtype>100#100#100</color_STOREtype>
+		<color_BRANCHtype>100#100#100</color_BRANCHtype>
+		<other_axis>158</other_axis>
+		<isMovingXaxis>true</isMovingXaxis>
+		<target_vertex>41</target_vertex>
+		<is_text>false</is_text>
+		
+		<num_vertex>13</num_vertex>
+		<name>inputRegIND</name>
+		<init>278</init>
+		<end>375</end>
+		<color_Itype>16#78#139</color_Itype>
+		<color_Rtype>16#78#139</color_Rtype>
+		<color_Jtype>100#100#100</color_Jtype>
+		<color_LOADtype>00#255#255</color_LOADtype>
+		<color_STOREtype>100#100#100</color_STOREtype>
+		<color_BRANCHtype>100#100#100</color_BRANCHtype>
+		<other_axis>188</other_axis>
+		<isMovingXaxis>true</isMovingXaxis>
+		<target_vertex>40</target_vertex>
+		<is_text>false</is_text>
+		
+		<num_vertex>14</num_vertex>
+		<name>registerData</name>
+		<init>152</init>
+		<end>126</end>
+		<color_Itype>16#78#139</color_Itype>
+		<color_Rtype>16#78#139</color_Rtype>
+		<color_Jtype>100#100#100</color_Jtype>
+		<color_LOADtype>00#255#255</color_LOADtype>
+		<color_STOREtype>100#100#100</color_STOREtype>
+		<color_BRANCHtype>100#100#100</color_BRANCHtype>
+		<other_axis>272</other_axis>
+		<isMovingXaxis>false</isMovingXaxis>
+		<target_vertex>15</target_vertex>
+		<is_text>false</is_text>
+		
+		<num_vertex>15</num_vertex>
+		<name>inputReg1</name>
+		<init>274</init>
+		<end>375</end>
+		<color_Itype>16#78#139</color_Itype>
+		<color_Rtype>16#78#139</color_Rtype>
+		<color_Jtype>100#100#100</color_Jtype>
+		<color_LOADtype>00#255#255</color_LOADtype>
+		<color_STOREtype>100#100#100</color_STOREtype>
+		<color_BRANCHtype>100#100#100</color_BRANCHtype>S
+		<other_axis>126</other_axis>
+		<isMovingXaxis>true</isMovingXaxis>
+		<target_vertex>42</target_vertex>
+		<is_text>false</is_text>
+
+		<num_vertex>16</num_vertex>
+		<name>writeControl</name>
+		<init>0</init>
+		<end>52</end>
+		<color_Itype>255#0#0</color_Itype>
+		<color_Rtype>255#0#0</color_Rtype>
+		<color_Jtype>100#100#100</color_Jtype>
+		<color_LOADtype>255#0#0</color_LOADtype>
+		<color_STOREtype>100#100#100</color_STOREtype>
+		<color_BRANCHtype>100#100#100</color_BRANCHtype>
+		<other_axis>392</other_axis>
+		<isMovingXaxis>false</isMovingXaxis>
+		<target_vertex>17</target_vertex>
+		<is_text>false</is_text>
+		
+		<num_vertex>17</num_vertex>
+		<name>writeControl</name>
+		<init>392</init>
+		<end>257</end>
+		<color_Itype>255#0#0</color_Itype>
+		<color_Rtype>255#0#0</color_Rtype>
+		<color_Jtype>100#100#100</color_Jtype>
+		<color_LOADtype>255#0#0</color_LOADtype>
+		<color_STOREtype>100#100#100</color_STOREtype>
+		<color_BRANCHtype>100#100#100</color_BRANCHtype>
+		<other_axis>52</other_axis>
+		<isMovingXaxis>true</isMovingXaxis>
+		<target_vertex>18</target_vertex>
+		<is_text>false</is_text>
+		
+		<num_vertex>18</num_vertex>
+		<name>writeControl</name>
+		<init>52</init>
+		<end>110</end>
+		<color_Itype>255#0#0</color_Itype>
+		<color_Rtype>255#0#0</color_Rtype>
+		<color_Jtype>100#100#100</color_Jtype>
+		<color_LOADtype>255#0#0</color_LOADtype>
+		<color_STOREtype>100#100#100</color_STOREtype>
+		<color_BRANCHtype>100#100#100</color_BRANCHtype>
+		<other_axis>257</other_axis>
+		<isMovingXaxis>false</isMovingXaxis>
+		<target_vertex>19#20</target_vertex>
+		<is_text>false</is_text>
+		
+		<num_vertex>19</num_vertex>
+		<name>writeControl</name>
+		<init>121</init>
+		<end>141</end>
+		<color_Itype>255#0#0</color_Itype>
+		<color_Rtype>255#0#0</color_Rtype>
+		<color_Jtype>100#100#100</color_Jtype>
+		<color_LOADtype>255#0#0</color_LOADtype>
+		<color_STOREtype>100#100#100</color_STOREtype>
+		<color_BRANCHtype>100#100#100</color_BRANCHtype>
+		<other_axis>257</other_axis>
+		<isMovingXaxis>false</isMovingXaxis>
+		<target_vertex>21#22</target_vertex>
+		<is_text>false</is_text>
+		
+		<num_vertex>20</num_vertex>
+		<name>and1</name>
+		<init>262</init>
+		<end>313</end>
+		<color_Itype>255#0#0</color_Itype>
+		<color_Rtype>255#0#0</color_Rtype>
+		<color_Jtype>100#100#100</color_Jtype>
+		<color_LOADtype>255#0#0</color_LOADtype>
+		<color_STOREtype>100#100#100</color_STOREtype>
+		<color_BRANCHtype>100#100#100</color_BRANCHtype>
+		<other_axis>116</other_axis>
+		<isMovingXaxis>true</isMovingXaxis>
+		<target_vertex>0</target_vertex>
+		<is_text>false</is_text>
+		
+		<num_vertex>21</num_vertex>
+		<name>and2</name>
+		<init>262</init>
+		<end>313</end>
+		<color_Itype>255#0#0</color_Itype>
+		<color_Rtype>255#0#0</color_Rtype>
+		<color_Jtype>100#100#100</color_Jtype>
+		<color_LOADtype>255#0#0</color_LOADtype>
+		<color_STOREtype>100#100#100</color_STOREtype>
+		<color_BRANCHtype>100#100#100</color_BRANCHtype>
+		<other_axis>147</other_axis>
+		<isMovingXaxis>true</isMovingXaxis>
+		<target_vertex>0</target_vertex>
+		<is_text>false</is_text>
+		
+		<num_vertex>22</num_vertex>
+		<name>writeControl</name>
+		<init>152</init>
+		<end>175</end>
+		<color_Itype>255#0#0</color_Itype>
+		<color_Rtype>255#0#0</color_Rtype>
+		<color_Jtype>100#100#100</color_Jtype>
+		<color_LOADtype>255#0#0</color_LOADtype>
+		<color_STOREtype>100#100#100</color_STOREtype>
+		<color_BRANCHtype>100#100#100</color_BRANCHtype>
+		<other_axis>257</other_axis>
+		<isMovingXaxis>false</isMovingXaxis>
+		<target_vertex>23#24</target_vertex>
+		<is_text>false</is_text>
+				
+		<num_vertex>23</num_vertex>
+		<name>and3</name>
+		<init>262</init>
+		<end>313</end>
+		<color_Itype>255#0#0</color_Itype>
+		<color_Rtype>255#0#0</color_Rtype>
+		<color_Jtype>100#100#100</color_Jtype>
+		<color_LOADtype>255#0#0</color_LOADtype>
+		<color_STOREtype>100#100#100</color_STOREtype>
+		<color_BRANCHtype>100#100#100</color_BRANCHtype>
+		<other_axis>180</other_axis>
+		<isMovingXaxis>true</isMovingXaxis>
+		<target_vertex>0</target_vertex>
+		<is_text>false</is_text>
+		
+		<num_vertex>24</num_vertex>
+		<name>writeControl</name>
+		<init>185</init>
+		<end>205</end>
+		<color_Itype>255#0#0</color_Itype>
+		<color_Rtype>255#0#0</color_Rtype>
+		<color_Jtype>100#100#100</color_Jtype>
+		<color_LOADtype>255#0#0</color_LOADtype>
+		<color_STOREtype>100#100#100</color_STOREtype>
+		<color_BRANCHtype>100#100#100</color_BRANCHtype>
+		<other_axis>257</other_axis>
+		<isMovingXaxis>false</isMovingXaxis>
+		<target_vertex>25#26</target_vertex>
+		<is_text>false</is_text>	
+		
+		<num_vertex>25</num_vertex>
+		<name>writeControl</name>
+		<init>216</init>
+		<end>240</end>
+		<color_Itype>255#0#0</color_Itype>
+		<color_Rtype>255#0#0</color_Rtype>
+		<color_Jtype>100#100#100</color_Jtype>
+		<color_LOADtype>255#0#0</color_LOADtype>
+		<color_STOREtype>100#100#100</color_STOREtype>
+		<color_BRANCHtype>100#100#100</color_BRANCHtype>
+		<other_axis>257</other_axis>
+		<isMovingXaxis>false</isMovingXaxis>
+		<target_vertex>27</target_vertex>
+		<is_text>false</is_text>	
+		
+		<num_vertex>26</num_vertex>
+		<name>and4</name>
+		<init>262</init>
+		<end>313</end>
+		<color_Itype>255#0#0</color_Itype>
+		<color_Rtype>255#0#0</color_Rtype>
+		<color_Jtype>100#100#100</color_Jtype>
+		<color_LOADtype>255#0#0</color_LOADtype>
+		<color_STOREtype>100#100#100</color_STOREtype>
+		<color_BRANCHtype>100#100#100</color_BRANCHtype>
+		<other_axis>211</other_axis>
+		<isMovingXaxis>true</isMovingXaxis>
+		<target_vertex>36</target_vertex>
+		<is_text>false</is_text>
+		
+		<num_vertex>27</num_vertex>
+		<name>and5</name>
+		<init>258</init>
+		<end>313</end>
+		<color_Itype>255#0#0</color_Itype>
+		<color_Rtype>255#0#0</color_Rtype>
+		<color_Jtype>100#100#100</color_Jtype>
+		<color_LOADtype>255#0#0</color_LOADtype>
+		<color_STOREtype>100#100#100</color_STOREtype>
+		<color_BRANCHtype>100#100#100</color_BRANCHtype>
+		<other_axis>241</other_axis>
+		<isMovingXaxis>true</isMovingXaxis>
+		<target_vertex>37</target_vertex>
+		<is_text>false</is_text>
+		
+		<num_vertex>28</num_vertex>
+		<name>and1a</name>
+		<init>233</init>
+		<end>313</end>
+		<color_Itype>100#100#100</color_Itype>
+		<color_Rtype>100#100#100</color_Rtype>
+		<color_Jtype>100#100#100</color_Jtype>
+		<color_LOADtype>100#100#100</color_LOADtype>
+		<color_STOREtype>100#100#100</color_STOREtype>
+		<color_BRANCHtype>100#100#100</color_BRANCHtype>
+		<other_axis>102</other_axis>
+		<isMovingXaxis>true</isMovingXaxis>
+		<target_vertex>33</target_vertex>
+		<is_text>false</is_text>
+		
+		<num_vertex>29</num_vertex>
+		<name>and2a</name>
+		<init>233</init>
+		<end>313</end>
+		<color_Itype>100#100#100</color_Itype>
+		<color_Rtype>100#100#100</color_Rtype>
+		<color_Jtype>100#100#100</color_Jtype>
+		<color_LOADtype>100#100#100</color_LOADtype>
+		<color_STOREtype>100#100#100</color_STOREtype>
+		<color_BRANCHtype>100#100#100</color_BRANCHtype>
+		<other_axis>137</other_axis>
+		<isMovingXaxis>true</isMovingXaxis>
+		<target_vertex>34</target_vertex>
+		<is_text>false</is_text>
+		
+		<num_vertex>30</num_vertex>
+		<name>and3a</name>
+		<init>233</init>
+		<end>313</end>
+		<color_Itype>0#0#255</color_Itype>
+		<color_Rtype>255#0#0</color_Rtype>
+		<color_Jtype>100#100#100</color_Jtype>
+		<color_LOADtype>255#0#0</color_LOADtype>
+		<color_STOREtype>100#100#100</color_STOREtype>
+		<color_BRANCHtype>100#100#100</color_BRANCHtype>
+		<other_axis>169</other_axis>
+		<isMovingXaxis>true</isMovingXaxis>
+		<target_vertex>35</target_vertex>
+		<is_text>false</is_text>
+		
+		<num_vertex>31</num_vertex>
+		<name>and4a</name>
+		<init>233</init>
+		<end>313</end>
+		<color_Itype>100#100#100</color_Itype>
+		<color_Rtype>100#100#100</color_Rtype>
+		<color_Jtype>100#100#100</color_Jtype>
+		<color_LOADtype>100#100#100</color_LOADtype>
+		<color_STOREtype>100#100#100</color_STOREtype>
+		<color_BRANCHtype>100#100#100</color_BRANCHtype>
+		<other_axis>197</other_axis>
+		<isMovingXaxis>true</isMovingXaxis>
+		<target_vertex>0</target_vertex>
+		<is_text>false</is_text>
+		
+		<num_vertex>32</num_vertex>
+		<name>and5a</name>
+		<init>233</init>
+		<end>313</end>
+		<color_Itype>100#100#100</color_Itype>
+		<color_Rtype>100#100#100</color_Rtype>
+		<color_Jtype>100#100#100</color_Jtype>
+		<color_LOADtype>100#100#100</color_LOADtype>
+		<color_STOREtype>100#100#100</color_STOREtype>
+		<color_BRANCHtype>100#100#100</color_BRANCHtype>
+		<other_axis>228</other_axis>
+		<isMovingXaxis>true</isMovingXaxis>
+		<target_vertex>0</target_vertex>
+		<is_text>false</is_text>
+		
+		<num_vertex>33</num_vertex>
+		<name>regData1</name>
+		<init>340</init>
+		<end>375</end>
+		<color_Itype>100#100#100</color_Itype>
+		<color_Rtype>100#100#100</color_Rtype>
+		<color_Jtype>100#100#100</color_Jtype>
+		<color_LOADtype>100#100#100</color_LOADtype>
+		<color_STOREtype>100#100#100</color_STOREtype>
+		<color_BRANCHtype>100#100#100</color_BRANCHtype>
+		<other_axis>110</other_axis>
+		<isMovingXaxis>true</isMovingXaxis>
+		<target_vertex>0</target_vertex>
+		<is_text>false</is_text>
+		
+		<num_vertex>34</num_vertex>
+		<name>regData2</name>
+		<init>340</init>
+		<end>375</end>
+		<color_Itype>100#100#100</color_Itype>
+		<color_Rtype>100#100#100</color_Rtype>
+		<color_Jtype>100#100#100</color_Jtype>
+		<color_LOADtype>100#100#100</color_LOADtype>
+		<color_STOREtype>100#100#100</color_STOREtype>
+		<color_BRANCHtype>100#100#100</color_BRANCHtype>
+		<other_axis>140</other_axis>
+		<isMovingXaxis>true</isMovingXaxis>
+		<target_vertex>0</target_vertex>
+		<is_text>false</is_text>
+		
+		<num_vertex>35</num_vertex>
+		<name>regData3</name>
+		<init>340</init>
+		<end>375</end>
+		<color_Itype>255#0#0</color_Itype>
+		<color_Rtype>255#0#0</color_Rtype>
+		<color_Jtype>100#100#100</color_Jtype>
+		<color_LOADtype>255#0#0</color_LOADtype>
+		<color_STOREtype>100#100#100</color_STOREtype>
+		<color_BRANCHtype>100#100#100</color_BRANCHtype>
+		<other_axis>172</other_axis>
+		<isMovingXaxis>true</isMovingXaxis>
+		<target_vertex>0</target_vertex>
+		<is_text>false</is_text>
+		
+		<num_vertex>36</num_vertex>
+		<name>regData4</name>
+		<init>340</init>
+		<end>375</end>
+		<color_Itype>100#100#100</color_Itype>
+		<color_Rtype>100#100#100</color_Rtype>
+		<color_Jtype>100#100#100</color_Jtype>
+		<color_LOADtype>100#100#100</color_LOADtype>
+		<color_STOREtype>100#100#100</color_STOREtype>
+		<color_BRANCHtype>100#100#100</color_BRANCHtype>
+		<other_axis>202</other_axis>
+		<isMovingXaxis>true</isMovingXaxis>
+		<target_vertex>0</target_vertex>
+		<is_text>false</is_text>
+		
+		<num_vertex>37</num_vertex>
+		<name>regData5</name>
+		<init>340</init>
+		<end>375</end>
+		<color_Itype>100#100#100</color_Itype>
+		<color_Rtype>100#100#100</color_Rtype>
+		<color_Jtype>100#100#100</color_Jtype>
+		<color_LOADtype>100#100#100</color_LOADtype>
+		<color_STOREtype>100#100#100</color_STOREtype>
+		<color_BRANCHtype>100#100#100</color_BRANCHtype>
+		<other_axis>234</other_axis>
+		<isMovingXaxis>true</isMovingXaxis>
+		<target_vertex>0</target_vertex>
+		<is_text>false</is_text>
+		
+		<num_vertex>38</num_vertex>
+		<name>regOutput32</name>
+		<init>520</init>
+		<end>543</end>
+		<color_Itype>010#010#150</color_Itype>
+		<color_Rtype>010#010#150</color_Rtype>
+		<color_Jtype>100#100#100</color_Jtype>
+		<color_LOADtype>010#010#150</color_LOADtype>
+		<color_STOREtype>010#010#150</color_STOREtype>
+		<color_BRANCHtype>100#100#100</color_BRANCHtype>
+		<other_axis>242</other_axis>
+		<isMovingXaxis>true</isMovingXaxis>
+		<target_vertex>43#44</target_vertex>
+		<is_text>false</is_text>
+		
+		<num_vertex>39</num_vertex>
+		<name>regOutput31</name>
+		<init>520</init>
+		<end>566</end>
+		<color_Itype>254#254#0</color_Itype>
+		<color_Rtype>254#254#0</color_Rtype>
+		<color_Jtype>100#100#100</color_Jtype>
+		<color_LOADtype>254#254#0</color_LOADtype>
+		<color_STOREtype>254#254#0</color_STOREtype>
+		<color_BRANCHtype>254#254#0</color_BRANCHtype>
+		<other_axis>210</other_axis>
+		<isMovingXaxis>true</isMovingXaxis>
+		<target_vertex>46#47</target_vertex>
+		<is_text>false</is_text>
+		
+		<num_vertex>40</num_vertex>
+		<name>regOutputIND</name>
+		<init>520</init>
+		<end>588</end>
+		<color_Itype>010#250#150</color_Itype>
+		<color_Rtype>010#250#150</color_Rtype>
+		<color_Jtype>100#100#100</color_Jtype>
+		<color_LOADtype>010#250#150</color_LOADtype>
+		<color_STOREtype>010#250#150</color_STOREtype>
+		<color_BRANCHtype>100#100#100</color_BRANCHtype>
+		<other_axis>182</other_axis>
+		<isMovingXaxis>true</isMovingXaxis>
+		<target_vertex>49#50</target_vertex>
+		<is_text>false</is_text>
+		
+		<num_vertex>41</num_vertex>
+		<name>regOutput2</name>
+		<init>520</init>
+		<end>610</end>
+		<color_Itype>0#255#255</color_Itype>
+		<color_Rtype>0#255#255</color_Rtype>
+		<color_Jtype>100#100#100</color_Jtype>
+		<color_LOADtype>0#255#255</color_LOADtype>
+		<color_STOREtype>0#255#255</color_STOREtype>
+		<color_BRANCHtype>0#255#255</color_BRANCHtype>
+		<other_axis>151</other_axis>
+		<isMovingXaxis>true</isMovingXaxis>
+		<target_vertex>52#53</target_vertex>
+		<is_text>false</is_text>
+		
+		<num_vertex>42</num_vertex>
+		<name>regOutput1</name>
+		<init>520</init>
+		<end>633</end>
+		<color_Itype>123#123#0</color_Itype>
+		<color_Rtype>123#123#0</color_Rtype>
+		<color_Jtype>100#100#100</color_Jtype>
+		<color_LOADtype>123#123#0</color_LOADtype>
+		<color_STOREtype>123#123#0</color_STOREtype>
+		<color_BRANCHtype>100#100#100</color_BRANCHtype>
+		<other_axis>120</other_axis>
+		<isMovingXaxis>true</isMovingXaxis>
+		<target_vertex>55#56</target_vertex>
+		<is_text>false</is_text>
+		
+		<num_vertex>43</num_vertex>
+		<name>mux1Reg32</name>
+		<init>552</init>
+		<end>665</end>
+		<color_Itype>010#010#150</color_Itype>
+		<color_Rtype>010#010#150</color_Rtype>
+		<color_Jtype>100#100#100</color_Jtype>
+		<color_LOADtype>010#010#150</color_LOADtype>
+		<color_STOREtype>010#010#150</color_STOREtype>
+		<color_BRANCHtype>100#100#100</color_BRANCHtype>
+		<other_axis>242</other_axis>
+		<isMovingXaxis>true</isMovingXaxis>
+		<target_vertex>0</target_vertex>
+		<is_text>false</is_text>
+		
+		<num_vertex>44</num_vertex>
+		<name>mux2Reg32</name>
+		<init>247</init>
+		<end>435</end>
+		<color_Itype>010#010#150</color_Itype>
+		<color_Rtype>010#010#150</color_Rtype>
+		<color_Jtype>100#100#100</color_Jtype>
+		<color_LOADtype>010#010#150</color_LOADtype>
+		<color_STOREtype>010#010#150</color_STOREtype>
+		<color_BRANCHtype>100#100#100</color_BRANCHtype>
+		<other_axis>547</other_axis>
+		<isMovingXaxis>false</isMovingXaxis>
+		<target_vertex>45</target_vertex>
+		<is_text>false</is_text>
+		
+		<num_vertex>45</num_vertex>
+		<name>mux2Reg32</name>
+		<init>548</init>
+		<end>665</end>
+		<color_Itype>010#010#150</color_Itype>
+		<color_Rtype>010#010#150</color_Rtype>
+		<color_Jtype>100#100#100</color_Jtype>
+		<color_LOADtype>010#010#150</color_LOADtype>
+		<color_STOREtype>010#010#150</color_STOREtype>
+		<color_BRANCHtype>100#100#100</color_BRANCHtype>
+		<other_axis>434</other_axis>
+		<isMovingXaxis>true</isMovingXaxis>
+		<target_vertex>0</target_vertex>
+		<is_text>false</is_text>
+		
+		<num_vertex>46</num_vertex>
+		<name>muxReg31</name>
+		<init>575</init>
+		<end>663</end>
+		<color_Itype>254#254#0</color_Itype>
+		<color_Rtype>254#254#0</color_Rtype>
+		<color_Jtype>100#100#100</color_Jtype>
+		<color_LOADtype>254#254#0</color_LOADtype>
+		<color_STOREtype>254#254#0</color_STOREtype>
+		<color_BRANCHtype>100#100#100</color_BRANCHtype>
+		<other_axis>210</other_axis>
+		<isMovingXaxis>true</isMovingXaxis>
+		<target_vertex>0</target_vertex>
+		<is_text>false</is_text>
+		
+		<num_vertex>47</num_vertex>
+		<name>mux2Reg31</name>
+		<init>217</init>
+		<end>407</end>
+		<color_Itype>254#254#0</color_Itype>
+		<color_Rtype>254#254#0</color_Rtype>
+		<color_Jtype>100#100#100</color_Jtype>
+		<color_LOADtype>254#254#0</color_LOADtype>
+		<color_STOREtype>254#254#0</color_STOREtype>
+		<color_BRANCHtype>100#100#100</color_BRANCHtype>
+		<other_axis>570</other_axis>
+		<isMovingXaxis>false</isMovingXaxis>
+		<target_vertex>48</target_vertex>
+		<is_text>false</is_text>
+		
+		<num_vertex>48</num_vertex>
+		<name>mux2Reg31</name>
+		<init>570</init>
+		<end>665</end>
+		<color_Itype>254#254#0</color_Itype>
+		<color_Rtype>254#254#0</color_Rtype>
+		<color_Jtype>100#100#100</color_Jtype>
+		<color_LOADtype>254#254#0</color_LOADtype>
+		<color_STOREtype>254#254#0</color_STOREtype>
+		<color_BRANCHtype>100#100#100</color_BRANCHtype>
+		<other_axis>407</other_axis>
+		<isMovingXaxis>true</isMovingXaxis>
+		<target_vertex>0</target_vertex>
+		<is_text>false</is_text>
+		
+		<num_vertex>49</num_vertex>
+		<name>muxRegInd</name>
+		<init>597</init>
+		<end>665</end>
+		<color_Itype>010#250#150</color_Itype>
+		<color_Rtype>010#250#150</color_Rtype>
+		<color_Jtype>100#100#100</color_Jtype>
+		<color_LOADtype>010#250#150</color_LOADtype>
+		<color_STOREtype>010#250#150</color_STOREtype>
+		<color_BRANCHtype>100#100#100</color_BRANCHtype>
+		<other_axis>182</other_axis>
+		<isMovingXaxis>true</isMovingXaxis>
+		<target_vertex>0</target_vertex>
+		<is_text>false</is_text>
+		
+		<num_vertex>50</num_vertex>
+		<name>muxRegInd</name>
+		<init>186</init>
+		<end>379</end>
+		<color_Itype>010#250#150</color_Itype>
+		<color_Rtype>010#250#150</color_Rtype>
+		<color_Jtype>100#100#100</color_Jtype>
+		<color_LOADtype>010#250#150</color_LOADtype>
+		<color_STOREtype>010#250#150</color_STOREtype>
+		<color_BRANCHtype>100#100#100</color_BRANCHtype>
+		<other_axis>594</other_axis>
+		<isMovingXaxis>false</isMovingXaxis>
+		<target_vertex>51</target_vertex>
+		<is_text>false</is_text>
+		
+		<num_vertex>51</num_vertex>
+		<name>muxRegInd</name>
+		<init>594</init>
+		<end>665</end>
+		<color_Itype>010#250#150</color_Itype>
+		<color_Rtype>010#250#150</color_Rtype>
+		<color_Jtype>100#100#100</color_Jtype>
+		<color_LOADtype>010#250#150</color_LOADtype>
+		<color_STOREtype>010#250#150</color_STOREtype>
+		<color_BRANCHtype>100#100#100</color_BRANCHtype>
+		<other_axis>379</other_axis>
+		<isMovingXaxis>true</isMovingXaxis>
+		<target_vertex>0</target_vertex>
+		<is_text>false</is_text>
+		
+		<num_vertex>52</num_vertex>
+		<name>muxReg2</name>
+		<init>155</init>
+		<end>353</end>
+		<color_Itype>0#255#255</color_Itype>
+		<color_Rtype>0#255#255</color_Rtype>
+		<color_Jtype>100#100#100</color_Jtype>
+		<color_LOADtype>0#255#255</color_LOADtype>
+		<color_STOREtype>0#255#255</color_STOREtype>
+		<color_BRANCHtype>100#100#100</color_BRANCHtype>
+		<other_axis>616</other_axis>
+		<isMovingXaxis>false</isMovingXaxis>
+		<target_vertex>54</target_vertex>
+		<is_text>false</is_text>
+		
+		<num_vertex>53</num_vertex>
+		<name>muxReg2</name>
+		<init>623</init>
+		<end>665</end>
+		<color_Itype>0#255#255</color_Itype>
+		<color_Rtype>0#255#255</color_Rtype>
+		<color_Jtype>100#100#100</color_Jtype>
+		<color_LOADtype>0#255#255</color_LOADtype>
+		<color_STOREtype>0#255#255</color_STOREtype>
+		<color_BRANCHtype>100#100#100</color_BRANCHtype>
+		<other_axis>150</other_axis>
+		<isMovingXaxis>true</isMovingXaxis>
+		<target_vertex>0</target_vertex>
+		<is_text>false</is_text>
+		
+		<num_vertex>54</num_vertex>
+		<name>muxReg2</name>
+		<init>615</init>
+		<end>665</end>
+		<color_Itype>0#255#255</color_Itype>
+		<color_Rtype>0#255#255</color_Rtype>
+		<color_Jtype>100#100#100</color_Jtype>
+		<color_LOADtype>0#255#255</color_LOADtype>
+		<color_STOREtype>0#255#255</color_STOREtype>
+		<color_BRANCHtype>100#100#100</color_BRANCHtype>
+		<other_axis>353</other_axis>
+		<isMovingXaxis>true</isMovingXaxis>
+		<target_vertex>0</target_vertex>
+		<is_text>false</is_text>
+		
+		<num_vertex>55</num_vertex>
+		<name>mux2reg1</name>
+		<init>642</init>
+		<end>665</end>
+		<color_Itype>123#123#0</color_Itype>
+		<color_Rtype>123#123#0</color_Rtype>
+		<color_Jtype>100#100#100</color_Jtype>
+		<color_LOADtype>123#123#0</color_LOADtype>
+		<color_STOREtype>123#123#0</color_STOREtype>
+		<color_BRANCHtype>100#100#100</color_BRANCHtype>
+		<other_axis>120</other_axis>
+		<isMovingXaxis>true</isMovingXaxis>
+		<target_vertex>0</target_vertex>
+		<is_text>false</is_text>
+		
+		<num_vertex>56</num_vertex>
+		<name>mux1reg1</name>
+		<init>125</init>
+		<end>335</end>
+		<color_Itype>123#123#0</color_Itype>
+		<color_Rtype>123#123#0</color_Rtype>
+		<color_Jtype>100#100#100</color_Jtype>
+		<color_LOADtype>123#123#0</color_LOADtype>
+		<color_STOREtype>123#123#0</color_STOREtype>
+		<color_BRANCHtype>100#100#100</color_BRANCHtype>
+		<other_axis>639</other_axis>
+		<isMovingXaxis>false</isMovingXaxis>
+		<target_vertex>57</target_vertex>
+		<is_text>false</is_text>
+		
+		<num_vertex>57</num_vertex>
+		<name>mux2reg1</name>
+		<init>639</init>
+		<end>665</end>
+		<color_Itype>123#123#0</color_Itype>
+		<color_Rtype>123#123#0</color_Rtype>
+		<color_Jtype>100#100#100</color_Jtype>
+		<color_LOADtype>123#123#0</color_LOADtype>
+		<color_STOREtype>123#123#0</color_STOREtype>
+		<color_BRANCHtype>100#100#100</color_BRANCHtype>
+		<other_axis>335</other_axis>
+		<isMovingXaxis>true</isMovingXaxis>
+		<target_vertex>0</target_vertex>
+		<is_text>false</is_text>
+		
+		<num_vertex>58</num_vertex>
+		<name>registerAdd1</name>
+		<init>68</init>
+		<end>95</end>
+		<color_Itype>0#205#0</color_Itype>
+		<color_Rtype>0#205#0</color_Rtype>
+		<color_Jtype>100#100#100</color_Jtype>
+		<color_LOADtype>0#205#0</color_LOADtype>
+		<color_STOREtype>0#205#0</color_STOREtype>
+		<color_BRANCHtype>0#205#0</color_BRANCHtype>
+		<other_axis>700</other_axis>
+		<isMovingXaxis>false</isMovingXaxis>
+		<target_vertex>61</target_vertex>
+		<is_text>false</is_text>
+		
+		<num_vertex>59</num_vertex>
+		<name>registerAdd2</name>
+		<init>275</init>
+		<end>290</end>
+		<color_Itype>0#0#255</color_Itype>
+		<color_Rtype>0#0#255</color_Rtype>
+		<color_Jtype>100#100#100</color_Jtype>
+		<color_LOADtype>0#0#255</color_LOADtype>
+		<color_STOREtype>0#0#255</color_STOREtype>
+		<color_BRANCHtype>0#0#255</color_BRANCHtype>
+		<other_axis>700</other_axis>
+		<isMovingXaxis>false</isMovingXaxis>
+		<target_vertex>60</target_vertex>
+		<is_text>false</is_text>
+	
+		<num_vertex>60</num_vertex>
+		<name>mux2output</name>
+		<init>738</init>
+		<end>800</end>
+		<color_Itype>254#254#0</color_Itype>
+		<color_Rtype>254#254#0</color_Rtype>
+		<color_Jtype>100#100#100</color_Jtype>
+		<color_LOADtype>254#254#0</color_LOADtype>
+		<color_STOREtype>254#254#0</color_STOREtype>
+		<color_BRANCHtype>100#100#100</color_BRANCHtype>
+		<other_axis>346</other_axis>
+		<isMovingXaxis>true</isMovingXaxis>
+		<target_vertex>0</target_vertex>
+		<is_text>false</is_text>	
+		
+		<num_vertex>61</num_vertex>
+		<name>mux2output</name>
+		<init>737</init>
+		<end>800</end>
+		<color_Itype>010#250#150</color_Itype>
+		<color_Rtype>010#250#150</color_Rtype>
+		<color_Jtype>100#100#100</color_Jtype>
+		<color_LOADtype>010#250#150</color_LOADtype>
+		<color_STOREtype>010#250#150</color_STOREtype>
+		<color_BRANCHtype>100#100#100</color_BRANCHtype>
+		<other_axis>145</other_axis>
+		<isMovingXaxis>true</isMovingXaxis>
+		<target_vertex>3#4#16</target_vertex>
+		<is_text>false</is_text>
+	</datapath_map>
+</register_data>
+
+	 

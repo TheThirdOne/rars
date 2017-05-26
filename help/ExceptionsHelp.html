@@ -1,0 +1,149 @@
+<html>
+<title>Writing and Using MIPS exception handlers in MARS
+</title>
+<body>
+<center>
+<h3>Writing and Using MIPS exception handlers in MARS</h3>
+</center>
+
+<h3>Introduction</h3>
+<i>Exception handlers</i>, also known as <i>trap handlers</i> or 
+<i>interrupt handlers</i>, can easily be incorporated into a MIPS program.
+This guide is not intended to be comprehensive but provides the essential
+information for writing and using exception handlers.
+
+<p>Although the same mechanism services all three, <i>exceptions</i>, <i>traps</i>
+and <i>interrupts</i> are all distinct from each other.
+Exceptions are caused by exceptional conditions that occur at runtime
+such as invalid memory address references.  Traps are caused by instructions
+constructed especially for this purpose, listed below.  Interrupts are
+caused by external devices.
+
+<p>MARS partially but not completely implements the exception and interrupt
+mechanism of SPIM.
+
+<h3>Essential Facts</h3>
+Some essential facts about writing and using exception handlers include:
+<ul>
+<li>MARS simulates basic elements of the MIPS32 exception mechanism.</li>
+<li>The MIPS instruction set includes a number of instructions that
+conditionally trigger a trap exception based on the relative values of two
+registers or of a constant and a register:
+<tt>teq</tt>, <tt>teqi</tt> (trap if equal), 
+<tt>tne</tt>, <tt>tnei</tt> (trap if not equal), 
+<tt>tge</tt>, <tt>tgeu</tt>, 
+<tt>tgei</tt>, <tt>tgeiu</tt> (trap if greater than or equal), 
+<tt>tlt</tt>, <tt>tltu</tt>, 
+<tt>tlti</tt>, <tt>tltiu</tt> (trap if less than)
+</li>
+<li>When an exception occurs, 
+  <ol>
+  <li>Coprocessor 0 register $12 (status) bit 1 is set</li>
+  <li>Coprocessor 0 register $13 (cause) bits 2-6 are set to the exception type (codes below)</li>
+  <li>Coprocessor 0 register $14 (epc) is set to the
+  address of the instruction that triggered the exception</li>
+  <li>If the exception was caused by an invalid memory address, 
+  Coprocessor 0 register $8 (vaddr) is set to the invalid address.</li>
+  <li>Execution flow jumps to the MIPS
+   instruction at memory location <tt>0x800000180</tt>.  This address
+   in the kernel text segment (<tt>.ktext</tt> directive) is the
+   standard MIPS32 exception handler location.  The only way to change
+   it in MARS is to change the MIPS memory configuration through
+   the Settings menu item Memory Configuration.
+   </li>
+  </ol>
+</li>
+<li>There are three ways to include an exception handler in a MIPS program
+  <ol>
+  <li>Write the exception handler in the same file as the regular
+      program.  An example of this is presented below.
+  </li>
+  <li>Write the exception handler in a separate file, store that file
+      in the same directory as the regular program, and select
+	  the Settings menu item "Assemble all files in directory"
+  </li>
+  <li>Write the exception handler in a separate file, store that file
+      in any directory, then open the "Exception Handler..." dialog
+	  in the Settings menu, check the check box and browse to 
+	  that file.
+  </li>
+  </ol>
+</li>
+<li>If there is no instruction at location <tt>0x800000180</tt>,
+MARS will terminate the MIPS program with an appropriate error message.
+</li>
+<li>The exception handler can return control to the program using 
+the <tt>eret</tt> instruction.  This will place the EPC register $14 value into the
+Program Counter, so be sure to increment $14 by 4 before returning
+to skip over the instruction that caused the exception.  The <tt>mfc0</tt>
+and <tt>mtc0</tt> instructions are used to read from and write to Coprocessor 0
+registers.</li>
+   <li>Bits 8-15 of the Cause register $13 can also be used to indicate
+   pending interrupts.  Currently this is used only by the Keyboard and
+   Display Simulator Tool, where bit 8 represents a keyboard interrupt
+   and bit 9 represents a display interrupt.  For more details, see the
+   Help panel for that Tool.
+   </li>
+<li>Exception types declared in <tt>mars.simulator.Exceptions</tt>, but
+not necessarily implemented, are ADDRESS_EXCEPTION_LOAD (4), ADDRESS_EXCEPTION_STORE (5),
+	SYSCALL_EXCEPTION (8),
+	BREAKPOINT_EXCEPTION (9),
+	RESERVED_INSTRUCTION_EXCEPTION (10),
+	ARITHMETIC_OVERFLOW_EXCEPTION (12),
+	TRAP_EXCEPTION(13),
+	DIVIDE_BY_ZERO_EXCEPTION (15),
+	FLOATING_POINT_OVERFLOW (16), and 
+	FLOATING_POINT_UNDERFLOW (17).
+</li>
+<li>When writing a non-trivial exception handler, your handler must first save
+general purpose register contents, then restore them before returning.</li>
+</ul>
+
+
+<h3>Example of Trap Handler</h3>
+The sample MIPS program below will immediately generate a trap exception because
+the trap condition evaluates true, control jumps to the exception handler,
+ the exception handler returns control to the instruction following
+the one that triggered the exception, then the program terminates normally.
+<p>
+<pre>
+   .text
+main:
+   teqi $t0,0     # immediately trap because $t0 contains 0
+   li   $v0, 10   # After return from exception handler, specify exit service
+   syscall        # terminate normally
+
+# Trap handler in the standard MIPS32 kernel text segment
+
+   .ktext 0x80000180
+   move $k0,$v0   # Save $v0 value
+   move $k1,$a0   # Save $a0 value
+   la   $a0, msg  # address of string to print
+   li   $v0, 4    # Print String service
+   syscall
+   move $v0,$k0   # Restore $v0
+   move $a0,$k1   # Restore $a0
+   mfc0 $k0,$14   # Coprocessor 0 register $14 has address of trapping instruction
+   addi $k0,$k0,4 # Add 4 to point to next instruction
+   mtc0 $k0,$14   # Store new address back into $14
+   eret           # Error return; set PC to value in $14
+   .kdata	
+msg:   
+   .asciiz "Trap generated"
+</pre>
+<p></p>
+
+<h3>Widely Used Exception Handler</h3>
+The exception handler <tt>exceptions.s</tt> provided with
+the SPIM simulator will assemble and run under MARS.  The MARS
+assembler will generate warnings because this program
+contains directives that it does not
+recognize, but as long as the setting "Assembler warnings are 
+considered errors" is <i>not</i> set this will not cause any
+problems.
+
+
+
+
+</body>
+</html>

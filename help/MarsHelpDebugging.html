@@ -1,0 +1,114 @@
+<html>
+<title>MARS 4.5 help contents
+</title>
+<body>
+<center>
+<h3>MARS - Mips Assembly and Runtime Simulator</h3>
+<h4>Release 4.5</h4>
+<h4>August 2014</h4>
+<h4>Interactive Debugging Features</h4>
+</center>
+
+<p>
+MARS provides many features for interactive debugging through its Execute pane.
+Features include:
+<ul>
+<li>In <i>Step</i> mode, the next instruction to be simulated is highlighted and
+memory content displays are updated at each step.</li>
+
+<li>Select the <i>Go</i> option if you want to simulate continually.
+It can also be used to continue simulation
+from a paused (step, breakpoint, pause) state.</li>
+
+<li>Breakpoints are easily set and reset using the check boxes next to each instruction displayed
+in the Text Segment window.  <i>New in Release 3.8:</i> You can temporarily suspend breakpoints
+using Toggle Breakpoints in the Run menu or by clicking the "Bkpt" column header in the Text Segment
+window.  Repeat, to re-activate.</li>
+
+<li>When running in the <i>Go</i> mode, you can select the simulation
+speed using the Run Speed slider.  Available speeds range
+from .05 instructions per second (20 seconds between steps) up to 30
+instructions per second, then above this offers an "unlimited" speed.
+When using "unlimited" speed, code highlighting and memory display updating 
+are turned off while simulating (but it executes really fast!).  
+When a breakpoint is reached, highlighting and updating occur.
+Run speed can be adjusted while the program is running.</li>
+
+<li>When running in the <i>Go</i> mode, you can pause or stop
+simulation at any time using the <i>Pause</i> or <i>Stop</i> features.
+The former will pause execution and update the display, as if you
+were stepping or at a breakpoint.  The latter will terminate execution
+and display final memory and register values.  If running at "unlimited"
+speed, the system may not respond immediately but it will respond.</li>
+
+
+<li>You have the ability to interactively step "backward" through program execution 
+one instruction at a time to "undo" execution steps.  It will buffer up to 2000 of the most 
+recent execution steps (this limit is stored in a properties file and can be changed).
+It will undo changes made to MIPS memory, registers or condition flags,
+but not console or file I/O.  This should be a great debugging aid.  
+It is available anytime execution is paused and at termination (even if terminated due to 
+exception).  
+
+<li>When program execution is paused or terminated, select <i>Reset</i>
+to reset all memory cells and registers to their initial post-assembly values.
+In fact, Reset is implemented by re-assembling the program.</li>
+
+<li>Memory addresses and values, and register values, can be viewed in either decimal
+or hexadecimal format.  All data are stored in little-endian byte order (each 
+word consists of byte 3 followed by byte 2 then 1 then 0).  Note that each word
+can hold 4 characters of a string and those 4 characters will appear in the
+reverse order from that of the string literal.</li>
+
+<li>Data segment contents are displayed 512 bytes
+at a time (with scrolling) starting with the data segment base address (0x10010000).  
+Navigation buttons are provided to change the display to the next 
+section of memory, the previous, or back to the initial (home) range.  A combo box is 
+also provided to view memory contents in the vicinity of the stack pointer 
+(contents of MIPS $sp register), global pointer (contents of MIPS $gp register),
+the heap base address (0x10040000), .extern globals (0x10000000),
+the kernel data segment (0x90000000), or memory-mapped IO (MMIO, 0xFFFF0000).
+<em>Starting with Mars 4.4,</em> raw text segment contents can also be displayed.</li>
+
+<li>Contents of any data segment memory word and almost any MIPS register can be modified by 
+editing its displayed table cell.  Double-click on a cell to edit it and press the Enter key
+when finished typing the new value.  If you
+enter an invalid 32-bit integer, the word INVALID appears in the cell
+and memory/register contents are not affected.  Values can be entered
+in either decimal or hexadecimal (leading "0x").  Negative hexadecimal 
+values can be entered in either two's complement or signed format.  Note
+that three of the integer registers (zero, program counter, return address) 
+cannot be edited.</li>
+
+<li><em>New in 4.4</em> If the setting for Self-Modifying Code is enabled
+(disabled by default, look in the Settings menu), text segment binary
+code can be modified using the same technique described above. It can also
+be modified by double-clicking on a cell in the Text Segment display's Code
+column.</li>
+
+<li>Contents of cells representing floating point registers can be edited 
+as described above and will accept valid hexadecimal or decimal floating point
+values.  Since each double-precision register overlays two single-precision 
+registers, any changes to a double-precision register will affect one or both
+of the displayed contents of its corresponding single-precision registers.
+Changes to a single-precision register will affect the display of its
+corresponding double-precision register.  Values entered in hexadecimal 
+need to conform to IEEE-754 format.  Values entered in decimal are entered
+using decimal points and E-notation (e.g. 12.5e3 is 12.5 times 10 cubed).</li>
+
+<li>Cell contents can be edited during program execution and once accepted
+will apply starting with the next instruction to be executed.</li>
+
+<li>Clicking on a Labels window entry will cause the location associated with 
+that label to be centered and highlighted in the Text Segment or Data Segment
+window as appropriate.  Note the Labels window is not displayed by default but
+can be by selecting it from the Settings menu.</li>
+
+</ul>
+
+<hr>
+<p>
+This document is available for printing on the MARS home page
+<tt><b>http://www.cs.missouristate.edu/MARS/</b></tt>.
+</body>
+</html>

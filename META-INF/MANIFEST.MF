@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+Class-Path: .
+Created-By: 1.6.0_33 (Sun Microsystems Inc.)
+Main-Class: Mars
+

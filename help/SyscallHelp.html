@@ -1,0 +1,292 @@
+<html>
+<title>MIPS syscall functions available in MARS
+</title>
+<body>
+<center>
+<h3>SYSCALL functions available in MARS</h3>
+</center>
+
+<h3>Introduction</h3>
+<p>A number of system services, mainly for input and output, are available for use by 
+your MIPS program.  They are described in the table below.</p>
+<p>MIPS register contents are not affected by a system call, except for result registers
+as specified in the table below.</p>
+<h3>How to use SYSCALL system services</h3>
+Step 1. Load the service number in register $v0.<br>
+Step 2. Load argument values, if any, in $a0, $a1, $a2, or $f12 as specified.<br>
+Step 3. Issue the SYSCALL instruction.<br>
+Step 4. Retrieve return values, if any, from result registers as specified.<br>
+</p>
+<strong>Example: display the value stored in $t0 on the console</strong><br>
+<pre>
+    li  $v0, 1           # service 1 is print integer
+    add $a0, $t0, $zero  # load desired value into argument register $a0, using pseudo-op
+    syscall
+</pre>
+<h3>Table of Available Services</h3>
+
+<table border=1>
+  <tr>  <th>Service</th>  <th>Code in $v0</th>  <th>Arguments</th>  <th>Result</th>  </tr>
+  <tr><td>print integer</td>                 <td align="center">1</td>   <td>$a0 = integer to print</td>  <td>&nbsp;</td></tr>
+  <tr><td>print float</td>                   <td align="center">2</td>   <td>$f12 = float to print</td>   <td>&nbsp;</td></tr>
+  <tr><td>print double</td>                  <td align="center">3</td>   <td>$f12 = double to print</td>  <td>&nbsp;</td></tr>
+  <tr><td>print string</td>                  <td align="center">4</td>   <td>$a0 = address of null-terminated string to print</td>  <td>&nbsp;</td></tr>
+  <tr><td>read integer</td>                  <td align="center">5</td>   <td>&nbsp;</td>  <td>$v0 contains integer read</td></tr>
+  <tr><td>read float</td>                    <td align="center">6</td>   <td>&nbsp;</td>  <td>$f0 contains float read</td></tr>
+  <tr><td>read double</td>                   <td align="center">7</td>   <td>&nbsp;</td>  <td>$f0 contains double read</td></tr>
+  <tr><td>read string</td>                   <td align="center">8</td>   <td>$a0 = address of input buffer<br>$a1 = maximum number of characters to read</td>  <td><i>See note below table</i></td></tr>
+  <tr><td>sbrk (allocate heap memory)</td>   <td align="center">9</td>   <td>$a0 = number of bytes to allocate</td>  <td>$v0 contains address of allocated memory</td></tr>
+  <tr><td>exit (terminate execution)</td>   <td align="center">10</td>   <td>&nbsp;</td>  <td>&nbsp;</td></tr>
+  <tr><td>print character</td>              <td align="center">11</td>   <td>$a0 = character to print</td>  <td><i>See note below table</i></td></tr>
+  <tr><td>read character</td>               <td align="center">12</td>   <td>&nbsp;</td>  <td>$v0 contains character read</td></tr>
+  <tr><td>open file</td>                    <td align="center">13</td>   <td>$a0 = address of null-terminated string containing filename<br>$a1 = flags<br>$a2 = mode</td>  <td>$v0 contains file descriptor (negative if error).  <i>See note below table</i></td></tr>
+  <tr><td>read from file</td>               <td align="center">14</td>   <td>$a0 = file descriptor<br>$a1 = address of input buffer<br>$a2 = maximum number of characters to read</td>  <td>$v0 contains number of characters read (0 if end-of-file, negative if error).  <i>See note below table</i></td></tr>
+  <tr><td>write to file</td>                <td align="center">15</td>   <td>$a0 = file descriptor<br>$a1 = address of output buffer<br>$a2 = number of characters to write</td>  <td>$v0 contains number of characters written (negative if error).  <i>See note below table</i></td></tr>
+  <tr><td>close file</td>                   <td align="center">16</td>   <td>$a0 = file descriptor</td>  <td>&nbsp;</td></tr>
+  <tr><td>exit2 (terminate with value)</td> <td align="center">17</td>   <td>$a0 = termination result</td>  <td><i>See note below table</i></td></tr>
+  <tr><td align="center" colspan=4><em>Services 1 through 17 are compatible with the SPIM simulator, other than Open File (13) as described in the Notes below the table.
+  Services 30 and higher are exclusive to MARS.</em></td></tr>
+  <tr><td>time (system time)</td>           <td align="center">30</td>   <td>&nbsp;</td><td>$a0 = low order 32 bits of system time<br>$a1 = high order 32 bits of system time.  <i>See note below table</i></td></tr>
+  <tr><td>MIDI out</td>                     <td align="center">31</td>   <td>$a0 = pitch (0-127)<br>$a1 = duration in milliseconds<br>$a2 = instrument (0-127)<br>$a3 = volume (0-127)</td>  <td>Generate tone and return immediately.  <i>See note below table</i></td></tr>
+  <tr><td>sleep</td>                        <td align="center">32</td>   <td>$a0 = the length of time to sleep in milliseconds.</td>  <td>Causes the MARS Java thread to sleep for (at least) the specified number of milliseconds. This timing will not be precise, as the Java implementation will add some overhead.</td></tr>
+  <tr><td>MIDI out synchronous              <td align="center">33</td>   <td>$a0 = pitch (0-127)<br>$a1 = duration in milliseconds<br>$a2 = instrument (0-127)<br>$a3 = volume (0-127)</td>  <td>Generate tone and return upon tone completion.  <i>See note below table</i></td></tr>
+  <tr><td>print integer in hexadecimal</td> <td align="center">34</td>   <td>$a0 = integer to print</td>  <td>Displayed value is 8 hexadecimal digits, left-padding with zeroes if necessary.</td></tr>
+  <tr><td>print integer in binary</td>      <td align="center">35</td>   <td>$a0 = integer to print</td>  <td>Displayed value is 32 bits, left-padding with zeroes if necessary.</td></tr>
+  <tr><td>print integer as unsigned</td>    <td align="center">36</td>   <td>$a0 = integer to print</td>  <td>Displayed as unsigned decimal value.</td></tr>
+  <tr><td align="center">(not used)</td>    <td align="center">37-39</td><td>&nbsp;</td>  <td>&nbsp;</td></tr>
+  <tr><td>set seed</td>                     <td align="center">40</td>   <td>$a0 = i.d. of pseudorandom number generator (any int).<br>$a1 = seed for corresponding pseudorandom number generator.</td>  <td>No values are returned. Sets the seed of the corresponding underlying Java pseudorandom number generator (<tt>java.util.Random</tt>). <i>See note below table</i></td></tr>
+  <tr><td>random int</td>                   <td align="center">41</td>   <td>$a0 = i.d. of pseudorandom number generator (any int).</td>  <td>$a0 contains the next pseudorandom, uniformly distributed int value from this random number generator's sequence. <i>See note below table</i></td></tr>
+  <tr><td>random int range</td>             <td align="center">42</td>   <td>$a0 = i.d. of pseudorandom number generator (any int).<br>$a1 = upper bound of range of returned values.</td>  <td>$a0 contains pseudorandom, uniformly distributed int value in the range 0 <= [int] < [upper bound], drawn from this random number generator's sequence.  <i>See note below table</i></td></tr>
+  <tr><td>random float</td>                 <td align="center">43</td>   <td>$a0 = i.d. of pseudorandom number generator (any int).</td>  <td>$f0 contains the next pseudorandom, uniformly distributed float value in the range 0.0 <= f < 1.0 from this random number generator's sequence.  <i>See note below table</i></td></tr>
+  <tr><td>random double</td>                <td align="center">44</td>   <td>$a0 = i.d. of pseudorandom number generator (any int).</td>  <td>$f0 contains the next pseudorandom, uniformly distributed double value in the range 0.0 <= f < 1.0 from this random number generator's sequence.  <i>See note below table</i></td></tr>
+  <tr><td align="center">(not used)</td>    <td align="center">45-49</td><td>&nbsp;</td>  <td>&nbsp;</td></tr>
+  <tr><td>ConfirmDialog</td>                <td align="center">50</td>   <td>$a0 = address of null-terminated string that is the message to user</td>  <td>$a0 contains value of user-chosen option<br>0: Yes<br>1: No<br>2: Cancel</td></tr>
+  <tr><td>InputDialogInt</td>               <td align="center">51</td>   <td>$a0 = address of null-terminated string that is the message to user</td>  <td>$a0 contains int read<br>$a1 contains status value<br>0: OK status<br>-1: input data cannot be correctly parsed<br>-2: Cancel was chosen<br>-3: OK was chosen but no data had been input into field</td></tr>
+  <tr><td>InputDialogFloat</td>             <td align="center">52</td>   <td>$a0 = address of null-terminated string that is the message to user</td>  <td>$f0 contains float read<br>$a1 contains status value<br>0: OK status<br>-1: input data cannot be correctly parsed<br>-2: Cancel was chosen<br>-3: OK was chosen but no data had been input into field</td></tr>
+  <tr><td>InputDialogDouble</td>            <td align="center">53</td>   <td>$a0 = address of null-terminated string that is the message to user</td>  <td>$f0 contains double read<br>$a1 contains status value<br>0: OK status<br>-1: input data cannot be correctly parsed<br>-2: Cancel was chosen<br>-3: OK was chosen but no data had been input into field</td></tr>
+  <tr><td>InputDialogString</td>            <td align="center">54</td>   <td>$a0 = address of null-terminated string that is the message to user<br>$a1 = address of input buffer<br>$a2 = maximum number of characters to read</td>  <td><i>See Service 8 note below table</i><br>$a1 contains status value<br>0: OK status. Buffer contains the input string.<br>-2: Cancel was chosen. No change to buffer. <br>-3: OK was chosen but no data had been input into field. No change to buffer.<br>-4: length of the input string exceeded the specified maximum. Buffer contains the maximum allowable input string plus a terminating null.</td></tr>
+  <tr><td>MessageDialog</td>                <td align="center">55</td>   <td>$a0 = address of null-terminated string that is the message to user<br>$a1 = the type of message to be displayed:<br> 
+0: error message, indicated by Error icon <!-- <img src="SyscallMessageDialogError.gif"> --> <br>
+1: information message, indicated by Information icon <!-- <img src="SyscallMessageDialogInformation.gif"> --> <br>
+2: warning message, indicated by Warning icon <!-- <img src="SyscallMessageDialogWarning.gif"> --> <br>
+3: question message, indicated by Question icon <!-- <img src="SyscallMessageDialogQuestion.gif"> --> <br>
+other: plain message (no icon displayed)
+</td>  <td>N/A</td></tr>
+  <tr><td>MessageDialogInt</td>             <td align="center">56</td>   <td>$a0 = address of null-terminated string that is an information-type message to user<br>$a1 = int value to display in string form after the first string</td>  <td>N/A</td></tr>
+  <tr><td>MessageDialogFloat</td>           <td align="center">57</td>   <td>$a0 = address of null-terminated string that is an information-type message to user<br>$f12 = float value to display in string form after the first string</td>  <td>N/A</td></tr>
+  <tr><td>MessageDialogDouble</td>          <td align="center">58</td>   <td>$a0 = address of null-terminated string that is an information-type message to user<br>$f12 = double value to display in string form after the first string</td>  <td>N/A</td></tr>
+  <tr><td>MessageDialogString</td>          <td align="center">59</td>   <td>$a0 = address of null-terminated string that is an information-type message to user<br>$a1 = address of null-terminated string to display after the first string</td>  <td>N/A</td></tr>
+</table>
+<br>
+<b>NOTES: Services numbered 30 and higher are not provided by SPIM</b>
+<br><b>Service 8</b> - Follows semantics of UNIX 'fgets'.  For specified length n, string can be no longer than n-1. If less than that, adds newline to end.  In either case, then pads with null byte  If n = 1, input is ignored and null byte placed at buffer address. If n < 1, input is ignored and nothing is written to the buffer.
+<br><b>Service 11</b> - Prints ASCII character corresponding to contents of low-order byte.
+<br><b>Service 13</b> - MARS implements three flag values: 0 for read-only, 1 for write-only with create, and 9 for write-only with create and append.  It ignores mode.  The returned file descriptor will be negative if the operation failed.  The underlying file I/O
+implementation uses <tt>java.io.FileInputStream.read()</tt> to read and <tt>java.io.FileOutputStream.write()</tt> to write.  MARS maintains file descriptors internally and allocates them starting with 3.  File descriptors 0, 1 and 2 are
+always open for: reading from standard input, writing to standard output, and writing to standard error, respectively (new in release 4.3).
+<br><b>Services 13,14,15</b> - In MARS 3.7, the result register was changed to $v0 for SPIM compatability.  It was previously $a0 as erroneously printed
+in Appendix B of <i>Computer Organization and Design,</i>.
+<br><b>Service 17</b> - If the MIPS program is run under control of the MARS graphical interface (GUI), the exit code in $a0 is ignored.
+<br><b>Service 30</b> - System time comes from <tt>java.util.Date.getTime()</tt> as milliseconds since 1 January 1970.
+<br><b>Services 31,33</b> - Simulate MIDI output through sound card.  Details below.
+<br><b>Services 40-44</b> use underlying Java pseudorandom number generators provided by the <tt>java.util.Random</tt> class.  Each stream (identified
+by $a0 contents) is modeled by a different <tt>Random</tt> object.  There are no default seed values, so use the Set Seed service (40) if 
+replicated random sequences are desired.
+
+
+
+<p></p>
+<hr>
+<h3>Example of File I/O</h3>
+The sample MIPS program below will open a new file for writing, write text to it from a memory buffer, then close it.  The file will be created in the
+directory in which MARS was run.
+<p>
+<pre>
+# Sample MIPS program that writes to a new file.
+#   by Kenneth Vollmar and Pete Sanderson
+
+        .data
+fout:   .asciiz "testout.txt"      # filename for output
+buffer: .asciiz "The quick brown fox jumps over the lazy dog."
+        .text
+  ###############################################################
+  # Open (for writing) a file that does not exist
+  li   $v0, 13       # system call for open file
+  la   $a0, fout     # output file name
+  li   $a1, 1        # Open for writing (flags are 0: read, 1: write)
+  li   $a2, 0        # mode is ignored
+  syscall            # open a file (file descriptor returned in $v0)
+  move $s6, $v0      # save the file descriptor 
+  ###############################################################
+  # Write to file just opened
+  li   $v0, 15       # system call for write to file
+  move $a0, $s6      # file descriptor 
+  la   $a1, buffer   # address of buffer from which to write
+  li   $a2, 44       # hardcoded buffer length
+  syscall            # write to file
+  ###############################################################
+  # Close the file 
+  li   $v0, 16       # system call for close file
+  move $a0, $s6      # file descriptor to close
+  syscall            # close file
+  ###############################################################
+</pre>
+<p></p>
+<hr>
+
+<h3>Using SYSCALL system services 31 and 33: MIDI output</h3>
+These system services are unique to MARS, and provide a means of producing sound.  MIDI output is
+simulated by your system sound card, and the simulation is provided by the <tt>javax.sound.midi</tt>
+package.  
+<p>Service 31 will generate the tone then immediately return.  Service 33 will generate the tone then
+sleep for the tone's duration before returning.  Thus it essentially combines services 31 and 32.
+<p>
+This service requires four parameters as follows:
+
+<table width="600" border="0" align="center" cellpadding="2">
+  <tr>
+    <td><h3>pitch ($a0)</h3>
+        
+      <li>Accepts a positive byte value (0-127) that denotes a pitch as it would 
+        be represented in MIDI </li>
+        
+      <li>Each number is one semitone / half-step in the chromatic scale.</li>
+        
+      <li>0 represents a very low C and 127 represents a very high G (a standard 
+        88 key piano begins at 9-A and ends at 108-C).</li>
+      <li>If the parameter value is outside this range, it applies a default value 60 which is the same as middle C on a piano.</li>
+        
+      <li>From middle C, all other pitches in the octave are as follows:</li>
+      
+        
+      <table width="450" border="0" align="center" cellpadding="2">
+        <tr>
+            <td>
+        	 <li>61 = C# or Db</li>
+        	 <li>62 = D</li>
+        	 <li>63 = D# or Eb</li>
+        	 <li>64 = E or Fb</li>
+			</td>
+            <td>
+        	 <li>65 = E# or F</li>
+        	 <li>66 = F# or Gb</li>
+        	 <li>67 = G</li>
+        	 <li>68 = G# or Ab</li>
+			</td>
+            <td>
+			 <li>69 = A</li>
+        	 <li>70 = A# or Bb</li>
+        	 <li>71 = B or Cb</li>
+        	 <li>72 = B# or C</li>
+			</td>
+          </tr>
+        </table>
+        
+        
+      <li>To produce these pitches in other octaves, add or subtract multiples 
+        of 12.</li>
+      <br>
+      </td>
+  </tr>
+  <tr>
+    <td><h3>duration in milliseconds ($a1)</h3>
+      <li>Accepts a positive integer value that is the length of the tone in milliseconds.</li>
+      <li>If the parameter value is negative, it applies a default value of one second (1000 milliseconds).</li>
+      <br>
+    </td>
+  </tr>
+  <tr>
+    <td><h3>instrument ($a2)</h3>
+	  <li>Accepts a positive byte value (0-127) that denotes the General MIDI 
+        &quot;patch&quot; used to play the tone.</li>
+      <li>If the parameter is outside this range, it applies a default value 0 which is an <em>Acoustic Grand Piano</em>.</li>
+      <li>General MIDI standardizes the number associated with each possible instrument 
+        (often referred to as <em>program change</em> numbers), however it does 
+        not determine how the tone will sound. This is determined by the synthesizer 
+        that is producing the sound. Thus a<em> Tuba</em> (patch 58) on one computer 
+        may sound different than that same patch on another computer.</li>
+      <li>The 128 available patches are divided into instrument families of 8:</li>
+	  <table width="450" border="0" align="center" cellpadding="2">
+        <tr> 
+          <td width="60">0-7</td>
+          <td width="160">Piano</td>
+          <td width="60">64-71</td>
+          <td>Reed</td>
+        </tr>
+        <tr> 
+          <td width="60">8-15</td>
+          <td width="160">Chromatic Percussion</td>
+          <td width="60">72-79</td>
+          <td>Pipe</td>
+        </tr>
+        <tr> 
+          <td width="60">16-23</td>
+          <td width="160">Organ</td>
+          <td width="60">80-87</td>
+          <td>Synth Lead</td>
+        </tr>
+        <tr> 
+          <td width="60">24-31</td>
+          <td width="160">Guitar</td>
+          <td width="60">88-95</td>
+          <td>Synth Pad</td>
+        </tr>
+        <tr> 
+          <td width="60">32-39</td>
+          <td width="160">Bass</td>
+          <td width="60">96-103</td>
+          <td>Synth Effects</td>
+        </tr>
+        <tr> 
+          <td width="60">40-47</td>
+          <td width="160">Strings</td>
+          <td width="60">104-111</td>
+          <td>Ethnic</td>
+        </tr>
+        <tr> 
+          <td width="60">48-55</td>
+          <td width="160">Ensemble</td>
+          <td width="60">112-119</td>
+          <td>Percussion</td>
+        </tr>
+        <tr> 
+          <td width="60">56-63</td>
+          <td width="160">Brass</td>
+          <td width="60">120-127</td>
+          <td>Sound Effects</td>
+        </tr>
+      </table>
+      <li>Note that outside of Java, General MIDI usually refers to patches 1-128. 
+        When referring to a list of General MIDI patches, 1 must be subtracted 
+        to play the correct patch. For a full list of General MIDI instruments, 
+        see <a href="http://www.midi.org/">
+        www.midi.org/about-midi/gm/gm1sound.shtml</a>. 
+        The General MIDI channel 10 percussion key map is not relevant to the 
+        toneGenerator method because it always defaults to MIDI channel 1.</li>
+		<br>
+      </td>
+  </tr>
+  <tr>
+    <td><h3>volume ($a3)</h3>
+      <li>Accepts a positive byte value (0-127) where 127 is the loudest and 0 
+        is silent. This value denotes MIDI velocity which refers to the initial 
+        attack of the tone.</li>
+      <li>If the parameter value is outside this range, it applies a default value 100.</li>
+      <li>MIDI velocity measures how hard a <em>note on</em> (or <em>note off</em>) 
+        message is played, perhaps on a MIDI controller like a keyboard. Most 
+        MIDI synthesizers will translate this into volume on a logarithmic scale 
+        in which the difference in amplitude decreases as the velocity value increases.</li>
+      <li>Note that velocity value on more sophisticated synthesizers can also 
+        affect the timbre of the tone (as most instruments sound different when 
+        they are played louder or softer).</li>
+      </td>
+  </tr>
+</table>
+System service 31 was developed and documented by Otterbein student Tony Brock in July 2007.
+
+
+
+
+
+</body>
+</html>

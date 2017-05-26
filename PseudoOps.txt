@@ -1,0 +1,572 @@
+# Copyright (c) 2003-2010,  Pete Sanderson and Kenneth Vollmar
+#
+# Developed by Pete Sanderson (psanderson@otterbein.edu)
+# and Kenneth Vollmar (kenvollmar@missouristate.edu)
+#
+# Permission is hereby granted, free of charge, to any person obtaining 
+# a copy of this software and associated documentation files (the 
+# "Software"), to deal in the Software without restriction, including 
+# without limitation the rights to use, copy, modify, merge, publish, 
+# distribute, sublicense, and/or sell copies of the Software, and to 
+# permit persons to whom the Software is furnished to do so, subject 
+# to the following conditions:
+#
+# The above copyright notice and this permission notice shall be 
+# included in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF 
+# MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
+# IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR 
+# ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF 
+# CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION 
+# WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+#
+# (MIT license, http://www.opensource.org/licenses/mit-license.html)
+
+
+# File containing definitions of MIPS pseudo-ops
+
+# File format:
+#   Each line contains specification for one pseudo-op, including optional description.
+#   First item is source statement syntax, specified in same "example" parser format used for regular instructions.
+#   Source statement specification ends with a tab.  It is followed by a tab-separated list of basic instruction
+#   templates to complete and substitute for the pseudo-op.
+#   Format for specifying syntax of templates is different from specifying syntax of source statement:
+#      (n=0,1,2,3,...) is token position in source statement (operator is token 0, parentheses are tokens but commas aren't)
+#      RGn means substitute register found in n'th token of source statement
+#      NRn means substitute next higher register than the one in n'th token of source code
+#      OPn means substitute n'th token of source code as is
+#      LLn means substitute low order 16-bits from label address in source token n.
+#      LLnU means substitute low order 16-bits (unsigned) from label address in source token n.
+#      LLnPm (m=1,2,3,4) means substitute low order 16-bits from label address in source token n, after adding m.
+#      LHn means substitute high order 16-bits from label address in source token n. Must add 1 if address bit 15 is 1. 
+#      LHnPm (m=1,2,3,4) means substitute high order 16-bits from label address in source token n, after adding m. Must then add 1 if bit 15 is 1. 
+#      VLn means substitute low order 16-bits from 32-bit value in source token n.
+#      VLnU means substitute low order 16-bits (unsigned) from 32-bit value in source token n.
+#      VLnPm (m=1,2,3,4) means substitute low order 16-bits from 32-bit value in source token n, after adding m to value.
+#      VLnPmU (m=1,2,3,4) means substitute low order 16-bits(unsigned) from 32-bit value in source token n, after adding m to value.
+#      VHLn means substitute high order 16-bits from 32-bit value in source token n.  Use this if later combined with low order 16-bits using "ori $1,$1,VLnU". See logical and branch operations.
+#      VHn means substitute high order 16-bits from 32-bit value in source token n, then add 1 if value's bit 15 is 1.  Use this only if later instruction uses VLn($1) to calculate 32-bit address.  See loads and stores.
+#      VHLnPm (m=1,2,3,4) means substitute high order 16-bits from 32-bit value in source token n, after adding m.  See VHLn.
+#      VHnPm (m=1,2,3,4) means substitute high order 16-bits from 32-bit value in source token n, after adding m. Must then add 1 if bit 15 is 1. See VHn.
+#      LLP is similar to LLn, but is needed for "label+100000" address offset. Immediate is added before taking low order 16. 
+#      LLPU is similar to LLn, but is needed for "label+100000" address offset. Immediate is added before taking low order 16 (unsigned). 
+#      LLPPm (m=1,2,3,4) is similar to LLP except m is added along with immediate before taking low order 16. 
+#      LHPA is similar to LHn, but is needed for "label+100000" address offset. Immediate is added before taking high order 16.
+#      LHPN is similar to LHPA, used only by "la" instruction. Address resolved by "ori" so do not add 1 if bit 15 is 1.
+#      LHPAPm (m=1,2,3,4) is similar to LHPA except value m is added along with immediate before taking high order 16.
+#      LHL means substitute high order 16-bits from label address in token 2 of "la" (load address) source statement.
+#      LAB means substitute textual label from last token of source statement.  Used for various branches.
+#      S32 means substitute the result of subtracting the constant value in last token from 32.  Used by "ror", "rol".
+#      DBNOP means Delayed Branching NOP - generate a "nop" instruction but only if delayed branching is enabled.  Added in 3.4.1 release.
+#      BROFFnm means substitute n if delayed branching is NOT enabled otherwise substitute m.  n and m are single digit numbers indicating constant branch offset (in words).  Added in 3.4.1 release.
+#      COMPACT is a marker to separate the default template from a second template optimized for 16-bit addresses.  See loads and stores having (data) label operands.
+#   Everything else is copied as is into the generated statement (you must use register numbers not mnemonics)
+#   The list of basic instruction templates is optionally followed a description of the instruction for help purposes.
+#   To add optional description, append a tab then the '#' character followed immediately (no spaces) by the description.
+#
+#  See documentation for ExtendedInstruction.makeTemplateSubstitutions() for more details.
+#
+#  Matching for a given instruction mnemonic is first-fit not best-fit.  If an instruction has both 16 and 32-bit
+#  immediate operand options, they should be listed in that order (16-bit version first).  Otherwise the 16-bit
+#  version will never be matched since the 32-bit version fits small immediate values first.
+#
+#  The pseudo-op specification must start in the first column.  If first column is blank, the line will be skipped!
+#
+#  When specifying the example instruction (first item on line), the conventions I follow are:
+#  - for a register operand, specify a numbered register (e.g. $t1 or $f1) to represent any register in the set. 
+#    The numerical value is not significant.  This is NOT the case when writing the templates that follow!
+#    In the templates, numbered registers are parsed as is (use only $0 and $1, which are $zero and $at).
+#  - for an immediate operand, specify a positive value indicative of the expected range.  I use 10 to represent
+#    a 5 bit value, 100 to represent a 16-bit value, and 100000 to represent a 32-bit value.
+#  - for a label operand, I use the string "label" (without the quotes). 
+#  The idea is to give the parser an example that will be parsed into the desired token sequence.  Syntax checking
+#  is done by comparing the source token sequence to list of token sequences generated from the examples.
+#  IMPORTANT NOTE:  The use of $t1,$t2, etc in the instruction sample means that any CPU register reference
+#                   can be used in that position.  It is simply a placeholder.  By contrast, when
+#                   $1 is used in the template specification, $1 ($at) is literally placed into the generated
+#                   instruction!  If you want the generated code to echo the source register, use RG1,RG2, etc.
+
+#######################  arithmetic and branch pseudo-ops #####################
+
+not $t1,$t2	nor RG1, RG2, $0	#Bitwise NOT (bit inversion)
+
+# Here are some "convenience" arithmetic pseduo-ops.  But do they encourage sloppy programming?
+add $t1,$t2,-100	addi RG1, RG2, VL3	#ADDition : set $t1 to ($t2 plus 16-bit immediate)
+add $t1,$t2,100000	lui $1, VHL3	ori $1, $1, VL3U	add RG1, RG2, $1	#ADDition : set $t1 to ($t2 plus 32-bit immediate)
+addu $t1,$t2,100000	lui $1, VHL3	ori $1, $1, VL3U	addu RG1, RG2, $1	#ADDition Unsigned : set $t1 to ($t2 plus 32-bit immediate), no overflow
+addi $t1,$t2,100000	lui $1, VHL3	ori $1, $1, VL3U	add RG1, RG2, $1	#ADDition Immediate : set $t1 to ($t2 plus 32-bit immediate)
+addiu $t1,$t2,100000	lui $1, VHL3	ori $1, $1, VL3U	addu RG1, RG2, $1	#ADDition Immediate Unsigned: set $t1 to ($t2 plus 32-bit immediate), no overflow
+sub $t1,$t2,-100		addi $1, $0, VL3	sub RG1, RG2, $1	#SUBtraction : set $t1 to ($t2 minus 16-bit immediate)
+sub $t1,$t2,100000	lui $1, VHL3	ori $1, $1, VL3U	sub RG1, RG2, $1	#SUBtraction : set $t1 to ($t2 minus 32-bit immediate)
+subu $t1,$t2,100000	lui $1, VHL3	ori $1, $1, VL3U	subu RG1, RG2, $1	#SUBtraction Unsigned : set $t1 to ($t2 minus 32-bit immediate), no overflow
+subi $t1,$t2,-100		addi $1, $0, VL3	sub RG1, RG2, $1	#SUBtraction Immediate : set $t1 to ($t2 minus 16-bit immediate)
+subi $t1,$t2,100000	lui $1, VHL3	ori $1, $1, VL3U	sub RG1, RG2, $1	#SUBtraction Immediate : set $t1 to ($t2 minus 32-bit immediate)
+subiu $t1,$t2,100000	lui $1, VHL3	ori $1, $1, VL3U	subu RG1, RG2, $1	#SUBtraction Immediate Unsigned : set $t1 to ($t2 minus 32-bit immediate), no overflow
+# feel free to add more convenience arithmetic pseduo-ops.
+
+# convenience logical operations can be added too,
+andi $t1,$t2,100000	lui $1, VHL3	ori $1, $1, VL3U	and RG1, RG2, $1	#AND Immediate : set $t1 to ($t2 bitwise-AND 32-bit immediate)
+ori $t1,$t2,100000	lui $1, VHL3	ori $1, $1, VL3U	or RG1, RG2, $1		#OR Immediate : set $t1 to ($t2 bitwise-OR 32-bit immediate)
+xori $t1,$t2,100000	lui $1, VHL3	ori $1, $1, VL3U	xor RG1, RG2, $1	#XOR Immediate : set $t1 to ($t2 bitwise-exclusive-OR 32-bit immediate)
+and $t1,$t2,100	andi RG1, RG2, VL3U	#AND : set $t1 to ($t2 bitwise-AND 16-bit unsigned immediate)
+or $t1,$t2,100	ori RG1, RG2, VL3U	#OR : set $t1 to ($t2 bitwise-OR 16-bit unsigned immediate)
+xor $t1,$t2,100	xori RG1, RG2, VL3U	#XOR : set $t1 to ($t2 bitwise-exclusive-OR 16-bit unsigned immediate)
+and $t1,100	andi RG1, RG1, VL2U	#AND : set $t1 to ($t1 bitwise-AND 16-bit unsigned immediate)
+or $t1,100	ori RG1, RG1, VL2U	#OR : set $t1 to ($t1 bitwise-OR 16-bit unsigned immediate)
+xor $t1,100	xori RG1, RG1, VL2U	#XOR : set $t1 to ($t1 bitwise-exclusive-OR 16-bit unsigned immediate)
+andi $t1,100	andi RG1, RG1, VL2U	#AND Immediate : set $t1 to ($t1 bitwise-AND 16-bit unsigned immediate)
+ori $t1,100	ori RG1, RG1, VL2U	#OR Immediate : set $t1 to ($t1 bitwise-OR 16-bit unsigned immediate)
+xori $t1,100	xori RG1, RG1, VL2U	#XOR Immediate : set $t1 to ($t1 bitwise-exclusive-OR 16-bit unsigned immediate)
+andi $t1,100000	lui $1, VHL2	ori $1, $1, VL2U	and RG1, RG1, $1	#AND Immediate : set $t1 to ($t1 bitwise-AND 32-bit immediate)
+ori $t1,100000	lui $1, VHL2	ori $1, $1, VL2U	or RG1, RG1, $1	#OR Immediate : set $t1 to ($t1 bitwise-OR 32-bit immediate)
+xori $t1,100000	lui $1, VHL2	ori $1, $1, VL2U	xor RG1, RG1, $1	#XOR Immediate : set $t1 to ($t1 bitwise-exclusive-OR 32-bit immediate)
+
+# Note: most of the expansions in this group were rewritten for Release 3.4.1 to remove internal branching.
+seq $t1,$t2,$t3	subu RG1, RG2, RG3	ori $1, $0, 1	sltu RG1, RG1, $1	#Set EQual : if $t2 equal to $t3 then set $t1 to 1 else 0
+seq $t1,$t2,-100	addi $1, $0, VL3	subu RG1, RG2, $1	ori $1, $0, 1	sltu RG1, RG1, $1	#Set EQual : if $t2 equal to 16-bit immediate then set $t1 to 1 else 0
+seq $t1,$t2,100000	lui $1, VHL3	ori $1, $1, VL3U	subu RG1, RG2, $1	ori $1, $0, 1	sltu RG1, RG1, $1	#Set EQual : if $t2 equal to 32-bit immediate then set $t1 to 1 else 0
+
+sne $t1,$t2,$t3	subu RG1, RG2, RG3	sltu RG1, $0, RG1	#Set Not Equal : if $t2 not equal to $t3 then set $t1 to 1 else 0
+sne $t1,$t2,-100	addi $1, $0, VL3	subu RG1, RG2, $1	sltu RG1, $0, RG1	#Set Not Equal : if $t2 not equal to 16-bit immediate then set $t1 to 1 else 0
+sne $t1,$t2,100000	lui $1, VHL3	ori $1, $1, VL3U	subu RG1, RG2, $1	sltu RG1, $0, RG1	#Set Not Equal : if $t2 not equal to 32-bit immediate then set $t1 to 1 else 0
+
+sge $t1,$t2,$t3	slt RG1, RG2, RG3	ori $1, $0, 1	subu RG1, $1, RG1	#Set Greater or Equal : if $t2 greater or equal to $t3 then set $t1 to 1 else 0
+sge $t1,$t2,-100	addi $1, $0, VL3	slt RG1, RG2, $1	ori $1, $0, 1	subu RG1, $1, RG1	#Set Greater or Equal : if $t2 greater or equal to 16-bit immediate then set $t1 to 1 else 0
+sge $t1,$t2,100000	lui $1, VHL3	ori $1, $1, VL3U	slt RG1, RG2, $1	ori $1, $0, 1	subu RG1, $1, RG1	#Set Greater or Equal : if $t2 greater or equal to 32-bit immediate then set $t1 to 1 else 0
+
+sgeu $t1,$t2,$t3	sltu RG1, RG2, RG3	ori $1, $0, 1	subu RG1, $1, RG1	#Set Greater or Equal Unsigned : if $t2 greater or equal to $t3 (unsigned compare) then set $t1 to 1 else 0
+sgeu $t1,$t2,-100	addi $1, $0, VL3	sltu RG1, RG2, $1	ori $1, $0, 1	subu RG1, $1, RG1	#Set Greater or Equal Unsigned : if $t2 greater or equal to 16-bit immediate (unsigned compare) then set $t1 to 1 else 0
+sgeu $t1,$t2,100000	lui $1, VHL3	ori $1, $1, VL3U	sltu RG1, RG2, $1	ori $1, $0, 1	subu RG1, $1, RG1	#Set Greater or Equal Unsigned : if $t2 greater or equal to 32-bit immediate (unsigned compare) then set $t1 to 1 else 0
+
+sgt $t1,$t2,$t3	slt RG1, RG3, RG2	#Set Greater Than : if $t2 greater than $t3 then set $t1 to 1 else 0
+sgt $t1,$t2,-100	addi $1, $0, VL3	slt RG1, $1, RG2	#Set Greater Than : if $t2 greater than 16-bit immediate then set $t1 to 1 else 0
+sgt $t1,$t2,100000	lui $1, VHL3	ori $1, $1, VL3U	slt RG1, $1, RG2	#Set Greater Than : if $t2 greater than 32-bit immediate then set $t1 to 1 else 0
+
+sgtu $t1,$t2,$t3	sltu RG1, RG3, RG2	#Set Greater Than Unsigned : if $t2 greater than $t3 (unsigned compare) then set $t1 to 1 else 0
+sgtu $t1,$t2,-100	addi $1, $0, VL3	sltu RG1, $1, RG2	#Set Greater Than Unsigned : if $t2 greater than 16-bit immediate (unsigned compare) then set $t1 to 1 else 0
+sgtu $t1,$t2,100000	lui $1, VHL3	ori $1, $1, VL3U	sltu RG1, $1, RG2	#Set Greater Than Unsigned : if $t2 greater than 32-bit immediate (unsigned compare) then set $t1 to 1 else 0
+
+sle $t1,$t2,$t3	slt RG1, RG3, RG2	ori $1, $0, 1	subu RG1, $1, RG1	#Set Less or Equal : if $t2 less or equal to $t3 then set $t1 to 1 else 0
+sle $t1,$t2,-100	addi $1, $0, VL3	slt RG1, $1, RG2	ori $1, $0, 1	subu RG1, $1, RG1	#Set Less or Equal : if $t2 less or equal to 16-bit immediate then set $t1 to 1 else 0
+sle $t1,$t2,100000	lui $1, VHL3	ori $1, $1, VL3U	slt RG1, $1, RG2	ori $1, $0, 1	subu RG1, $1, RG1	#Set Less or Equal : if $t2 less or equal to 32-bit immediate then set $t1 to 1 else 0
+
+sleu $t1,$t2,$t3	sltu RG1, RG3, RG2	ori $1, $0, 1	subu RG1, $1, RG1	#Set Less or Equal Unsigned: if $t2 less or equal to $t3 (unsigned compare) then set $t1 to 1 else 0
+sleu $t1,$t2,-100	addi $1, $0, VL3	sltu RG1, $1, RG2	ori $1, $0, 1	subu RG1, $1, RG1	#Set Less or Equal Unsigned: if $t2 less or equal to 16-bit immediate (unsigned compare) then set $t1 to 1 else 0
+sleu $t1,$t2,100000	lui $1, VHL3	ori $1, $1, VL3U	sltu RG1, $1, RG2	ori $1, $0, 1	subu RG1, $1, RG1	#Set Less or Equal Unsigned: if $t2 less or equal to 32-bit immediate (unsigned compare) then set $t1 to 1 else 0
+
+
+move $t1,$t2	addu RG1, $0, RG2	#MOVE : Set $t1 to contents of $t2
+abs $t1,$t2	sra $1, RG2, 31	xor RG1, $1, RG2	subu RG1, RG1, $1	#ABSolute value : Set $t1 to absolute value of $t2 (algorithm from Hacker's Delight) 
+neg $t1,$t2	sub RG1, $0, RG2	#NEGate : Set $t1 to negation of $t2
+negu $t1,$t2	subu RG1, $0, RG2	#NEGate Unsigned : Set $t1 to negation of $t2, no overflow
+
+b label	bgez $0, LAB	#Branch : Branch to statement at label unconditionally
+beqz $t1,label	beq RG1, $0, LAB	#Branch if EQual Zero : Branch to statement at label if $t1 is equal to zero
+bnez $t1,label	bne RG1, $0, LAB	#Branch if Not Equal Zero : Branch to statement at label if $t1 is not equal to zero
+
+beq $t1,-100,label	addi $1, $0, VL2	beq $1, RG1, LAB	#Branch if EQual : Branch to statement at label if $t1 is equal to 16-bit immediate
+beq $t1,100000,label	lui $1, VHL2	ori $1, $1, VL2U	beq $1, RG1, LAB	#Branch if EQual : Branch to statement at label if $t1 is equal to 32-bit immediate	
+bne $t1,-100,label	addi $1, $0, VL2	bne $1, RG1, LAB	#Branch if Not Equal : Branch to statement at label if $t1 is not equal to 16-bit immediate
+bne $t1,100000,label	lui $1, VHL2	ori $1, $1, VL2U	bne $1, RG1, LAB	#Branch if Not Equal : Branch to statement at label if $t1 is not equal to 32-bit immediate	
+
+bge $t1,$t2,label	slt $1, RG1, RG2	beq $1, $0, LAB	#Branch if Greater or Equal : Branch to statement at label if $t1 is greater or equal to $t2
+bge $t1,-100,label	slti $1, RG1, VL2	beq $1, $0, LAB	#Branch if Greater or Equal : Branch to statement at label if $t1 is greater or equal to 16-bit immediate	
+bge $t1,100000,label	lui $1, VHL2	ori $1, $1, VL2U	slt $1, RG1, $1	beq $1, $0, LAB	#Branch if Greater or Equal : Branch to statement at label if $t1 is greater or equal to 32-bit immediate	
+
+bgeu $t1,$t2,label	sltu $1, RG1, RG2	beq $1, $0, LAB	#Branch if Greater or Equal Unsigned : Branch to statement at label if $t1 is greater or equal to $t2 (unsigned compare)
+bgeu $t1,-100,label	sltiu $1, RG1, VL2	beq $1, $0, LAB	#Branch if Greater or Equal Unsigned : Branch to statement at label if $t1 is greater or equal to 16-bit immediate (unsigned compare)
+bgeu $t1,100000,label	lui $1, VHL2	ori $1, $1, VL2U	sltu $1, RG1, $1	beq $1, $0, LAB	#Branch if Greater or Equal Unsigned : Branch to statement at label if $t1 is greater or equal to 32-bit immediate (unsigned compare)
+
+bgt $t1,$t2,label	slt $1, RG2, RG1	bne $1, $0, LAB	#Branch if Greater Than : Branch to statement at label if $t1 is greater than $t2
+bgt $t1,-100,label	addi $1, $0, VL2	slt $1, $1, RG1	bne $1, $0, LAB	#Branch if Greater Than : Branch to statement at label if $t1 is greater than 16-bit immediate	
+bgt $t1,100000,label	lui $1, VHL2P1	ori $1, $1, VL2P1U	slt $1, RG1, $1	beq $1, $0, LAB	#Branch if Greater Than : Branch to statement at label if $t1 is greater than 32-bit immediate
+
+bgtu $t1,$t2,label	sltu $1, RG2, RG1	bne $1, $0, LAB	#Branch if Greater Than Unsigned: Branch to statement at label if $t1 is greater than $t2 (unsigned compare)
+bgtu $t1,-100,label	addi $1, $0, VL2	sltu $1, $1, RG1	bne $1, $0, LAB	#Branch if Greater Than Unsigned: Branch to statement at label if $t1 is greater than 16-bit immediate (unsigned compare)
+bgtu $t1,100000,label	lui $1, VHL2	ori $1, $1, VL2U	sltu $1, $1, RG1	bne $1, $0, LAB	#Branch if Greater Than Unsigned: Branch to statement at label if $t1 is greater than 16-bit immediate (unsigned compare)
+
+ble $t1,$t2,label	slt $1, RG2, RG1	beq $1, $0, LAB	#Branch if Less or Equal : Branch to statement at label if $t1 is less than or equal to $t2
+ble $t1,-100,label	addi $1, RG1, -1	slti $1, $1, VL2	bne $1, $0, LAB	#Branch if Less or Equal : Branch to statement at label if $t1 is less than or equal to 16-bit immediate
+ble $t1,100000,label	lui $1, VHL2P1	ori $1, $1, VL2P1U	slt $1, RG1, $1	bne $1, $0, LAB	#Branch if Less or Equal : Branch to statement at label if $t1 is less than or equal to 32-bit immediate	
+
+bleu $t1,$t2,label	sltu $1, RG2, RG1	beq $1, $0, LAB	#Branch if Less or Equal Unsigned : Branch to statement at label if $t1 is less than or equal to $t2 (unsigned compare)
+bleu $t1,-100,label	addi $1, $0, VL2	sltu $1, $1, RG1	beq $1, $0, LAB	#Branch if Less or Equal Unsigned : Branch to statement at label if $t1 is less than or equal to 16-bit immediate (unsigned compare)
+bleu $t1,100000,label	lui $1, VHL2	ori $1, $1, VL2U	sltu $1, $1, RG1	beq $1, $0, LAB	#Branch if Less or Equal Unsigned : Branch to statement at label if $t1 is less than or equal to 32-bit immediate (unsigned compare)
+
+blt $t1,$t2,label	slt $1, RG1, RG2	bne $1, $0, LAB	#Branch if Less Than : Branch to statement at label if $t1 is less than $t2
+blt $t1,-100,label	slti $1, RG1, VL2	bne $1, $0, LAB	#Branch if Less Than : Branch to statement at label if $t1 is less than 16-bit immediate
+blt $t1,100000,label	lui $1, VHL2	ori $1, $1, VL2U	slt $1, RG1, $1	bne $1, $0, LAB	#Branch if Less Than : Branch to statement at label if $t1 is less than 32-bit immediate
+
+bltu $t1,$t2,label	sltu $1, RG1, RG2	bne $1, $0, LAB	#Branch if Less Than Unsigned : Branch to statement at label if $t1 is less than $t2
+bltu $t1,-100,label	sltiu $1, RG1, VL2	bne $1, $0, LAB	#Branch if Less Than Unsigned : Branch to statement at label if $t1 is less than 16-bit immediate	
+bltu $t1,100000,label	lui $1, VHL2	ori $1, $1, VL2U	sltu $1, RG1, $1	bne $1, $0, LAB	#Branch if Less Than Unsigned : Branch to statement at label if $t1 is less than 32-bit immediate
+
+rol $t1,$t2,$t3	subu $1, $0, RG3	srlv $1, RG2, $1	sllv RG1, RG2, RG3	or RG1, RG1, $1	#ROtate Left : Set $t1 to ($t2 rotated left by number of bit positions specified in $t3)
+rol $t1,$t2,10	srl $1, RG2, S32	sll RG1, RG2, OP3	or RG1, RG1, $1	#ROtate Left : Set $t1 to ($t2 rotated left by number of bit positions specified in 5-bit immediate)
+ror $t1,$t2,$t3	subu $1, $0, RG3	sllv $1, RG2, $1	srlv RG1, RG2, RG3	or RG1, RG1, $1	#ROtate Right : Set $t1 to ($t2 rotated right by number of bit positions specified in $t3)
+ror $t1,$t2,10	sll $1, RG2, S32	srl RG1, RG2, OP3	or RG1, RG1, $1	#ROtate Right : Set $t1 to ($t2 rotated right by number of bit positions specified in 5-bit immediate)
+
+mfc1.d $t1,$f2	mfc1 RG1, RG2	mfc1 NR1, NR2	#Move From Coprocessor 1 Double : Set $t1 to contents of $f2, set next higher register from $t1 to contents of next higher register from $f2
+mtc1.d $t1,$f2	mtc1 RG1, RG2	mtc1 NR1, NR2	#Move To Coprocessor 1 Double : Set $f2 to contents of $t1, set next higher register from $f2 to contents of next higher register from $t1
+
+mul $t1,$t2,-100	addi $1, $0, VL3	mul RG1, RG2, $1	#MULtiplication : Set HI to high-order 32 bits, LO and $t1 to low-order 32 bits of the product of $t2 and 16-bit signed immediate (use mfhi to access HI, mflo to access LO)
+mul $t1,$t2,100000	lui $1, VHL3	ori $1, $1, VL3U	mul RG1, RG2, $1	#MULtiplication : Set HI to high-order 32 bits, LO and $t1 to low-order 32 bits of the product of $t2 and 32-bit immediate (use mfhi to access HI, mflo to access LO)
+mulu $t1,$t2,$t3	multu RG2, RG3	mflo RG1	#MULtiplication Unsigned : Set HI to high-order 32 bits, LO and $t1 to low-order 32 bits of ($t2 multiplied by $t3, unsigned multiplication)
+mulu $t1,$t2,-100	addi $1, $0, VL3	multu RG2, $1	mflo RG1	#MULtiplication Unsigned :  Set HI to high-order 32 bits, LO and $t1 to low-order 32 bits of ($t2 multiplied by 16-bit immediate, unsigned multiplication)
+mulu $t1,$t2,100000	lui $1, VHL3	ori $1, $1, VL3U	multu RG2, $1	mflo RG1	#MULtiplication Unsigned :  Set HI to high-order 32 bits, LO and $t1 to low-order 32 bits of ($t2 multiplied by 32-bit immediate, unsigned multiplication)
+mulo $t1,$t2,$t3	mult RG2, RG3	mfhi $1	mflo RG1	sra RG1, RG1, 31	beq $1, RG1, BROFF12	DBNOP	break	mflo RG1	#MULtiplication with Overflow : Set $t1 to low-order 32 bits of the product of $t2 and $t3
+mulo $t1,$t2,-100	addi $1, $0, VL3	mult RG2, $1	mfhi $1	mflo RG1	sra RG1, RG1, 31	beq $1, RG1, BROFF12	DBNOP	break	mflo RG1	#MULtiplication with Overflow : Set $t1 to low-order 32 bits of the product of $t2 and signed 16-bit immediate
+mulo $t1,$t2,100000	lui $1, VHL3	ori $1, $1, VL3U	mult RG2, $1	mfhi $1	mflo RG1	sra RG1, RG1, 31	beq $1, RG1, BROFF12	DBNOP	break	mflo RG1	#MULtiplication with Overflow : Set $t1 to low-order 32 bits of the product of $t2 and 32-bit immediate
+mulou $t1,$t2,$t3	multu RG2, RG3	mfhi $1	beq $1,$0, BROFF12	DBNOP	break	mflo RG1	#MULtiplication with Overflow Unsigned : Set $t1 to low-order 32 bits of the product of $t2 and $t3
+mulou $t1,$t2,-100	addi $1, $0, VL3	multu RG2, $1	mfhi $1	beq $1,$0, BROFF12	DBNOP	break	mflo RG1	#MULtiplication with Overflow Unsigned : Set $t1 to low-order 32 bits of the product of $t2 and signed 16-bit immediate
+mulou $t1,$t2,100000	lui $1, VHL3	ori $1, $1, VL3U	multu RG2, $1	mfhi $1	beq $1,$0, BROFF12	DBNOP	break	mflo RG1	#MULtiplication with Overflow Unsigned : Set $t1 to low-order 32 bits of the product of $t2 and 32-bit immediate
+div $t1,$t2,$t3	bne RG3, $0, BROFF12	DBNOP	break	div RG2, RG3	mflo RG1	#DIVision : Set $t1 to ($t2 divided by $t3, integer division)
+div $t1,$t2,-100	addi $1, $0, VL3	div RG2, $1	mflo RG1	#DIVision : Set $t1 to ($t2 divided by 16-bit immediate, integer division)
+div $t1,$t2,100000	lui $1, VHL3	ori $1, $1, VL3U	div RG2, $1	mflo RG1	#DIVision : Set $t1 to ($t2 divided by 32-bit immediate, integer division)
+divu $t1,$t2,$t3	bne RG3, $0, BROFF12	DBNOP	break	divu RG2, RG3	mflo RG1	#DIVision Unsigned :  Set $t1 to ($t2 divided by $t3, unsigned integer division)
+divu $t1,$t2,-100	addi $1, $0, VL3	divu RG2, $1	mflo RG1	#DIVision Unsigned :  Set $t1 to ($t2 divided by 16-bit immediate, unsigned integer division)
+divu $t1,$t2,100000	lui $1, VHL3	ori $1, $1, VL3U	divu RG2, $1	mflo RG1	#DIVision Unsigned :  Set $t1 to ($t2 divided by 32-bit immediate, unsigned integer division)
+rem $t1,$t2,$t3	bne RG3, $0, BROFF12	DBNOP	break	div RG2, RG3	mfhi RG1	#REMainder : Set $t1 to (remainder of $t2 divided by $t3)
+rem $t1,$t2,-100	addi $1, $0, VL3	div RG2, $1	mfhi RG1	#REMainder : Set $t1 to (remainder of $t2 divided by 16-bit immediate)
+rem $t1,$t2,100000	lui $1, VHL3	ori $1, $1, VL3U	div RG2, $1	mfhi RG1	#REMainder : Set $t1 to (remainder of $t2 divided by 32-bit immediate)
+remu $t1,$t2,$t3	bne RG3, $0, BROFF12	DBNOP	break	divu RG2, RG3	mfhi RG1	#REMainder : Set $t1 to (remainder of $t2 divided by $t3, unsigned division)
+remu $t1,$t2,-100	addi $1, $0, VL3	divu RG2, $1	mfhi RG1	#REMainder : Set $t1 to (remainder of $t2 divided by 16-bit immediate, unsigned division)
+remu $t1,$t2,100000	lui $1, VHL3	ori $1, $1, VL3U	divu RG2, $1	mfhi RG1	#REMainder : Set $t1 to (remainder of $t2 divided by 32-bit immediate, unsigned division)
+
+
+#########################  load/store pseudo-ops start here  ##########################
+#
+#  Most of these simply provide a variety of convenient memory addressing modes for 
+#  specifying load/store address.
+#
+
+li $t1,-100	addiu RG1, $0, VL2	#Load Immediate : Set $t1 to 16-bit immediate (sign-extended)
+li $t1,100	ori RG1, $0, VL2U	#Load Immediate : Set $t1 to unsigned 16-bit immediate (zero-extended)
+li $t1,100000	lui $1, VHL2	ori RG1, $1, VL2U	#Load Immediate : Set $t1 to 32-bit immediate
+
+la $t1,($t2)	addi RG1, RG3, 0	#Load Address : Set $t1 to contents of $t2
+la $t1,-100	addiu RG1, $0, VL2	#Load Address : Set $t1 to 16-bit immediate (sign-extended) 
+la $t1,100	ori RG1, $0, VL2U	#Load Address : Set $t1 to 16-bit immediate (zero-extended) 
+la $t1,100000	lui $1, VHL2	ori RG1, $1, VL2U	#Load Address : Set $t1 to 32-bit immediate
+la $t1,100($t2)	ori $1, $0, VL2U	add RG1, RG4, $1	#Load Address : Set $t1 to sum (of $t2 and 16-bit immediate)
+la $t1,100000($t2)	lui $1, VHL2	ori $1, $1, VL2U	add RG1, RG4, $1	#Load Address : Set $t1 to sum (of $t2 and 32-bit immediate)
+la $t1,label	lui $1, LHL	ori RG1, $1, LL2U	COMPACT	addi RG1, $0, LL2	#Load Address : Set $t1 to label's address
+la $t1,label($t2)	lui $1, LHL	ori $1, $1, LL2U	add RG1, RG4, $1	COMPACT	addi RG1, RG4, LL2	#Load Address : Set $t1 to sum (of $t2 and label's address)
+la $t1,label+100000	lui $1, LHPN	ori RG1, $1, LLPU	#Load Address : Set $t1 to sum (of label's address and 32-bit immediate)
+la $t1,label+100000($t2)	lui $1, LHPN	ori $1, $1, LLPU	add RG1, RG6, $1	#Load Address : Set $t1 to sum (of label's address, 32-bit immediate, and $t2)
+
+lw $t1,($t2)	lw RG1,0(RG3)	#Load Word : Set $t1 to contents of effective memory word address
+lw $t1,-100	lw RG1, VL2($0)	#Load Word : Set $t1 to contents of effective memory word address
+lw $t1,100	ori $1, $0, VL2U	lw RG1, 0($1)	#Load Word : Set $t1 to contents of effective memory word address
+lw $t1,100000	lui $1, VH2	lw RG1,VL2($1)	#Load Word : Set $t1 to contents of effective memory word address
+lw $t1,100($t2)	ori $1, $0, VL2U	addu $1, $1, RG4	lw RG1, 0($1)	#Load Word : Set $t1 to contents of effective memory word address
+lw $t1,100000($t2)	lui $1, VH2	addu $1, $1, RG4	lw RG1, VL2($1)	#Load Word : Set $t1 to contents of effective memory word address
+lw $t1,label	lui $1, LH2	lw RG1, LL2($1)	COMPACT	lw RG1, LL2($0)	#Load Word : Set $t1 to contents of memory word at label's address
+lw $t1,label($t2)	lui $1, LH2	addu $1, $1, RG4	lw RG1, LL2($1)	COMPACT	lw RG1, LL2(RG4)	#Load Word : Set $t1 to contents of effective memory word address
+lw $t1,label+100000	lui $1, LHPA	lw RG1, LLP($1)	#Load Word : Set $t1 to contents of effective memory word address 
+lw $t1,label+100000($t2)	lui $1, LHPA	addu $1, $1, RG6	lw RG1, LLP($1)	#Load Word : Set $t1 to contents of effective memory word address
+
+sw $t1,($t2)	sw RG1,0(RG3)	#Store Word : Store $t1 contents into effective memory word address
+sw $t1,-100	sw RG1, VL2($0)	#Store Word : Store $t1 contents into effective memory word address
+sw $t1,100	ori $1, $0, VL2U	sw RG1, 0($1)	#Store Word : Store $t1 contents into effective memory word address
+sw $t1,100000	lui $1, VH2	sw RG1,VL2($1)	#Store Word : Store $t1 contents into effective memory word address
+sw $t1,100($t2)	ori $1, $0, VL2U	addu $1, $1, RG4	sw RG1, 0($1)	#Store Word : Store $t1 contents into effective memory word address
+sw $t1,100000($t2)	lui $1, VH2	addu $1, $1, RG4	sw RG1, VL2($1)	#Store Word : Store $t1 contents into effective memory word address
+sw $t1,label	lui $1, LH2	sw RG1, LL2($1)	COMPACT	sw RG1, LL2($0)	#Store Word : Store $t1 contents into memory word at label's address
+sw $t1,label($t2)	lui $1, LH2	addu $1, $1, RG4	sw RG1, LL2($1)	COMPACT	sw RG1, LL2(RG4)	#Store Word : Store $t1 contents into effective memory word address
+sw $t1,label+100000	lui $1, LHPA	sw RG1, LLP($1)	#Store Word : Store $t1 contents into effective memory word address
+sw $t1,label+100000($t2)	lui $1, LHPA	addu $1, $1, RG6	sw RG1, LLP($1)	#Store Word : Store $t1 contents into effective memory word address
+
+lh $t1,($t2)	lh RG1,0(RG3)	#Load Halfword : Set $t1 to sign-extended 16-bit value from effective memory halfword address
+lh $t1,-100	lh RG1, VL2($0)	#Load Halfword : Set $t1 to sign-extended 16-bit value from effective memory halfword address
+lh $t1,100	ori $1, $0, VL2U	lh RG1, 0($1)	#Load Halfword : Set $t1 to sign-extended 16-bit value from effective memory halfword address
+lh $t1,100000	lui $1, VH2	lh RG1,VL2($1)	#Load Halfword : Set $t1 to sign-extended 16-bit value from effective memory halfword address
+lh $t1,100($t2)	ori $1, $0, VL2U	addu $1, $1, RG4	lh RG1, 0($1)	#Load Halfword : Set $t1 to sign-extended 16-bit value from effective memory halfword address
+lh $t1,100000($t2)	lui $1, VH2	addu $1, $1, RG4	lh RG1, VL2($1)	#Load Halfword : Set $t1 to sign-extended 16-bit value from effective memory halfword address
+lh $t1,label	lui $1, LH2	lh RG1, LL2($1)	COMPACT	lh RG1, LL2($0)	#Load Halfword : Set $t1 to sign-extended 16-bit value from effective memory halfword address
+lh $t1,label($t2)	lui $1, LH2	addu $1, $1, RG4	lh RG1, LL2($1)	COMPACT	lh RG1, LL2(RG4)	#Load Halfword : Set $t1 to sign-extended 16-bit value from effective memory halfword address
+lh $t1,label+100000	lui $1, LHPA	lh RG1, LLP($1)	#Load Halfword : Set $t1 to sign-extended 16-bit value from effective memory halfword address
+lh $t1,label+100000($t2)	lui $1, LHPA	addu $1, $1, RG6	lh RG1, LLP($1)	#Load Halfword : Set $t1 to sign-extended 16-bit value from effective memory halfword address
+
+sh $t1,($t2)	sh RG1,0(RG3)	#Store Halfword : Store the low-order 16 bits of $t1 into the effective memory halfword address
+sh $t1,-100	sh RG1, VL2($0)	#Store Halfword : Store the low-order 16 bits of $t1 into the effective memory halfword address
+sh $t1,100	ori $1, $0, VL2U	sh RG1, 0($1)	#Store Halfword : Store the low-order 16 bits of $t1 into the effective memory halfword address
+sh $t1,100000	lui $1, VH2	sh RG1,VL2($1)	#Store Halfword : Store the low-order 16 bits of $t1 into the effective memory halfword address
+sh $t1,100($t2)	ori $1, $0, VL2U	addu $1, $1, RG4	sh RG1, 0($1)	#Store Halfword : Store the low-order 16 bits of $t1 into the effective memory halfword address
+sh $t1,100000($t2)	lui $1, VH2	addu $1, $1, RG4	sh RG1, VL2($1)	#Store Halfword : Store the low-order 16 bits of $t1 into the effective memory halfword address
+sh $t1,label	lui $1, LH2	sh RG1, LL2($1)	COMPACT	sh RG1, LL2($0)	#Store Halfword : Store the low-order 16 bits of $t1 into the effective memory halfword address
+sh $t1,label($t2)	lui $1, LH2	addu $1, $1, RG4	sh RG1, LL2($1)	COMPACT	sh RG1, LL2(RG4)	#Store Halfword : Store the low-order 16 bits of $t1 into the effective memory halfword address
+sh $t1,label+100000	lui $1, LHPA	sh RG1, LLP($1)	#Store Halfword : Store the low-order 16 bits of $t1 into the effective memory halfword address
+sh $t1,label+100000($t2)	lui $1, LHPA	addu $1, $1, RG6	sh RG1, LLP($1)	#Store Halfword : Store the low-order 16 bits of $t1 into the effective memory halfword address
+
+lb $t1,($t2)	lb RG1,0(RG3)	#Load Byte : Set $t1 to sign-extended 8-bit value from effective memory byte address
+lb $t1,-100	lb RG1, VL2($0)	#Load Byte : Set $t1 to sign-extended 8-bit value from effective memory byte address
+lb $t1,100	ori $1, $0, VL2U	lb RG1, 0($1)	#Load Byte : Set $t1 to sign-extended 8-bit value from effective memory byte address
+lb $t1,100000	lui $1, VH2	lb RG1,VL2($1)	#Load Byte : Set $t1 to sign-extended 8-bit value from effective memory byte address
+lb $t1,100($t2)	ori $1, $0, VL2U	addu $1, $1, RG4	lb RG1, 0($1)	#Load Byte : Set $t1 to sign-extended 8-bit value from effective memory byte address
+lb $t1,100000($t2)	lui $1, VH2	addu $1, $1, RG4	lb RG1, VL2($1)	#Load Byte : Set $t1 to sign-extended 8-bit value from effective memory byte address
+lb $t1,label	lui $1, LH2	lb RG1, LL2($1)	COMPACT	lb RG1, LL2($0)	#Load Byte : Set $t1 to sign-extended 8-bit value from effective memory byte address
+lb $t1,label($t2)	lui $1, LH2	addu $1, $1, RG4	lb RG1, LL2($1)	COMPACT	lb RG1, LL2(RG4)	#Load Byte : Set $t1 to sign-extended 8-bit value from effective memory byte address
+lb $t1,label+100000	lui $1, LHPA	lb RG1, LLP($1)	#Load Byte : Set $t1 to sign-extended 8-bit value from effective memory byte address
+lb $t1,label+100000($t2)	lui $1, LHPA	addu $1, $1, RG6	lb RG1, LLP($1)	#Load Byte : Set $t1 to sign-extended 8-bit value from effective memory byte address
+
+sb $t1,($t2)	sb RG1,0(RG3)	#Store Byte : Store the low-order 8 bits of $t1 into the effective memory byte address
+sb $t1,-100	sb RG1, VL2($0)	#Store Byte : Store the low-order 8 bits of $t1 into the effective memory byte address
+sb $t1,100	ori $1, $0, VL2U	sb RG1, 0($1)	#Store Byte : Store the low-order 8 bits of $t1 into the effective memory byte address
+sb $t1,100000	lui $1, VH2	sb RG1,VL2($1)	#Store Byte : Store the low-order 8 bits of $t1 into the effective memory byte address
+sb $t1,100($t2)	ori $1, $0, VL2U	addu $1, $1, RG4	sb RG1, 0($1)	#Store Byte : Store the low-order 8 bits of $t1 into the effective memory byte address
+sb $t1,100000($t2)	lui $1, VH2	addu $1, $1, RG4	sb RG1, VL2($1)	#Store Byte : Store the low-order 8 bits of $t1 into the effective memory byte address
+sb $t1,label	lui $1, LH2	sb RG1, LL2($1)	COMPACT	sb RG1, LL2($0)	#Store Byte : Store the low-order 8 bits of $t1 into the effective memory byte address
+sb $t1,label($t2)	lui $1, LH2	addu $1, $1, RG4	sb RG1, LL2($1)	COMPACT	sb RG1, LL2(RG4)	#Store Byte : Store the low-order 8 bits of $t1 into the effective memory byte address
+sb $t1,label+100000	lui $1, LHPA	sb RG1, LLP($1)	#Store Byte : Store the low-order 8 bits of $t1 into the effective memory byte address
+sb $t1,label+100000($t2)	lui $1, LHPA	addu $1, $1, RG6	sb RG1, LLP($1)	#Store Byte : Store the low-order 8 bits of $t1 into the effective memory byte address
+
+lhu $t1,($t2)	lhu RG1,0(RG3)	#Load Halfword Unsigned : Set $t1 to zero-extended 16-bit value from effective memory halfword address
+lhu $t1,-100	lhu RG1,VL2($0)	#Load Halfword Unsigned : Set $t1 to zero-extended 16-bit value from effective memory halfword address
+lhu $t1,100	ori $1, $0, VL2U	lhu RG1, 0($1)	#Load Halfword Unsigned : Set $t1 to zero-extended 16-bit value from effective memory halfword address
+lhu $t1,100000	lui $1, VH2	lhu RG1,VL2($1)	#Load Halfword Unsigned : Set $t1 to zero-extended 16-bit value from effective memory halfword address
+lhu $t1,100($t2)	ori $1, $0, VL2U	addu $1, $1, RG4	lhu RG1, 0($1)	#Load Halfword Unsigned : Set $t1 to zero-extended 16-bit value from effective memory halfword address
+lhu $t1,100000($t2)	lui $1, VH2	addu $1, $1, RG4	lhu RG1, VL2($1)	#Load Halfword Unsigned : Set $t1 to zero-extended 16-bit value from effective memory halfword address
+lhu $t1,label	lui $1, LH2	lhu RG1, LL2($1)	COMPACT	lhu RG1, LL2($0)	#Load Halfword Unsigned : Set $t1 to zero-extended 16-bit value from effective memory halfword address
+lhu $t1,label($t2)	lui $1, LH2	addu $1, $1, RG4	lhu RG1, LL2($1)	COMPACT	lhu RG1, LL2(RG4)	#Load Halfword Unsigned : Set $t1 to zero-extended 16-bit value from effective memory halfword address
+lhu $t1,label+100000	lui $1, LHPA	lhu RG1, LLP($1)	#Load Halfword Unsigned : Set $t1 to zero-extended 16-bit value from effective memory halfword address
+lhu $t1,label+100000($t2)	lui $1, LHPA	addu $1, $1, RG6	lhu RG1, LLP($1)	#Load Halfword Unsigned : Set $t1 to zero-extended 16-bit value from effective memory halfword address
+
+lbu $t1,($t2)	lbu RG1,0(RG3)	#Load Byte Unsigned : Set $t1 to zero-extended 8-bit value from effective memory byte address
+lbu $t1,-100	lbu RG1,VL2($0)	#Load Byte Unsigned : Set $t1 to zero-extended 8-bit value from effective memory byte address
+lbu $t1,100	ori $1, $0, VL2U	lbu RG1, 0($1)	#Load Byte Unsigned : Set $t1 to zero-extended 8-bit value from effective memory byte address
+lbu $t1,100000	lui $1, VH2	lbu RG1,VL2($1)	#Load Byte Unsigned : Set $t1 to zero-extended 8-bit value from effective memory byte address
+lbu $t1,100($t2)	ori $1, $0, VL2U	addu $1, $1, RG4	lbu RG1, 0($1)	#Load Byte Unsigned : Set $t1 to zero-extended 8-bit value from effective memory byte address
+lbu $t1,100000($t2)	lui $1, VH2	addu $1, $1, RG4	lbu RG1, VL2($1)	#Load Byte Unsigned : Set $t1 to zero-extended 8-bit value from effective memory byte address
+lbu $t1,label	lui $1, LH2	lbu RG1, LL2($1)	COMPACT	lbu RG1, LL2($0)	#Load Byte Unsigned : Set $t1 to zero-extended 8-bit value from effective memory byte address
+lbu $t1,label($t2)	lui $1, LH2	addu $1, $1, RG4	lbu RG1, LL2($1)	COMPACT	lbu RG1, LL2(RG4)	#Load Byte Unsigned : Set $t1 to zero-extended 8-bit value from effective memory byte address
+lbu $t1,label+100000	lui $1, LHPA	lbu RG1, LLP($1)	#Load Byte Unsigned : Set $t1 to zero-extended 8-bit value from effective memory byte address
+lbu $t1,label+100000($t2)	lui $1, LHPA	addu $1, $1, RG6	lbu RG1, LLP($1)	#Load Byte Unsigned : Set $t1 to zero-extended 8-bit value from effective memory byte address
+
+lwl $t1,($t2)	lwl RG1,0(RG3)	#Load Word Left : Load from 1 to 4 bytes left-justified into $t1, starting with effective memory byte address and continuing through the low-order byte of its word
+lwl $t1,-100	lwl RG1,VL2($0)	#Load Word Left : Load from 1 to 4 bytes left-justified into $t1, starting with effective memory byte address and continuing through the low-order byte of its word
+lwl $t1,100	ori $1, $0, VL2U	lwl RG1, 0($1)	#Load Word Left : Load from 1 to 4 bytes left-justified into $t1, starting with effective memory byte address and continuing through the low-order byte of its word
+lwl $t1,100000	lui $1, VH2	lwl RG1,VL2($1)	#Load Word Left : Load from 1 to 4 bytes left-justified into $t1, starting with effective memory byte address and continuing through the low-order byte of its word
+lwl $t1,100($t2)	ori $1, $0, VL2U	addu $1, $1, RG4	lwl RG1, 0($1)	#Load Word Left : Load from 1 to 4 bytes left-justified into $t1, starting with effective memory byte address and continuing through the low-order byte of its word
+lwl $t1,100000($t2)	lui $1, VH2	addu $1, $1, RG4	lwl RG1, VL2($1)	#Load Word Left : Load from 1 to 4 bytes left-justified into $t1, starting with effective memory byte address and continuing through the low-order byte of its word
+lwl $t1,label	lui $1, LH2	lwl RG1, LL2($1)	COMPACT	lwl RG1, LL2($0)	#Load Word Left : Load from 1 to 4 bytes left-justified into $t1, starting with effective memory byte address and continuing through the low-order byte of its word
+lwl $t1,label($t2)	lui $1, LH2	addu $1, $1, RG4	lwl RG1, LL2($1)	COMPACT	lwl RG1, LL2(RG4)	#Load Word Left : Load from 1 to 4 bytes left-justified into $t1, starting with effective memory byte address and continuing through the low-order byte of its word
+lwl $t1,label+100000	lui $1, LHPA	lwl RG1, LLP($1)	#Load Word Left : Load from 1 to 4 bytes left-justified into $t1, starting with effective memory byte address and continuing through the low-order byte of its word
+lwl $t1,label+100000($t2)	lui $1, LHPA	addu $1, $1, RG6	lwl RG1, LLP($1)	#Load Word Left : Load from 1 to 4 bytes left-justified into $t1, starting with effective memory byte address and continuing through the low-order byte of its word
+
+swl $t1,($t2)	swl RG1,0(RG3)	#Store Word Left : Store high-order 1 to 4 bytes of $t1 into memory, starting with effective memory byte address and continuing through the low-order byte of its word
+swl $t1,-100	swl RG1,VL2($0)	#Store Word Left : Store high-order 1 to 4 bytes of $t1 into memory, starting with effective memory byte address and continuing through the low-order byte of its word
+swl $t1,100	ori $1, $0, VL2U	swl RG1, 0($1)	#Store Word Left : Store high-order 1 to 4 bytes of $t1 into memory, starting with effective memory byte address and continuing through the low-order byte of its word
+swl $t1,100000	lui $1, VH2	swl RG1,VL2($1)	#Store Word Left : Store high-order 1 to 4 bytes of $t1 into memory, starting with effective memory byte address and continuing through the low-order byte of its word
+swl $t1,100($t2)	ori $1, $0, VL2U	addu $1, $1, RG4	swl RG1, 0($1)	#Store Word Left : Store high-order 1 to 4 bytes of $t1 into memory, starting with effective memory byte address and continuing through the low-order byte of its word
+swl $t1,100000($t2)	lui $1, VH2	addu $1, $1, RG4	swl RG1, VL2($1)	#Store Word Left : Store high-order 1 to 4 bytes of $t1 into memory, starting with effective memory byte address and continuing through the low-order byte of its word
+swl $t1,label	lui $1, LH2	swl RG1, LL2($1)	COMPACT	swl RG1, LL2($0)	#Store Word Left : Store high-order 1 to 4 bytes of $t1 into memory, starting with effective memory byte address and continuing through the low-order byte of its word
+swl $t1,label($t2)	lui $1, LH2	addu $1, $1, RG4	swl RG1, LL2($1)	COMPACT	swl RG1, LL2(RG4)	#Store Word Left : Store high-order 1 to 4 bytes of $t1 into memory, starting with effective memory byte address and continuing through the low-order byte of its word
+swl $t1,label+100000	lui $1, LHPA	swl RG1, LLP($1)	#Store Word Left : Store high-order 1 to 4 bytes of $t1 into memory, starting with effective memory byte address and continuing through the low-order byte of its word
+swl $t1,label+100000($t2)	lui $1, LHPA	addu $1, $1, RG6	swl RG1, LLP($1)	#Store Word Left : Store high-order 1 to 4 bytes of $t1 into memory, starting with effective memory byte address and continuing through the low-order byte of its word
+
+lwr $t1,($t2)	lwr RG1,0(RG3)	#Load Word Right : Load from 1 to 4 bytes right-justified into $t1, starting with effective memory byte address and continuing through the high-order byte of its word
+lwr $t1,-100	lwr RG1,VL2($0)	#Load Word Right : Load from 1 to 4 bytes right-justified into $t1, starting with effective memory byte address and continuing through the high-order byte of its word
+lwr $t1,100	ori $1, $0, VL2U	lwr RG1, 0($1)	#Load Word Right : Load from 1 to 4 bytes right-justified into $t1, starting with effective memory byte address and continuing through the high-order byte of its word
+lwr $t1,100000	lui $1, VH2	lwr RG1,VL2($1)	#Load Word Right : Load from 1 to 4 bytes right-justified into $t1, starting with effective memory byte address and continuing through the high-order byte of its word
+lwr $t1,100($t2)	ori $1, $0, VL2U	addu $1, $1, RG4	lwr RG1, 0($1)	#Load Word Right : Load from 1 to 4 bytes right-justified into $t1, starting with effective memory byte address and continuing through the high-order byte of its word
+lwr $t1,100000($t2)	lui $1, VH2	addu $1, $1, RG4	lwr RG1, VL2($1)	#Load Word Right : Load from 1 to 4 bytes right-justified into $t1, starting with effective memory byte address and continuing through the high-order byte of its word
+lwr $t1,label	lui $1, LH2	lwr RG1, LL2($1)	COMPACT	lwr RG1, LL2($0)	#Load Word Right : Load from 1 to 4 bytes right-justified into $t1, starting with effective memory byte address and continuing through the high-order byte of its word
+lwr $t1,label($t2)	lui $1, LH2	addu $1, $1, RG4	lwr RG1, LL2($1)	COMPACT	lwr RG1, LL2(RG4)	#Load Word Right : Load from 1 to 4 bytes right-justified into $t1, starting with effective memory byte address and continuing through the high-order byte of its word
+lwr $t1,label+100000	lui $1, LHPA	lwr RG1, LLP($1)	#Load Word Right : Load from 1 to 4 bytes right-justified into $t1, starting with effective memory byte address and continuing through the high-order byte of its word
+lwr $t1,label+100000($t2)	lui $1, LHPA	addu $1, $1, RG6	lwr RG1, LLP($1)	#Load Word Right : Load from 1 to 4 bytes right-justified into $t1, starting with effective memory byte address and continuing through the high-order byte of its word
+
+swr $t1,($t2)	swr RG1,0(RG3)	#Store Word Right : Store low-order 1 to 4 bytes of $t1 into memory, starting with high-order byte of word containing effective memory byte address and continuing through that byte address
+swr $t1,-100	swr RG1,VL2($0)	#Store Word Right : Store low-order 1 to 4 bytes of $t1 into memory, starting with high-order byte of word containing effective memory byte address and continuing through that byte address
+swr $t1,100	ori $1, $0, VL2U	swr RG1, 0	#Store Word Right : Store low-order 1 to 4 bytes of $t1 into memory, starting with high-order byte of word containing effective memory byte address and continuing through that byte address
+swr $t1,100000	lui $1, VH2	swr RG1,VL2($1)	#Store Word Right : Store low-order 1 to 4 bytes of $t1 into memory, starting with high-order byte of word containing effective memory byte address and continuing through that byte address
+swr $t1,100($t2)	ori $1, $0, VL2U	addu $1, $1, RG4	swr RG1, 0($1)	#Store Word Right : Store low-order 1 to 4 bytes of $t1 into memory, starting with high-order byte of word containing effective memory byte address and continuing through that byte address
+swr $t1,100000($t2)	lui $1, VH2	addu $1, $1, RG4	swr RG1, VL2($1)	#Store Word Right : Store low-order 1 to 4 bytes of $t1 into memory, starting with high-order byte of word containing effective memory byte address and continuing through that byte address
+swr $t1,label	lui $1, LH2	swr RG1, LL2($1)	COMPACT	swr RG1, LL2($0)	#Store Word Right : Store low-order 1 to 4 bytes of $t1 into memory, starting with high-order byte of word containing effective memory byte address and continuing through that byte address
+swr $t1,label($t2)	lui $1, LH2	addu $1, $1, RG4	swr RG1, LL2($1)	COMPACT	swr RG1, LL2(RG4)	#Store Word Right : Store low-order 1 to 4 bytes of $t1 into memory, starting with high-order byte of word containing effective memory byte address and continuing through that byte address
+swr $t1,label+100000	lui $1, LHPA	swr RG1, LLP($1)	#Store Word Right : Store low-order 1 to 4 bytes of $t1 into memory, starting with high-order byte of word containing effective memory byte address and continuing through that byte address
+swr $t1,label+100000($t2)	lui $1, LHPA	addu $1, $1, RG6	swr RG1, LLP($1)	#Store Word Right : Store low-order 1 to 4 bytes of $t1 into memory, starting with high-order byte of word containing effective memory byte address and continuing through that byte address
+
+ll $t1,($t2)	ll RG1,0(RG3)	#Load Linked : Paired with Store Conditional (sc) to perform atomic read-modify-write.  Treated as equivalent to Load Word (lw) because MARS does not simulate multiple processors.
+ll $t1,-100	ll RG1,VL2($0)	#Load Linked : Paired with Store Conditional (sc) to perform atomic read-modify-write.  Treated as equivalent to Load Word (lw) because MARS does not simulate multiple processors.
+ll $t1,100	ori $1, $0, VL2U	ll RG1, 0($1)	#Load Linked : Paired with Store Conditional (sc) to perform atomic read-modify-write.  Treated as equivalent to Load Word (lw) because MARS does not simulate multiple processors.
+ll $t1,100000	lui $1, VH2	ll RG1,VL2($1)	#Load Linked : Paired with Store Conditional (sc) to perform atomic read-modify-write.  Treated as equivalent to Load Word (lw) because MARS does not simulate multiple processors.
+ll $t1,100($t2)	ori $1, $0, VL2U	addu $1, $1, RG4	ll RG1, 0($1)	#Load Linked : Paired with Store Conditional (sc) to perform atomic read-modify-write.  Treated as equivalent to Load Word (lw) because MARS does not simulate multiple processors.
+ll $t1,100000($t2)	lui $1, VH2	addu $1, $1, RG4	ll RG1, VL2($1)	#Load Linked : Paired with Store Conditional (sc) to perform atomic read-modify-write.  Treated as equivalent to Load Word (lw) because MARS does not simulate multiple processors.
+ll $t1,label	lui $1, LH2	ll RG1, LL2($1)	COMPACT	ll RG1, LL2($0)	#Load Linked : Paired with Store Conditional (sc) to perform atomic read-modify-write.  Treated as equivalent to Load Word (lw) because MARS does not simulate multiple processors.
+ll $t1,label($t2)	lui $1, LH2	addu $1, $1, RG4	ll RG1, LL2($1)	COMPACT	ll RG1, LL2(RG4)	#Load Linked : Paired with Store Conditional (sc) to perform atomic read-modify-write.  Treated as equivalent to Load Word (lw) because MARS does not simulate multiple processors.
+ll $t1,label+100000	lui $1, LHPA	ll RG1, LLP($1)	#Load Linked : Paired with Store Conditional (sc) to perform atomic read-modify-write.  Treated as equivalent to Load Word (lw) because MARS does not simulate multiple processors.
+ll $t1,label+100000($t2)	lui $1, LHPA	addu $1, $1, RG6	ll RG1, LLP($1)	#Load Linked : Paired with Store Conditional (sc) to perform atomic read-modify-write.  Treated as equivalent to Load Word (lw) because MARS does not simulate multiple processors.
+
+sc $t1,($t2)	sc RG1,0(RG3)	#Store Conditional : Paired with Load Linked (ll) to perform atomic read-modify-write.  Treated as equivalent to Store Word (sw) because MARS does not simulate multiple processors.
+sc $t1,-100	sc RG1,VL2($0)	#Store Conditional : Paired with Load Linked (ll) to perform atomic read-modify-write.  Treated as equivalent to Store Word (sw) because MARS does not simulate multiple processors.
+sc $t1,100	ori $1, $0, VL2U	sc RG1, 0($1)	#Store Conditional : Paired with Load Linked (ll) to perform atomic read-modify-write.  Treated as equivalent to Store Word (sw) because MARS does not simulate multiple processors.
+sc $t1,100000	lui $1, VH2	sc RG1,VL2($1)	#Store Conditional : Paired with Load Linked (ll) to perform atomic read-modify-write.  Treated as equivalent to Store Word (sw) because MARS does not simulate multiple processors.
+sc $t1,100($t2)	ori $1, $0, VL2U	addu $1, $1, RG4	sc RG1, 0($1)	#Store Conditional : Paired with Load Linked (ll) to perform atomic read-modify-write.  Treated as equivalent to Store Word (sw) because MARS does not simulate multiple processors.
+sc $t1,100000($t2)	lui $1, VH2	addu $1, $1, RG4	sc RG1, VL2($1)	#Store Conditional : Paired with Load Linked (ll) to perform atomic read-modify-write.  Treated as equivalent to Store Word (sw) because MARS does not simulate multiple processors.
+sc $t1,label	lui $1, LH2	sc RG1, LL2($1)	COMPACT	sc RG1, LL2($0)	#Store Conditional : Paired with Load Linked (ll) to perform atomic read-modify-write.  Treated as equivalent to Store Word (sw) because MARS does not simulate multiple processors.
+sc $t1,label($t2)	lui $1, LH2	addu $1, $1, RG4	sc RG1, LL2($1)	COMPACT	sc RG1, LL2(RG4)	#Store Conditional : Paired with Load Linked (ll) to perform atomic read-modify-write.  Treated as equivalent to Store Word (sw) because MARS does not simulate multiple processors.
+sc $t1,label+100000	lui $1, LHPA	sc RG1, LLP($1)	#Store Conditional : Paired with Load Linked (ll) to perform atomic read-modify-write.  Treated as equivalent to Store Word (sw) because MARS does not simulate multiple processors.
+sc $t1,label+100000($t2)	lui $1, LHPA	addu $1, $1, RG6	sc RG1, LLP($1)	#Store Conditional : Paired with Load Linked (ll) to perform atomic read-modify-write.  Treated as equivalent to Store Word (sw) because MARS does not simulate multiple processors.
+
+# Unaligned and double loads and stores.  All the them require assembler to add a constant
+# byte offset (from 1 to 4 bytes) to the given or calculated address.
+# NOTE: I have abandoned the "accepted" expansion of immed16($reg) addressing form for the 
+#       unaligned and double load/store pseudo-instructions because they produce what I consider 
+#       incorrect results for immediate values at the upper edge of the signed 16-bit range 
+#       (32765 through 32767).  The expansion of these pseudo's requires adding an additional 
+#       byte offset (from 1 to 4 bytes) to the immediate value, which overflows the signed 16 
+#       bit range and results in a large negative offset with no counterbalancing increment 
+#       to the high order 16-bits.  Thus if the two pieces of unaligned data end up in different 
+#       words, they are stored 64K bytes apart!  For example, the normal expansion of 
+#       "usw $8,32767($9)" would be "swl $8,-32766($9)", "swr $8, 32767($9)"  Both SPIM and
+#       Britten's text do this but I consider it incorrect.  My compromise is the following:
+#       since each of the expansion calls for two calculated offsets, one of which can possibly
+#       overflow due to the addition but the other will not (because there is no addition),
+#       I'll code the expansion to treat the at-risk calculated offset as 32-bits (it will generate
+#       the lui and addu, which is unnecessary in almost every case but is always correct)
+#       and the second as 16-bits.  I'll group all instructions for this addressing mode together.
+# ulw $t1,-100($t2)	lwl RG1, VL2P3(RG4)	lwr RG1, VL2(RG4)   -- used by SPIM but not me.
+# usw $t1,-100($t2)	swl RG1, VL2P3(RG4)	swr RG1, VL2(RG4)   -- used by SPIM but not me.
+
+ulw $t1,-100($t2)	lui $1, VH2P3	addu $1, $1, RG4	lwl RG1, VL2P3($1)	lwr RG1, VL2(RG4)	#Unaligned Load Word : Set $t1 to the 32 bits starting at effective memory byte address
+ulh $t1,-100($t2)	lui $1, VH2P1	addu $1, $1, RG4	lb RG1, VL2P1($1)	lbu $1, VL2(RG4)	sll RG1, RG1, 8	or RG1, RG1, $1	#Unaligned Load Halfword : Set $t1 to the 16 bits, sign-extended, starting at effective memory byte address
+ulhu $t1,-100($t2)	lui $1, VH2P1	addu $1, $1, RG4	lbu RG1, VL2P1($1)	lbu $1, VL2(RG4)	sll RG1, RG1, 8	or RG1, RG1, $1	#Unaligned Load Halfword : Set $t1 to the 16 bits, zero-extended, starting at effective memory byte address
+ld $t1,-100($t2)	lw RG1, VL2(RG4)	lui $1, VH2P4	addu $1, $1, RG4	lw NR1, VL2P4($1)	#Load Doubleword : Set $t1 and the next register to the 64 bits starting at effective memory byte address
+usw $t1,-100($t2)	lui $1, VH2P3	addu $1, $1, RG4	swl RG1, VL2P3($1)	swr RG1, VL2(RG4)	#Unaligned Store Word : Store $t1 contents into the 32 bits starting at effective memory byte address
+ush $t1,-100($t2)	sb RG1, VL2(RG4)	sll $1, RG1, 24	srl RG1, RG1, 8	or RG1, RG1, $1	lui $1, VH2P1	addu $1, $1, RG4	sb RG1, VL2P1($1)	srl $1, RG1, 24	sll RG1, RG1, 8	or RG1, RG1, $1	#Unaligned Store Halfword: Store low-order halfword $t1 contents into the 16 bits starting at effective memory byte address
+sd $t1,-100($t2)	sw RG1, VL2(RG4)	lui $1, VH2P4	addu $1, $1, RG4	sw NR1, VL2P4($1)	#Store Doubleword : Store contents of $t1 and the next register to the 64 bits starting at effective memory byte address
+
+# here are the remaining addressing modes, grouped by instruction.
+
+ulw $t1,100000	lui $1, VH2P3	lwl RG1, VL2P3($1)	lui $1, VH2	lwr RG1, VL2($1)	#Unaligned Load Word : Set $t1 to the 32 bits starting at effective memory byte address
+ulw $t1,label	lui $1, LH2P3	lwl RG1, LL2P3($1)	lui $1, LH2	lwr RG1, LL2($1)	#Unaligned Load Word : Set $t1 to the 32 bits starting at effective memory byte address
+ulw $t1,label+100000	lui $1, LHPAP3	lwl RG1, LLPP3($1)	lui $1, LHPA	lwr RG1, LLP($1)	#Unaligned Load Word : Set $t1 to the 32 bits starting at effective memory byte address
+ulw $t1,($t2)	lwl RG1, 3(RG3)	lwr RG1, 0(RG3)	#Unaligned Load Word : Set $t1 to the 32 bits starting at effective memory byte address
+ulw $t1,100000($t2)	lui $1, VH2P3	addu $1, $1, RG4	lwl RG1, VL2P3($1)	lui $1, VH2	addu $1, $1, RG4	lwr RG1, VL2($1)	#Unaligned Load Word : Set $t1 to the 32 bits starting at effective memory byte address
+ulw $t1,label($t2)	lui $1, LH2P3	addu $1, $1, RG4	lwl RG1, LL2P3($1)	lui $1, LH2	addu $1, $1, RG4	lwr RG1, LL2($1)	#Unaligned Load Word : Set $t1 to the 32 bits starting at effective memory byte address
+ulw $t1,label+100000($t2)	lui $1, LHPAP3	addu $1, $1, RG6	lwl RG1, LLPP3($1)	lui $1, LHPA	addu $1, $1, RG6	lwr RG1, LLP($1)	#Unaligned Load Word : Set $t1 to the 32 bits starting at effective memory byte address
+
+ulh $t1,100000	lui $1, VH2P1	lb RG1, VL2P1($1)	lui $1, VH2	lbu $1, VL2($1)	sll RG1, RG1, 8	or RG1, RG1, $1	#Unaligned Load Halfword : Set $t1 to the 16 bits, sign-extended, starting at effective memory byte address
+ulh $t1,label	lui $1, LH2P1	lb RG1, LL2P1($1)	lui $1, LH2	lbu $1, LL2($1)	sll RG1, RG1, 8	or RG1, RG1, $1	#Unaligned Load Halfword : Set $t1 to the 16 bits, sign-extended, starting at effective memory byte address
+ulh $t1,label+100000	lui $1, LHPAP1	lb RG1, LLPP1($1)	lui $1, LHPA	lbu $1, LLP($1)	sll RG1, RG1, 8	or RG1, RG1, $1	#Unaligned Load Halfword : Set $t1 to the 16 bits, sign-extended, starting at effective memory byte address
+ulh $t1,($t2)	lb RG1, 1(RG3)	lbu $1, 0(RG3)	sll RG1, RG1, 8	or RG1, RG1, $1		#Unaligned Load Halfword : Set $t1 to the 16 bits, sign-extended, starting at effective memory byte address
+ulh $t1,100000($t2)	lui $1, VH2P1	addu $1, $1, RG4	lb RG1, VL2P1($1)	lui $1, VH2	addu $1, $1, RG4	lbu $1, VL2($1)	sll RG1, RG1, 8	or RG1, RG1, $1	#Unaligned Load Halfword : Set $t1 to the 16 bits, sign-extended, starting at effective memory byte address
+ulh $t1,label($t2)	lui $1, LH2P1	addu $1, $1, RG4	lb RG1, LL2P1($1)	lui $1, LH2	addu $1, $1, RG4	lbu $1, LL2($1)	sll RG1, RG1, 8	or RG1, RG1, $1	#Unaligned Load Halfword : Set $t1 to the 16 bits, sign-extended, starting at effective memory byte address
+ulh $t1,label+100000($t2)	lui $1, LHPAP1	addu $1, $1, RG6	lb RG1, LLPP1($1)	lui $1, LHPA	addu $1, $1, RG6	lbu $1, LLP($1)	sll RG1, RG1, 8	or RG1, RG1, $1	#Unaligned Load Halfword : Set $t1 to the 16 bits, sign-extended, starting at effective memory byte address
+
+ulhu $t1,100000	lui $1, VH2P1	lbu RG1, VL2P1($1)	lui $1, VH2	lbu $1, VL2($1)	sll RG1, RG1, 8	or RG1, RG1, $1	#Unaligned Load Halfword : Set $t1 to the 16 bits, zero-extended, starting at effective memory byte address
+ulhu $t1,label	lui $1, LH2P1	lbu RG1, LL2P1($1)	lui $1, LH2	lbu $1, LL2($1)	sll RG1, RG1, 8	or RG1, RG1, $1	#Unaligned Load Halfword : Set $t1 to the 16 bits, zero-extended, starting at effective memory byte address
+ulhu $t1,label+100000	lui $1, LHPAP1	lbu RG1, LLPP1($1)	lui $1, LHPA	lbu $1, LLP($1)	sll RG1, RG1, 8	or RG1, RG1, $1	#Unaligned Load Halfword : Set $t1 to the 16 bits, zero-extended, starting at effective memory byte address
+ulhu $t1,($t2)	lbu RG1, 1(RG3)	lbu $1, 0(RG3)	sll RG1, RG1, 8	or RG1, RG1, $1		#Unaligned Load Halfword : Set $t1 to the 16 bits, zero-extended, starting at effective memory byte address
+ulhu $t1,100000($t2)	lui $1, VH2P1	addu $1, $1, RG4	lbu RG1, VL2P1($1)	lui $1, VH2	addu $1, $1, RG4	lbu $1, VL2($1)	sll RG1, RG1, 8	or RG1, RG1, $1	#Unaligned Load Halfword : Set $t1 to the 16 bits, zero-extended, starting at effective memory byte address
+ulhu $t1,label($t2)	lui $1, LH2P1	addu $1, $1, RG4	lbu RG1, LL2P1($1)	lui $1, LH2	addu $1, $1, RG4	lbu $1, LL2($1)	sll RG1, RG1, 8	or RG1, RG1, $1	#Unaligned Load Halfword : Set $t1 to the 16 bits, zero-extended, starting at effective memory byte address
+ulhu $t1,label+100000($t2)	lui $1, LHPAP1	addu $1, $1, RG6	lbu RG1, LLPP1($1)	lui $1, LHPA	addu $1, $1, RG6	lbu $1, LLP($1)	sll RG1, RG1, 8	or RG1, RG1, $1	#Unaligned Load Halfword : Set $t1 to the 16 bits, zero-extended, starting at effective memory byte address
+
+ld $t1,100000	lui $1, VH2	lw RG1, VL2($1)	lui $1, VH2P4	lw NR1, VL2P4($1)	#Load Doubleword : Set $t1 and the next register to the 64 bits starting at effective memory word address
+ld $t1,label	lui $1, LH2	lw RG1, LL2($1)	lui $1, LH2P4	lw NR1, LL2P4($1)	#Load Doubleword : Set $t1 and the next register to the 64 bits starting at effective memory word address
+ld $t1,label+100000	lui $1, LHPA	lw RG1, LLP($1)	lui $1, LHPAP4	lw NR1, LLPP4($1)	#Load Doubleword : Set $t1 and the next register to the 64 bits starting at effective memory word address
+ld $t1,($t2)	lw RG1, 0(RG3)	lw NR1, 4(RG3)	#Load Doubleword : Set $t1 and the next register to the 64 bits starting at effective memory word address
+ld $t1,100000($t2)	lui $1, VH2	addu $1, $1, RG4	lw RG1, VL2($1)	lui $1, VH2P4	addu $1, $1, RG4	lw NR1, VL2P4($1)	#Load Doubleword : Set $t1 and the next register to the 64 bits starting at effective memory word address
+ld $t1,label($t2)	lui $1, LH2	addu $1, $1, RG4	lw RG1, LL2($1)	lui $1, LH2P4	addu $1, $1, RG4	lw NR1, LL2P4($1)	#Load Doubleword : Set $t1 and the next register to the 64 bits starting at effective memory word address
+ld $t1,label+100000($t2)	lui $1, LHPA	addu $1, $1, RG6	lw RG1, LLP($1)	lui $1, LHPAP4	addu $1, $1, RG6	lw NR1, LLPP4($1)	#Load Doubleword : Set $t1 and the next register to the 64 bits starting at effective memory word address
+
+usw $t1,100000	lui $1, VH2P3	swl RG1, VL2P3($1)	lui $1, VH2	swr RG1, VL2($1)	#Unaligned Store Word : Store $t1 contents into the 32 bits starting at effective memory byte address
+usw $t1,label	lui $1, LH2P3	swl RG1, LL2P3($1)	lui $1, LH2	swr RG1, LL2($1)	#Unaligned Store Word : Store $t1 contents into the 32 bits starting at effective memory byte address
+usw $t1,label+100000	lui $1, LHPAP3	swl RG1, LLPP3($1)	lui $1, LHPA	swr RG1, LLP($1)	#Unaligned Store Word : Store $t1 contents into the 32 bits starting at effective memory byte address
+usw $t1,($t2)	swl RG1, 3(RG3)	swr RG1, 0(RG3)	#Unaligned Store Word : Store $t1 contents into the 32 bits starting at effective memory byte address
+usw $t1,100000($t2)	lui $1, VH2P3	addu $1, $1, RG4	swl RG1, VL2P3($1)	lui $1, VH2	addu $1, $1, RG4	swr RG1, VL2($1)	#Unaligned Store Word : Store $t1 contents into the 32 bits starting at effective memory byte address
+usw $t1,label($t2)	lui $1, LH2P3	addu $1, $1, RG4	swl RG1, LL2P3($1)	lui $1, LH2	addu $1, $1, RG4	swr RG1, LL2($1)	#Unaligned Store Word : Store $t1 contents into the 32 bits starting at effective memory byte address
+usw $t1,label+100000($t2)	lui $1, LHPAP3	addu $1, $1, RG6	swl RG1, LLPP3($1)	lui $1, LHPA	addu $1, $1, RG6	swr RG1, LLP($1)	#Unaligned Store Word : Store $t1 contents into the 32 bits starting at effective memory byte address
+
+ush $t1,100000	lui $1, VH2	sb RG1, VL2($1)	sll $1, RG1, 24	srl RG1, RG1, 8	or RG1, RG1, $1	lui $1, VH2P1	sb RG1, VL2P1($1)	srl $1, RG1, 24	sll RG1, RG1, 8	or RG1, RG1, $1	#Unaligned Store Halfword: Store low-order halfword $t1 contents into the 16 bits starting at effective memory byte address
+ush $t1,label	lui $1, LH2	sb RG1, LL2($1)	sll $1, RG1, 24	srl RG1, RG1, 8	or RG1, RG1, $1	lui $1, LH2P1	sb RG1, LL2P1($1)	srl $1, RG1, 24	sll RG1, RG1, 8	or RG1, RG1, $1	#Unaligned Store Halfword: Store low-order halfword $t1 contents into the 16 bits starting at effective memory byte address
+ush $t1,label+100000	lui $1, LHPA	sb RG1, LLP($1)	sll $1, RG1, 24	srl RG1, RG1, 8	or RG1, RG1, $1	lui $1, LHPAP1	sb RG1, LLPP1($1)	srl $1, RG1, 24	sll RG1, RG1, 8	or RG1, RG1, $1	#Unaligned Store Halfword: Store low-order halfword $t1 contents into the 16 bits starting at effective memory byte address
+ush $t1,($t2)	sb RG1, 0(RG3)	sll $1, RG1, 24	srl RG1, RG1, 8	or RG1, RG1, $1	sb RG1, 1(RG3)	srl $1, RG1, 24	sll RG1, RG1, 8	or RG1, RG1, $1	#Unaligned Store Halfword: Store low-order halfword $t1 contents into the 16 bits starting at effective memory byte address
+ush $t1,100000($t2)	lui $1, VH2	addu $1, $1, RG4	sb RG1, VL2($1)	sll $1, RG1, 24	srl RG1, RG1, 8	or RG1, RG1, $1	lui $1, VH2P1	addu $1, $1, RG4	sb RG1, VL2P1($1)	srl $1, RG1, 24	sll RG1, RG1, 8	or RG1, RG1, $1	#Unaligned Store Halfword: Store low-order halfword $t1 contents into the 16 bits starting at effective memory byte address
+ush $t1,label($t2)	lui $1, LH2	addu $1, $1, RG4	sb RG1, LL2($1)	sll $1, RG1, 24	srl RG1, RG1, 8	or RG1, RG1, $1	lui $1, LH2P1	addu $1, $1, RG4	sb RG1, LL2P1($1)	srl $1, RG1, 24	sll RG1, RG1, 8	or RG1, RG1, $1	#Unaligned Store Halfword: Store low-order halfword $t1 contents into the 16 bits starting at effective memory byte address
+ush $t1,label+100000($t2)	lui $1, LHPA	addu $1, $1, RG6	sb RG1, LLP($1)	sll $1, RG1, 24	srl RG1, RG1, 8	or RG1, RG1, $1	lui $1, LHPAP1	addu $1, $1, RG6	sb RG1, LLPP1($1)	srl $1, RG1, 24	sll RG1, RG1, 8	or RG1, RG1, $1	#Unaligned Store Halfword: Store low-order halfword $t1 contents into the 16 bits starting at effective memory byte address
+
+sd $t1,100000	lui $1, VH2	sw RG1, VL2($1)	lui $1, VH2P4	sw NR1, VL2P4($1)	#Store Doubleword : Store contents of $t1 and the next register to the 64 bits starting at effective memory word address
+sd $t1,label	lui $1, LH2	sw RG1, LL2($1)	lui $1, LH2P4	sw NR1, LL2P4($1)	#Store Doubleword : Store contents of $t1 and the next register to the 64 bits starting at effective memory word address
+sd $t1,label+100000	lui $1, LHPA	sw RG1, LLP($1)	lui $1, LHPAP4	sw NR1, LLPP4($1)	#Store Doubleword : Store contents of $t1 and the next register to the 64 bits starting at effective memory word address
+sd $t1,($t2)	sw RG1, 0(RG3)	sw NR1, 4(RG3)	#Store Doubleword : Store contents of $t1 and the next register to the 64 bits starting at effective memory word address
+sd $t1,100000($t2)	lui $1, VH2	addu $1, $1, RG4	sw RG1, VL2($1)	lui $1, VH2P4	addu $1, $1, RG4	sw NR1, VL2P4($1)	#Store Doubleword : Store contents of $t1 and the next register to the 64 bits starting at effective memory word address
+sd $t1,label($t2)	lui $1, LH2	addu $1, $1, RG4	sw RG1, LL2($1)	lui $1, LH2P4	addu $1, $1, RG4	sw NR1, LL2P4($1)	#Store Doubleword : Store contents of $t1 and the next register to the 64 bits starting at effective memory word address
+sd $t1,label+100000($t2)	lui $1, LHPA	addu $1, $1, RG6	sw RG1, LLP($1)	lui $1, LHPAP4	addu $1, $1, RG6	sw NR1, LLPP4($1)	#Store Doubleword : Store contents of $t1 and the next register to the 64 bits starting at effective memory word address
+
+# load and store pseudo-instructions for floating point (coprocessor 1) registers
+
+lwc1 $f1,($t2)	lwc1 RG1,0(RG3)	#Load Word Coprocessor 1 : Set $f1 to 32-bit value from effective memory word address
+lwc1 $f1,-100	lwc1 RG1,VL2($0)	#Load Word Coprocessor 1 : Set $f1 to 32-bit value from effective memory word address
+lwc1 $f1,100000	lui $1, VH2	lwc1 RG1,VL2($1)	#Load Word Coprocessor 1 : Set $f1 to 32-bit value from effective memory word address
+lwc1 $f1,100000($t2)	lui $1, VH2	addu $1, $1, RG4	lwc1 RG1, VL2($1)	#Load Word Coprocessor 1 : Set $f1 to 32-bit value from effective memory word address
+lwc1 $f1,label	lui $1, LH2	lwc1 RG1, LL2($1)	COMPACT	lwc1 RG1, LL2($0)	#Load Word Coprocessor 1 : Set $f1 to 32-bit value from effective memory word address
+lwc1 $f1,label($t2)	lui $1, LH2	addu $1, $1, RG4	lwc1 RG1, LL2($1)	COMPACT	lwc1 RG1, LL2(RG4)	#Load Word Coprocessor 1 : Set $f1 to 32-bit value from effective memory word address
+lwc1 $f1,label+100000	lui $1, LHPA	lwc1 RG1, LLP($1)	#Load Word Coprocessor 1 : Set $f1 to 32-bit value from effective memory word address
+lwc1 $f1,label+100000($t2)	lui $1, LHPA	addu $1, $1, RG6	lwc1 RG1, LLP($1)	#Load Word Coprocessor 1 : Set $f1 to 32-bit value from effective memory word address
+
+ldc1 $f2,($t2)	ldc1 RG1,0(RG3)	#Load Doubleword Coprocessor 1 : Set $f2 and $f3 register pair to 64-bit value at effective memory doubleword address
+ldc1 $f2,-100	ldc1 RG1,VL2($0)	#Load Doubleword Coprocessor 1 : Set $f2 and $f3 register pair to 64-bit value at effective memory doubleword address
+ldc1 $f2,100000	lui $1, VH2	ldc1 RG1,VL2($1)	#Load Doubleword Coprocessor 1 : Set $f2 and $f3 register pair to 64-bit value at effective memory doubleword address
+ldc1 $f2,100000($t2)	lui $1, VH2	addu $1, $1, RG4	ldc1 RG1, VL2($1)	#Load Doubleword Coprocessor 1 : Set $f2 and $f3 register pair to 64-bit value at effective memory doubleword address
+ldc1 $f2,label	lui $1, LH2	ldc1 RG1, LL2($1)	COMPACT	ldc1 RG1, LL2($0)	#Load Doubleword Coprocessor 1 : Set $f2 and $f3 register pair to 64-bit value at effective memory doubleword address
+ldc1 $f2,label($t2)	lui $1, LH2	addu $1, $1, RG4	ldc1 RG1, LL2($1)	COMPACT	ldc1 RG1, LL2(RG4)	#Load Doubleword Coprocessor 1 : Set $f2 and $f3 register pair to 64-bit value at effective memory doubleword address
+ldc1 $f2,label+100000	lui $1, LHPA	ldc1 RG1, LLP($1)	#Load Doubleword Coprocessor 1 : Set $f2 and $f3 register pair to 64-bit value at effective memory doubleword address
+ldc1 $f2,label+100000($t2)	lui $1, LHPA	addu $1, $1, RG6	ldc1 RG1, LLP($1)	#Load Doubleword Coprocessor 1 : Set $f2 and $f3 register pair to 64-bit value at effective memory doubleword address
+
+swc1 $f1,($t2)	swc1 RG1,0(RG3)	#Store Word Coprocessor 1 : Store 32-bit value from $f1 to effective memory word address
+swc1 $f1,-100	swc1 RG1,VL2($0)	#Store Word Coprocessor 1 : Store 32-bit value from $f1 to effective memory word address
+swc1 $f1,100000	lui $1, VH2	swc1 RG1,VL2($1)	#Store Word Coprocessor 1 : Store 32-bit value from $f1 to effective memory word address
+swc1 $f1,100000($t2)	lui $1, VH2	addu $1, $1, RG4	swc1 RG1, VL2($1)	#Store Word Coprocessor 1 : Store 32-bit value from $f1 to effective memory word address
+swc1 $f1,label	lui $1, LH2	swc1 RG1, LL2($1)	COMPACT	swc1 RG1, LL2($0)	#Store Word Coprocessor 1 : Store 32-bit value from $f1 to effective memory word address
+swc1 $f1,label($t2)	lui $1, LH2	addu $1, $1, RG4	swc1 RG1, LL2($1)	COMPACT	swc1 RG1, LL2(RG4)	#Store Word Coprocessor 1 : Store 32-bit value from $f1 to effective memory word address
+swc1 $f1,label+100000	lui $1, LHPA	swc1 RG1, LLP($1)	#Store Word Coprocessor 1 : Store 32-bit value from $f1 to effective memory word address
+swc1 $f1,label+100000($t2)	lui $1, LHPA	addu $1, $1, RG6	swc1 RG1, LLP($1)	#Store Word Coprocessor 1 : Store 32-bit value from $f1 to effective memory word address
+
+sdc1 $f2,($t2)	sdc1 RG1,0(RG3)	#Store Doubleword Coprocessor 1 : Store 64 bits from $f2 and $f3 register pair to effective memory doubleword address
+sdc1 $f2,-100	sdc1 RG1,VL2($0)	#Store Doubleword Coprocessor 1 : Store 64 bits from $f2 and $f3 register pair to effective memory doubleword address
+sdc1 $f2,100000	lui $1, VH2	sdc1 RG1,VL2($1)	#Store Doubleword Coprocessor 1 : Store 64 bits from $f2 and $f3 register pair to effective memory doubleword address
+sdc1 $f2,100000($t2)	lui $1, VH2	addu $1, $1, RG4	sdc1 RG1, VL2($1)	#Store Doubleword Coprocessor 1 : Store 64 bits from $f2 and $f3 register pair to effective memory doubleword address
+sdc1 $f2,label	lui $1, LH2	sdc1 RG1, LL2($1)	COMPACT	sdc1 RG1, LL2($0)	#Store Doubleword Coprocessor 1 : Store 64 bits from $f2 and $f3 register pair to effective memory doubleword address
+sdc1 $f2,label($t2)	lui $1, LH2	addu $1, $1, RG4	sdc1 RG1, LL2($1)	COMPACT	sdc1 RG1, LL2(RG4)	#Store Doubleword Coprocessor 1 : Store 64 bits from $f2 and $f3 register pair to effective memory doubleword address
+sdc1 $f2,label+100000	lui $1, LHPA	sdc1 RG1, LLP($1)	#Store Doubleword Coprocessor 1 : Store 64 bits from $f2 and $f3 register pair to effective memory doubleword address
+sdc1 $f2,label+100000($t2)	lui $1, LHPA	addu $1, $1, RG6	sdc1 RG1, LLP($1)	#Store Doubleword Coprocessor 1 : Store 64 bits from $f2 and $f3 register pair to effective memory doubleword address
+
+l.s $f1,($t2)	lwc1 RG1,0(RG3)	#Load floating point Single precision : Set $f1 to 32-bit value at effective memory word address
+l.s $f1,-100	lwc1 RG1,VL2($0)	#Load floating point Single precision : Set $f1 to 32-bit value at effective memory word address
+l.s $f1,100000	lui $1, VH2	lwc1 RG1,VL2($1)	#Load floating point Single precision : Set $f1 to 32-bit value at effective memory word address
+l.s $f1,100000($t2)	lui $1, VH2	addu $1, $1, RG4	lwc1 RG1, VL2($1)	#Load floating point Single precision : Set $f1 to 32-bit value at effective memory word address
+l.s $f1,label	lui $1, LH2	lwc1 RG1, LL2($1)	COMPACT	lwc1 RG1, LL2($0)	#Load floating point Single precision : Set $f1 to 32-bit value at effective memory word address
+l.s $f1,label($t2)	lui $1, LH2	addu $1, $1, RG4	lwc1 RG1, LL2($1)	COMPACT	lwc1 RG1, LL2(RG4)	#Load floating point Single precision : Set $f1 to 32-bit value at effective memory word address
+l.s $f1,label+100000	lui $1, LHPA	lwc1 RG1, LLP($1)	#Load floating point Single precision : Set $f1 to 32-bit value at effective memory word address
+l.s $f1,label+100000($t2)	lui $1, LHPA	addu $1, $1, RG6	lwc1 RG1, LLP($1)	#Load floating point Single precision : Set $f1 to 32-bit value at effective memory word address
+
+s.s $f1,($t2)	swc1 RG1,0(RG3)	#Store floating point Single precision : Store 32-bit value from $f1 to effective memory word address
+s.s $f1,-100	swc1 RG1,VL2($0)	#Store floating point Single precision : Store 32-bit value from $f1 to effective memory word address
+s.s $f1,100000	lui $1, VH2	swc1 RG1,VL2($1)	#Store floating point Single precision : Store 32-bit value from $f1 to effective memory word address
+s.s $f1,100000($t2)	lui $1, VH2	addu $1, $1, RG4	swc1 RG1, VL2($1)	#Store floating point Single precision : Store 32-bit value from $f1 to effective memory word address
+s.s $f1,label	lui $1, LH2	swc1 RG1, LL2($1)	COMPACT	swc1 RG1, LL2($0)	#Store floating point Single precision : Store 32-bit value from $f1 to effective memory word address
+s.s $f1,label($t2)	lui $1, LH2	addu $1, $1, RG4	swc1 RG1, LL2($1)	COMPACT	swc1 RG1, LL2(RG4)	#Store floating point Single precision : Store 32-bit value from $f1 to effective memory word address
+s.s $f1,label+100000	lui $1, LHPA	swc1 RG1, LLP($1)	#Store floating point Single precision : Store 32-bit value from $f1 to effective memory word address
+s.s $f1,label+100000($t2)	lui $1, LHPA	addu $1, $1, RG6	swc1 RG1, LLP($1)	#Store floating point Single precision : Store 32-bit value from $f1 to effective memory word address
+
+l.d $f2,($t2)	ldc1 RG1,0(RG3)	#Load floating point Double precision : Set $f2 and $f3 register pair to 64-bit value at effective memory doubleword address
+l.d $f2,-100	ldc1 RG1,VL2($0)	#Load floating point Double precision : Set $f2 and $f3 register pair to 64-bit value at effective memory doubleword address
+l.d $f2,100000	lui $1, VH2	ldc1 RG1,VL2($1)	#Load floating point Double precision : Set $f2 and $f3 register pair to 64-bit value at effective memory doubleword address
+l.d $f2,100000($t2)	lui $1, VH2	addu $1, $1, RG4	ldc1 RG1, VL2($1)	#Load floating point Double precision : Set $f2 and $f3 register pair to 64-bit value at effective memory doubleword address
+l.d $f2,label	lui $1, LH2	ldc1 RG1, LL2($1)	COMPACT	ldc1 RG1, LL2($0)	#Load floating point Double precision : Set $f2 and $f3 register pair to 64-bit value at effective memory doubleword address
+l.d $f2,label($t2)	lui $1, LH2	addu $1, $1, RG4	ldc1 RG1, LL2($1)	COMPACT	ldc1 RG1, LL2(RG4)	#Load floating point Double precision : Set $f2 and $f3 register pair to 64-bit value at effective memory doubleword address
+l.d $f2,label+100000	lui $1, LHPA	ldc1 RG1, LLP($1)	#Load floating point Double precision : Set $f2 and $f3 register pair to 64-bit value at effective memory doubleword address
+l.d $f2,label+100000($t2)	lui $1, LHPA	addu $1, $1, RG6	ldc1 RG1, LLP($1)	#Load floating point Double precision : Set $f2 and $f3 register pair to 64-bit value at effective memory doubleword address
+
+s.d $f2,($t2)	sdc1 RG1,0(RG3)	#Store floating point Double precision : Store 64 bits from $f2 and $f3 register pair to effective memory doubleword address
+s.d $f2,-100	sdc1 RG1,VL2($0)	#Store floating point Double precision : Store 64 bits from $f2 and $f3 register pair to effective memory doubleword address
+s.d $f2,100000	lui $1, VH2	sdc1 RG1,VL2($1)	#Store floating point Double precision : Store 64 bits from $f2 and $f3 register pair to effective memory doubleword address
+s.d $f2,100000($t2)	lui $1, VH2	addu $1, $1, RG4	sdc1 RG1, VL2($1)	#Store floating point Double precision : Store 64 bits from $f2 and $f3 register pair to effective memory doubleword address
+s.d $f2,label	lui $1, LH2	sdc1 RG1, LL2($1)	COMPACT	sdc1 RG1, LL2($0)	#Store floating point Double precision : Store 64 bits from $f2 and $f3 register pair to effective memory doubleword address
+s.d $f2,label($t2)	lui $1, LH2	addu $1, $1, RG4	sdc1 RG1, LL2($1)	COMPACT	sdc1 RG1, LL2(RG4)	#Store floating point Double precision : Store 64 bits from $f2 and $f3 register pair to effective memory doubleword address
+s.d $f2,label+100000	lui $1, LHPA	sdc1 RG1, LLP($1)	#Store floating point Double precision : Store 64 bits from $f2 and $f3 register pair to effective memory doubleword address
+s.d $f2,label+100000($t2)	lui $1, LHPA	addu $1, $1, RG6	sdc1 RG1, LLP($1)	#Store floating point Double precision : Store 64 bits from $f2 and $f3 register pair to effective memory doubleword address
