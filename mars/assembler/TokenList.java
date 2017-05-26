@@ -87,7 +87,7 @@ public class TokenList implements Cloneable, Iterable<Token> {
      * @return the requested token, or ArrayIndexOutOfBounds exception
      */
     public Token get(int pos) {
-        return (Token) tokenList.get(pos);
+        return tokenList.get(pos);
     }
 
     /**
@@ -180,7 +180,7 @@ public class TokenList implements Cloneable, Iterable<Token> {
     public Object clone() {
         try {
             TokenList t = (TokenList) super.clone();
-            t.tokenList = (ArrayList<Token>) tokenList.clone();
+            t.tokenList = new ArrayList<>(tokenList);
             return t;
         } catch (CloneNotSupportedException e) {
             return null;

@@ -141,9 +141,9 @@ public class ProgramStatement {
                     int k0 = 31 - fmt.lastIndexOf(code);
                     int k1 = 31 - j;
                     int opand = (binaryStatement >> k0) & ((1 << (k1 - k0 + 1)) - 1);
-                    if (instrFormat.equals(BasicInstructionFormat.I_BRANCH_FORMAT) && numOps == 2) {
+                    if (instrFormat == BasicInstructionFormat.I_BRANCH_FORMAT && numOps == 2) {
                         opand = opand << 16 >> 16;
-                    } else if (instrFormat.equals(BasicInstructionFormat.J_FORMAT) && numOps == 0) {
+                    } else if (instrFormat == BasicInstructionFormat.J_FORMAT && numOps == 0) {
                         opand |= (textAddress >> 2) & 0x3C000000;
                     }
                     this.operands[numOps] = opand;
@@ -371,7 +371,6 @@ public class ProgramStatement {
                 this.insertBinaryCode(this.operands[i], Instruction.operandMask[i], errors);
         }
         this.binaryStatement = Binary.binaryStringToInt(this.machineStatement);
-        return;
     } // buildMachineStatementFromBasicStatement(
 
 
@@ -612,7 +611,6 @@ public class ProgramStatement {
         if (endPos < this.machineStatement.length() - 1)
             state = state + this.machineStatement.substring(endPos + 1);
         this.machineStatement = state;
-        return;
     } // insertBinaryCode()
 
 
@@ -689,10 +687,10 @@ public class ProgramStatement {
 
     private class BasicStatementList {
 
-        private ArrayList list;
+        private ArrayList<ListElement> list;
 
         BasicStatementList() {
-            list = new ArrayList();
+            list = new ArrayList<>();
         }
 
         void addString(String string) {
@@ -712,8 +710,7 @@ public class ProgramStatement {
             int valueBase = (Globals.getSettings().getBooleanSetting(Settings.DISPLAY_VALUES_IN_HEX)) ? mars.venus.NumberDisplayBaseChooser.HEXADECIMAL : mars.venus.NumberDisplayBaseChooser.DECIMAL;
 
             StringBuffer result = new StringBuffer();
-            for (int i = 0; i < list.size(); i++) {
-                ListElement e = (ListElement) list.get(i);
+            for (ListElement e : list) {
                 switch (e.type) {
                     case 0:
                         result.append(e.sValue);
