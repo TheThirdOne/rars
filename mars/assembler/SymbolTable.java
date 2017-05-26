@@ -44,7 +44,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 public class SymbolTable {
     private static String startLabel = "main";
     private String filename;
-    private ArrayList table;
+    private ArrayList<Symbol> table;
     // Note -1 is legal 32 bit address (0xFFFFFFFF) but it is the high address in
     // kernel address space so highly unlikely that any symbol will have this as
     // its associated address!
@@ -58,7 +58,7 @@ public class SymbolTable {
      */
     public SymbolTable(String filename) {
         this.filename = filename;
-        this.table = new ArrayList();
+        this.table = new ArrayList<>();
     }
 
     /**
@@ -75,8 +75,7 @@ public class SymbolTable {
         if (getSymbol(label) != null) {
             errors.add(new ErrorMessage(token.getSourceMIPSprogram(), token.getSourceLine(), token.getStartPos(), "label \"" + label + "\" already defined"));
         } else {
-            Symbol s = new Symbol(label, address, b);
-            table.add(s);
+            table.add(new Symbol(label, address, b));
             if (Globals.debug)
                 System.out.println("The symbol " + label + " with address " + address + " has been added to the " + this.filename + " symbol table.");
         }
@@ -94,14 +93,13 @@ public class SymbolTable {
     public void removeSymbol(Token token) {
         String label = token.getValue();
         for (int i = 0; i < table.size(); i++) {
-            if (((Symbol) (table.get(i))).getName().equals(label)) {
+            if (table.get(i).getName().equals(label)) {
                 table.remove(i);
                 if (Globals.debug)
                     System.out.println("The symbol " + label + " has been removed from the " + this.filename + " symbol table.");
                 break;
             }
         }
-        return;
     }
 
 
@@ -112,9 +110,9 @@ public class SymbolTable {
      * @return The memory address of the label given, or NOT_FOUND if not found in symbol table.
      **/
     public int getAddress(String s) {
-        for (int i = 0; i < table.size(); i++) {
-            if (((Symbol) (table.get(i))).getName().equals(s)) {
-                return ((Symbol) table.get(i)).getAddress();
+        for (Symbol sym : table) {
+            if (sym.getName().equals(s)) {
+                return sym.getAddress();
             }
         }
         return NOT_FOUND;
@@ -142,9 +140,9 @@ public class SymbolTable {
      **/
 
     public Symbol getSymbol(String s) {
-        for (int i = 0; i < table.size(); i++) {
-            if (((Symbol) (table.get(i))).getName().equals(s)) {
-                return (Symbol) table.get(i);
+        for (Symbol sym : table) {
+            if (sym.getName().equals(s)) {
+                return sym;
             }
         }
         return null;
@@ -164,9 +162,9 @@ public class SymbolTable {
         } catch (NumberFormatException e) {
             return null;
         }
-        for (int i = 0; i < table.size(); i++) {
-            if (((Symbol) (table.get(i))).getAddress() == address) {
-                return (Symbol) table.get(i);
+        for (Symbol sym : table) {
+            if (sym.getAddress() == address) {
+                return sym;
             }
         }
         return null;
@@ -191,11 +189,11 @@ public class SymbolTable {
      * @return An ArrayList of Symbol objects.
      **/
 
-    public ArrayList getDataSymbols() {
-        ArrayList list = new ArrayList();
-        for (int i = 0; i < table.size(); i++) {
-            if (((Symbol) table.get(i)).getType()) {
-                list.add(table.get(i));
+    public ArrayList<Symbol> getDataSymbols() {
+        ArrayList<Symbol> list = new ArrayList<>();
+        for (Symbol sym : table) {
+            if (sym.getType()) {
+                list.add(sym);
             }
         }
         return list;
@@ -209,12 +207,13 @@ public class SymbolTable {
      **/
 
     public ArrayList getTextSymbols() {
-        ArrayList list = new ArrayList();
-        for (int i = 0; i < table.size(); i++) {
-            if (!((Symbol) table.get(i)).getType()) {
-                list.add(table.get(i));
+        ArrayList<Symbol> list = new ArrayList<>();
+        for (Symbol sym : table) {
+            if (!sym.getType()) {
+                list.add(sym);
             }
         }
+
         return list;
     }
 
@@ -224,11 +223,9 @@ public class SymbolTable {
      * @return An ArrayList of Symbol objects.
      **/
 
-    public ArrayList getAllSymbols() {
-        ArrayList list = new ArrayList();
-        for (int i = 0; i < table.size(); i++) {
-            list.add(table.get(i));
-        }
+    public ArrayList<Symbol> getAllSymbols() {
+        ArrayList<Symbol> list = new ArrayList<>();
+        list.addAll(table);
         return list;
     }
 
@@ -247,7 +244,7 @@ public class SymbolTable {
      **/
 
     public void clear() {
-        table = new ArrayList();
+        table = new ArrayList<>();
     }
 
     /**

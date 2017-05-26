@@ -1,6 +1,7 @@
 package mars.assembler;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 /*
 Copyright (c) 2003-2013,  Pete Sanderson and Kenneth Vollmar
@@ -38,19 +39,22 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * @version August 2003
  */
 
-public class TokenList implements Cloneable {
+public class TokenList implements Cloneable, Iterable<Token> {
 
-    private ArrayList tokenList;
+    private ArrayList<Token> tokenList;
     private String processedLine;// DPS 03-Jan-2013
 
     /**
      * Constructor for objects of class TokenList
      */
     public TokenList() {
-        tokenList = new ArrayList();
+        tokenList = new ArrayList<>();
         processedLine = ""; // DPS 03-Jan-2013
     }
 
+    public Iterator<Token> iterator(){
+        return tokenList.iterator();
+    }
     /**
      * Use this to record the source line String for this token list
      * after possible modification (textual substitution) during
@@ -158,8 +162,8 @@ public class TokenList implements Cloneable {
 
     public String toTypeString() {
         String stringified = "";
-        for (int i = 0; i < tokenList.size(); i++) {
-            stringified += ((Token) tokenList.get(i)).getType().toString() + " ";
+        for (Token t : tokenList) {
+            stringified += t.getType().toString() + " ";
         }
         return stringified;
     }
@@ -175,7 +179,7 @@ public class TokenList implements Cloneable {
     public Object clone() {
         try {
             TokenList t = (TokenList) super.clone();
-            t.tokenList = (ArrayList) tokenList.clone();
+            t.tokenList = (ArrayList<Token>) tokenList.clone();
             return t;
         } catch (CloneNotSupportedException e) {
             return null;

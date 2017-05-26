@@ -1,4 +1,4 @@
-package mars.mips.instructions.syscalls;
+package mars.mips.instructions;
 
 import mars.ProcessingException;
 import mars.ProgramStatement;

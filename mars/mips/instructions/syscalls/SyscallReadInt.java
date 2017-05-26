@@ -3,6 +3,7 @@ package mars.mips.instructions.syscalls;
 import mars.ProcessingException;
 import mars.ProgramStatement;
 import mars.mips.hardware.RegisterFile;
+import mars.mips.instructions.AbstractSyscall;
 import mars.simulator.Exceptions;
 import mars.util.SystemIO;
 

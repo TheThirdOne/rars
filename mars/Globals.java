@@ -233,8 +233,8 @@ public class Globals {
 
     // Read assembly language file extensions from properties file.  Resulting
     // string is tokenized into array list (assume StringTokenizer default delimiters).
-    private static ArrayList getFileExtensions() {
-        ArrayList extensionsList = new ArrayList();
+    private static ArrayList<String> getFileExtensions() {
+        ArrayList<String> extensionsList = new ArrayList<>();
         String extensions = getPropertyEntry(configPropertiesFile, "Extensions");
         if (extensions != null) {
             StringTokenizer st = new StringTokenizer(extensions);
@@ -253,8 +253,8 @@ public class Globals {
      * @return ArrayList.  Each item is file path to .class file
      * of a class that implements MarsTool.  If none, returns empty list.
      */
-    public static ArrayList getExternalTools() {
-        ArrayList toolsList = new ArrayList();
+    public static ArrayList<String> getExternalTools() {
+        ArrayList<String> toolsList = new ArrayList<>();
         String delimiter = ";";
         String tools = getPropertyEntry(configPropertiesFile, "ExternalTools");
         if (tools != null) {
@@ -283,8 +283,8 @@ public class Globals {
      *
      * @return ArrayList of SyscallNumberOverride objects
      */
-    public ArrayList getSyscallOverrides() {
-        ArrayList overrides = new ArrayList();
+    public ArrayList<SyscallNumberOverride> getSyscallOverrides() {
+        ArrayList<SyscallNumberOverride> overrides = new ArrayList<>();
         Properties properties = PropertiesFile.loadPropertiesFromFile(syscallPropertiesFile);
         Enumeration keys = properties.keys();
         while (keys.hasMoreElements()) {

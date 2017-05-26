@@ -5,6 +5,7 @@ import mars.ProcessingException;
 import mars.ProgramStatement;
 import mars.mips.hardware.AddressErrorException;
 import mars.mips.hardware.RegisterFile;
+import mars.mips.instructions.AbstractSyscall;
 
 import javax.swing.*;
 

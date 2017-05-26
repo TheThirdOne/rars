@@ -5,6 +5,7 @@ import mars.ProgramStatement;
 import mars.mips.hardware.Coprocessor1;
 import mars.mips.hardware.InvalidRegisterAccessException;
 import mars.mips.hardware.RegisterFile;
+import mars.mips.instructions.AbstractSyscall;
 import mars.simulator.Exceptions;
 
 import java.util.Random;

@@ -90,10 +90,10 @@ public class Tokenizer {
 
     public ArrayList tokenize(MIPSprogram p) throws ProcessingException {
         sourceMIPSprogram = p;
-        equivalents = new HashMap<String, String>(); // DPS 11-July-2012
-        ArrayList tokenList = new ArrayList();
+        equivalents = new HashMap<>(); // DPS 11-July-2012
+        ArrayList<TokenList> tokenList = new ArrayList<>();
         //ArrayList source = p.getSourceList();
-        ArrayList<SourceLine> source = processIncludes(p, new HashMap<String, String>()); // DPS 9-Jan-2013
+        ArrayList<SourceLine> source = processIncludes(p, new HashMap<>()); // DPS 9-Jan-2013
         p.setSourceLineList(source);
         TokenList currentLineTokens;
         String sourceLine;
@@ -125,10 +125,10 @@ public class Tokenizer {
     // includes both direct and indirect.
     // DPS 11-Jan-2013
     private ArrayList<SourceLine> processIncludes(MIPSprogram program, Map<String, String> inclFiles) throws ProcessingException {
-        ArrayList source = program.getSourceList();
+        ArrayList<String> source = program.getSourceList();
         ArrayList<SourceLine> result = new ArrayList<SourceLine>(source.size());
         for (int i = 0; i < source.size(); i++) {
-            String line = (String) source.get(i);
+            String line = source.get(i);
             TokenList tl = tokenizeLine(program, i + 1, line, false);
             boolean hasInclude = false;
             for (int ii = 0; ii < tl.size(); ii++) {
@@ -183,8 +183,7 @@ public class Tokenizer {
      **/
 
     public TokenList tokenizeExampleInstruction(String example) throws ProcessingException {
-        TokenList result = new TokenList();
-        result = tokenizeLine(sourceMIPSprogram, 0, example, false);
+        TokenList result = tokenizeLine(sourceMIPSprogram, 0, example, false);
         if (errors.errorsOccurred()) {
             throw new ProcessingException(errors);
         }
@@ -250,7 +249,7 @@ public class Tokenizer {
      * @param lineNum          line number from source code (used in error message)
      * @param theLine          String containing source code
      * @param callerErrorList  errors will go into this list instead of tokenizer's list.
-     * @param doEqvSubstitutse boolean param set true to perform .eqv substitutions, else false
+     * @param doEqvSubstitutes boolean param set true to perform .eqv substitutions, else false
      * @return the generated token list for that line
      **/
     public TokenList tokenizeLine(int lineNum, String theLine, ErrorList callerErrorList, boolean doEqvSubstitutes) {
@@ -302,7 +301,6 @@ public class Tokenizer {
                     case '#':  // # denotes comment that takes remainder of line
                         if (tokenPos > 0) {
                             this.processCandidateToken(token, program, lineNum, theLine, tokenPos, tokenStartPos, result);
-                            tokenPos = 0;
                         }
                         tokenStartPos = linePos + 1;
                         tokenPos = line.length - linePos;
@@ -339,7 +337,7 @@ public class Tokenizer {
                         }
                         tokenStartPos = linePos + 1;
                         token[tokenPos++] = c;
-                        if (!((result.isEmpty() || ((Token) result.get(result.size() - 1)).getType() != TokenTypes.IDENTIFIER) &&
+                        if (!((result.isEmpty() || result.get(result.size() - 1).getType() != TokenTypes.IDENTIFIER) &&
                                 (line.length >= linePos + 2 && Character.isDigit(line[linePos + 1])))) {
                             // treat it as binary.....
                             this.processCandidateToken(token, program, lineNum, theLine, tokenPos, tokenStartPos, result);
@@ -535,7 +533,6 @@ public class Tokenizer {
         }
         Token toke = new Token(type, value, program, line, tokenStartPos);
         tokenList.add(toke);
-        return;
     }
 
 

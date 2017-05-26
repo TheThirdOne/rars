@@ -51,7 +51,7 @@ public class MacroPool {
      */
     private ArrayList<Macro> macroList;
     /**
-     * @see #BeginMacro(String, int)
+     * @see #beginMacro(Token)
      */
     private Macro current;
     private ArrayList<Integer> callStack;
@@ -69,9 +69,9 @@ public class MacroPool {
      */
     public MacroPool(MIPSprogram mipsProgram) {
         this.program = mipsProgram;
-        macroList = new ArrayList<Macro>();
-        callStack = new ArrayList<Integer>();
-        callStackOrigLines = new ArrayList<Integer>();
+        macroList = new ArrayList<>();
+        callStack = new ArrayList<>();
+        callStackOrigLines = new ArrayList<>();
         current = null;
         counter = 0;
     }
@@ -81,7 +81,7 @@ public class MacroPool {
      * directive.<br>
      * Instantiates a new {@link Macro} object and stores it in {@link #current}
      * . {@link #current} will be added to {@link #macroList} by
-     * {@link #CommitMacro(int)}
+     * {@link #commitMacro(Token)}
      *
      * @param nameToken Token containing name of macro after <code>.macro</code> directive
      */

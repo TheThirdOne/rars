@@ -61,8 +61,8 @@ public class Macro {
         program = null;
         fromLine = toLine = 0;
         origFromLine = origToLine = 0;
-        args = new ArrayList<String>();
-        labels = new ArrayList<String>();
+        args = new ArrayList<>();
+        labels = new ArrayList<>();
     }
 
     public String getName() {
@@ -152,7 +152,7 @@ public class Macro {
      */
 
     public String getSubstitutedLine(int line, TokenList args, long counter, ErrorList errors) {
-        TokenList tokens = (TokenList) program.getTokenList().get(line - 1);
+        TokenList tokens = program.getTokenList().get(line - 1);
         String s = program.getSourceLine(line);
 
         for (int i = tokens.size() - 1; i >= 0; i--) {
@@ -246,6 +246,4 @@ public class Macro {
     public void readyForCommit() {
         Collections.sort(labels);
     }
-
-
 }

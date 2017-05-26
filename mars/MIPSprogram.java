@@ -53,10 +53,10 @@ public class MIPSprogram {
     private boolean steppedExecution = false;
 
     private String filename;
-    private ArrayList sourceList;
-    private ArrayList tokenList;
-    private ArrayList parsedList;
-    private ArrayList machineList;
+    private ArrayList<String> sourceList;
+    private ArrayList<TokenList>  tokenList;
+    private ArrayList<ProgramStatement> parsedList;
+    private ArrayList<ProgramStatement> machineList;
     private BackStepper backStepper;
     private SymbolTable localSymbolTable;
     private MacroPool macroPool;
@@ -69,7 +69,7 @@ public class MIPSprogram {
      * @return ArrayList of String.  Each String is one line of MIPS source code.
      **/
 
-    public ArrayList getSourceList() {
+    public ArrayList<String> getSourceList() {
         return sourceList;
     }
 
@@ -82,7 +82,7 @@ public class MIPSprogram {
 
     public void setSourceLineList(ArrayList<SourceLine> sourceLineList) {
         this.sourceLineList = sourceLineList;
-        sourceList = new ArrayList();
+        sourceList = new ArrayList<>();
         for (SourceLine sl : sourceLineList) {
             sourceList.add(sl.getSource());
         }
@@ -117,7 +117,7 @@ public class MIPSprogram {
      * @see TokenList
      **/
 
-    public ArrayList getTokenList() {
+    public ArrayList<TokenList> getTokenList() {
         return tokenList;
     }
 
@@ -139,8 +139,8 @@ public class MIPSprogram {
      * @see ProgramStatement
      **/
 
-    public ArrayList createParsedList() {
-        parsedList = new ArrayList();
+    public ArrayList<ProgramStatement> createParsedList() {
+        parsedList = new ArrayList<>();
         return parsedList;
     }
 
@@ -152,7 +152,7 @@ public class MIPSprogram {
      * @see ProgramStatement
      **/
 
-    public ArrayList getParsedList() {
+    public ArrayList<ProgramStatement> getParsedList() {
         return parsedList;
     }
 
@@ -164,7 +164,7 @@ public class MIPSprogram {
      * @see ProgramStatement
      **/
 
-    public ArrayList getMachineList() {
+    public ArrayList<ProgramStatement> getMachineList() {
         return machineList;
     }
 
@@ -208,7 +208,7 @@ public class MIPSprogram {
 
     public String getSourceLine(int i) {
         if ((i >= 1) && (i <= sourceList.size()))
-            return (String) sourceList.get(i - 1);
+            return sourceList.get(i - 1);
         else
             return null;
     }
@@ -225,7 +225,7 @@ public class MIPSprogram {
 
     public void readSource(String file) throws ProcessingException {
         this.filename = file;
-        this.sourceList = new ArrayList();
+        this.sourceList = new ArrayList<>();
         ErrorList errors = null;
         BufferedReader inputFile;
         String line;
@@ -242,7 +242,6 @@ public class MIPSprogram {
             errors.add(new ErrorMessage((MIPSprogram) null, 0, 0, e.toString()));
             throw new ProcessingException(errors);
         }
-        return;
     }
 
     /**
@@ -255,7 +254,6 @@ public class MIPSprogram {
         this.tokenizer = new Tokenizer();
         this.tokenList = tokenizer.tokenize(this);
         this.localSymbolTable = new SymbolTable(this.filename); // prepare for assembly
-        return;
     }
 
     /**
@@ -274,15 +272,14 @@ public class MIPSprogram {
      * @throws ProcessingException Will throw exception if errors occured while reading or tokenizing.
      **/
 
-    public ArrayList prepareFilesForAssembly(ArrayList filenames, String leadFilename, String exceptionHandler) throws ProcessingException {
-        ArrayList MIPSprogramsToAssemble = new ArrayList();
+    public ArrayList<MIPSprogram> prepareFilesForAssembly(ArrayList<String> filenames, String leadFilename, String exceptionHandler) throws ProcessingException {
+        ArrayList<MIPSprogram> MIPSprogramsToAssemble = new ArrayList<>();
         int leadFilePosition = 0;
         if (exceptionHandler != null && exceptionHandler.length() > 0) {
             filenames.add(0, exceptionHandler);
             leadFilePosition = 1;
         }
-        for (int i = 0; i < filenames.size(); i++) {
-            String filename = (String) filenames.get(i);
+        for (String filename : filenames) {
             MIPSprogram preparee = (filename.equals(leadFilename)) ? this : new MIPSprogram();
             preparee.readSource(filename);
             preparee.tokenize();
@@ -307,7 +304,7 @@ public class MIPSprogram {
      * @throws ProcessingException Will throw exception if errors occured while assembling.
      **/
 
-    public ErrorList assemble(ArrayList MIPSprogramsToAssemble, boolean extendedAssemblerEnabled)
+    public ErrorList assemble(ArrayList<MIPSprogram> MIPSprogramsToAssemble, boolean extendedAssemblerEnabled)
             throws ProcessingException {
         return assemble(MIPSprogramsToAssemble, extendedAssemblerEnabled, false);
     }
@@ -325,7 +322,7 @@ public class MIPSprogram {
      * @throws ProcessingException Will throw exception if errors occured while assembling.
      **/
 
-    public ErrorList assemble(ArrayList MIPSprogramsToAssemble, boolean extendedAssemblerEnabled,
+    public ErrorList assemble(ArrayList<MIPSprogram> MIPSprogramsToAssemble, boolean extendedAssemblerEnabled,
                               boolean warningsAreErrors) throws ProcessingException {
         this.backStepper = null;
         Assembler asm = new Assembler();
@@ -377,7 +374,7 @@ public class MIPSprogram {
     public boolean simulateFromPC(int[] breakPoints, int maxSteps, AbstractAction a) throws ProcessingException {
         steppedExecution = false;
         Simulator sim = Simulator.getInstance();
-        return sim.simulate(this, RegisterFile.getProgramCounter(), maxSteps, breakPoints, a);
+        return sim.simulate(RegisterFile.getProgramCounter(), maxSteps, breakPoints, a);
     }
 
 
@@ -392,7 +389,7 @@ public class MIPSprogram {
     public boolean simulateStepAtPC(AbstractAction a) throws ProcessingException {
         steppedExecution = true;
         Simulator sim = Simulator.getInstance();
-        boolean done = sim.simulate(this, RegisterFile.getProgramCounter(), 1, null, a);
+        boolean done = sim.simulate(RegisterFile.getProgramCounter(), 1, null, a);
         return done;
     }
 

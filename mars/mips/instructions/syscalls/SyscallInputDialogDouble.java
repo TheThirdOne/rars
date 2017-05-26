@@ -7,6 +7,7 @@ import mars.mips.hardware.AddressErrorException;
 import mars.mips.hardware.Coprocessor1;
 import mars.mips.hardware.InvalidRegisterAccessException;
 import mars.mips.hardware.RegisterFile;
+import mars.mips.instructions.AbstractSyscall;
 import mars.simulator.Exceptions;
 
 import javax.swing.*;

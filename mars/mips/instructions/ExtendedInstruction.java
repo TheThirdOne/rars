@@ -51,7 +51,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 public class ExtendedInstruction extends Instruction {
 
-    private ArrayList translationStrings, compactTranslationStrings;
+    private ArrayList<String> translationStrings, compactTranslationStrings;
 
     /**
      * Constructor for ExtendedInstruction.
@@ -128,7 +128,7 @@ public class ExtendedInstruction extends Instruction {
      * @return ArrayList of Strings.
      */
 
-    public ArrayList getBasicIntructionTemplateList() {
+    public ArrayList<String> getBasicIntructionTemplateList() {
         return translationStrings;
     }
 
@@ -168,7 +168,7 @@ public class ExtendedInstruction extends Instruction {
      * have a compact alternative.
      */
 
-    public ArrayList getCompactBasicIntructionTemplateList() {
+    public ArrayList<String> getCompactBasicIntructionTemplateList() {
         return compactTranslationStrings;
     }
 
@@ -217,7 +217,7 @@ public class ExtendedInstruction extends Instruction {
      * @return String representing basic assembler statement.
      */
 
-    public static String makeTemplateSubstitutions(MIPSprogram program, String template, TokenList theTokenList) {
+    public static String makeTemplateSubstitutions(MIPSprogram program, String template, TokenList tokenList) {
         String instruction = template;
         int index;
         // Added 22 Jan 2008 by DPS.  The DBNOP template means to generate a "nop" instruction if delayed branching
@@ -226,17 +226,17 @@ public class ExtendedInstruction extends Instruction {
         //This is the goal, but it leads to a cascade of
         // additional changes, so for now I will generate "nop" in either case, then come back to it for the
         // next major release.
-        if (instruction.indexOf("DBNOP") >= 0) {
+        if (instruction.contains("DBNOP")) {
             return Globals.getSettings().getDelayedBranchingEnabled() ? "nop" : "";
         }
         // substitute first operand token for template's RG1 or OP1, second for RG2 or OP2, etc
-        for (int op = 1; op < theTokenList.size(); op++) {
-            instruction = substitute(instruction, "RG" + op, theTokenList.get(op).getValue());
-            instruction = substitute(instruction, "OP" + op, theTokenList.get(op).getValue());
+        for (int op = 1; op < tokenList.size(); op++) {
+            instruction = substitute(instruction, "RG" + op, tokenList.get(op).getValue());
+            instruction = substitute(instruction, "OP" + op, tokenList.get(op).getValue());
             // substitute upper 16 bits of label address, after adding singe digit constant following P
             if ((index = instruction.indexOf("LH" + op + "P")) >= 0) {
                 // Label, last operand, has already been translated to address by symtab lookup
-                String label = theTokenList.get(op).getValue();
+                String label = tokenList.get(op).getValue();
                 int addr = 0;
                 int add = instruction.charAt(index + 4) - 48; // extract the digit following P
                 try {
@@ -251,9 +251,9 @@ public class ExtendedInstruction extends Instruction {
             }
             // substitute upper 16 bits of label address
             // NOTE: form LHnPm will not match here since it is discovered and substituted above.
-            if (instruction.indexOf("LH" + op) >= 0) {
+            if (instruction.contains("LH" + op)) {
                 // Label, last operand, has already been translated to address by symtab lookup
-                String label = theTokenList.get(op).getValue();
+                String label = tokenList.get(op).getValue();
                 int addr = 0;
                 try {
                     addr = Binary.stringToInt(label);    // KENV   1/6/05
@@ -268,7 +268,7 @@ public class ExtendedInstruction extends Instruction {
             // substitute lower 16 bits of label address, after adding single digit that follows P
             if ((index = instruction.indexOf("LL" + op + "P")) >= 0) {
                 // label has already been translated to address by symtab lookup.
-                String label = theTokenList.get(op).getValue();
+                String label = tokenList.get(op).getValue();
                 int addr = 0;
                 int add = instruction.charAt(index + 4) - 48; // digit that follows P
                 try {
@@ -282,7 +282,7 @@ public class ExtendedInstruction extends Instruction {
             // NOTE: form LLnPm will not match here since it is discovered and substituted above.
             if ((index = instruction.indexOf("LL" + op)) >= 0) {
                 // label has already been translated to address by symtab lookup.
-                String label = theTokenList.get(op).getValue();
+                String label = tokenList.get(op).getValue();
                 int addr = 0;
                 try {
                     addr = Binary.stringToInt(label);     // KENV   1/6/05
@@ -298,7 +298,7 @@ public class ExtendedInstruction extends Instruction {
             // Substitute upper 16 bits of value after adding 1,2,3,4, (any single digit)
             // Added by DPS on 22 Jan 2008 to fix "ble" and "bgt" bug [do not adjust for bit 15==1]
             if ((index = instruction.indexOf("VHL" + op + "P")) >= 0) {
-                String value = theTokenList.get(op).getValue();
+                String value = tokenList.get(op).getValue();
                 int val = 0;
                 int add = instruction.charAt(index + 5) - '0'; // amount to add: 1,2,3,4 (any single digit)
                 try { // KENV 1/6/05
@@ -311,7 +311,7 @@ public class ExtendedInstruction extends Instruction {
             // substitute upper 16 bits of value after adding 1,2,3,4, then adjust
             // if necessary, if resulting bit 15 is 1 (see "extra" below)
             if ((index = instruction.indexOf("VH" + op + "P")) >= 0) {
-                String value = theTokenList.get(op).getValue();
+                String value = tokenList.get(op).getValue();
                 int val = 0;
                 int add = instruction.charAt(index + 4) - '0'; // amount to add: 1,2,3,4 (any single digit)
                 try { // KENV 1/6/05
@@ -326,8 +326,8 @@ public class ExtendedInstruction extends Instruction {
             }
             // substitute upper 16 bits of value, adjusted if necessary (see "extra" below)
             // NOTE: if VHnPm appears it will not match here; already substituted by code above
-            if (instruction.indexOf("VH" + op) >= 0) {
-                String value = theTokenList.get(op).getValue();
+            if (instruction.contains("VH" + op)) {
+                String value = tokenList.get(op).getValue();
                 int val = 0;
                 try {
                     val = Binary.stringToInt(value);      // KENV   1/6/05
@@ -341,7 +341,7 @@ public class ExtendedInstruction extends Instruction {
             }
             // substitute lower 16 bits of value after adding specified amount (1,2,3,4)
             if ((index = instruction.indexOf("VL" + op + "P")) >= 0) {
-                String value = theTokenList.get(op).getValue();
+                String value = tokenList.get(op).getValue();
                 int val = 0;
                 int add = instruction.charAt(index + 4) - '0'; // P is followed by 1,2,3,4(any single digit OK)
                 try {  // KENV 1/6/05
@@ -357,7 +357,7 @@ public class ExtendedInstruction extends Instruction {
             }
             // substitute lower 16 bits of value.  NOTE: VLnPm already substituted by above code.
             if ((index = instruction.indexOf("VL" + op)) >= 0) {
-                String value = theTokenList.get(op).getValue();
+                String value = tokenList.get(op).getValue();
                 int val = 0;
                 try {
                     val = Binary.stringToInt(value);      // KENV   1/6/05
@@ -371,9 +371,9 @@ public class ExtendedInstruction extends Instruction {
                 }
             }
             // substitute upper 16 bits of 32 bit value
-            if (instruction.indexOf("VHL" + op) >= 0) {
+            if (instruction.contains("VHL" + op)) {
                 // value has to be second operand token.
-                String value = theTokenList.get(op).getValue(); // has to be token 2 position
+                String value = tokenList.get(op).getValue(); // has to be token 2 position
                 int val = 0;
                 try {
                     val = Binary.stringToInt(value);      // KENV   1/6/05
@@ -384,9 +384,9 @@ public class ExtendedInstruction extends Instruction {
             }
         }
         // substitute upper 16 bits of label address for "la"
-        if (instruction.indexOf("LHL") >= 0) {
+        if (instruction.contains("LHL")) {
             // Label has already been translated to address by symtab lookup
-            String label = theTokenList.get(2).getValue();  // has to be token 2 position
+            String label = tokenList.get(2).getValue();  // has to be token 2 position
             int addr = 0;
             try {
                 addr = Binary.stringToInt(label);    // KENV   1/6/05
@@ -401,8 +401,8 @@ public class ExtendedInstruction extends Instruction {
         // Address will be resolved using addition, so need to add 1 to upper half if bit 15 is 1.
         if ((index = instruction.indexOf("LHPAP")) >= 0) {
             // Label has already been translated to address by symtab lookup
-            String label = theTokenList.get(2).getValue();  // 2 is only possible token position
-            String addend = theTokenList.get(4).getValue();  // 4 is only possible token position
+            String label = tokenList.get(2).getValue();  // 2 is only possible token position
+            String addend = tokenList.get(4).getValue();  // 4 is only possible token position
             int addr = 0;
             int add = instruction.charAt(index + 5) - 48; // extract digit following P
             try {
@@ -419,10 +419,10 @@ public class ExtendedInstruction extends Instruction {
         // substitute upper 16 bits of label address after adding constant e.g. here+4($s0)
         // Address will be resolved using addition, so need to add 1 to upper half if bit 15 is 1.
         // NOTE: format LHPAPm is recognized and substituted by the code above.
-        if (instruction.indexOf("LHPA") >= 0) {
+        if (instruction.contains("LHPA")) {
             // Label has already been translated to address by symtab lookup
-            String label = theTokenList.get(2).getValue();  // 2 is only possible token position
-            String addend = theTokenList.get(4).getValue();  // 4 is only possible token position
+            String label = tokenList.get(2).getValue();  // 2 is only possible token position
+            String addend = tokenList.get(4).getValue();  // 4 is only possible token position
             int addr = 0;
             try {
                 addr = Binary.stringToInt(label) +    // KENV   1/6/05
@@ -438,10 +438,10 @@ public class ExtendedInstruction extends Instruction {
         // substitute upper 16 bits of label address after adding constant e.g. here+4($s0)
         // Address will be resolved using "ori", so DO NOT adjust upper 16 if bit 15 is 1.
         // This only happens in the "la" (load address) instruction.
-        if (instruction.indexOf("LHPN") >= 0) {
+        if (instruction.contains("LHPN")) {
             // Label has already been translated to address by symtab lookup
-            String label = theTokenList.get(2).getValue();  // 2 is only possible token position
-            String addend = theTokenList.get(4).getValue();  // 4 is only possible token position
+            String label = tokenList.get(2).getValue();  // 2 is only possible token position
+            String addend = tokenList.get(4).getValue();  // 4 is only possible token position
             int addr = 0;
             try {
                 addr = Binary.stringToInt(label) +    // KENV   1/6/05
@@ -455,8 +455,8 @@ public class ExtendedInstruction extends Instruction {
         // and also adding the digit following LLPP in the spec.
         if ((index = instruction.indexOf("LLPP")) >= 0) {
             // label has already been translated to address by symtab lookup.
-            String label = theTokenList.get(2).getValue(); // 2 is only possible token position
-            String addend = theTokenList.get(4).getValue(); // 4 is only possible token position
+            String label = tokenList.get(2).getValue(); // 2 is only possible token position
+            String addend = tokenList.get(4).getValue(); // 4 is only possible token position
             int addr = 0;
             int add = instruction.charAt(index + 4) - 48; // extract digit following P
             try {
@@ -472,8 +472,8 @@ public class ExtendedInstruction extends Instruction {
         // NOTE: format LLPPm is recognized and substituted by the code above
         if ((index = instruction.indexOf("LLP")) >= 0) {
             // label has already been translated to address by symtab lookup.
-            String label = theTokenList.get(2).getValue(); // 2 is only possible token position
-            String addend = theTokenList.get(4).getValue(); // 4 is only possible token position
+            String label = tokenList.get(2).getValue(); // 2 is only possible token position
+            String addend = tokenList.get(4).getValue(); // 4 is only possible token position
             int addr = 0;
             try {
                 addr = Binary.stringToInt(label) +    // KENV   1/6/05
@@ -502,9 +502,9 @@ public class ExtendedInstruction extends Instruction {
             }
         }
         // substitute Next higher Register for registers in token list (for "mfc1.d","mtc1.d")
-        if (instruction.indexOf("NR") >= 0) {
-            for (int op = 1; op < theTokenList.size(); op++) {
-                String token = theTokenList.get(op).getValue();
+        if (instruction.contains("NR")) {
+            for (int op = 1; op < tokenList.size(); op++) {
+                String token = tokenList.get(op).getValue();
                 int regNumber;
                 try { // if token is a RegisterFile register, substitute next higher register
                     regNumber = RegisterFile.getUserRegister(token).getNumber();
@@ -521,8 +521,8 @@ public class ExtendedInstruction extends Instruction {
         }
 
         // substitute result of subtracting last token from 32 (rol and ror constant rotate amount)
-        if (instruction.indexOf("S32") >= 0) {
-            String value = theTokenList.get(theTokenList.size() - 1).getValue();
+        if (instruction.contains("S32")) {
+            String value = tokenList.get(tokenList.size() - 1).getValue();
             int val = 0;
             try {
                 val = Binary.stringToInt(value);      // KENV   1/6/05
@@ -533,10 +533,10 @@ public class ExtendedInstruction extends Instruction {
         }
 
         // substitute label if necessary
-        if (instruction.indexOf("LAB") >= 0) {
+        if (instruction.contains("LAB")) {
             // label has to be last token.  It has already been translated to address
             // by symtab lookup, so I need to get the text label back so parseLine() won't puke.
-            String label = theTokenList.get(theTokenList.size() - 1).getValue();
+            String label = tokenList.get(tokenList.size() - 1).getValue();
             Symbol sym = program.getLocalSymbolTable().getSymbolGivenAddressLocalOrGlobal(label);
             if (sym != null) {
                 // should never be null, since there would not be an address if label were not in symtab!
@@ -555,7 +555,7 @@ public class ExtendedInstruction extends Instruction {
     // do this directly but I wanted to stay 1.4 compatible.
     // Modified 12 July 2006 to "substitute all occurances", not just the first.
     private static String substitute(String original, String find, String replacement) {
-        if (original.indexOf(find) < 0 || find.equals(replacement)) {
+        if (!original.contains(find) || find.equals(replacement)) {
             return original;  // second condition prevents infinite loop below
         }
         int i;
@@ -570,7 +570,7 @@ public class ExtendedInstruction extends Instruction {
     // Java 1.5 adds an overloaded String.replace method to do this directly but I
     // wanted to stay 1.4 compatible.
     private static String substituteFirst(String original, String find, String replacement) {
-        if (original.indexOf(find) < 0 || find.equals(replacement)) {
+        if (!original.contains(find) || find.equals(replacement)) {
             return original;  // second condition prevents infinite loop below
         }
         int i;
@@ -586,11 +586,11 @@ public class ExtendedInstruction extends Instruction {
     // expands to, which is a string, and breaks out into separate
     // instructions.  They are separated by '\n' character.
 
-    private ArrayList buildTranslationList(String translation) {
+    private ArrayList<String> buildTranslationList(String translation) {
         if (translation == null || translation.length() == 0) {
             return null;
         }
-        ArrayList translationList = new ArrayList();
+        ArrayList<String> translationList = new ArrayList<>();
         StringTokenizer st = new StringTokenizer(translation, "\n");
         while (st.hasMoreTokens()) {
             translationList.add(st.nextToken());
@@ -607,7 +607,7 @@ public class ExtendedInstruction extends Instruction {
      * Returns length in bytes of corresponding binary instruction(s).
      * Returns 0 if the ArrayList is null or empty.
      */
-    private int getInstructionLength(ArrayList translationList) {
+    private int getInstructionLength(ArrayList<String> translationList) {
         if (translationList == null || translationList.size() == 0) {
             return 0;
         }
@@ -615,12 +615,11 @@ public class ExtendedInstruction extends Instruction {
         // if Delayed branching is enabled.  Otherwise generate nothing.  If generating nothing,
         // then don't count the nop in the instruction length.   DPS 23-Jan-2008
         int instructionCount = 0;
-        for (int i = 0; i < translationList.size(); i++) {
-            if (((String) translationList.get(i)).indexOf("DBNOP") >= 0 && !Globals.getSettings().getDelayedBranchingEnabled())
+        for (String str : translationList) {
+            if (str.contains("DBNOP") && !Globals.getSettings().getDelayedBranchingEnabled())
                 continue;
             instructionCount++;
         }
         return 4 * instructionCount;
     }
-
 }

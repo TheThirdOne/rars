@@ -11,7 +11,7 @@ import java.util.StringTokenizer;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-	/*
+/*
 Copyright (c) 2003-2008,  Pete Sanderson and Kenneth Vollmar
 
 Developed by Pete Sanderson (psanderson@otterbein.edu)
@@ -73,11 +73,11 @@ public class FilenameFinder {
      *                      to the list.  Do NOT include the "." in extension.
      * @return array list of matching file names as Strings.  If none, list is empty.
      */
-    public static ArrayList getFilenameList(ClassLoader classLoader,
+    public static ArrayList<String> getFilenameList(ClassLoader classLoader,
                                             String directoryPath,
                                             String fileExtension) {
         fileExtension = checkFileExtension(fileExtension);
-        ArrayList filenameList = new ArrayList();
+        ArrayList<String> filenameList = new ArrayList<>();
         // Modified by DPS 10-July-2008 to better handle path containing space
         // character (%20) and to hopefully handle path containing non-ASCII
         // characters.  The "toURI()" approach was suggested by MARS user
@@ -185,16 +185,14 @@ public class FilenameFinder {
      *                       extension null or empty, all files are added.
      * @return array list of matching file names as Strings.  If none, list is empty.
      */
-    public static ArrayList getFilenameList(ClassLoader classLoader,
+    public static ArrayList<String> getFilenameList(ClassLoader classLoader,
                                             String directoryPath,
-                                            ArrayList fileExtensions) {
-        ArrayList filenameList = new ArrayList();
-        String fileExtension;
+                                            ArrayList<String> fileExtensions) {
+        ArrayList<String> filenameList = new ArrayList<>();
         if (fileExtensions == null || fileExtensions.size() == 0) {
             filenameList = getFilenameList(classLoader, directoryPath, "");
         } else {
-            for (int i = 0; i < fileExtensions.size(); i++) {
-                fileExtension = checkFileExtension((String) fileExtensions.get(i));
+            for (String fileExtension : fileExtensions) {
                 filenameList.addAll(getFilenameList(classLoader, directoryPath, fileExtension));
             }
         }
@@ -214,16 +212,16 @@ public class FilenameFinder {
      *                      If null or empty string, all files are added.
      * @return array list of matching file names (absolute path).  If none, list is empty.
      */
-    public static ArrayList getFilenameList(String directoryPath, String fileExtension) {
+    public static ArrayList<String> getFilenameList(String directoryPath, String fileExtension) {
         fileExtension = checkFileExtension(fileExtension);
-        ArrayList filenameList = new ArrayList();
+        ArrayList<String> filenameList = new ArrayList<>();
         File directory = new File(directoryPath);
         if (directory.isDirectory()) {
             File[] allFiles = directory.listFiles();
             FileFilter filter = getFileFilter(fileExtension, "", NO_DIRECTORIES);
-            for (int i = 0; i < allFiles.length; i++) {
-                if (filter.accept(allFiles[i])) {
-                    filenameList.add(allFiles[i].getAbsolutePath());
+            for (File file : allFiles) {
+                if (filter.accept(file)) {
+                    filenameList.add(file.getAbsolutePath());
                 }
             }
         }
@@ -244,14 +242,12 @@ public class FilenameFinder {
      *                       extension null or empty, all files are added.
      * @return array list of matching file names (absolute path).  If none, list is empty.
      */
-    public static ArrayList getFilenameList(String directoryPath, ArrayList fileExtensions) {
-        ArrayList filenameList = new ArrayList();
-        String fileExtension;
+    public static ArrayList<String> getFilenameList(String directoryPath, ArrayList<String> fileExtensions) {
+        ArrayList<String> filenameList = new ArrayList<>();
         if (fileExtensions == null || fileExtensions.size() == 0) {
             filenameList = getFilenameList(directoryPath, "");
         } else {
-            for (int i = 0; i < fileExtensions.size(); i++) {
-                fileExtension = checkFileExtension((String) fileExtensions.get(i));
+            for (String fileExtension : fileExtensions) {
                 filenameList.addAll(getFilenameList(directoryPath, fileExtension));
             }
         }
@@ -269,12 +265,12 @@ public class FilenameFinder {
      *                      If null or empty string, all files are added.  Do NOT include "." in extension.
      * @return array list of matching file names (absolute path).  If none, list is empty.
      */
-    public static ArrayList getFilenameList(ArrayList nameList, String fileExtension) {
+    public static ArrayList<String> getFilenameList(ArrayList<String> nameList, String fileExtension) {
         fileExtension = checkFileExtension(fileExtension);
-        ArrayList filenameList = new ArrayList();
+        ArrayList<String> filenameList = new ArrayList<>();
         FileFilter filter = getFileFilter(fileExtension, "", NO_DIRECTORIES);
-        for (int i = 0; i < nameList.size(); i++) {
-            File file = new File((String) nameList.get(i));
+        for (String name : nameList) {
+            File file = new File(name);
             if (filter.accept(file)) {
                 filenameList.add(file.getAbsolutePath());
             }
@@ -295,14 +291,14 @@ public class FilenameFinder {
      *                       extension null or empty, all files are added.
      * @return array list of matching file names (absolute path).  If none, list is empty.
      */
-    public static ArrayList getFilenameList(ArrayList nameList, ArrayList fileExtensions) {
-        ArrayList filenameList = new ArrayList();
+    public static ArrayList<String> getFilenameList(ArrayList<String> nameList, ArrayList<String> fileExtensions) {
+        ArrayList<String> filenameList = new ArrayList<>();
         String fileExtension;
         if (fileExtensions == null || fileExtensions.size() == 0) {
             filenameList = getFilenameList(nameList, "");
         } else {
-            for (int i = 0; i < fileExtensions.size(); i++) {
-                fileExtension = checkFileExtension((String) fileExtensions.get(i));
+            for (String ext : fileExtensions) {
+                fileExtension = checkFileExtension(ext);
                 filenameList.addAll(getFilenameList(nameList, fileExtension));
             }
         }
@@ -363,7 +359,7 @@ public class FilenameFinder {
      */
 
     public static FileFilter getFileFilter(String extension, String description, boolean acceptDirectories) {
-        ArrayList extensions = new ArrayList();
+        ArrayList<String> extensions = new ArrayList<>();
         extensions.add(extension);
         return new MarsFileFilter(extensions, description, acceptDirectories);
     }
@@ -396,9 +392,9 @@ public class FilenameFinder {
     }
 
     // return list of file names in specified folder inside JAR
-    private static ArrayList getListFromJar(String jarName, String directoryPath, String fileExtension) {
+    private static ArrayList<String> getListFromJar(String jarName, String directoryPath, String fileExtension) {
         fileExtension = checkFileExtension(fileExtension);
-        ArrayList nameList = new ArrayList();
+        ArrayList<String> nameList = new ArrayList<>();
         if (jarName == null) {
             return nameList;
         }

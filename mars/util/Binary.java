@@ -446,7 +446,7 @@ public class Binary {
         // valid hex two's complement values as exceptions.  We'll catch those and
         // do our own validation.
         try {
-            result = Long.decode(s).longValue();
+            result = Long.decode(s);
         } catch (NumberFormatException nfe) {
             // Multistep process toward validation of hex two's complement. 3-step test:
             //   (1) exactly 18 characters long,

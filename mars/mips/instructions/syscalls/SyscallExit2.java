@@ -4,6 +4,7 @@ import mars.Globals;
 import mars.ProcessingException;
 import mars.ProgramStatement;
 import mars.mips.hardware.RegisterFile;
+import mars.mips.instructions.AbstractSyscall;
 
 /*
 Copyright (c) 2003-2006,  Pete Sanderson and Kenneth Vollmar

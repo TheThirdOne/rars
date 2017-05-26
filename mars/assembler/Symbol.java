@@ -95,6 +95,5 @@ public class Symbol {
 
     public void setAddress(int newAddress) {
         this.address = newAddress;
-        return;
     }
 }

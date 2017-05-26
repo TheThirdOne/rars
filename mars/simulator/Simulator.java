@@ -114,7 +114,6 @@ public class Simulator extends Observable {
     /**
      * Simulate execution of given MIPS program.  It must have already been assembled.
      *
-     * @param p           The MIPSprogram to be simulated.
      * @param pc          address of first instruction to simulate; this goes into program counter
      * @param maxSteps    maximum number of steps to perform before returning false (0 or less means no max)
      * @param breakPoints array of breakpoint program counter values, use null if none
@@ -123,8 +122,8 @@ public class Simulator extends Observable {
      * @throws ProcessingException Throws exception if run-time exception occurs.
      **/
 
-    public boolean simulate(MIPSprogram p, int pc, int maxSteps, int[] breakPoints, AbstractAction actor) throws ProcessingException {
-        simulatorThread = new SimThread(p, pc, maxSteps, breakPoints, actor);
+    public boolean simulate(int pc, int maxSteps, int[] breakPoints, AbstractAction actor) throws ProcessingException {
+        simulatorThread = new SimThread(pc, maxSteps, breakPoints, actor);
         simulatorThread.start();
 
         // Condition should only be true if run from command-line instead of GUI.
@@ -170,7 +169,7 @@ public class Simulator extends Observable {
         void stopped(Simulator s);
     }
 
-    private ArrayList<StopListener> stopListeners = new ArrayList<StopListener>(1);
+    private ArrayList<StopListener> stopListeners = new ArrayList<>(1);
 
     public void addStopListener(StopListener l) {
         stopListeners.add(l);
@@ -211,7 +210,6 @@ public class Simulator extends Observable {
      */
 
     class SimThread extends SwingWorker {
-        private MIPSprogram p;
         private int pc, maxSteps;
         private int[] breakPoints;
         private boolean done;
@@ -225,15 +223,13 @@ public class Simulator extends Observable {
         /**
          * SimThread constructor.  Receives all the information it needs to simulate execution.
          *
-         * @param p           the MIPSprogram to be simulated
          * @param pc          address in text segment of first instruction to simulate
          * @param maxSteps    maximum number of instruction steps to simulate.  Default of -1 means no maximum
          * @param breakPoints array of breakpoints (instruction addresses) specified by user
          * @param starter     the GUI component responsible for this call, usually GO or STEP.  null if none.
          */
-        SimThread(MIPSprogram p, int pc, int maxSteps, int[] breakPoints, AbstractAction starter) {
+        SimThread(int pc, int maxSteps, int[] breakPoints, AbstractAction starter) {
             super(Globals.getGui() != null);
-            this.p = p;
             this.pc = pc;
             this.maxSteps = maxSteps;
             this.breakPoints = breakPoints;
@@ -297,7 +293,7 @@ public class Simulator extends Observable {
                 this.done = true;
                 SystemIO.resetFiles(); // close any files opened in MIPS program
                 Simulator.getInstance().notifyObserversOfExecutionStop(maxSteps, pc);
-                return new Boolean(done);
+                return true;
             }
             int steps = 0;
 
@@ -366,7 +362,7 @@ public class Simulator extends Observable {
                             this.done = true;
                             SystemIO.resetFiles(); // close any files opened in MIPS program
                             Simulator.getInstance().notifyObserversOfExecutionStop(maxSteps, pc);
-                            return new Boolean(done); // execution completed without error.
+                            return true; // execution completed without error.
                         } else {
                             // See if an exception handler is present.  Assume this is the case
                             // if and only if memory location Memory.exceptionHandlerAddress
@@ -386,7 +382,7 @@ public class Simulator extends Observable {
                                 this.done = true;
                                 SystemIO.resetFiles(); // close any files opened in MIPS program
                                 Simulator.getInstance().notifyObserversOfExecutionStop(maxSteps, pc);
-                                return new Boolean(done);
+                                return true;
                             }
                         }
                     }
@@ -402,11 +398,11 @@ public class Simulator extends Observable {
 
                 // Volatile variable initialized false but can be set true by the main thread.
                 // Used to stop or pause a running MIPS program.  See stopSimulation() above.
-                if (stop == true) {
+                if (stop) {
                     this.constructReturnReason = PAUSE_OR_STOP;
                     this.done = false;
                     Simulator.getInstance().notifyObserversOfExecutionStop(maxSteps, pc);
-                    return new Boolean(done);
+                    return false;
                 }
                 //	Return if we've reached a breakpoint.
                 if ((breakPoints != null) &&
@@ -414,7 +410,7 @@ public class Simulator extends Observable {
                     this.constructReturnReason = BREAKPOINT;
                     this.done = false;
                     Simulator.getInstance().notifyObserversOfExecutionStop(maxSteps, pc);
-                    return new Boolean(done); // false;
+                    return false;
                 }
                 // Check number of MIPS instructions executed.  Return if at limit (-1 is no limit).
                 if (maxSteps > 0) {
@@ -423,7 +419,7 @@ public class Simulator extends Observable {
                         this.constructReturnReason = MAX_STEPS;
                         this.done = false;
                         Simulator.getInstance().notifyObserversOfExecutionStop(maxSteps, pc);
-                        return new Boolean(done);// false;
+                        return false;
                     }
                 }
 
@@ -463,7 +459,7 @@ public class Simulator extends Observable {
                     this.done = true;
                     SystemIO.resetFiles(); // close any files opened in MIPS program
                     Simulator.getInstance().notifyObserversOfExecutionStop(maxSteps, pc);
-                    return new Boolean(done);
+                    return true;
                 }
             }
             // DPS July 2007.  This "if" statement is needed for correct program
@@ -480,7 +476,7 @@ public class Simulator extends Observable {
             this.done = true;
             SystemIO.resetFiles(); // close any files opened in MIPS program
             Simulator.getInstance().notifyObserversOfExecutionStop(maxSteps, pc);
-            return new Boolean(done); // true;  // execution completed
+            return true; // true;  // execution completed
         }
 
 
@@ -489,7 +485,7 @@ public class Simulator extends Observable {
          * It will update the GUI appropriately.  According to Sun's documentation, it
          * is run in the main thread so should work OK with Swing components (which are
          * not thread-safe).
-         * <p>
+         *
          * Its action depends on what caused the return from construct() and what
          * action led to the call of construct() in the first place.
          */
@@ -517,7 +513,6 @@ public class Simulator extends Observable {
                     }
                 }
             }
-            return;
         }
 
     }

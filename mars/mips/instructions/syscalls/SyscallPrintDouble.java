@@ -3,6 +3,7 @@ package mars.mips.instructions.syscalls;
 import mars.ProcessingException;
 import mars.ProgramStatement;
 import mars.mips.hardware.Coprocessor1;
+import mars.mips.instructions.AbstractSyscall;
 import mars.util.Binary;
 import mars.util.SystemIO;
 

@@ -7,7 +7,6 @@ import mars.mips.hardware.AddressErrorException;
 import mars.mips.hardware.Coprocessor0;
 import mars.mips.hardware.Coprocessor1;
 import mars.mips.hardware.RegisterFile;
-import mars.mips.instructions.syscalls.Syscall;
 import mars.simulator.DelayedBranch;
 import mars.simulator.Exceptions;
 import mars.util.Binary;
@@ -16,10 +15,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.StringTokenizer;
+import java.util.*;
 
 	/*
 Copyright (c) 2003-2013,  Pete Sanderson and Kenneth Vollmar
@@ -59,22 +55,22 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 public class InstructionSet {
-    private ArrayList instructionList;
-    private ArrayList opcodeMatchMaps;
+    private ArrayList<Instruction> instructionList;
+    private ArrayList<MatchMap> opcodeMatchMaps;
     private SyscallLoader syscallLoader;
 
     /**
      * Creates a new InstructionSet object.
      */
     public InstructionSet() {
-        instructionList = new ArrayList();
+        instructionList = new ArrayList<>();
 
     }
 
     /**
      * Retrieve the current instruction set.
      */
-    public ArrayList getInstructionList() {
+    public ArrayList<Instruction> getInstructionList() {
         return instructionList;
 
     }
@@ -2677,22 +2673,20 @@ public class InstructionSet {
 
         // Initialization step.  Create token list for each instruction example.  This is
         // used by parser to determine user program correct syntax.
-        for (int i = 0; i < instructionList.size(); i++) {
-            Instruction inst = (Instruction) instructionList.get(i);
+        for (Instruction inst : instructionList) {
             inst.createExampleTokenList();
         }
 
-        HashMap maskMap = new HashMap();
-        ArrayList matchMaps = new ArrayList();
-        for (int i = 0; i < instructionList.size(); i++) {
-            Object rawInstr = instructionList.get(i);
-            if (rawInstr instanceof BasicInstruction) {
-                BasicInstruction basic = (BasicInstruction) rawInstr;
-                Integer mask = Integer.valueOf(basic.getOpcodeMask());
-                Integer match = Integer.valueOf(basic.getOpcodeMatch());
-                HashMap matchMap = (HashMap) maskMap.get(mask);
+        HashMap<Integer,HashMap<Integer,BasicInstruction>> maskMap = new HashMap<>();
+        ArrayList<MatchMap> matchMaps = new ArrayList<>();
+        for (Instruction inst : instructionList) {
+            if (inst instanceof BasicInstruction) {
+                BasicInstruction basic = (BasicInstruction) inst;
+                Integer mask = basic.getOpcodeMask();
+                Integer match = basic.getOpcodeMatch();
+                HashMap<Integer,BasicInstruction> matchMap = maskMap.get(mask);
                 if (matchMap == null) {
-                    matchMap = new HashMap();
+                    matchMap = new HashMap<>();
                     maskMap.put(mask, matchMap);
                     matchMaps.add(new MatchMap(mask, matchMap));
                 }
@@ -2704,9 +2698,7 @@ public class InstructionSet {
     }
 
     public BasicInstruction findByBinaryCode(int binaryInstr) {
-        ArrayList matchMaps = this.opcodeMatchMaps;
-        for (int i = 0; i < matchMaps.size(); i++) {
-            MatchMap map = (MatchMap) matchMaps.get(i);
+        for (MatchMap map : this.opcodeMatchMaps) {
             BasicInstruction ret = map.find(binaryInstr);
             if (ret != null) return ret;
         }
@@ -2786,14 +2778,14 @@ public class InstructionSet {
      * @param name operator mnemonic (e.g. addi, sw,...)
      * @return list of corresponding Instruction object(s), or null if not found.
      */
-    public ArrayList matchOperator(String name) {
-        ArrayList matchingInstructions = null;
+    public ArrayList<Instruction> matchOperator(String name) {
+        ArrayList<Instruction> matchingInstructions = null;
         // Linear search for now....
-        for (int i = 0; i < instructionList.size(); i++) {
-            if (((Instruction) instructionList.get(i)).getName().equalsIgnoreCase(name)) {
+        for (Instruction inst : instructionList) {
+            if (inst.getName().equalsIgnoreCase(name)) {
                 if (matchingInstructions == null)
-                    matchingInstructions = new ArrayList();
-                matchingInstructions.add(instructionList.get(i));
+                    matchingInstructions = new ArrayList<>();
+                matchingInstructions.add(inst);
             }
         }
         return matchingInstructions;
@@ -2808,15 +2800,15 @@ public class InstructionSet {
      * @param name a string
      * @return list of matching Instruction object(s), or null if none match.
      */
-    public ArrayList prefixMatchOperator(String name) {
-        ArrayList matchingInstructions = null;
+    public ArrayList<Instruction> prefixMatchOperator(String name) {
+        ArrayList<Instruction> matchingInstructions = null;
         // Linear search for now....
         if (name != null) {
-            for (int i = 0; i < instructionList.size(); i++) {
-                if (((Instruction) instructionList.get(i)).getName().toLowerCase().startsWith(name.toLowerCase())) {
+            for (Instruction inst : instructionList) {
+                if (inst.getName().toLowerCase().startsWith(name.toLowerCase())) {
                     if (matchingInstructions == null)
-                        matchingInstructions = new ArrayList();
-                    matchingInstructions.add(instructionList.get(i));
+                        matchingInstructions = new ArrayList<>();
+                    matchingInstructions.add(inst);
                 }
             }
         }
@@ -2908,9 +2900,9 @@ public class InstructionSet {
     private static class MatchMap implements Comparable {
         private int mask;
         private int maskLength; // number of 1 bits in mask
-        private HashMap matchMap;
+        private HashMap<Integer,BasicInstruction>  matchMap;
 
-        public MatchMap(int mask, HashMap matchMap) {
+        public MatchMap(int mask, HashMap<Integer,BasicInstruction>  matchMap) {
             this.mask = mask;
             this.matchMap = matchMap;
 
@@ -2935,8 +2927,8 @@ public class InstructionSet {
         }
 
         public BasicInstruction find(int instr) {
-            int match = Integer.valueOf(instr & mask);
-            return (BasicInstruction) matchMap.get(match);
+            int match = instr & mask;
+            return matchMap.get(match);
         }
     }
 }
