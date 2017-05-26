@@ -15,7 +15,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.StringTokenizer;
 
 	/*
 Copyright (c) 2003-2013,  Pete Sanderson and Kenneth Vollmar
@@ -2677,14 +2680,14 @@ public class InstructionSet {
             inst.createExampleTokenList();
         }
 
-        HashMap<Integer,HashMap<Integer,BasicInstruction>> maskMap = new HashMap<>();
+        HashMap<Integer, HashMap<Integer, BasicInstruction>> maskMap = new HashMap<>();
         ArrayList<MatchMap> matchMaps = new ArrayList<>();
         for (Instruction inst : instructionList) {
             if (inst instanceof BasicInstruction) {
                 BasicInstruction basic = (BasicInstruction) inst;
                 Integer mask = basic.getOpcodeMask();
                 Integer match = basic.getOpcodeMatch();
-                HashMap<Integer,BasicInstruction> matchMap = maskMap.get(mask);
+                HashMap<Integer, BasicInstruction> matchMap = maskMap.get(mask);
                 if (matchMap == null) {
                     matchMap = new HashMap<>();
                     maskMap.put(mask, matchMap);
@@ -2816,7 +2819,7 @@ public class InstructionSet {
     }
 
    	/*
-   	 * Method to find and invoke a syscall given its service number.  Each syscall
+        * Method to find and invoke a syscall given its service number.  Each syscall
    	 * function is represented by an object in an array list.  Each object is of
    	 * a class that implements Syscall or extends AbstractSyscall.
    	 */
@@ -2900,9 +2903,9 @@ public class InstructionSet {
     private static class MatchMap implements Comparable {
         private int mask;
         private int maskLength; // number of 1 bits in mask
-        private HashMap<Integer,BasicInstruction>  matchMap;
+        private HashMap<Integer, BasicInstruction> matchMap;
 
-        public MatchMap(int mask, HashMap<Integer,BasicInstruction>  matchMap) {
+        public MatchMap(int mask, HashMap<Integer, BasicInstruction> matchMap) {
             this.mask = mask;
             this.matchMap = matchMap;
 

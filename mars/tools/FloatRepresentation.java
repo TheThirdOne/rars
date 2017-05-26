@@ -933,7 +933,7 @@ public class FloatRepresentation extends AbstractMarsToolAndApplication {
             // for every 4 characters (bits) of the display.  This would make
             // the correspondence between bits and hex digits very clear.
             // NOTE: this is the only reason for subclassing JTextField.
-         	
+
          	/*
             int columnWidth = getWidth()/getColumns();
             Color shadedColor = Color.red;

@@ -424,7 +424,7 @@ public class BitmapDisplay extends AbstractMarsToolAndApplication {
     private void updateBaseAddress() {
         baseAddress = displayBaseAddresses[displayBaseAddressSelector.getSelectedIndex()];
           /*  If you want to extend this app to allow user to edit combo box, you can always
-      	    parse the getSelectedItem() value, because the pre-defined items are all formatted
+              parse the getSelectedItem() value, because the pre-defined items are all formatted
       		 such that the first 10 characters contain the integer's hex value.  And if the
       		 value is user-entered, the numeric part cannot exceed 10 characters for a 32-bit
       		 address anyway.  So if the value is > 10 characters long, slice off the first

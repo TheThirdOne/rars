@@ -306,7 +306,7 @@ public class Memory extends Observable {
                 memoryMapBaseAddress +
                         BLOCK_LENGTH_WORDS * MMIO_TABLE_LENGTH * WORD_LENGTH_BYTES);
       /*	System.out.println("dataSegmentLimitAddress "+Binary.intToHexString(dataSegmentLimitAddress));
-      	System.out.println("textLimitAddress "+Binary.intToHexString(textLimitAddress));
+          System.out.println("textLimitAddress "+Binary.intToHexString(textLimitAddress));
       	System.out.println("kernelDataSegmentLimitAddress "+Binary.intToHexString(kernelDataSegmentLimitAddress));
       	System.out.println("kernelTextLimitAddress "+Binary.intToHexString(kernelTextLimitAddress));
       	System.out.println("stackLimitAddress "+Binary.intToHexString(stackLimitAddress));

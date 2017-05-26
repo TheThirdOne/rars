@@ -56,7 +56,7 @@ public class BasicInstruction extends Instruction {
      * @see SimulationCode
      **/
     /* codes for operand positions are:
-	 * f == First operand
+     * f == First operand
 	 * s == Second operand
 	 * t == Third operand
 	 * example: "add rd,rs,rt" is R format with fields in this order: opcode, rs, rt, rd, shamt, funct.

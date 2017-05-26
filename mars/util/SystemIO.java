@@ -357,7 +357,7 @@ public class SystemIO {
      * IMPLEMENTED.  Also note that file permission modes are also NOT IMPLEMENTED.
      *
      * @param filename string containing filename
-     * @param flags     0 for read, 1 for write
+     * @param flags    0 for read, 1 for write
      * @return file descriptor in the range 0 to SYSCALL_MAXFILES-1, or -1 if error
      * @author Ken Vollmar
      */

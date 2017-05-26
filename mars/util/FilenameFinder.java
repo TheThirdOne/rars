@@ -74,8 +74,8 @@ public class FilenameFinder {
      * @return array list of matching file names as Strings.  If none, list is empty.
      */
     public static ArrayList<String> getFilenameList(ClassLoader classLoader,
-                                            String directoryPath,
-                                            String fileExtension) {
+                                                    String directoryPath,
+                                                    String fileExtension) {
         fileExtension = checkFileExtension(fileExtension);
         ArrayList<String> filenameList = new ArrayList<>();
         // Modified by DPS 10-July-2008 to better handle path containing space
@@ -186,8 +186,8 @@ public class FilenameFinder {
      * @return array list of matching file names as Strings.  If none, list is empty.
      */
     public static ArrayList<String> getFilenameList(ClassLoader classLoader,
-                                            String directoryPath,
-                                            ArrayList<String> fileExtensions) {
+                                                    String directoryPath,
+                                                    ArrayList<String> fileExtensions) {
         ArrayList<String> filenameList = new ArrayList<>();
         if (fileExtensions == null || fileExtensions.size() == 0) {
             filenameList = getFilenameList(classLoader, directoryPath, "");

@@ -645,7 +645,7 @@ public class TextSegmentWindow extends JInternalFrame implements Observer {
     private void deleteAsTextSegmentObserver() {
         Memory.getInstance().deleteObserver(this);
     }
-   		
+
       /*
    	 *  Re-order the Text segment columns according to saved preferences.
    	 */

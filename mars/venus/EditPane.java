@@ -247,7 +247,7 @@ public class EditPane extends JPanel implements Observer {
      */
 
    	/*  IMPLEMENTATION NOTE:
-   	 * Tried repeatedly to use StringTokenizer to count lines but got bad results 
+        * Tried repeatedly to use StringTokenizer to count lines but got bad results
    	 * on empty lines (consecutive delimiters) even when returning delimiter as token.
    	 * BufferedReader on StringReader seems to work better.
    	 */

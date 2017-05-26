@@ -653,7 +653,7 @@ public class DataSegmentWindow extends JInternalFrame implements Observer {
     }
 
    	/*
-   	 * Establish action listeners for the data segment navigation buttons.
+        * Establish action listeners for the data segment navigation buttons.
    	 */
 
     private void addButtonActionListenersAndInitialize() {

@@ -88,7 +88,7 @@ public class Tokenizer {
      * that represents a tokenized source statement from the MIPS program.
      **/
 
-    public ArrayList tokenize(MIPSprogram p) throws ProcessingException {
+    public ArrayList<TokenList> tokenize(MIPSprogram p) throws ProcessingException {
         sourceMIPSprogram = p;
         equivalents = new HashMap<>(); // DPS 11-July-2012
         ArrayList<TokenList> tokenList = new ArrayList<>();
@@ -126,7 +126,7 @@ public class Tokenizer {
     // DPS 11-Jan-2013
     private ArrayList<SourceLine> processIncludes(MIPSprogram program, Map<String, String> inclFiles) throws ProcessingException {
         ArrayList<String> source = program.getSourceList();
-        ArrayList<SourceLine> result = new ArrayList<SourceLine>(source.size());
+        ArrayList<SourceLine> result = new ArrayList<>(source.size());
         for (int i = 0; i < source.size(); i++) {
             String line = source.get(i);
             TokenList tl = tokenizeLine(program, i + 1, line, false);

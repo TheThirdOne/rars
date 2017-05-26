@@ -46,7 +46,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  **/
 
 	  /* Heavily modified by Pete Sanderson, July 2004, to incorporate JSPIMMenu and JSPIMToolbar
-	   * not as subclasses of JMenuBar and JToolBar, but as instances of them.  They are both
+       * not as subclasses of JMenuBar and JToolBar, but as instances of them.  They are both
 		* here primarily so both can share the Action objects.
 		*/
 

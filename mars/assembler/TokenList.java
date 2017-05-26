@@ -52,9 +52,10 @@ public class TokenList implements Cloneable, Iterable<Token> {
         processedLine = ""; // DPS 03-Jan-2013
     }
 
-    public Iterator<Token> iterator(){
+    public Iterator<Token> iterator() {
         return tokenList.iterator();
     }
+
     /**
      * Use this to record the source line String for this token list
      * after possible modification (textual substitution) during

@@ -234,7 +234,7 @@ class Tone implements Runnable {
             player.setSequence(seq);
 
 	    /* The EndOfTrackListener was added 2009-10-19 by Max
-	     * Hailperin <max@gustavus.edu> so that its
+         * Hailperin <max@gustavus.edu> so that its
 	     * awaitEndOfTrack method could be used as a more reliable
 	     * replacement for Thread.sleep.  (Given that the tone
 	     * might not start playing right away, the sleep could end

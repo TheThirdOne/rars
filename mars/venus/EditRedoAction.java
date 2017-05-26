@@ -60,4 +60,4 @@ public class EditRedoAction extends GuiAction {
         setEnabled(editPane != null && editPane.getUndoManager().canRedo());
     }
 }
-	
+

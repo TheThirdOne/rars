@@ -54,7 +54,7 @@ public class MIPSprogram {
 
     private String filename;
     private ArrayList<String> sourceList;
-    private ArrayList<TokenList>  tokenList;
+    private ArrayList<TokenList> tokenList;
     private ArrayList<ProgramStatement> parsedList;
     private ArrayList<ProgramStatement> machineList;
     private BackStepper backStepper;

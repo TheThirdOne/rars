@@ -192,7 +192,7 @@ public class BackStepper {
   
      
       /* Convenience method called below to get program counter value.  If it needs to be
-   	 * be modified (e.g. to subtract 4) that can be done here in one place.
+        * be modified (e.g. to subtract 4) that can be done here in one place.
    	 */
 
     private int pc() {

@@ -485,7 +485,7 @@ public class Simulator extends Observable {
          * It will update the GUI appropriately.  According to Sun's documentation, it
          * is run in the main thread so should work OK with Swing components (which are
          * not thread-safe).
-         *
+         * <p>
          * Its action depends on what caused the return from construct() and what
          * action led to the call of construct() in the first place.
          */

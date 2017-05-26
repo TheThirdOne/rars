@@ -4,9 +4,6 @@ import mars.Globals;
 import mars.mips.hardware.AddressErrorException;
 import mars.mips.hardware.Memory;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-
 	/*
 Copyright (c) 2003-2009,  Pete Sanderson and Kenneth Vollmar
 

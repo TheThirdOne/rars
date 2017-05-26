@@ -50,4 +50,4 @@ public class FileNewAction extends GuiAction {
         mainUI.editor.newFile();
     }
 }
-	
+

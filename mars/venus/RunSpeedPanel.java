@@ -132,7 +132,7 @@ public class RunSpeedPanel extends JPanel {
         }
         return result;
     }
-   	
+
    	
    	/*
    	 *  Both revises label as user slides and updates current index when sliding stops.

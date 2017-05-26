@@ -161,7 +161,7 @@ public class Assembler {
      * @see ProgramStatement
      **/
     public ArrayList<ProgramStatement> assemble(ArrayList<MIPSprogram> tokenizedProgramFiles, boolean extendedAssemblerEnabled,
-                              boolean warningsAreErrors) throws ProcessingException {
+                                                boolean warningsAreErrors) throws ProcessingException {
 
         if (tokenizedProgramFiles == null || tokenizedProgramFiles.size() == 0)
             return null;
@@ -314,7 +314,7 @@ public class Assembler {
                     for (int instrNumber = 0; instrNumber < templateList.size(); instrNumber++) {
                         String instruction = ExtendedInstruction.makeTemplateSubstitutions(
                                 this.fileCurrentlyBeingAssembled,
-                                 templateList.get(instrNumber), theTokenList);
+                                templateList.get(instrNumber), theTokenList);
                         // 23 Jan 2008 by DPS. Template substitution may result in no instruction.
                         // If this is the case, skip remainder of loop iteration. This should only
                         // happen if template substitution was for "nop" instruction but delayed branching
