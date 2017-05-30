@@ -93,6 +93,7 @@ public class OperandFormat {
         if (numOperands == reqNumOperands) {
             return true;
         } else if (numOperands < reqNumOperands) {
+
             String mess = "Too few or incorrectly formatted operands. Expected: " + spec.getExampleFormat();
             generateMessage(operator, mess, errors);
         } else {

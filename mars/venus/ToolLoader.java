@@ -7,7 +7,7 @@ import javax.swing.*;
 import java.awt.event.KeyEvent;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.HashSet;
 
 	/*
 Copyright (c) 2003-2006,  Pete Sanderson and Kenneth Vollmar
@@ -69,14 +69,13 @@ public class ToolLoader {
      */
     public JMenu buildToolsMenu() {
         JMenu menu = null;
-        ArrayList marsToolList = loadMarsTools();
+        ArrayList<MarsToolClassAndInstance> marsToolList = loadMarsTools();
         if (!marsToolList.isEmpty()) {
             menu = new JMenu(TOOLS_MENU_NAME);
             menu.setMnemonic(KeyEvent.VK_T);
             // traverse array list and build menu
-            MarsToolClassAndInstance listItem;
-            for (int i = 0; i < marsToolList.size(); i++) {
-                listItem = (MarsToolClassAndInstance) marsToolList.get(i);
+            ;
+            for (MarsToolClassAndInstance listItem : marsToolList) {
                 menu.add(new ToolAction(listItem.marsToolClass, listItem.marsToolInstance.getName()));
             }
         }
@@ -102,9 +101,9 @@ public class ToolLoader {
      *  as a ZipFile, get the ZipEntry enumeration, find the class files in the tools
      *  folder, then continue as before.
      */
-    private ArrayList loadMarsTools() {
-        ArrayList toolList = new ArrayList();
-        ArrayList candidates = FilenameFinder.getFilenameList(this.getClass().getClassLoader(),
+    private ArrayList<MarsToolClassAndInstance> loadMarsTools() {
+        ArrayList<MarsToolClassAndInstance> toolList = new ArrayList<>();
+        ArrayList<String> candidates = FilenameFinder.getFilenameList(this.getClass().getClassLoader(),
                 TOOLS_DIRECTORY_PATH, CLASS_EXTENSION);
         // Add any tools stored externally, as listed in Config.properties file.
         // This needs some work, because mars.Globals.getExternalTools() returns
@@ -113,14 +112,13 @@ public class ToolLoader {
         // it correctly.  Not sure how to create a Class object given an absolute
         // pathname.
         //candidates.addAll(mars.Globals.getExternalTools());  // this by itself is not enough...
-        HashMap tools = new HashMap();
-        for (int i = 0; i < candidates.size(); i++) {
-            String file = (String) candidates.get(i);
+        HashSet<String> tools = new HashSet<>();
+        for (String file : candidates) {
             // Do not add class if already encountered (happens if run in MARS development directory)
-            if (tools.containsKey(file)) {
+            if (tools.contains(file)) {
                 continue;
             } else {
-                tools.put(file, file);
+                tools.add(file);
             }
             if (!file.equals(MARSTOOL_INTERFACE)) {
                 try {

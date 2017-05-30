@@ -379,7 +379,7 @@ public class Memory extends Observable {
     public boolean getByteOrder() {
         return byteOrder;
     }
-   	
+
    	
    /*  *******************************  THE SETTER METHODS  ******************************/
 
@@ -910,7 +910,7 @@ public class Memory extends Observable {
 
     public ProgramStatement getStatement(int address) throws AddressErrorException {
         return getStatement(address, true);
-      	/*
+          /*
          if (address % 4 != 0 || !(inTextSegment(address) || inKernelTextSegment(address))) {
             throw new AddressErrorException(
                "fetch address for text segment out of range or not aligned to word boundary ",
@@ -938,7 +938,7 @@ public class Memory extends Observable {
 
     public ProgramStatement getStatementNoNotify(int address) throws AddressErrorException {
         return getStatement(address, false);
-      	/*
+          /*
          if (address % 4 != 0 || !(inTextSegment(address) || inKernelTextSegment(address))) {
             throw new AddressErrorException(
                "fetch address for text segment out of range or not aligned to word boundary ",

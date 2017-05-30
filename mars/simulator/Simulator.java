@@ -350,7 +350,7 @@ public class Simulator extends Observable {
                                     Exceptions.RESERVED_INSTRUCTION_EXCEPTION);
                         }
                         // THIS IS WHERE THE INSTRUCTION EXECUTION IS ACTUALLY SIMULATED!
-                        instruction.getSimulationCode().simulate(statement);
+                        instruction.simulate(statement);
 
                         // IF statement added 7/26/06 (explanation above)
                         if (Globals.getSettings().getBackSteppingEnabled()) {

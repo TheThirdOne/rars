@@ -28,6 +28,9 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 (MIT license, http://www.opensource.org/licenses/mit-license.html)
  */
 
+import mars.ProcessingException;
+import mars.ProgramStatement;
+
 /**
  * Class to represent a basic instruction in the MIPS instruction set.
  * Basic instruction means it translates directly to a 32-bit binary machine
@@ -36,12 +39,11 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * @author Pete Sanderson and Ken Vollmar
  * @version August 2003
  */
-public class BasicInstruction extends Instruction {
+public abstract class BasicInstruction extends Instruction {
 
     private String instructionName;
     private BasicInstructionFormat instructionFormat;
     private String operationMask;
-    private SimulationCode simulationCode;
 
     private int opcodeMask;  // integer with 1's where constants required (0/1 become 1, f/s/t become 0)
     private int opcodeMatch; // integer matching constants required (0/1 become 0/1, f/s/t become 0)
@@ -52,8 +54,6 @@ public class BasicInstruction extends Instruction {
      * @param example     An example usage of the instruction, as a String.
      * @param instrFormat The format is R, I, I-branch or J.
      * @param operMask    The opcode mask is a 32 character string that contains the opcode in binary in the appropriate bit positions and codes for operand positions ('f', 's', 't') in the remainding positions.
-     * @param simCode     The inline definition of an object and class which anonymously implements the SimulationCode interface.
-     * @see SimulationCode
      **/
     /* codes for operand positions are:
      * f == First operand
@@ -70,7 +70,7 @@ public class BasicInstruction extends Instruction {
 	 * instruction simulator -- it needs to match all and only the 0's and 1's.
 	 */
     public BasicInstruction(String example, String description, BasicInstructionFormat instrFormat,
-                            String operMask, SimulationCode simCode) {
+                            String operMask) {
         this.exampleFormat = example;
         this.mnemonic = this.extractOperator(example);
         this.description = description;
@@ -79,7 +79,6 @@ public class BasicInstruction extends Instruction {
         if (operationMask.length() != Instruction.INSTRUCTION_LENGTH_BITS) {
             System.out.println(example + " mask not " + Instruction.INSTRUCTION_LENGTH_BITS + " bits!");
         }
-        this.simulationCode = simCode;
 
         this.opcodeMask = (int) Long.parseLong(this.operationMask.replaceAll("[01]", "1").replaceAll("[^01]", "0"), 2);
         this.opcodeMatch = (int) Long.parseLong(this.operationMask.replaceAll("[^1]", "0"), 2);
@@ -88,8 +87,8 @@ public class BasicInstruction extends Instruction {
     // Temporary constructor so that instructions without description yet will compile.
 
     public BasicInstruction(String example, BasicInstructionFormat instrFormat,
-                            String operMask, SimulationCode simCode) {
-        this(example, "", instrFormat, operMask, simCode);
+                            String operMask) {
+        this(example, "", instrFormat, operMask);
     }
 
     /**
@@ -120,19 +119,6 @@ public class BasicInstruction extends Instruction {
         return instructionFormat;
     }
 
-    /**
-     * Gets the SimulationCode object.  It is really an object of an anonymous
-     * class that implements the SimulationCode interface.  Such an object has but one
-     * method: Simulate().
-     *
-     * @return the SimulationCode object for this instruction.
-     * @see SimulationCode
-     **/
-
-    public SimulationCode getSimulationCode() {
-        return simulationCode;
-    }
-
     public int getOpcodeMask() {
         return this.opcodeMask;
     }
@@ -140,4 +126,13 @@ public class BasicInstruction extends Instruction {
     public int getOpcodeMatch() {
         return this.opcodeMatch;
     }
+
+    /**
+     * Method to simulate the execution of a specific MIPS basic instruction.
+     *
+     * @param statement A ProgramStatement representing the MIPS instruction to simulate.
+     * @throws ProcessingException This is a run-time exception generated during simulation.
+     **/
+
+    public abstract void simulate(ProgramStatement statement) throws ProcessingException;
 }
