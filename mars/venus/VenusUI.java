@@ -2,6 +2,7 @@ package mars.venus;
 
 import mars.Globals;
 import mars.Settings;
+import mars.mips.dump.DumpFormatLoader;
 
 import javax.swing.*;
 import java.awt.*;
@@ -512,7 +513,7 @@ public class VenusUI extends JFrame {
         file.add(fileSave);
         file.add(fileSaveAs);
         file.add(fileSaveAll);
-        if (new mars.mips.dump.DumpFormatLoader().loadDumpFormats().size() > 0) {
+        if (DumpFormatLoader.loadDumpFormats().size() > 0) {
             file.add(fileDumpMemory);
         }
         file.addSeparator();
@@ -951,8 +952,7 @@ public class VenusUI extends JFrame {
         runGoAction.setEnabled(true);
         runStepAction.setEnabled(true);
         runBackstepAction.setEnabled(
-                (Globals.getSettings().getBackSteppingEnabled() && !Globals.program.getBackStepper().empty())
-                        ? true : false);
+                Globals.getSettings().getBackSteppingEnabled() && !Globals.program.getBackStepper().empty());
         runResetAction.setEnabled(true);
         runStopAction.setEnabled(false);
         runPauseAction.setEnabled(false);
@@ -1023,8 +1023,7 @@ public class VenusUI extends JFrame {
         runGoAction.setEnabled(false);
         runStepAction.setEnabled(false);
         runBackstepAction.setEnabled(
-                (Globals.getSettings().getBackSteppingEnabled() && !Globals.program.getBackStepper().empty())
-                        ? true : false);
+                Globals.getSettings().getBackSteppingEnabled() && !Globals.program.getBackStepper().empty());
         runResetAction.setEnabled(true);
         runStopAction.setEnabled(false);
         runPauseAction.setEnabled(false);

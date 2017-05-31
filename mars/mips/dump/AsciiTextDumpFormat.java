@@ -87,7 +87,7 @@ public class AsciiTextDumpFormat extends AbstractDumpFormat {
                 Integer temp = Globals.memory.getRawWordOrNull(address);
                 if (temp == null)
                     break;
-                out.println(Binary.intToAscii(temp.intValue()));
+                out.println(Binary.intToAscii(temp));
             }
         } finally {
             out.close();

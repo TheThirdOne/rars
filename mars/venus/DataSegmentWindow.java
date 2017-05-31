@@ -1045,8 +1045,8 @@ public class DataSegmentWindow extends JInternalFrame implements Observer {
         private String[] columnToolTips = {
                /* address  */ "Base MIPS memory address for this row of the table.",
                /* value +0 */ "32-bit value stored at base address for its row.",
-            	/* value +n */ "32-bit value stored ",
-            	/* value +n */ " bytes beyond base address for its row."
+                /* value +n */ "32-bit value stored ",
+                /* value +n */ " bytes beyond base address for its row."
         };
 
         //Implement table header tool tips.

@@ -321,7 +321,7 @@ public class MarsLaunch {
             if (args[i].toLowerCase().indexOf("ae") == 0) {
                 String s = args[i].substring(2);
                 try {
-                    assembleErrorExitCode = Integer.decode(s).intValue();
+                    assembleErrorExitCode = Integer.decode(s);
                     continue;
                 } catch (NumberFormatException nfe) {
                     // Let it fall thru and get handled by catch-all
@@ -331,7 +331,7 @@ public class MarsLaunch {
             if (args[i].toLowerCase().indexOf("se") == 0) {
                 String s = args[i].substring(2);
                 try {
-                    simulateErrorExitCode = Integer.decode(s).intValue();
+                    simulateErrorExitCode = Integer.decode(s);
                     continue;
                 } catch (NumberFormatException nfe) {
                     // Let it fall thru and get handled by catch-all
@@ -419,7 +419,7 @@ public class MarsLaunch {
             // Check for stand-alone integer, which is the max execution steps option
             try {
                 Integer.decode(args[i]);
-                maxSteps = Integer.decode(args[i]).intValue(); // if we got here, it has to be OK
+                maxSteps = Integer.decode(args[i]); // if we got here, it has to be OK
                 continue;
             } catch (NumberFormatException nfe) {
             }
@@ -752,10 +752,10 @@ public class MarsLaunch {
                 segments += ", ";
             }
         }
-        ArrayList dumpFormats = (new DumpFormatLoader()).loadDumpFormats();
+        ArrayList<DumpFormat> dumpFormats = DumpFormatLoader.loadDumpFormats();
         String formats = "";
         for (int i = 0; i < dumpFormats.size(); i++) {
-            formats += ((DumpFormat) dumpFormats.get(i)).getCommandDescriptor();
+            formats += dumpFormats.get(i).getCommandDescriptor();
             if (i < dumpFormats.size() - 1) {
                 formats += ", ";
             }

@@ -79,7 +79,7 @@ public class BinaryTextDumpFormat extends AbstractDumpFormat {
                 Integer temp = Globals.memory.getRawWordOrNull(address);
                 if (temp == null)
                     break;
-                string = Integer.toBinaryString(temp.intValue());
+                string = Integer.toBinaryString(temp);
                 while (string.length() < 32) {
                     string = '0' + string;
                 }

@@ -135,7 +135,7 @@ public class RunSpeedPanel extends JPanel {
 
    	
    	/*
-   	 *  Both revises label as user slides and updates current index when sliding stops.
+        *  Both revises label as user slides and updates current index when sliding stops.
    	 */
 
     private class RunSpeedListener implements ChangeListener {

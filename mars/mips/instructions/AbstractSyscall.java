@@ -53,7 +53,7 @@ public abstract class AbstractSyscall implements Syscall {
      * @param number default assigned service number
      * @param name   service name which may be used for reference independent of number
      */
-    public AbstractSyscall(int number, String name) {
+    protected AbstractSyscall(int number, String name) {
         serviceNumber = number;
         serviceName = name;
     }

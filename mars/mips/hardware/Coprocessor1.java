@@ -279,7 +279,6 @@ public class Coprocessor1 {
 
     public static double getDoubleFromRegisterPair(int reg)
             throws InvalidRegisterAccessException {
-        double result = 0.0;
         if (reg % 2 != 0) {
             throw new InvalidRegisterAccessException();
         }
@@ -313,7 +312,6 @@ public class Coprocessor1 {
 
     public static long getLongFromRegisterPair(int reg)
             throws InvalidRegisterAccessException {
-        double result = 0.0;
         if (reg % 2 != 0) {
             throw new InvalidRegisterAccessException();
         }

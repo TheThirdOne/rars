@@ -133,10 +133,10 @@ public class BackStepper {
     // Use a do-while loop based on the backstep's program statement reference.
     public void backStep() {
         if (engaged && !backSteps.empty()) {
-            ProgramStatement statement = ((BackStep) backSteps.peek()).ps;
+            ProgramStatement statement = backSteps.peek().ps;
             engaged = false; // GOTTA DO THIS SO METHOD CALL IN SWITCH WILL NOT RESULT IN NEW ACTION ON STACK!
             do {
-                BackStep step = (BackStep) backSteps.pop();
+                BackStep step = backSteps.pop();
             /*
                 System.out.println("backstep POP: action "+step.action+" pc "+mars.util.Binary.intToHexString(step.pc)+
             	                   " source "+((step.ps==null)? "none":step.ps.getSource())+
@@ -185,7 +185,7 @@ public class BackStepper {
                     System.out.println("Internal MARS error: address exception while back-stepping.");
                     System.exit(0);
                 }
-            } while (!backSteps.empty() && statement == ((BackStep) backSteps.peek()).ps);
+            } while (!backSteps.empty() && statement == backSteps.peek().ps);
             engaged = true;  // RESET IT (was disabled at top of loop -- see comment)
         }
     }
@@ -336,14 +336,11 @@ public class BackStepper {
      * is to do nothing!  This is just a place holder so when user is backstepping
      * through the program no instructions will be skipped.  Cosmetic. If the top of the
      * stack has the same PC counter, the do-nothing action will not be added.
-     *
-     * @return 0
      */
-    public int addDoNothing(int pc) {
+    public void addDoNothing(int pc) {
         if (backSteps.empty() || backSteps.peek().pc != pc) {
             backSteps.push(DO_NOTHING, pc);
         }
-        return 0;
     }
 
 

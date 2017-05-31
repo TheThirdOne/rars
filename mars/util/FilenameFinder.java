@@ -117,9 +117,9 @@ public class FilenameFinder {
                     }
                 } else {  // have array of File objects; convert to names and add to list
                     FileFilter filter = getFileFilter(fileExtension, "", NO_DIRECTORIES);
-                    for (int i = 0; i < files.length; i++) {
-                        if (filter.accept(files[i])) {
-                            filenameList.add(files[i].getName());
+                    for (File file : files) {
+                        if (filter.accept(file)) {
+                            filenameList.add(file.getName());
                         }
                     }
                 }
@@ -444,11 +444,11 @@ public class FilenameFinder {
 
     private static class MarsFileFilter extends FileFilter {
 
-        private ArrayList extensions;
+        private ArrayList<String> extensions;
         private String fullDescription;
         private boolean acceptDirectories;
 
-        private MarsFileFilter(ArrayList extensions, String description, boolean acceptDirectories) {
+        private MarsFileFilter(ArrayList<String> extensions, String description, boolean acceptDirectories) {
             this.extensions = extensions;
             this.fullDescription = buildFullDescription(description, extensions);
             this.acceptDirectories = acceptDirectories;
@@ -487,8 +487,8 @@ public class FilenameFinder {
             }
             String fileExtension = getExtension(file);
             if (fileExtension != null) {
-                for (int i = 0; i < extensions.size(); i++) {
-                    String extension = checkFileExtension((String) extensions.get(i));
+                for (String ext : extensions) {
+                    String extension = checkFileExtension(ext);
                     if (extension.equals(MATCH_ALL_EXTENSIONS) ||
                             fileExtension.equals(extension)) {
                         return true;

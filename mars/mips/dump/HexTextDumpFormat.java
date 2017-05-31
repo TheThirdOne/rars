@@ -79,7 +79,7 @@ public class HexTextDumpFormat extends AbstractDumpFormat {
                 Integer temp = Globals.memory.getRawWordOrNull(address);
                 if (temp == null)
                     break;
-                string = Integer.toHexString(temp.intValue());
+                string = Integer.toHexString(temp);
                 while (string.length() < 8) {
                     string = '0' + string;
                 }

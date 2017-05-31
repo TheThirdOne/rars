@@ -77,7 +77,7 @@ public class BinaryDumpFormat extends AbstractDumpFormat {
                 Integer temp = Globals.memory.getRawWordOrNull(address);
                 if (temp == null)
                     break;
-                int word = temp.intValue();
+                int word = temp;
                 for (int i = 0; i < 4; i++)
                     out.write((word >>> (i << 3)) & 0xFF);
             }

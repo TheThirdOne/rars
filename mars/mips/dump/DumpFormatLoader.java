@@ -34,11 +34,10 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 
-/****************************************************************************/
-    /* This class provides functionality to bring external memory dump format definitions
-     * into MARS.  This is adapted from the ToolLoader class, which is in turn adapted
-     * from Bret Barker's GameServer class from the book "Developing Games In Java".
-     */
+/* This class provides functionality to bring external memory dump format definitions
+ * into MARS.  This is adapted from the ToolLoader class, which is in turn adapted
+ * from Bret Barker's GameServer class from the book "Developing Games In Java".
+ */
 
 public class DumpFormatLoader {
 

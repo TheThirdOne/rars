@@ -55,27 +55,27 @@ public class InstructionCounter extends AbstractMarsToolAndApplication {
     /**
      * Number of instructions executed until now.
      */
-    protected int counter = 0;
+    private int counter = 0;
     private JTextField counterField;
 
     /**
      * Number of instructions of type R.
      */
-    protected int counterR = 0;
+    private int counterR = 0;
     private JTextField counterRField;
     private JProgressBar progressbarR;
 
     /**
      * Number of instructions of type I.
      */
-    protected int counterI = 0;
+    private int counterI = 0;
     private JTextField counterIField;
     private JProgressBar progressbarI;
 
     /**
      * Number of instructions of type J.
      */
-    protected int counterJ = 0;
+    private int counterJ = 0;
     private JTextField counterJField;
     private JProgressBar progressbarJ;
 
@@ -85,7 +85,7 @@ public class InstructionCounter extends AbstractMarsToolAndApplication {
      * program to execute twice the same instruction is to enter an infinite
      * loop, which is not insteresting in the POV of counting instructions.
      */
-    protected int lastAddress = -1;
+    private int lastAddress = -1;
 
     /**
      * Simple constructor, likely used to run a stand-alone memory reference visualizer.

@@ -147,8 +147,8 @@ public class TokenList implements Cloneable, Iterable<Token> {
 
     public String toString() {
         String stringified = "";
-        for (int i = 0; i < tokenList.size(); i++) {
-            stringified += tokenList.get(i).toString() + " ";
+        for (Token token : tokenList) {
+            stringified += token.toString() + " ";
         }
         return stringified;
     }

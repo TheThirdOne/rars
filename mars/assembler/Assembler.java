@@ -1403,7 +1403,7 @@ public class Assembler {
             int labelAddress;
             DataSegmentForwardReference entry;
             for (int i = 0; i < forwardReferenceList.size(); i++) {
-                entry = (DataSegmentForwardReference) forwardReferenceList.get(i);
+                entry = forwardReferenceList.get(i);
                 labelAddress = localSymtab.getAddressLocalOrGlobal(entry.token.getValue());
                 if (labelAddress != SymbolTable.NOT_FOUND) {
                     // patch address has to be valid b/c we already stored there...

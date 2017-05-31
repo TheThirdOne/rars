@@ -678,9 +678,9 @@ public class MemoryReferenceVisualization extends AbstractMarsToolAndApplication
             public void stateChanged(ChangeEvent e) {
                 JSlider source = (JSlider) e.getSource();
                 if (!source.getValueIsAdjusting()) {
-                    counterIndex = (int) source.getValue();
+                    counterIndex = source.getValue();
                 } else {
-                    int count = countTable[(int) source.getValue()];
+                    int count = countTable[source.getValue()];
                     sliderLabel.setText(setLabel(count));
                     currentColorButton.setBackground(counterColorScale.getColor(count));
                 }

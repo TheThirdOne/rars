@@ -156,15 +156,15 @@ public class BHTableModel extends AbstractTableModel {
      */
     public Object getValueAt(int row, int col) {
 
-        BHTEntry e = (BHTEntry) m_entries.elementAt(row);
+        BHTEntry e = m_entries.elementAt(row);
         if (e == null) return "";
 
-        if (col == 0) return new Integer(row);
+        if (col == 0) return row;
         if (col == 1) return e.getHistoryAsStr();
         if (col == 2) return e.getPredictionAsStr();
-        if (col == 3) return new Integer(e.getStatsPredCorrect());
-        if (col == 4) return new Integer(e.getStatsPredIncorrect());
-        if (col == 5) return new Double(e.getStatsPredPrecision());
+        if (col == 3) return e.getStatsPredCorrect();
+        if (col == 4) return e.getStatsPredIncorrect();
+        if (col == 5) return e.getStatsPredPrecision();
 
         return "";
     }
@@ -225,7 +225,7 @@ public class BHTableModel extends AbstractTableModel {
         if (index < 0 || index > m_entryCnt)
             throw new IllegalArgumentException("Only indexes in the range 0 to " + (m_entryCnt - 1) + " allowed");
 
-        return ((BHTEntry) m_entries.elementAt(index)).getPrediction();
+        return m_entries.elementAt(index).getPrediction();
     }
 
 

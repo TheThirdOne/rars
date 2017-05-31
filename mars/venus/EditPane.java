@@ -357,9 +357,9 @@ public class EditPane extends JPanel implements Observer {
     public UndoManager getUndoManager() {
         return sourceCode.getUndoManager();
     }
-   	
+
       /*       Note: these are invoked only when copy/cut/paste are used from the
-   	               toolbar or menu or the defined menu Alt codes.  When
+                      toolbar or menu or the defined menu Alt codes.  When
    						Ctrl-C, Ctrl-X or Ctrl-V are used, this code is NOT invoked
    						but the operation works correctly!
    				The "set visible" operations are used because clicking on the toolbar

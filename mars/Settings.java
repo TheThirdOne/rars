@@ -1193,7 +1193,7 @@ public class Settings extends Observable {
      * Should be 1 or 2.  If 1, the popup will be generated after first letter typed, based on all matches; if 2,
      * the popup will be generated after second letter typed.
      *
-     * @param number of letters (should be 1 or 2).
+     * @param length of letters (should be 1 or 2).
      */
     public void setEditorPopupPrefixLength(int length) {
         setStringSetting(EDITOR_POPUP_PREFIX_LENGTH, "" + length);
@@ -1408,7 +1408,7 @@ public class Settings extends Observable {
             for (int i = 0; i < booleanSettingsKeys.length; i++) {
                 settingValue = Globals.getPropertyEntry(filename, booleanSettingsKeys[i]);
                 if (settingValue != null) {
-                    booleanSettingsValues[i] = defaultBooleanSettingsValues[i] = Boolean.valueOf(settingValue).booleanValue();
+                    booleanSettingsValues[i] = defaultBooleanSettingsValues[i] = Boolean.valueOf(settingValue);
                 }
             }
             for (int i = 0; i < stringSettingsKeys.length; i++) {

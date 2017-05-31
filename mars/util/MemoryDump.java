@@ -34,13 +34,13 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 public class MemoryDump {
 
-    /**
+    /*
      * A list of segmentname/dumpformat/filename triples which should be dumped
      * Unused as far as I can tell - Ben
      */
     //public static ArrayList dumpTriples = null;
 
-    /**
+    /*
      * A mapping from segments names (like ".text") to the base and limit for that segment.
      * Unused as far as I can tell - Ben
      */

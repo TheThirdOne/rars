@@ -380,7 +380,7 @@ public class Binary {
         // valid hex two's complement values as exceptions.  We'll catch those and
         // do our own validation.
         try {
-            result = Integer.decode(s).intValue();
+            result = Integer.decode(s);
         } catch (NumberFormatException nfe) {
             // Multistep process toward validation of hex two's complement. 3-step test:
             //   (1) exactly 10 characters long,

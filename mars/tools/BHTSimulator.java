@@ -134,8 +134,8 @@ public class BHTSimulator extends AbstractMarsToolAndApplication implements Acti
         m_bhtModel = new BHTableModel(BHTSimulator.BHT_DEFAULT_SIZE, BHTSimulator.BHT_DEFAULT_HISTORY, BHT_DEFAULT_INITVAL);
 
         m_gui.getTabBHT().setModel(m_bhtModel);
-        m_gui.getCbBHThistory().setSelectedItem(new Integer(BHTSimulator.BHT_DEFAULT_HISTORY));
-        m_gui.getCbBHTentries().setSelectedItem(new Integer(BHTSimulator.BHT_DEFAULT_SIZE));
+        m_gui.getCbBHThistory().setSelectedItem(BHTSimulator.BHT_DEFAULT_HISTORY);
+        m_gui.getCbBHTentries().setSelectedItem(BHTSimulator.BHT_DEFAULT_SIZE);
 
         m_gui.getCbBHTentries().addActionListener(this);
         m_gui.getCbBHThistory().addActionListener(this);

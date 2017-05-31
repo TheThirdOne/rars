@@ -647,7 +647,7 @@ public class TextSegmentWindow extends JInternalFrame implements Observer {
     }
 
       /*
-   	 *  Re-order the Text segment columns according to saved preferences.
+        *  Re-order the Text segment columns according to saved preferences.
    	 */
 
     private void reorderColumns() {
@@ -991,7 +991,7 @@ public class TextSegmentWindow extends JInternalFrame implements Observer {
                /* break */   "If checked, will set an execution breakpoint. Click header to disable/enable breakpoints",
                /* address */ "Text segment address of binary instruction code",
                /* code */    "32-bit binary MIPS instruction",
-            	/* basic */   "Basic assembler instruction",
+                /* basic */   "Basic assembler instruction",
                /* source */  "Source code line"
         };
 
