@@ -182,7 +182,7 @@ public class FileDumpMemoryAction extends GuiAction {
         contents.add(segmentPanel, BorderLayout.WEST);
 
         // Next, create list of all available dump formats.
-        ArrayList dumpFormats = DumpFormatLoader.loadDumpFormats();
+        ArrayList<DumpFormat> dumpFormats = DumpFormatLoader.getDumpFormats();
         formatListSelector = new JComboBox(dumpFormats.toArray());
         formatListSelector.setRenderer(new DumpFormatComboBoxRenderer(formatListSelector));
         formatListSelector.setSelectedIndex(0);

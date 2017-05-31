@@ -43,17 +43,16 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 public class ToolAction extends AbstractAction {
-    private Class toolClass; //MarsTool tool;
+    private MarsTool tool; //MarsTool tool;
 
     /**
      * Simple constructor.
      *
-     * @param toolClass Class object for the associated MarsTool subclass
-     * @param toolName  Name of this tool, for the menu.
+     * @param tool
      */
-    public ToolAction(Class toolClass, String toolName) {
-        super(toolName, null);
-        this.toolClass = toolClass;
+    public ToolAction(MarsTool tool) {
+        super(tool.getName(), null);
+        this.tool = tool;
     }
 
 
@@ -64,10 +63,9 @@ public class ToolAction extends AbstractAction {
      */
     public void actionPerformed(ActionEvent e) {
         try {
-            // An exception should not occur here because we got here only after
-            // already successfully creating an instance from the same Class object
-            // in ToolLoader's loadMarsTools() method.
-            ((MarsTool) this.toolClass.newInstance()).action();
+            // I am not sure if a new instance needs to be made each time
+            // It may be possible to reduce this to tool.action()
+            tool.getClass().newInstance().action();
         } catch (Exception ex) {
         }
     }

@@ -204,7 +204,6 @@ public class MarsLaunch {
                 out.println("Error while attempting to save dump, segment/address-range " + triple[0] + " is invalid!");
                 continue;
             }
-            DumpFormatLoader.loadDumpFormats();
             DumpFormat format = DumpFormatLoader.findDumpFormatGivenCommandDescriptor(triple[1]);
             if (format == null) {
                 out.println("Error while attempting to save dump, format " + triple[1] + " was not found!");
@@ -752,7 +751,7 @@ public class MarsLaunch {
                 segments += ", ";
             }
         }
-        ArrayList<DumpFormat> dumpFormats = DumpFormatLoader.loadDumpFormats();
+        ArrayList<DumpFormat> dumpFormats = DumpFormatLoader.getDumpFormats();
         String formats = "";
         for (int i = 0; i < dumpFormats.size(); i++) {
             formats += dumpFormats.get(i).getCommandDescriptor();

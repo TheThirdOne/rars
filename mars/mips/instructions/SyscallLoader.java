@@ -50,7 +50,7 @@ class SyscallLoader {
     private static final String SYSCALLS_DIRECTORY_PATH = "mars/mips/instructions/syscalls";
     private static final String CLASS_EXTENSION = "class";
 
-    private ArrayList<Syscall> syscallList;
+    private static ArrayList<Syscall> syscallList;
 
     /*
        *  Dynamically loads Syscalls into an ArrayList.  This method is adapted from
@@ -58,10 +58,10 @@ class SyscallLoader {
        *  Barker (bret@hypefiend.com) is co-author of the book "Developing Games
        *  in Java".  Also see the "loadMarsTools()" method from ToolLoader class.
        */
-    void loadSyscalls() {
+    static {
         syscallList = new ArrayList<>();
         // grab all class files in the same directory as Syscall
-        ArrayList<String> candidates = FilenameFinder.getFilenameList(this.getClass().getClassLoader(),
+        ArrayList<String> candidates = FilenameFinder.getFilenameList(SyscallLoader.class.getClassLoader(),
                 SYSCALLS_DIRECTORY_PATH, CLASS_EXTENSION);
         HashSet<String> syscalls = new HashSet<>();
         for (String file : candidates) {
@@ -96,7 +96,7 @@ class SyscallLoader {
 
     // Will get any syscall number override specifications from MARS config file and
     // process them.  This will alter syscallList entry for affected names.
-    private ArrayList<Syscall> processSyscallNumberOverrides(ArrayList<Syscall> syscallList) {
+    private static ArrayList<Syscall> processSyscallNumberOverrides(ArrayList<Syscall> syscallList) {
         ArrayList<SyscallNumberOverride> overrides = new Globals().getSyscallOverrides();
         for (SyscallNumberOverride override : overrides) {
             boolean match = false;
@@ -142,11 +142,8 @@ class SyscallLoader {
      * Method to find Syscall object associated with given service number.
      * Returns null if no associated object found.
      */
-    Syscall findSyscall(int number) {
+    static Syscall findSyscall(int number) {
         // linear search is OK since number of syscalls is small.
-        if (syscallList == null) {
-            loadSyscalls();
-        }
         for (Syscall service : syscallList) {
             if (service.getNumber() == number) {
                 return service;

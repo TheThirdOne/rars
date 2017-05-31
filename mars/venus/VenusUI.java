@@ -513,7 +513,7 @@ public class VenusUI extends JFrame {
         file.add(fileSave);
         file.add(fileSaveAs);
         file.add(fileSaveAll);
-        if (DumpFormatLoader.loadDumpFormats().size() > 0) {
+        if (DumpFormatLoader.getDumpFormats().size() > 0) {
             file.add(fileDumpMemory);
         }
         file.addSeparator();
@@ -640,7 +640,7 @@ public class VenusUI extends JFrame {
         menuBar.add(edit);
         menuBar.add(run);
         menuBar.add(settings);
-        JMenu toolMenu = new ToolLoader().buildToolsMenu();
+        JMenu toolMenu = ToolLoader.buildToolsMenu();
         if (toolMenu != null) menuBar.add(toolMenu);
         menuBar.add(help);
 
@@ -707,7 +707,7 @@ public class VenusUI extends JFrame {
         toolBar.add(Open);
         toolBar.add(Save);
         toolBar.add(SaveAs);
-        if (new mars.mips.dump.DumpFormatLoader().loadDumpFormats().size() > 0) {
+        if (DumpFormatLoader.getDumpFormats().size() > 0) {
             toolBar.add(DumpMemory);
         }
         toolBar.add(Print);

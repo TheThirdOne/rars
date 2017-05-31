@@ -47,6 +47,28 @@ public class DumpFormatLoader {
 
     private static ArrayList<DumpFormat> formatList = null;
 
+    static {
+        formatList = new ArrayList<>();
+        // grab all class files in the dump directory
+        ArrayList<String> candidates = FilenameFinder.getFilenameList(DumpFormatLoader.class.getClassLoader(),
+                DUMP_DIRECTORY_PATH, CLASS_EXTENSION);
+        for (String file : candidates) {
+            try {
+                // grab the class, make sure it implements DumpFormat, instantiate, add to list
+                String formatClassName = CLASS_PREFIX + file.substring(0, file.indexOf(CLASS_EXTENSION) - 1);
+                Class clas = Class.forName(formatClassName);
+                if (DumpFormat.class.isAssignableFrom(clas) &&
+                        !Modifier.isAbstract(clas.getModifiers()) &&
+                        !Modifier.isInterface(clas.getModifiers())) {
+                    formatList.add((DumpFormat) clas.newInstance());
+                }
+            } catch (Exception e) {
+                System.out.println("Error instantiating DumpFormat from file " + file + ": " + e);
+            }
+        }
+    }
+
+
     /**
      * Dynamically loads dump formats into an ArrayList.  This method is adapted from
      * the loadGameControllers() method in Bret Barker's GameServer class.
@@ -54,28 +76,7 @@ public class DumpFormatLoader {
      * in Java".  Also see the ToolLoader and SyscallLoader classes elsewhere in MARS.
      */
 
-    public static ArrayList<DumpFormat> loadDumpFormats() {
-        // The list will be populated only the first time this method is called.
-        if (formatList == null) {
-            formatList = new ArrayList<>();
-            // grab all class files in the dump directory
-            ArrayList<String> candidates = FilenameFinder.getFilenameList(DumpFormatLoader.class.getClassLoader(),
-                    DUMP_DIRECTORY_PATH, CLASS_EXTENSION);
-            for (String file : candidates) {
-                try {
-                    // grab the class, make sure it implements DumpFormat, instantiate, add to list
-                    String formatClassName = CLASS_PREFIX + file.substring(0, file.indexOf(CLASS_EXTENSION) - 1);
-                    Class clas = Class.forName(formatClassName);
-                    if (DumpFormat.class.isAssignableFrom(clas) &&
-                            !Modifier.isAbstract(clas.getModifiers()) &&
-                            !Modifier.isInterface(clas.getModifiers())) {
-                        formatList.add((DumpFormat) clas.newInstance());
-                    }
-                } catch (Exception e) {
-                    System.out.println("Error instantiating DumpFormat from file " + file + ": " + e);
-                }
-            }
-        }
+    public static ArrayList<DumpFormat> getDumpFormats() {
         return formatList;
     }
 

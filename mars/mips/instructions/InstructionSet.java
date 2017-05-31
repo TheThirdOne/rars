@@ -59,7 +59,6 @@ public class InstructionSet {
 
     private ArrayList<Instruction> instructionList;
     private ArrayList<MatchMap> opcodeMatchMaps;
-    private static SyscallLoader syscallLoader;
 
     /**
      * Creates a new InstructionSet object.
@@ -94,10 +93,6 @@ public class InstructionSet {
 
         ////////////// READ PSEUDO-INSTRUCTION SPECS FROM DATA FILE AND ADD //////////////////////
         addPseudoInstructions();
-
-        ////////////// GET AND CREATE LIST OF SYSCALL FUNCTION OBJECTS ////////////////////
-        syscallLoader = new SyscallLoader();
-        syscallLoader.loadSyscalls();
 
         // Initialization step.  Create token list for each instruction example.  This is
         // used by parser to determine user program correct syntax.
@@ -278,7 +273,7 @@ public class InstructionSet {
 
     public static void findAndSimulateSyscall(int number, ProgramStatement statement)
             throws ProcessingException {
-        Syscall service = syscallLoader.findSyscall(number);
+        Syscall service = SyscallLoader.findSyscall(number);
         if (service != null) {
             service.simulate(statement);
             return;
