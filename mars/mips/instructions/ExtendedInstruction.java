@@ -43,8 +43,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * ExtendedInstruction represents a MIPS extended (a.k.a pseudo) instruction.  This
  * assembly language instruction does not have a corresponding machine instruction.  Instead
  * it is translated by the extended assembler into one or more basic instructions (operations
- * that have a corresponding machine instruction).  The TranslationCode object is
- * responsible for performing the translation.
+ * that have a corresponding machine instruction).
  *
  * @author Pete Sanderson
  * @version August 2003

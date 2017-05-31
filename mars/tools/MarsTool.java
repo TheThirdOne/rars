@@ -54,12 +54,12 @@ public interface MarsTool {
      * Return a name you have chosen for this tool.  It will appear as the
      * menu item.
      */
-    public abstract String getName();
+    String getName();
 
     /**
      * Performs tool functions.  It will be invoked when the tool is selected
      * from the Tools menu.
      */
 
-    public abstract void action();
+    void action();
 }

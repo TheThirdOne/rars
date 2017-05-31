@@ -123,7 +123,7 @@ public class ProgramStatement {
             this.operands = null;
             this.numOperands = 0;
             this.instruction = (binaryStatement == 0) // this is a "nop" statement
-                    ? (Instruction) Globals.instructionSet.matchOperator("nop").get(0)
+                    ? Globals.instructionSet.matchOperator("nop").get(0)
                     : null;
         } else {
             this.operands = new int[4];
@@ -169,7 +169,7 @@ public class ProgramStatement {
     public void buildBasicStatementFromBasicInstruction(ErrorList errors) {
         Token token = strippedTokenList.get(0);
         String basicStatementElement = token.getValue() + " ";
-        ;
+
         String basic = basicStatementElement;
         basicStatementList.addString(basicStatementElement); // the operator
         TokenTypes tokenType, nextTokenType;
@@ -390,7 +390,6 @@ public class ProgramStatement {
             int firstSpace = this.basicAssemblyStatement.indexOf(" ");
             result += blanks.substring(0, 16 - result.length()) + this.basicAssemblyStatement.substring(0, firstSpace);
             result += blanks.substring(0, 24 - result.length()) + this.basicAssemblyStatement.substring(firstSpace + 1);
-            ;
         } else {
             result += blanks.substring(0, 16 - result.length()) + "0x" + Integer.toString(this.binaryStatement, 16);
         }

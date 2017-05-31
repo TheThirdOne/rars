@@ -103,7 +103,7 @@ public class Globals {
     /**
      * List of accepted file extensions for MIPS assembly source files.
      */
-    public static final ArrayList fileExtensions = getFileExtensions();
+    public static final ArrayList<String> fileExtensions = getFileExtensions();
     /**
      * Maximum length of scrolled message window (MARS Messages and Run I/O)
      */

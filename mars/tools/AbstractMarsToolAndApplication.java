@@ -715,15 +715,15 @@ public abstract class AbstractMarsToolAndApplication extends JFrame implements M
             MIPSprogram program = new MIPSprogram();
             mars.Globals.program = program; // Shouldn't have to do this...
             String fileToAssemble = mostRecentlyOpenedFile.getPath();
-            ArrayList filesToAssemble = null;
+            ArrayList<String> filesToAssemble;
             if (multiFileAssemble) {// setting (check box in file open dialog) calls for multiple file assembly 
                 filesToAssemble = FilenameFinder.getFilenameList(
                         new File(fileToAssemble).getParent(), Globals.fileExtensions);
             } else {
-                filesToAssemble = new ArrayList();
+                filesToAssemble = new ArrayList<>();
                 filesToAssemble.add(fileToAssemble);
             }
-            ArrayList programsToAssemble = null;
+            ArrayList<MIPSprogram> programsToAssemble;
             try {
                 operationStatusMessages.displayNonTerminatingMessage("Assembling " + fileToAssemble);
                 programsToAssemble = program.prepareFilesForAssembly(filesToAssemble, fileToAssemble, exceptionHandler);

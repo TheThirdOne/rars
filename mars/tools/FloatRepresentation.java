@@ -954,7 +954,7 @@ public class FloatRepresentation extends AbstractMarsToolAndApplication {
                g.setColor(shadedColor);
                g.fillPolygon(p);
             }*/
-         	/*
+             /*
             // Nibble 5 straddles binary display of exponent and fraction.
             p = new Polygon();
             p.addPoint(hexDisplay.getX()+hexColumnWidth*(hexDisplay.getColumns()-6)+hexColumnWidth/2, upperY);

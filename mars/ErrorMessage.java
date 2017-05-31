@@ -199,7 +199,7 @@ public class ErrorMessage {
         Pattern pattern = Pattern.compile("<\\d+>");
         Matcher matcher = pattern.matcher(string);
         String verify = new String(string).trim();
-        ArrayList<Integer> macroHistory = new ArrayList<Integer>();
+        ArrayList<Integer> macroHistory = new ArrayList<>();
         while (matcher.find()) {
             String match = matcher.group();
             if (verify.indexOf(match) == 0) {

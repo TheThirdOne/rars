@@ -58,7 +58,7 @@ public class ProgramArgumentList {
      */
     public ProgramArgumentList(String args) {
         StringTokenizer st = new StringTokenizer(args);
-        programArgumentList = new ArrayList(st.countTokens());
+        programArgumentList = new ArrayList<>(st.countTokens());
         while (st.hasMoreTokens()) {
             programArgumentList.add(st.nextToken());
         }

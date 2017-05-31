@@ -316,7 +316,7 @@ public class SystemIO {
         if (fd == STDIN && Globals.getGui() != null) {
             String input = Globals.getGui().getMessagesPane().getInputString(lengthRequested);
             byte[] bytesRead = input.getBytes();
-            ;
+
             for (int i = 0; i < myBuffer.length; i++) {
                 myBuffer[i] = (i < bytesRead.length) ? bytesRead[i] : 0;
             }

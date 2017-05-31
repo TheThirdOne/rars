@@ -52,7 +52,7 @@ public interface Syscall {
      *
      * @return service name as a string
      */
-    public abstract String getName();
+    String getName();
 
     /**
      * Set the service number.  This is provided to allow MARS implementer or user
@@ -60,7 +60,7 @@ public interface Syscall {
      *
      * @param num specified service number to override the default.
      */
-    public abstract void setNumber(int num);
+    void setNumber(int num);
 
     /**
      * Return the assigned service number.  This is the number the MIPS programmer
@@ -68,7 +68,7 @@ public interface Syscall {
      *
      * @return assigned service number
      */
-    public abstract int getNumber();
+    int getNumber();
 
     /**
      * Performs syscall function.  It will be invoked when the service is invoked
@@ -76,6 +76,5 @@ public interface Syscall {
      *
      * @param statement ProgramStatement for this syscall statement.
      */
-    public abstract void simulate(ProgramStatement statement)
-            throws ProcessingException;
+    void simulate(ProgramStatement statement) throws ProcessingException;
 }

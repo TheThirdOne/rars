@@ -226,10 +226,9 @@ public class MIPSprogram {
     public void readSource(String file) throws ProcessingException {
         this.filename = file;
         this.sourceList = new ArrayList<>();
-        ErrorList errors = null;
+        ErrorList errors;
         BufferedReader inputFile;
         String line;
-        int lengthSoFar = 0;
         try {
             inputFile = new BufferedReader(new FileReader(file));
             line = inputFile.readLine();
@@ -389,8 +388,7 @@ public class MIPSprogram {
     public boolean simulateStepAtPC(AbstractAction a) throws ProcessingException {
         steppedExecution = true;
         Simulator sim = Simulator.getInstance();
-        boolean done = sim.simulate(RegisterFile.getProgramCounter(), 1, null, a);
-        return done;
+        return sim.simulate(RegisterFile.getProgramCounter(), 1, null, a);
     }
 
     /**

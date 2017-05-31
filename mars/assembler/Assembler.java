@@ -136,7 +136,7 @@ public class Assembler {
      * statement. Returns null if incoming array list is null or empty.
      * @see ProgramStatement
      **/
-    public ArrayList assemble(ArrayList tokenizedProgramFiles, boolean extendedAssemblerEnabled)
+    public ArrayList<ProgramStatement> assemble(ArrayList<MIPSprogram> tokenizedProgramFiles, boolean extendedAssemblerEnabled)
             throws ProcessingException {
         return assemble(tokenizedProgramFiles, extendedAssemblerEnabled, false);
     }
@@ -331,7 +331,7 @@ public class Assembler {
                         // statement, add to list.
                         TokenList newTokenList = new Tokenizer().tokenizeLine(sourceLine,
                                 instruction, errors, false);
-                        ArrayList instrMatches = this.matchInstruction(newTokenList.get(0));
+                        ArrayList<Instruction> instrMatches = this.matchInstruction(newTokenList.get(0));
                         Instruction instr = OperandFormat.bestOperandMatch(newTokenList,
                                 instrMatches);
                         // Only first generated instruction is linked to original source

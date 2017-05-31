@@ -374,7 +374,7 @@ public class FilenameFinder {
      */
 
     public static FileFilter getFileFilter(String extension, String description) {
-        ArrayList extensions = new ArrayList();
+        ArrayList<String> extensions = new ArrayList<>();
         extensions.add(extension);
         return getFileFilter(extensions, description, true);
     }

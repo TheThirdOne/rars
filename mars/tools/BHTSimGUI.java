@@ -228,16 +228,16 @@ public class BHTSimGUI extends JPanel {
     private JPanel buildConfigPanel() {
         JPanel panel = new JPanel();
 
-        Vector sizes = new Vector();
-        sizes.add(new Integer(8));
-        sizes.add(new Integer(16));
-        sizes.add(new Integer(32));
+        Vector<Integer> sizes = new Vector<>();
+        sizes.add(8);
+        sizes.add(16);
+        sizes.add(32);
 
-        Vector bits = new Vector();
-        bits.add(new Integer(1));
-        bits.add(new Integer(2));
+        Vector<Integer> bits = new Vector<>();
+        bits.add(1);
+        bits.add(2);
 
-        Vector initVals = new Vector();
+        Vector<String> initVals = new Vector<>();
         initVals.add(BHTSimGUI.BHT_DO_NOT_TAKE_BRANCH);
         initVals.add(BHTSimGUI.BHT_TAKE_BRANCH);
 

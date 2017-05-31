@@ -7,7 +7,10 @@ import mars.mips.instructions.Instruction;
 import mars.simulator.Exceptions;
 import mars.util.Binary;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Observable;
+import java.util.Observer;
+import java.util.Vector;
 
 	/*
 Copyright (c) 2003-2009,  Pete Sanderson and Kenneth Vollmar
@@ -145,7 +148,7 @@ public class Memory extends Observable {
     // and high end of address range, but retrieval from the tree has to be based
     // on target address being ANYWHERE IN THE RANGE (not an exact key match).
 
-    Collection observables = getNewMemoryObserversCollection();
+    Collection<MemoryObservable> observables = getNewMemoryObserversCollection();
 
     // The data segment is allocated in blocks of 1024 ints (4096 bytes).  Each block is
     // referenced by a "block table" entry, and the table has 1024 entries.  The capacity
@@ -1164,9 +1167,8 @@ public class Memory extends Observable {
      * @param obs Observer to be removed
      */
     public void deleteObserver(Observer obs) {
-        Iterator it = observables.iterator();
-        while (it.hasNext()) {
-            ((MemoryObservable) it.next()).deleteObserver(obs);
+        for (MemoryObservable o : observables) {
+            o.deleteObserver(obs);
         }
     }
 
@@ -1201,8 +1203,8 @@ public class Memory extends Observable {
     }
 
 
-    private Collection getNewMemoryObserversCollection() {
-        return new Vector();  // Vectors are thread-safe
+    private Collection<MemoryObservable> getNewMemoryObserversCollection() {
+        return new Vector<>();  // Vectors are thread-safe
     }
 
     /////////////////////////////////////////////////////////////////////////
@@ -1255,10 +1257,7 @@ public class Memory extends Observable {
     // is from command mode, Globals.program is null but still want ability to observe.
     private void notifyAnyObservers(int type, int address, int length, int value) {
         if ((Globals.program != null || Globals.getGui() == null) && this.observables.size() > 0) {
-            Iterator it = this.observables.iterator();
-            MemoryObservable mo;
-            while (it.hasNext()) {
-                mo = (MemoryObservable) it.next();
+            for (MemoryObservable mo : observables) {
                 if (mo.match(address)) {
                     mo.notifyObserver(new MemoryAccessNotice(type, address, length, value));
                 }

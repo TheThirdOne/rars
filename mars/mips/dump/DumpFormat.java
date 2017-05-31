@@ -51,7 +51,7 @@ public interface DumpFormat {
      * @return String containing file extension -- without the leading "." -- or
      * null if there is no standard extension.
      */
-    public String getFileExtension();
+    String getFileExtension();
 
     /**
      * Get a short description of the format, suitable
@@ -62,21 +62,21 @@ public interface DumpFormat {
      * or as tool tip when mouse hovers over GUI component representing
      * this format.
      */
-    public String getDescription();
+    String getDescription();
 
     /**
      * A short one-word descriptor that will be used by the MARS
      * command line parser (and the MARS command line user) to specify
      * that this format is to be used.
      */
-    public String getCommandDescriptor();
+    String getCommandDescriptor();
 
     /**
      * Descriptive name for the format.
      *
      * @return Format name.
      */
-    public String toString();
+    String toString();
 
     /**
      * Write MIPS memory contents according to the
@@ -90,7 +90,7 @@ public interface DumpFormat {
      * @throws AddressErrorException if firstAddress is invalid or not on a word boundary.
      * @throws IOException           if error occurs during file output.
      */
-    public void dumpMemoryRange(File file, int firstAddress, int lastAddress)
+    void dumpMemoryRange(File file, int firstAddress, int lastAddress)
             throws AddressErrorException, IOException;
 
 }
