@@ -99,7 +99,7 @@ public class RegistersWindow extends JPanel implements Observer {
         registers = RegisterFile.getRegisters();
         for (int i = 0; i < registers.length; i++) {
             tableData[i][0] = registers[i].getName();
-            tableData[i][1] = new Integer(registers[i].getNumber());
+            tableData[i][1] = registers[i].getNumber();
             tableData[i][2] = NumberDisplayBaseChooser.formatNumber(registers[i].getValue(), valueBase);
         }
         tableData[32][0] = "pc";
@@ -160,8 +160,8 @@ public class RegistersWindow extends JPanel implements Observer {
      */
     public void updateRegisters(int base) {
         registers = RegisterFile.getRegisters();
-        for (int i = 0; i < registers.length; i++) {
-            updateRegisterValue(registers[i].getNumber(), registers[i].getValue(), base);
+        for (Register register : registers) {
+            updateRegisterValue(register.getNumber(), register.getValue(), base);
         }
         updateRegisterUnsignedValue(32, RegisterFile.getProgramCounter(), base);
         updateRegisterValue(33, RegisterFile.getValue(33), base);
@@ -317,11 +317,7 @@ public class RegistersWindow extends JPanel implements Observer {
             //Note that the data/cell address is constant,
             //no matter where the cell appears onscreen.
             // these registers are not editable: $zero (0), $pc (32), $ra (31)
-            if (col == VALUE_COLUMN && row != 0 && row != 32 && row != 31) {
-                return true;
-            } else {
-                return false;
-            }
+            return col == VALUE_COLUMN && row != 0 && row != 32 && row != 31;
         }
 
 
@@ -347,7 +343,6 @@ public class RegistersWindow extends JPanel implements Observer {
             int valueBase = Globals.getGui().getMainPane().getExecutePane().getValueDisplayBase();
             data[row][col] = NumberDisplayBaseChooser.formatNumber(val, valueBase);
             fireTableCellUpdated(row, col);
-            return;
         }
 
 

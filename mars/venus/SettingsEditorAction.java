@@ -50,12 +50,6 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 public class SettingsEditorAction extends GuiAction {
 
     JDialog editorDialog;
-    JComboBox fontFamilySelector, fontStyleSelector;
-    JSlider tabSizeSelector;
-    JTextField fontSizeDisplay;
-
-    // Used to determine upon OK, whether or not anything has changed.
-    String initialFontFamily, initialFontStyle, initialFontSize;
 
     /**
      * Create a new SettingsEditorAction.  Has all the GuiAction parameters.
@@ -226,7 +220,7 @@ public class SettingsEditorAction extends GuiAction {
             Globals.getSettings().setBooleanSetting(Settings.GENERIC_TEXT_EDITOR, genericEditorCheck.isSelected());
             Globals.getSettings().setBooleanSetting(Settings.EDITOR_CURRENT_LINE_HIGHLIGHTING, lineHighlightCheck.isSelected());
             Globals.getSettings().setBooleanSetting(Settings.AUTO_INDENT, autoIndentCheck.isSelected());
-            Globals.getSettings().setCaretBlinkRate(((Integer) blinkRateSpinSelector.getValue()).intValue());
+            Globals.getSettings().setCaretBlinkRate((Integer) blinkRateSpinSelector.getValue());
             Globals.getSettings().setEditorTabSize(tabSizeSelector.getValue());
             if (syntaxStylesAction) {
                 for (int i = 0; i < syntaxStyleIndex.length; i++) {
@@ -263,10 +257,10 @@ public class SettingsEditorAction extends GuiAction {
         // Perform reset on miscellaneous editor settings
         private void resetOtherSettings() {
             tabSizeSelector.setValue(initialEditorTabSize);
-            tabSizeSpinSelector.setValue(new Integer(initialEditorTabSize));
+            tabSizeSpinSelector.setValue(initialEditorTabSize);
             lineHighlightCheck.setSelected(initialLineHighlighting);
             autoIndentCheck.setSelected(initialAutoIndent);
-            blinkRateSpinSelector.setValue(new Integer(initialCaretBlinkRate));
+            blinkRateSpinSelector.setValue(initialCaretBlinkRate);
             blinkCaret.setBlinkRate(initialCaretBlinkRate);
             popupGuidanceOptions[initialPopupGuidance].setSelected(true);
         }
@@ -282,7 +276,7 @@ public class SettingsEditorAction extends GuiAction {
             tabSizeSelector.addChangeListener(
                     new ChangeListener() {
                         public void stateChanged(ChangeEvent e) {
-                            Integer value = new Integer(((JSlider) e.getSource()).getValue());
+                            Integer value = ((JSlider) e.getSource()).getValue();
                             tabSizeSpinSelector.setValue(value);
                         }
                     });
@@ -293,7 +287,7 @@ public class SettingsEditorAction extends GuiAction {
                     new ChangeListener() {
                         public void stateChanged(ChangeEvent e) {
                             Object value = ((JSpinner) e.getSource()).getValue();
-                            tabSizeSelector.setValue(((Integer) value).intValue());
+                            tabSizeSelector.setValue((Integer) value);
                         }
                     });
 
@@ -325,7 +319,7 @@ public class SettingsEditorAction extends GuiAction {
                     new ChangeListener() {
                         public void stateChanged(ChangeEvent e) {
                             Object value = ((JSpinner) e.getSource()).getValue();
-                            blinkCaret.setBlinkRate(((Integer) value).intValue());
+                            blinkCaret.setBlinkRate((Integer) value);
                             blinkSample.requestFocus();
                             blinkCaret.setVisible(true);
                         }
@@ -386,8 +380,8 @@ public class SettingsEditorAction extends GuiAction {
             syntaxStylesAction = false;
             int count = 0;
             // Count the number of actual styles specified
-            for (int i = 0; i < labels.length; i++) {
-                if (labels[i] != null) {
+            for (String label : labels) {
+                if (label != null) {
                     count++;
                 }
             }
@@ -584,8 +578,6 @@ public class SettingsEditorAction extends GuiAction {
 
                 // If selected: disable buttons, save current settings, set to defaults
                 // If deselected:restore current settings, enable buttons
-                Color newBackground = null;
-                Font newFont = null;
                 if (e.getStateChange() == ItemEvent.SELECTED) {
                     foregroundButtons[row].setEnabled(false);
                     bold[row].setEnabled(false);

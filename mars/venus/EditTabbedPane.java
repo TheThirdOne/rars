@@ -533,7 +533,7 @@ public class EditTabbedPane extends JTabbedPane {
         private File mostRecentlyOpenedFile;
         private JFileChooser fileChooser;
         private int fileFilterCount;
-        private ArrayList fileFilterList;
+        private ArrayList<FileFilter> fileFilterList;
         private PropertyChangeListener listenForUserAddedFileFilter;
         private Editor theEditor;
 
@@ -545,7 +545,7 @@ public class EditTabbedPane extends JTabbedPane {
             this.fileChooser.addPropertyChangeListener(this.listenForUserAddedFileFilter);
 
             // Note: add sequence is significant - last one added becomes default.
-            fileFilterList = new ArrayList();
+            fileFilterList = new ArrayList<>();
             fileFilterList.add(fileChooser.getAcceptAllFileFilter());
             fileFilterList.add(FilenameFinder.getFileFilter(Globals.fileExtensions, "Assembler Files", true));
             fileFilterCount = 0; // this will trigger fileChooser file filter load in next line
@@ -693,8 +693,8 @@ public class EditTabbedPane extends JTabbedPane {
                 // clear out the list and populate from our own ArrayList.
                 // Last one added becomes the default.
                 fileChooser.resetChoosableFileFilters();
-                for (int i = 0; i < fileFilterList.size(); i++) {
-                    fileChooser.addChoosableFileFilter((FileFilter) fileFilterList.get(i));
+                for (FileFilter ff : fileFilterList) {
+                    fileChooser.addChoosableFileFilter(ff);
                 }
                 // Restore listener.
                 if (activeListener) {

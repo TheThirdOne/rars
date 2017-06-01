@@ -59,7 +59,7 @@ public class RunAssembleAction extends GuiAction {
     }
 
     // These are both used by RunResetAction to re-assemble under identical conditions.
-    static ArrayList getMIPSprogramsToAssemble() {
+    static ArrayList<MIPSprogram> getMIPSprogramsToAssemble() {
         return MIPSprogramsToAssemble;
     }
 
@@ -136,9 +136,8 @@ public class RunAssembleAction extends GuiAction {
                 mainUI.messagesPane.postMarsMessage(
                         name + ": operation completed with errors.\n\n");
                 // Select editor line containing first error, and corresponding error message.
-                ArrayList errorMessages = pe.errors().getErrorMessages();
-                for (int i = 0; i < errorMessages.size(); i++) {
-                    ErrorMessage em = (ErrorMessage) errorMessages.get(i);
+                ArrayList<ErrorMessage> errorMessages = pe.errors().getErrorMessages();
+                for (ErrorMessage em : errorMessages) {
                     // No line or position may mean File Not Found (e.g. exception file). Don't try to open. DPS 3-Oct-2010
                     if (em.getLine() == 0 && em.getPosition() == 0) {
                         continue;
@@ -164,11 +163,11 @@ public class RunAssembleAction extends GuiAction {
 
     // Handy little utility for building comma-separated list of filenames
     // while not letting line length get out of hand.
-    private String buildFileNameList(String preamble, ArrayList programList) {
+    private String buildFileNameList(String preamble, ArrayList<MIPSprogram> programList) {
         String result = preamble;
         int lineLength = result.length();
         for (int i = 0; i < programList.size(); i++) {
-            String filename = ((MIPSprogram) programList.get(i)).getFilename();
+            String filename = programList.get(i).getFilename();
             result += filename + ((i < programList.size() - 1) ? ", " : "");
             lineLength += filename.length();
             if (lineLength > LINE_LENGTH_LIMIT) {

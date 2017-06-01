@@ -94,14 +94,14 @@ public class Coprocessor0Window extends JPanel implements Observer {
      * @return The array object with the data for the window.
      **/
 
-    public Object[][] setupWindow() {
+    private Object[][] setupWindow() {
         registers = Coprocessor0.getRegisters();
         tableData = new Object[registers.length][3];
         rowGivenRegNumber = new int[32]; // maximum number of registers
         for (int i = 0; i < registers.length; i++) {
             rowGivenRegNumber[registers[i].getNumber()] = i;
             tableData[i][0] = registers[i].getName();
-            tableData[i][1] = new Integer(registers[i].getNumber());
+            tableData[i][1] = registers[i].getNumber();
             tableData[i][2] = NumberDisplayBaseChooser.formatNumber(registers[i].getValue(),
                     NumberDisplayBaseChooser.getBase(settings.getBooleanSetting(Settings.DISPLAY_VALUES_IN_HEX)));
         }
@@ -151,8 +151,8 @@ public class Coprocessor0Window extends JPanel implements Observer {
      */
     public void updateRegisters(int base) {
         registers = Coprocessor0.getRegisters();
-        for (int i = 0; i < registers.length; i++) {
-            this.updateRegisterValue(registers[i].getNumber(), registers[i].getValue(), base);
+        for (Register register : registers) {
+            this.updateRegisterValue(register.getNumber(), register.getValue(), base);
         }
     }
 
@@ -163,7 +163,7 @@ public class Coprocessor0Window extends JPanel implements Observer {
      * @param val    New value.
      **/
 
-    public void updateRegisterValue(int number, int val, int base) {
+    private void updateRegisterValue(int number, int val, int base) {
         ((RegTableModel) table.getModel()).setDisplayAndModelValueAt(
                 NumberDisplayBaseChooser.formatNumber(val, base), rowGivenRegNumber[number], 2);
     }
@@ -215,7 +215,7 @@ public class Coprocessor0Window extends JPanel implements Observer {
      *
      * @param register Register object corresponding to row to be selected.
      */
-    void highlightCellForRegister(Register register) {
+    private void highlightCellForRegister(Register register) {
         int registerRow = Coprocessor0.getRegisterPosition(register);
         if (registerRow < 0)
             return; // not valid coprocessor0 register
@@ -301,11 +301,7 @@ public class Coprocessor0Window extends JPanel implements Observer {
         public boolean isCellEditable(int row, int col) {
             //Note that the data/cell address is constant,
             //no matter where the cell appears onscreen.
-            if (col == VALUE_COLUMN) {
-                return true;
-            } else {
-                return false;
-            }
+            return col == VALUE_COLUMN;
         }
 
 
@@ -331,7 +327,6 @@ public class Coprocessor0Window extends JPanel implements Observer {
             int valueBase = Globals.getGui().getMainPane().getExecutePane().getValueDisplayBase();
             data[row][col] = NumberDisplayBaseChooser.formatNumber(val, valueBase);
             fireTableCellUpdated(row, col);
-            return;
         }
 
 

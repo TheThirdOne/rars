@@ -119,7 +119,6 @@ public class RunSpeedPanel extends JPanel {
      */
     private String setLabel(int index) {
         String result = "Run speed ";
-        ;
         if (index <= SPEED_INDEX_INTERACTION_LIMIT) {
             if (speedTable[index] < 1) {
                 result += speedTable[index];

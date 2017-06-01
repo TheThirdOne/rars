@@ -66,7 +66,7 @@ public class FileDumpMemoryAction extends GuiAction {
     private int[] segmentListBaseArray;
     private int[] segmentListHighArray;
 
-    private JComboBox segmentListSelector;
+    private JComboBox<String> segmentListSelector;
     private JComboBox formatListSelector;
 
     public FileDumpMemoryAction(String name, Icon icon, String descrip,
@@ -82,13 +82,11 @@ public class FileDumpMemoryAction extends GuiAction {
 
     /* Save the memory segment in a supported format.
    */
-    private boolean dumpMemory() {
+    private void dumpMemory() {
         dumpDialog = createDumpDialog();
         dumpDialog.pack();
         dumpDialog.setLocationRelativeTo(Globals.getGui());
         dumpDialog.setVisible(true);
-        return true;
-        /////////////////////////////////////////////////////////////////////
     }
 
 
@@ -174,7 +172,7 @@ public class FileDumpMemoryAction extends GuiAction {
         }
 
         // Create segment selector.  First element selected by default.
-        segmentListSelector = new JComboBox(segmentListArray);
+        segmentListSelector = new JComboBox<>(segmentListArray);
         segmentListSelector.setSelectedIndex(0);
         JPanel segmentPanel = new JPanel(new BorderLayout());
         segmentPanel.add(new Label("Memory Segment"), BorderLayout.NORTH);
@@ -223,8 +221,8 @@ public class FileDumpMemoryAction extends GuiAction {
     // User has clicked "Dump" button, so launch a file chooser then get
     // segment (memory range) and format selections and save to the file.
     private boolean performDump(int firstAddress, int lastAddress, DumpFormat format) {
-        File theFile = null;
-        JFileChooser saveDialog = null;
+        File theFile;
+        JFileChooser saveDialog;
         boolean operationOK = false;
 
         saveDialog = new JFileChooser(mainUI.getEditor().getCurrentSaveDirectory());

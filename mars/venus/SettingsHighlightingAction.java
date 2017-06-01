@@ -601,8 +601,8 @@ public class SettingsHighlightingAction extends GuiAction {
 //  whether enabled or not.  The default behavior does not work
 //  well on buttons with black background.
 class ColorSelectButton extends JButton {
-    public static final Border ColorSelectButtonEnabledBorder = new BevelBorder(BevelBorder.RAISED, Color.WHITE, Color.GRAY);
-    public static final Border ColorSelectButtonDisabledBorder = new LineBorder(Color.GRAY, 2);
+    private static final Border ColorSelectButtonEnabledBorder = new BevelBorder(BevelBorder.RAISED, Color.WHITE, Color.GRAY);
+    private static final Border ColorSelectButtonDisabledBorder = new LineBorder(Color.GRAY, 2);
 
     public void setEnabled(boolean status) {
         super.setEnabled(status);

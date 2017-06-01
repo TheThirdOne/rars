@@ -129,19 +129,4 @@ public class PopupHelpItem {
     public void setDescription(String description) {
         this.description = description;
     }
-
-    // Utility method.  Traverse ArrayList of PopupHelpItem objects
-    // and return String length of longest example.
-    public static int maxExampleLength(java.util.ArrayList matches) {
-        int length = 0;
-        if (matches != null) {
-            for (int i = 0; i < matches.size(); i++) {
-                Object match = matches.get(i);
-                if (match instanceof PopupHelpItem) {
-                    length = Math.max(length, ((PopupHelpItem) match).getExampleLength());
-                }
-            }
-        }
-        return length;
-    }
 }

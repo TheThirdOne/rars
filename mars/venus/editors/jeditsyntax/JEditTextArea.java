@@ -26,8 +26,6 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.*;
-import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.Vector;
 
 /**
@@ -1341,8 +1339,8 @@ public class JEditTextArea extends JComponent {
     /**
      * Sets if the selection should be rectangular.
      *
-     * @param overwrite True if the selection should be rectangular,
-     *                  false otherwise.
+     * @param rectSelect True if the selection should be rectangular,
+     *                   false otherwise.
      */
     public final void setSelectionRectangular(boolean rectSelect) {
         this.rectSelect = rectSelect;
@@ -1668,9 +1666,7 @@ public class JEditTextArea extends JComponent {
                     centerHeight);
 
             // Lay out all status components, in order
-            Enumeration status = leftOfScrollBar.elements();
-            while (status.hasMoreElements()) {
-                Component comp = (Component) status.nextElement();
+            for (Component comp : leftOfScrollBar) {
                 Dimension dim = comp.getPreferredSize();
                 comp.setBounds(ileft,
                         itop + centerHeight,
@@ -1690,7 +1686,7 @@ public class JEditTextArea extends JComponent {
         private Component center;
         private Component right;
         private Component bottom;
-        private Vector leftOfScrollBar = new Vector();
+        private Vector<Component> leftOfScrollBar = new Vector<>();
     }
 
     static class CaretBlinker implements ActionListener {
@@ -2011,33 +2007,6 @@ public class JEditTextArea extends JComponent {
         }
     }
 
-
-    /**
-     * Return any relevant tool tip text for token at specified position. Keyword match
-     * must be exact.  DPS 24-May-2010
-     *
-     * @param x x-coordinate of current position
-     * @param y y-coordinate of current position
-     * @return String containing appropriate tool tip text.  Possibly HTML-encoded.
-     */
-    // Is used for tool tip only (not popup menu)
-    public String getSyntaxSensitiveToolTipText(int x, int y) {
-        String result = null;
-        int line = this.yToLine(y);
-        ArrayList matches = getSyntaxSensitiveHelpAtLineOffset(line, this.xToOffset(line, x), true);
-        if (matches == null) {
-            return null;
-        }
-        int length = PopupHelpItem.maxExampleLength(matches) + 2;
-        result = "<html>";
-        for (int i = 0; i < matches.size(); i++) {
-            PopupHelpItem match = (PopupHelpItem) matches.get(i);
-            result += ((i == 0) ? "" : "<br>") + "<tt>" + match.getExamplePaddedToLength(length).replaceAll(" ", "&nbsp;") + "</tt>" + match.getDescription();
-        }
-        return result + "</html>";
-    }
-
-
     /**
      * Constructs string for auto-indent feature.  Returns empty string
      * if auto-intent is disabled or if line has no leading white space.
@@ -2074,61 +2043,6 @@ public class JEditTextArea extends JComponent {
         return indent;
     }
 
-    //////////////////////////////////////////////////////////////////////////////////
-    // Get relevant help information at specified position.  Returns ArrayList of
-    // PopupHelpItem with one per match, or null if no matches.
-    // The "exact" parameter is set depending on whether the match has to be
-    // exact or whether a prefix match will do.  The token "s" will not match
-    // any instruction names if exact is true, but will match "sw", "sh", etc
-    // if exact is false.  The former is helpful for mouse-movement-based tool
-    // tips (this is what you have).  The latter is helpful for caret-based tool
-    // tips (this is what you can do).
-    private ArrayList getSyntaxSensitiveHelpAtLineOffset(int line, int offset, boolean exact) {
-        ArrayList matches = null;
-        TokenMarker tokenMarker = this.getTokenMarker();
-        if (tokenMarker != null) {
-            Segment lineSegment = new Segment();
-            this.getLineText(line, lineSegment); // fill segment with info from this line
-            Token tokens = tokenMarker.markTokens(lineSegment, line);
-            Token tokenList = tokens;
-            int tokenOffset = 0;
-            Token tokenAtOffset = null;
-            // cool for following the tokens...
-            //System.out.print("(JEditTextArea.java) Token Stream:");
-            Token toke = tokens;
-            for (; ; ) {
-                //System.out.print(" "+toke.id+"("+toke.length+")");
-                if (toke.id == Token.END)
-                    break;
-                toke = toke.next;
-            }
-            //System.out.println();
-
-            for (; ; ) {
-                byte id = tokens.id;
-                if (id == Token.END)
-                    break;
-                int length = tokens.length;
-                if (offset > tokenOffset && offset <= tokenOffset + length) {
-                    tokenAtOffset = tokens;
-                    break;
-                }
-                tokenOffset += length;
-                tokens = tokens.next;
-            }
-            if (tokenAtOffset != null) {
-                String tokenText = lineSegment.toString().substring(tokenOffset, tokenOffset + tokenAtOffset.length);
-                if (exact) {
-                    matches = tokenMarker.getTokenExactMatchHelp(tokenAtOffset, tokenText);
-                } else {
-                    matches = tokenMarker.getTokenPrefixMatchHelp(lineSegment.toString(), tokenList, tokenAtOffset, tokenText);
-                }
-            }
-        }
-        return matches;
-    }
-
-
     ////////////////////////////////////////////////////////////////////////////////////
     // Compose and display syntax-sensitive help. Typically invoked upon typing a key.
     // Results in popup menu.  Is not used for creating tool tips.
@@ -2140,82 +2054,9 @@ public class JEditTextArea extends JComponent {
         int lineStart = getLineStartOffset(line);
         int offset = Math.max(1, Math.min(getLineLength(line),
                 getCaretPosition() - lineStart));
-        ArrayList helpItems = getSyntaxSensitiveHelpAtLineOffset(line, offset, false);
-        if (helpItems == null && popupMenu != null) {
-            popupMenu.setVisible(false);
-            popupMenu = null;
-        }
-        if (helpItems != null) {
-            popupMenu = new JPopupMenu();
-            int length = PopupHelpItem.maxExampleLength(helpItems) + 2;
-            for (int i = 0; i < helpItems.size(); i++) {
-                PopupHelpItem item = (PopupHelpItem) helpItems.get(i);
-                JMenuItem menuItem = new JMenuItem("<html><tt>" + item.getExamplePaddedToLength(length).replaceAll(" ", "&nbsp;") + "</tt>" + item.getDescription() + "</html>");
-                if (item.getExact()) {
-                    // The instruction name is completed so the role of the popup changes
-                    // to that of floating help to assist in operand specification.
-                    menuItem.setSelected(false);
-                    // Want menu item to be disabled but that causes rendered text to be hard to see.
-                    // Spent a couple hours on workaround with no success.  The UI uses
-                    // UIManager.get("MenuItem.disabledForeground") property to determine rendering
-                    // color but this is done each time the text is rendered (paintText). There is
-                    // no setter for the menu item itself.  The UIManager property is used for all
-                    // menus not just the editor's popup help menu, so you can't just set the disabled
-                    // foreground color to, say, black and leave it.  Tried several techniques without
-                    // success.  The only solution I found was a hack:  writing a BasicMenuItem UI
-                    // subclass that consists of hacked override of its paintText() method.  But even
-                    // this required use of "SwingUtilities2" class which has been deprecated for years
-                    // So in the end I decided just to leave the menu item enabled.  It will highlight
-                    // but does nothing if selected.  DPS 11-July-2014
 
-                    // menuItem.setEnabled(false);
-                } else {
-                    // Typing of instruction/directive name is still in progress; the action listener
-                    // will complete it when its menu item is selected.
-                    menuItem.addActionListener(new PopupHelpActionListener(item.getTokenText(), item.getExample()));
-                }
-                popupMenu.add(menuItem);
-            }
-            popupMenu.pack();
-            int y = lineToY(line);
-            int x = offsetToX(line, offset);
-            int height = painter.getFontMetrics(painter.getFont()).getHeight();
-            int width = painter.getFontMetrics(painter.getFont()).charWidth('w');
-            int menuXLoc = x + width + width + width;
-            int menuYLoc = y + height + height; // display below;
-            // Modified to always display popup BELOW the current line.
-            // This was done in response to negative student feedback about
-            // the popup blocking information they needed to (e.g. operands from
-            // previous instructions).  Note that if menu is long enough and
-            // current cursor position is low enough, the menu will bottom out at the
-            // bottom of the screen and extend above the current line. DPS 23-Dec-2010
-            popupMenu.show(this, menuXLoc, menuYLoc);
-            this.requestFocusInWindow(); // get cursor back from the menu
-        }
-    }
-
-
-    // Carries out the instruction/directive completion when popup menu
-    // item is selected.
-    private class PopupHelpActionListener implements ActionListener {
-        private String tokenText, text;
-
-        public PopupHelpActionListener(String tokenText, String text) {
-            this.tokenText = tokenText;
-            this.text = text.split(" ")[0];
-        }
-
-        // Completion action will insert either a tab or space character following the
-        // completed instruction mnemonic.  Inserts a tab if tab key was pressed;
-        // space otherwise.  Get this information from the ActionEvent.
-        public void actionPerformed(ActionEvent e) {
-            String insert = (e.getActionCommand().charAt(0) == '\t') ? "\t" : " ";
-            if (this.tokenText.length() >= this.text.length()) {
-                overwriteSetSelectedText(insert);
-            } else {
-                overwriteSetSelectedText(this.text.substring(this.tokenText.length()) + insert);
-            }
-        }
+        popupMenu.setVisible(false);
+        popupMenu = null;
     }
 
     private void checkAutoIndent(KeyEvent evt) {

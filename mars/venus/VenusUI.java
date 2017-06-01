@@ -68,8 +68,8 @@ public class VenusUI extends JFrame {
     private static int menuState = FileStatus.NO_FILE;
 
     // PLEASE PUT THESE TWO (& THEIR METHODS) SOMEWHERE THEY BELONG, NOT HERE
-    private static boolean reset = true; // registers/memory reset for execution
-    private static boolean started = false;  // started execution
+    private boolean reset = true; // registers/memory reset for execution
+    private boolean started = false;  // started execution
     Editor editor;
 
     // components of the menubar
@@ -245,125 +245,125 @@ public class VenusUI extends JFrame {
         try {
             fileNewAction = new FileNewAction("New",
                     new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "New22.png"))),
-                    "Create a new file for editing", new Integer(KeyEvent.VK_N),
+                    "Create a new file for editing", KeyEvent.VK_N,
                     KeyStroke.getKeyStroke(KeyEvent.VK_N, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),
                     mainUI);
             fileOpenAction = new FileOpenAction("Open ...",
                     new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "Open22.png"))),
-                    "Open a file for editing", new Integer(KeyEvent.VK_O),
+                    "Open a file for editing", KeyEvent.VK_O,
                     KeyStroke.getKeyStroke(KeyEvent.VK_O, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),
                     mainUI);
             fileCloseAction = new FileCloseAction("Close", null,
-                    "Close the current file", new Integer(KeyEvent.VK_C),
+                    "Close the current file", KeyEvent.VK_C,
                     KeyStroke.getKeyStroke(KeyEvent.VK_W, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),
                     mainUI);
             fileCloseAllAction = new FileCloseAllAction("Close All", null,
-                    "Close all open files", new Integer(KeyEvent.VK_L),
+                    "Close all open files", KeyEvent.VK_L,
                     null, mainUI);
             fileSaveAction = new FileSaveAction("Save",
                     new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "Save22.png"))),
-                    "Save the current file", new Integer(KeyEvent.VK_S),
+                    "Save the current file", KeyEvent.VK_S,
                     KeyStroke.getKeyStroke(KeyEvent.VK_S, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),
                     mainUI);
             fileSaveAsAction = new FileSaveAsAction("Save as ...",
                     new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "SaveAs22.png"))),
-                    "Save current file with different name", new Integer(KeyEvent.VK_A),
+                    "Save current file with different name", KeyEvent.VK_A,
                     null, mainUI);
             fileSaveAllAction = new FileSaveAllAction("Save All", null,
-                    "Save all open files", new Integer(KeyEvent.VK_V),
+                    "Save all open files", KeyEvent.VK_V,
                     null, mainUI);
             fileDumpMemoryAction = new FileDumpMemoryAction("Dump Memory ...",
                     new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "Dump22.png"))),
-                    "Dump machine code or data in an available format", new Integer(KeyEvent.VK_D),
+                    "Dump machine code or data in an available format", KeyEvent.VK_D,
                     KeyStroke.getKeyStroke(KeyEvent.VK_D, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),
                     mainUI);
             filePrintAction = new FilePrintAction("Print ...",
                     new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "Print22.gif"))),
-                    "Print current file", new Integer(KeyEvent.VK_P),
+                    "Print current file", KeyEvent.VK_P,
                     null, mainUI);
             fileExitAction = new FileExitAction("Exit", null,
-                    "Exit Mars", new Integer(KeyEvent.VK_X),
+                    "Exit Mars", KeyEvent.VK_X,
                     null, mainUI);
             editUndoAction = new EditUndoAction("Undo",
                     new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "Undo22.png"))),
-                    "Undo last edit", new Integer(KeyEvent.VK_U),
+                    "Undo last edit", KeyEvent.VK_U,
                     KeyStroke.getKeyStroke(KeyEvent.VK_Z, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),
                     mainUI);
             editRedoAction = new EditRedoAction("Redo",
                     new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "Redo22.png"))),
-                    "Redo last edit", new Integer(KeyEvent.VK_R),
+                    "Redo last edit", KeyEvent.VK_R,
                     KeyStroke.getKeyStroke(KeyEvent.VK_Y, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),
                     mainUI);
             editCutAction = new EditCutAction("Cut",
                     new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "Cut22.gif"))),
-                    "Cut", new Integer(KeyEvent.VK_C),
+                    "Cut", KeyEvent.VK_C,
                     KeyStroke.getKeyStroke(KeyEvent.VK_X, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),
                     mainUI);
             editCopyAction = new EditCopyAction("Copy",
                     new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "Copy22.png"))),
-                    "Copy", new Integer(KeyEvent.VK_O),
+                    "Copy", KeyEvent.VK_O,
                     KeyStroke.getKeyStroke(KeyEvent.VK_C, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),
                     mainUI);
             editPasteAction = new EditPasteAction("Paste",
                     new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "Paste22.png"))),
-                    "Paste", new Integer(KeyEvent.VK_P),
+                    "Paste", KeyEvent.VK_P,
                     KeyStroke.getKeyStroke(KeyEvent.VK_V, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),
                     mainUI);
             editFindReplaceAction = new EditFindReplaceAction("Find/Replace",
                     new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "Find22.png"))),
-                    "Find/Replace", new Integer(KeyEvent.VK_F),
+                    "Find/Replace", KeyEvent.VK_F,
                     KeyStroke.getKeyStroke(KeyEvent.VK_F, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),
                     mainUI);
             editSelectAllAction = new EditSelectAllAction("Select All",
                     null, //new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath+"Find22.png"))),
-                    "Select All", new Integer(KeyEvent.VK_A),
+                    "Select All", KeyEvent.VK_A,
                     KeyStroke.getKeyStroke(KeyEvent.VK_A, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),
                     mainUI);
             runAssembleAction = new RunAssembleAction("Assemble",
                     new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "Assemble22.png"))),
-                    "Assemble the current file and clear breakpoints", new Integer(KeyEvent.VK_A),
+                    "Assemble the current file and clear breakpoints", KeyEvent.VK_A,
                     KeyStroke.getKeyStroke(KeyEvent.VK_F3, 0),
                     mainUI);
             runGoAction = new RunGoAction("Go",
                     new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "Play22.png"))),
-                    "Run the current program", new Integer(KeyEvent.VK_G),
+                    "Run the current program", KeyEvent.VK_G,
                     KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0),
                     mainUI);
             runStepAction = new RunStepAction("Step",
                     new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "StepForward22.png"))),
-                    "Run one step at a time", new Integer(KeyEvent.VK_T),
+                    "Run one step at a time", KeyEvent.VK_T,
                     KeyStroke.getKeyStroke(KeyEvent.VK_F7, 0),
                     mainUI);
             runBackstepAction = new RunBackstepAction("Backstep",
                     new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "StepBack22.png"))),
-                    "Undo the last step", new Integer(KeyEvent.VK_B),
+                    "Undo the last step", KeyEvent.VK_B,
                     KeyStroke.getKeyStroke(KeyEvent.VK_F8, 0),
                     mainUI);
             runPauseAction = new RunPauseAction("Pause",
                     new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "Pause22.png"))),
-                    "Pause the currently running program", new Integer(KeyEvent.VK_P),
+                    "Pause the currently running program", KeyEvent.VK_P,
                     KeyStroke.getKeyStroke(KeyEvent.VK_F9, 0),
                     mainUI);
             runStopAction = new RunStopAction("Stop",
                     new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "Stop22.png"))),
-                    "Stop the currently running program", new Integer(KeyEvent.VK_S),
+                    "Stop the currently running program", KeyEvent.VK_S,
                     KeyStroke.getKeyStroke(KeyEvent.VK_F11, 0),
                     mainUI);
             runResetAction = new RunResetAction("Reset",
                     new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "Reset22.png"))),
-                    "Reset MIPS memory and registers", new Integer(KeyEvent.VK_R),
+                    "Reset MIPS memory and registers", KeyEvent.VK_R,
                     KeyStroke.getKeyStroke(KeyEvent.VK_F12, 0),
                     mainUI);
             runClearBreakpointsAction = new RunClearBreakpointsAction("Clear all breakpoints",
                     null,
                     "Clears all execution breakpoints set since the last assemble.",
-                    new Integer(KeyEvent.VK_K),
+                    KeyEvent.VK_K,
                     KeyStroke.getKeyStroke(KeyEvent.VK_K, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),
                     mainUI);
             runToggleBreakpointsAction = new RunToggleBreakpointsAction("Toggle all breakpoints",
                     null,
                     "Disable/enable all breakpoints without clearing (can also click Bkpt column header)",
-                    new Integer(KeyEvent.VK_T),
+                    KeyEvent.VK_T,
                     KeyStroke.getKeyStroke(KeyEvent.VK_T, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),
                     mainUI);
             settingsLabelAction = new SettingsLabelAction("Show Labels Window (symbol table)",
@@ -449,7 +449,7 @@ public class VenusUI extends JFrame {
                     mainUI);
             helpHelpAction = new HelpHelpAction("Help",
                     new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "Help22.png"))),
-                    "Help", new Integer(KeyEvent.VK_H),
+                    "Help", KeyEvent.VK_H,
                     KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0),
                     mainUI);
             helpAboutAction = new HelpAboutAction("About ...", null,
@@ -1051,7 +1051,7 @@ public class VenusUI extends JFrame {
      * @param b Boolean true if the register values have been reset.
      **/
 
-    public static void setReset(boolean b) {
+    public void setReset(boolean b) {
         reset = b;
     }
 
@@ -1061,7 +1061,7 @@ public class VenusUI extends JFrame {
      * @param b true if the MIPS program execution has started.
      **/
 
-    public static void setStarted(boolean b) {
+    public void setStarted(boolean b) {
         started = b;
     }
 
@@ -1071,7 +1071,7 @@ public class VenusUI extends JFrame {
      * @return Boolean true if the register values have been reset.
      **/
 
-    public static boolean getReset() {
+    public boolean getReset() {
         return reset;
     }
 
@@ -1080,7 +1080,7 @@ public class VenusUI extends JFrame {
      *
      * @return true if MIPS program is currently executing.
      **/
-    public static boolean getStarted() {
+    public boolean getStarted() {
         return started;
     }
 
@@ -1185,6 +1185,4 @@ public class VenusUI extends JFrame {
         MouseListener popupListener = new PopupListener(popup);
         this.addMouseListener(popupListener);
     }
-
-
 }

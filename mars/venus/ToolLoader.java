@@ -74,7 +74,6 @@ public class ToolLoader {
             menu = new JMenu(TOOLS_MENU_NAME);
             menu.setMnemonic(KeyEvent.VK_T);
             // traverse array list and build menu
-            ;
             for (MarsTool tool : marsToolList) {
                 menu.add(new ToolAction(tool));
             }

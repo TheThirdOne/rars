@@ -30,9 +30,8 @@ import java.util.Hashtable;
  *
  * @author Slava Pestov
  * @version $Id: InputHandler.java,v 1.14 1999/12/13 03:40:30 sp Exp $
- * @see org.syntax.jedit.DefaultInputHandler
- * <p>
- * 08/12/2002	Clipboard actions	(Oliver Henning)
+ *          <p>
+ *          08/12/2002	Clipboard actions	(Oliver Henning)
  */
 public abstract class InputHandler extends KeyAdapter {
     /**
@@ -89,7 +88,7 @@ public abstract class InputHandler extends KeyAdapter {
     private static Hashtable<String, ActionListener> actions;
 
     static {
-        actions = new Hashtable();
+        actions = new Hashtable<>();
         actions.put("backspace", BACKSPACE);
         actions.put("backspace-word", BACKSPACE_WORD);
         actions.put("delete", DELETE);
@@ -136,7 +135,7 @@ public abstract class InputHandler extends KeyAdapter {
      * @param name The action name
      */
     public static ActionListener getAction(String name) {
-        return (ActionListener) actions.get(name);
+        return actions.get(name);
     }
 
     /**
@@ -145,9 +144,9 @@ public abstract class InputHandler extends KeyAdapter {
      * @param listener The action
      */
     public static String getActionName(ActionListener listener) {
-        Enumeration enumeration = getActions();
+        Enumeration<String> enumeration = getActions();
         while (enumeration.hasMoreElements()) {
-            String name = (String) enumeration.nextElement();
+            String name = enumeration.nextElement();
             ActionListener _listener = getAction(name);
             if (_listener == listener)
                 return name;
@@ -158,7 +157,7 @@ public abstract class InputHandler extends KeyAdapter {
     /**
      * Returns an enumeration of all available actions.
      */
-    public static Enumeration getActions() {
+    public static Enumeration<String> getActions() {
         return actions.keys();
     }
 
@@ -195,7 +194,7 @@ public abstract class InputHandler extends KeyAdapter {
      * Grabs the next key typed event and invokes the specified
      * action with the key as a the action command.
      *
-     * @param action The action
+     * @param listener the actionlistener
      */
     public void grabNextKeyStroke(ActionListener listener) {
         grabAction = listener;

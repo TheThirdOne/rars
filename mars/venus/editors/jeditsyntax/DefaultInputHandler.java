@@ -188,18 +188,15 @@ public class DefaultInputHandler extends InputHandler {
                 // (mnemonic, accelerator).  DPS 4-may-2010
                 mars.Globals.getGui().dispatchEventToMenu(evt);
                 evt.consume();
-                return;
             } else if (o instanceof ActionListener) {
                 currentBindings = bindings;
                 executeAction(((ActionListener) o),
                         evt.getSource(), null);
 
                 evt.consume();
-                return;
             } else if (o instanceof Hashtable) {
                 currentBindings = (Hashtable) o;
                 evt.consume();
-                return;
             }
         }
     }

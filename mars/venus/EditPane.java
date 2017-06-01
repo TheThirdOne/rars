@@ -277,7 +277,7 @@ public class EditPane extends JPanel implements Observer {
      * Set the editing status for this EditPane's associated document.
      * For the argument, use one of the constants from class FileStatus.
      *
-     * @param FileStatus the status constant from class FileStatus
+     * @param fileStatus the status constant from class FileStatus
      */
     public void setFileStatus(int fileStatus) {
         this.fileStatus.setFileStatus(fileStatus);
@@ -442,7 +442,7 @@ public class EditPane extends JPanel implements Observer {
     /**
      * enable or disable checkbox that controls display of line numbers
      *
-     * @param enable True to enable box, false to disable.
+     * @param enabled True to enable box, false to disable.
      */
     public void setShowLineNumbersEnabled(boolean enabled) {
         showLineNumbers.setEnabled(enabled);

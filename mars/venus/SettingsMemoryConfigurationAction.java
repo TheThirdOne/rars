@@ -51,13 +51,8 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 public class SettingsMemoryConfigurationAction extends GuiAction {
 
     JDialog configDialog;
-    JComboBox fontFamilySelector, fontStyleSelector;
-    JSlider fontSizeSelector;
-    JTextField fontSizeDisplay;
     SettingsMemoryConfigurationAction thisAction;
 
-    // Used to determine upon OK, whether or not anything has changed.
-    String initialFontFamily, initialFontStyle, initialFontSize;
 
     /**
      * Create a new SettingsEditorAction.  Has all the GuiAction parameters.
@@ -117,9 +112,9 @@ public class SettingsMemoryConfigurationAction extends GuiAction {
         private Component buildConfigChooser() {
             JPanel chooserPanel = new JPanel(new GridLayout(4, 1));
             ButtonGroup choices = new ButtonGroup();
-            Iterator configurationsIterator = MemoryConfigurations.getConfigurationsIterator();
+            Iterator<MemoryConfiguration> configurationsIterator = MemoryConfigurations.getConfigurationsIterator();
             while (configurationsIterator.hasNext()) {
-                MemoryConfiguration config = (MemoryConfiguration) configurationsIterator.next();
+                MemoryConfiguration config = configurationsIterator.next();
                 ConfigurationButton button = new ConfigurationButton(config);
                 button.addActionListener(this);
                 if (button.isSelected()) {
@@ -268,17 +263,17 @@ public class SettingsMemoryConfigurationAction extends GuiAction {
             // results.  There can be duplicate addresses, so I concatenate the name
             // onto the address to make each key unique.  Then slice off the name upon
             // extraction.
-            TreeMap treeSortedByAddress = new TreeMap();
+            TreeMap<String, String> treeSortedByAddress = new TreeMap<>();
             for (int i = 0; i < configurationItemValues.length; i++) {
                 treeSortedByAddress.put(Binary.intToHexString(configurationItemValues[i]) + configurationItemNames[i], configurationItemNames[i]);
             }
-            Iterator setSortedByAddress = treeSortedByAddress.entrySet().iterator();
-            Map.Entry pair;
+            Iterator<Map.Entry<String, String>> setSortedByAddress = treeSortedByAddress.entrySet().iterator();
+            Map.Entry<String, String> pair;
             int addressStringLength = Binary.intToHexString(configurationItemValues[0]).length();
             for (int i = 0; i < configurationItemValues.length; i++) {
-                pair = (Map.Entry) setSortedByAddress.next();
-                nameDisplay[i].setText((String) pair.getValue());
-                addressDisplay[i].setText(((String) pair.getKey()).substring(0, addressStringLength));
+                pair = setSortedByAddress.next();
+                nameDisplay[i].setText(pair.getValue());
+                addressDisplay[i].setText(pair.getKey().substring(0, addressStringLength));
             }
         }
 
