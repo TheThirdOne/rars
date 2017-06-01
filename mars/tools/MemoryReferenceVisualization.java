@@ -54,7 +54,7 @@ public class MemoryReferenceVisualization extends AbstractMarsToolAndApplication
     private static String heading = "Visualizing memory reference patterns";
 
     // Major GUI components
-    private JComboBox wordsPerUnitSelector, visualizationUnitPixelWidthSelector, visualizationUnitPixelHeightSelector,
+    private JComboBox<String> wordsPerUnitSelector, visualizationUnitPixelWidthSelector, visualizationUnitPixelHeightSelector,
             visualizationPixelWidthSelector, visualizationPixelHeightSelector, displayBaseAddressSelector;
     private JCheckBox drawHashMarksSelector;
     private Graphics drawingArea;
@@ -68,17 +68,17 @@ public class MemoryReferenceVisualization extends AbstractMarsToolAndApplication
 
     // Values for Combo Boxes
 
-    private final String[] wordsPerUnitChoices = {"1", "2", "4", "8", "16", "32", "64", "128", "256", "512", "1024", "2048"};
-    private final int defaultWordsPerUnitIndex = 0;
-    private final String[] visualizationUnitPixelWidthChoices = {"1", "2", "4", "8", "16", "32"};
-    private final int defaultVisualizationUnitPixelWidthIndex = 4;
-    private final String[] visualizationUnitPixelHeightChoices = {"1", "2", "4", "8", "16", "32"};
-    private final int defaultVisualizationUnitPixelHeightIndex = 4;
-    private final String[] displayAreaPixelWidthChoices = {"64", "128", "256", "512", "1024"};
-    private final int defaultDisplayWidthIndex = 2;
-    private final String[] displayAreaPixelHeightChoices = {"64", "128", "256", "512", "1024"};
-    private final int defaultDisplayHeightIndex = 2;
-    private final boolean defaultDrawHashMarks = true;
+    private static final String[] wordsPerUnitChoices = {"1", "2", "4", "8", "16", "32", "64", "128", "256", "512", "1024", "2048"};
+    private static final int defaultWordsPerUnitIndex = 0;
+    private static final String[] visualizationUnitPixelWidthChoices = {"1", "2", "4", "8", "16", "32"};
+    private static final int defaultVisualizationUnitPixelWidthIndex = 4;
+    private static final String[] visualizationUnitPixelHeightChoices = {"1", "2", "4", "8", "16", "32"};
+    private static final int defaultVisualizationUnitPixelHeightIndex = 4;
+    private static final String[] displayAreaPixelWidthChoices = {"64", "128", "256", "512", "1024"};
+    private static final int defaultDisplayWidthIndex = 2;
+    private static final String[] displayAreaPixelHeightChoices = {"64", "128", "256", "512", "1024"};
+    private static final int defaultDisplayHeightIndex = 2;
+    private static final boolean defaultDrawHashMarks = true;
 
     // Values for display canvas.  Note their initialization uses the identifiers just above.
 
@@ -109,7 +109,7 @@ public class MemoryReferenceVisualization extends AbstractMarsToolAndApplication
             20, 30, 40, 50, 100, 200, 300, 400, 500, 1000,   // 11-20
             2000, 3000, 4000, 5000, 10000, 50000, 100000, 500000, 1000000          // 21-29
     };
-    private final int COUNT_INDEX_INIT = 10;  // array element #10, arbitrary starting point
+    private static final int COUNT_INDEX_INIT = 10;  // array element #10, arbitrary starting point
 
     // The next four are initialized dynamically in initializeDisplayBaseChoices()
     private String[] displayBaseAddressChoices;
@@ -312,7 +312,7 @@ public class MemoryReferenceVisualization extends AbstractMarsToolAndApplication
                         updateDisplay();
                     }
                 });
-        wordsPerUnitSelector = new JComboBox(wordsPerUnitChoices);
+        wordsPerUnitSelector = new JComboBox<>(wordsPerUnitChoices);
         wordsPerUnitSelector.setEditable(false);
         wordsPerUnitSelector.setBackground(backgroundColor);
         wordsPerUnitSelector.setSelectedIndex(defaultWordsPerUnitIndex);
@@ -324,7 +324,7 @@ public class MemoryReferenceVisualization extends AbstractMarsToolAndApplication
                         reset();
                     }
                 });
-        visualizationUnitPixelWidthSelector = new JComboBox(visualizationUnitPixelWidthChoices);
+        visualizationUnitPixelWidthSelector = new JComboBox<>(visualizationUnitPixelWidthChoices);
         visualizationUnitPixelWidthSelector.setEditable(false);
         visualizationUnitPixelWidthSelector.setBackground(backgroundColor);
         visualizationUnitPixelWidthSelector.setSelectedIndex(defaultVisualizationUnitPixelWidthIndex);
@@ -337,7 +337,7 @@ public class MemoryReferenceVisualization extends AbstractMarsToolAndApplication
                         updateDisplay();
                     }
                 });
-        visualizationUnitPixelHeightSelector = new JComboBox(visualizationUnitPixelHeightChoices);
+        visualizationUnitPixelHeightSelector = new JComboBox<>(visualizationUnitPixelHeightChoices);
         visualizationUnitPixelHeightSelector.setEditable(false);
         visualizationUnitPixelHeightSelector.setBackground(backgroundColor);
         visualizationUnitPixelHeightSelector.setSelectedIndex(defaultVisualizationUnitPixelHeightIndex);
@@ -350,7 +350,7 @@ public class MemoryReferenceVisualization extends AbstractMarsToolAndApplication
                         updateDisplay();
                     }
                 });
-        visualizationPixelWidthSelector = new JComboBox(displayAreaPixelWidthChoices);
+        visualizationPixelWidthSelector = new JComboBox<>(displayAreaPixelWidthChoices);
         visualizationPixelWidthSelector.setEditable(false);
         visualizationPixelWidthSelector.setBackground(backgroundColor);
         visualizationPixelWidthSelector.setSelectedIndex(defaultDisplayWidthIndex);
@@ -366,7 +366,7 @@ public class MemoryReferenceVisualization extends AbstractMarsToolAndApplication
                         updateDisplay();
                     }
                 });
-        visualizationPixelHeightSelector = new JComboBox(displayAreaPixelHeightChoices);
+        visualizationPixelHeightSelector = new JComboBox<>(displayAreaPixelHeightChoices);
         visualizationPixelHeightSelector.setEditable(false);
         visualizationPixelHeightSelector.setBackground(backgroundColor);
         visualizationPixelHeightSelector.setSelectedIndex(defaultDisplayHeightIndex);
@@ -382,7 +382,7 @@ public class MemoryReferenceVisualization extends AbstractMarsToolAndApplication
                         updateDisplay();
                     }
                 });
-        displayBaseAddressSelector = new JComboBox(displayBaseAddressChoices);
+        displayBaseAddressSelector = new JComboBox<>(displayBaseAddressChoices);
         displayBaseAddressSelector.setEditable(false);
         displayBaseAddressSelector.setBackground(backgroundColor);
         displayBaseAddressSelector.setSelectedIndex(defaultBaseAddressIndex);
@@ -512,7 +512,7 @@ public class MemoryReferenceVisualization extends AbstractMarsToolAndApplication
 
     // Will return int equivalent of specified combo box's current selection.
     // The selection must be a String that parses to an int.
-    private int getIntComboBoxSelection(JComboBox comboBox) {
+    private int getIntComboBoxSelection(JComboBox<String> comboBox) {
         try {
             return Integer.parseInt((String) comboBox.getSelectedItem());
         } catch (NumberFormatException nfe) {
@@ -747,7 +747,7 @@ public class MemoryReferenceVisualization extends AbstractMarsToolAndApplication
     // Each object represents beginning of a counter value range (non-negative integer) and
     // color for rendering the range.  High end of the range is defined as low end of the
     // next range minus 1.  For last range, high end is Integer.MAX_VALUE.
-    private class CounterColor implements Comparable {
+    private class CounterColor implements Comparable<CounterColor> {
         private int colorRangeStart;
         private Color associatedColor;
 
@@ -757,12 +757,8 @@ public class MemoryReferenceVisualization extends AbstractMarsToolAndApplication
         }
 
         // Necessary for sorting in ascending order of range low end.
-        public int compareTo(Object other) {
-            if (other instanceof CounterColor) {
-                return this.colorRangeStart - ((CounterColor) other).colorRangeStart;
-            } else {
-                throw new ClassCastException();
-            }
+        public int compareTo(CounterColor other) {
+            return this.colorRangeStart - other.colorRangeStart;
         }
     }
 

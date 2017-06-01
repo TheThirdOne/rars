@@ -51,7 +51,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 
-public class ProgramStatement {
+public class ProgramStatement implements Comparable<ProgramStatement> {
     private MIPSprogram sourceMIPSprogram;
     private String source, basicAssemblyStatement, machineStatement;
     private TokenList originalTokenList, strippedTokenList;
@@ -156,6 +156,11 @@ public class ProgramStatement {
         this.basicStatementList = buildBasicStatementListFromBinaryCode(binaryStatement, instr, operands, numOperands);
     }
 
+    public int compareTo(ProgramStatement obj1) {
+        int addr1 = getAddress();
+        int addr2 = obj1.getAddress();
+        return (addr1 < 0 && addr2 >= 0 || addr1 >= 0 && addr2 < 0) ? addr2 : addr1 - addr2;
+    }
 
     /////////////////////////////////////////////////////////////////////////////
 

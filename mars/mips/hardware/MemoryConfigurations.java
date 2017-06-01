@@ -180,7 +180,7 @@ public class MemoryConfigurations {
         }
     }
 
-    public static Iterator getConfigurationsIterator() {
+    public static Iterator<MemoryConfiguration> getConfigurationsIterator() {
         if (configurations == null) {
             buildConfigurationCollection();
         }
@@ -189,9 +189,9 @@ public class MemoryConfigurations {
     }
 
     public static MemoryConfiguration getConfigurationByName(String name) {
-        Iterator configurationsIterator = getConfigurationsIterator();
+        Iterator<MemoryConfiguration> configurationsIterator = getConfigurationsIterator();
         while (configurationsIterator.hasNext()) {
-            MemoryConfiguration config = (MemoryConfiguration) configurationsIterator.next();
+            MemoryConfiguration config = configurationsIterator.next();
             if (name.equals(config.getConfigurationIdentifier())) {
                 return config;
             }

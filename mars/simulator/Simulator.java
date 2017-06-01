@@ -129,7 +129,7 @@ public class Simulator extends Observable {
         // Condition should only be true if run from command-line instead of GUI.
         // If so, just stick around until execution thread is finished.
         if (actor == null) {
-            Object dun = simulatorThread.get(); // this should emulate join()
+            simulatorThread.get(); // this should emulate join()
             ProcessingException pe = simulatorThread.pe;
             boolean done = simulatorThread.done;
             if (done) SystemIO.resetFiles(); // close any files opened in MIPS progra
@@ -277,7 +277,7 @@ public class Simulator extends Observable {
             Simulator.getInstance().notifyObserversOfExecutionStart(maxSteps, pc);
 
             RegisterFile.initializeProgramCounter(pc);
-            ProgramStatement statement = null;
+            ProgramStatement statement;
             try {
                 statement = Globals.memory.getStatement(RegisterFile.getProgramCounter());
             } catch (AddressErrorException e) {

@@ -71,13 +71,6 @@ public final class Directives {
     private String descriptor;
     private String description; // help text
 
-    private Directives() {
-        // private ctor assures no objects can be created other than those above.
-        this.descriptor = "generic";
-        this.description = "";
-        directiveList.add(this);
-    }
-
     private Directives(String name, String description) {
         this.descriptor = name;
         this.description = description;

@@ -294,10 +294,7 @@ public class DigitalLabSim extends AbstractMarsToolAndApplication {
         } else {
             updateMMIOControlAndData(OUT_ADRESS_HEXA_KEYBOARD, 0);
         }
-        if ((row & 0xF0) != 0)
-            KeyboardInterruptOnOff = true;
-        else
-            KeyboardInterruptOnOff = false;
+        KeyboardInterruptOnOff = (row & 0xF0) != 0;
     }
 
     public class HexaKeyboard extends JPanel {

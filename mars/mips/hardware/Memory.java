@@ -148,7 +148,7 @@ public class Memory extends Observable {
     // and high end of address range, but retrieval from the tree has to be based
     // on target address being ANYWHERE IN THE RANGE (not an exact key match).
 
-    Collection<MemoryObservable> observables = getNewMemoryObserversCollection();
+    private Collection<MemoryObservable> observables = getNewMemoryObserversCollection();
 
     // The data segment is allocated in blocks of 1024 ints (4096 bytes).  Each block is
     // referenced by a "block table" entry, and the table has 1024 entries.  The capacity
@@ -1210,7 +1210,7 @@ public class Memory extends Observable {
     /////////////////////////////////////////////////////////////////////////
     // Private class whose objects will represent an observable-observer pair
     // for a given memory address or range.
-    private class MemoryObservable extends Observable implements Comparable {
+    private class MemoryObservable extends Observable implements Comparable<MemoryObservable> {
         private int lowAddress, highAddress;
 
         public MemoryObservable(Observer obs, int startAddr, int endAddr) {
@@ -1230,11 +1230,7 @@ public class Memory extends Observable {
 
         // Useful to have for future refactoring, if it actually becomes worthwhile to sort
         // these or put 'em in a tree (rather than sequential search through list).
-        public int compareTo(Object obj) {
-            if (!(obj instanceof MemoryObservable)) {
-                throw new ClassCastException();
-            }
-            MemoryObservable mo = (MemoryObservable) obj;
+        public int compareTo(MemoryObservable mo) {
             if (this.lowAddress < mo.lowAddress || this.lowAddress == mo.lowAddress && this.highAddress < mo.highAddress) {
                 return -1;
             }

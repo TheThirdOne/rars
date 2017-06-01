@@ -116,7 +116,7 @@ public class KeyboardAndDisplaySimulator extends AbstractMarsToolAndApplication 
     private JScrollPane displayScrollPane;
     private JTextArea display;
     private JPanel displayPanel, displayOptions;
-    private JComboBox delayTechniqueChooser;
+    private JComboBox<TransmitterDelayTechnique> delayTechniqueChooser;
     private DelayLengthPanel delayLengthPanel;
     private JSlider delayLengthSlider;
     private JCheckBox displayAfterDelayCheckBox;
@@ -413,7 +413,7 @@ public class KeyboardAndDisplaySimulator extends AbstractMarsToolAndApplication 
         int cols = (int) size.getWidth();
         int rows = (int) size.getHeight();
         int caretPosition = display.getCaretPosition();
-        String stringCaretPosition = "";
+        String stringCaretPosition;
         // display position as stream or 2D depending on random access
         if (displayRandomAccessMode) {
             //             if ( caretPosition == rows*(columns+1)+1) {
@@ -639,7 +639,7 @@ public class KeyboardAndDisplaySimulator extends AbstractMarsToolAndApplication 
 
         displayPanel.add(displayScrollPane);
         displayOptions = new JPanel();
-        delayTechniqueChooser = new JComboBox(delayTechniques);
+        delayTechniqueChooser = new JComboBox<>(delayTechniques);
         delayTechniqueChooser.setToolTipText("Technique for determining simulated transmitter device processing delay");
         delayTechniqueChooser.addActionListener(
                 new ActionListener() {
@@ -882,7 +882,7 @@ public class KeyboardAndDisplaySimulator extends AbstractMarsToolAndApplication 
     //
 
     private interface TransmitterDelayTechnique {
-        public int generateDelay(double parameter);
+        int generateDelay(double parameter);
     }
 
     // Delay value is fixed, and equal to slider value.

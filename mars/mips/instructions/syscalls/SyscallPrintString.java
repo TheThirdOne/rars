@@ -60,7 +60,7 @@ public class SyscallPrintString extends AbstractSyscall {
             ch = (char) Globals.memory.getByte(byteAddress);
             // won't stop until NULL byte reached!
             while (ch != 0) {
-                SystemIO.printString(new Character(ch).toString());
+                SystemIO.printString(Character.toString(ch));
                 byteAddress++;
                 ch = (char) Globals.memory.getByte(byteAddress);
             }

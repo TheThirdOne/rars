@@ -264,29 +264,33 @@ public class MarsBot implements Observer, MarsTool {
                 } else if (address == ADDR_LEAVETRACK) {
                     message = "MarsBot.update: got leave track directive value ";
 
-                    // If we HAD NOT been leaving a track, but we should NOW leave
-                    // a track, put start point into array.
-                    if (MarsBotLeaveTrack == false && notice.getValue() == 1) {
-                        MarsBotLeaveTrack = true;
-                        arrayOfTrack[trackIndex] = new Point((int) MarsBotXPosition, (int) MarsBotYPosition);
-                        trackIndex++;  // the index of the end point
-                    }
-                    // If we HAD NOT been leaving a track, and get another directive
-                    // to NOT leave a track, do nothing (nothing to do).
-                    else if (MarsBotLeaveTrack == false && notice.getValue() == 0) {
-                        // NO ACTION
-                    }
-                    // If we HAD been leaving a track, and get another directive
-                    // to LEAVE a track, do nothing (nothing to do).
-                    else if (MarsBotLeaveTrack == true && notice.getValue() == 1) {
-                        // NO ACTION
-                    }
-                    // If we HAD been leaving a track, and get another directive
-                    // to NOT leave a track, put end point into array.
-                    else if (MarsBotLeaveTrack == true && notice.getValue() == 0) {
-                        MarsBotLeaveTrack = false;
-                        arrayOfTrack[trackIndex] = new Point((int) MarsBotXPosition, (int) MarsBotYPosition);
-                        trackIndex++;  // the index of the next start point
+
+                    if (MarsBotLeaveTrack) {
+                        // If we HAD been leaving a track, and get another directive
+                        // to LEAVE a track, do nothing (nothing to do).
+                        if (notice.getValue() == 1) {
+                            // NO ACTION
+                        }
+                        // If we HAD been leaving a track, and get another directive
+                        // to NOT leave a track, put end point into array.
+                        else if (notice.getValue() == 0) {
+                            MarsBotLeaveTrack = false;
+                            arrayOfTrack[trackIndex] = new Point((int) MarsBotXPosition, (int) MarsBotYPosition);
+                            trackIndex++;  // the index of the next start point
+                        }
+                    } else {
+                        // If we HAD NOT been leaving a track, but we should NOW leave
+                        // a track, put start point into array.
+                        if (notice.getValue() == 1) {
+                            MarsBotLeaveTrack = true;
+                            arrayOfTrack[trackIndex] = new Point((int) MarsBotXPosition, (int) MarsBotYPosition);
+                            trackIndex++;  // the index of the end point
+                        }
+                        // If we HAD NOT been leaving a track, and get another directive
+                        // to NOT leave a track, do nothing (nothing to do).
+                        else if (!MarsBotLeaveTrack && notice.getValue() == 0) {
+                            // NO ACTION
+                        }
                     }
 
                     //System.out.println("MarsBotDisplay.paintComponent: putting point in track array at " + trackIndex);

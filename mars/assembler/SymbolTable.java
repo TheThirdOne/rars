@@ -156,7 +156,7 @@ public class SymbolTable {
      **/
 
     public Symbol getSymbolGivenAddress(String s) {
-        int address = 0;
+        int address;
         try {
             address = mars.util.Binary.stringToInt(s);// DPS 2-Aug-2010: was Integer.parseInt(s) but croaked on hex    
         } catch (NumberFormatException e) {
@@ -206,7 +206,7 @@ public class SymbolTable {
      * @return An ArrayList of Symbol objects.
      **/
 
-    public ArrayList getTextSymbols() {
+    public ArrayList<Symbol> getTextSymbols() {
         ArrayList<Symbol> list = new ArrayList<>();
         for (Symbol sym : table) {
             if (!sym.getType()) {
@@ -263,7 +263,6 @@ public class SymbolTable {
             label.setAddress(replacementAddress);
             label = getSymbolGivenAddress(Integer.toString(originalAddress));
         }
-        return;
     }
 
     /**

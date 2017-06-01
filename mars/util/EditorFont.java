@@ -172,6 +172,10 @@ public class EditorFont {
         return new Font(family, styleStringToStyleInt(style), sizeStringToSizeInt(size));
     }
 
+    private static final String TAB_STRING = "\t";
+    private static final char TAB_CHAR = '\t';
+    private static final String SPACES = "                                                  ";
+
     /**
      * Handy utility to produce a string that substitutes spaces for all tab characters
      * in the given string.  The number of spaces generated is based on the position of
@@ -181,10 +185,6 @@ public class EditorFont {
      * @return New string in which spaces are substituted for tabs
      * @throws NullPointerException if string is null
      */
-    private static final String TAB_STRING = "\t";
-    private static final char TAB_CHAR = '\t';
-    private static final String SPACES = "                                                  ";
-
     public static String substituteSpacesForTabs(String string) {
         return substituteSpacesForTabs(string, Globals.getSettings().getEditorTabSize());
     }
@@ -222,9 +222,9 @@ public class EditorFont {
         String[] availableFamilies = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
         Arrays.sort(availableFamilies); // not sure if necessary; is the list already alphabetical?
         int k = 0;
-        for (int i = 0; i < allCommonFamilies.length; i++) {
-            if (Arrays.binarySearch(availableFamilies, allCommonFamilies[i]) >= 0) {
-                result[k++] = allCommonFamilies[i];
+        for (String family : allCommonFamilies) {
+            if (Arrays.binarySearch(availableFamilies, family) >= 0) {
+                result[k++] = family;
             }
         }
         // If not all are found, creat a new array with only the ones that are.

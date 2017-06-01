@@ -367,7 +367,6 @@ public class SystemIO {
         // that file descriptor.
 
         int retValue = -1;
-        char ch[] = {' '}; // Need an array to convert to String
         FileInputStream inputStream;
         FileOutputStream outputStream;
         int fdToUse;
@@ -397,8 +396,7 @@ public class SystemIO {
                 outputStream = new FileOutputStream(filename, ((flags & O_APPEND) != 0));
                 FileIOData.setStreamInUse(fdToUse, outputStream); // Save stream for later use
             } catch (FileNotFoundException e) {
-                fileErrorString = new String(
-                        "File " + filename + " not found, open for output.");
+                fileErrorString = "File " + filename + " not found, open for output.";
                 retValue = -1;
             }
         }

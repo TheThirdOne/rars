@@ -348,7 +348,7 @@ public class InstructionSet {
                         Instruction.INSTRUCTION_LENGTH : 0));
     }
 
-    private static class MatchMap implements Comparable {
+    private static class MatchMap implements Comparable<MatchMap> {
         private int mask;
         private int maskLength; // number of 1 bits in mask
         private HashMap<Integer, BasicInstruction> matchMap;
@@ -370,10 +370,9 @@ public class InstructionSet {
             return o instanceof MatchMap && mask == ((MatchMap) o).mask;
         }
 
-        public int compareTo(Object other) {
-            MatchMap o = (MatchMap) other;
-            int d = o.maskLength - this.maskLength;
-            if (d == 0) d = this.mask - o.mask;
+        public int compareTo(MatchMap other) {
+            int d = other.maskLength - this.maskLength;
+            if (d == 0) d = this.mask - other.mask;
             return d;
         }
 

@@ -246,27 +246,6 @@ public class Globals {
     }
 
     /**
-     * Get list of MarsTools that reside outside the MARS distribution.
-     * Currently this is done by adding the tool's path name to the list
-     * of values for the external_tools property. Use ";" as delimiter!
-     *
-     * @return ArrayList.  Each item is file path to .class file
-     * of a class that implements MarsTool.  If none, returns empty list.
-     */
-    public static ArrayList<String> getExternalTools() {
-        ArrayList<String> toolsList = new ArrayList<>();
-        String delimiter = ";";
-        String tools = getPropertyEntry(configPropertiesFile, "ExternalTools");
-        if (tools != null) {
-            StringTokenizer st = new StringTokenizer(tools, delimiter);
-            while (st.hasMoreTokens()) {
-                toolsList.add(st.nextToken());
-            }
-        }
-        return toolsList;
-    }
-
-    /**
      * Read and return property file value (if any) for requested property.
      *
      * @param propertiesFile name of properties file (do NOT include filename extension,

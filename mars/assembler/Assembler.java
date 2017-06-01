@@ -11,7 +11,6 @@ import mars.util.SystemIO;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 
 /*
  Copyright (c) 2003-2012,  Pete Sanderson and Kenneth Vollmar
@@ -51,14 +50,12 @@ import java.util.Comparator;
  **/
 
 public class Assembler {
-    private ArrayList<ProgramStatement> machineList;
     private ErrorList errors;
     private boolean inDataSegment; // status maintained by parser
     private boolean inMacroSegment; // status maintained by parser, true if in
     // macro definition segment
     private int externAddress;
     private boolean autoAlign;
-    private Directives currentDirective;
     private Directives dataDirective;
     private MIPSprogram fileCurrentlyBeingAssembled;
     private TokenList globalDeclarationList;
@@ -68,77 +65,12 @@ public class Assembler {
             accumulatedDataSegmentForwardReferences;
 
     /**
-     * Parse and generate machine code for the given MIPS program. It must have
-     * already been tokenized. Warnings are not considered errors.
-     *
-     * @param p                        A MIPSprogram object representing the program source.
-     * @param extendedAssemblerEnabled A boolean value that if true permits use of extended (pseudo)
-     *                                 instructions in the source code. If false, these are flagged
-     *                                 as errors.
-     * @return An ArrayList representing the assembled program. Each member of
-     * the list is a ProgramStatement object containing the source,
-     * intermediate, and machine binary representations of a program
-     * statement.
-     * @see ProgramStatement
-     **/
-    public ArrayList assemble(MIPSprogram p, boolean extendedAssemblerEnabled)
-            throws ProcessingException {
-        return assemble(p, extendedAssemblerEnabled, false);
-    }
-
-    /**
-     * Parse and generate machine code for the given MIPS program. It must have
-     * already been tokenized.
-     *
-     * @param p                        A MIPSprogram object representing the program source.
-     * @param extendedAssemblerEnabled A boolean value that if true permits use of extended (pseudo)
-     *                                 instructions in the source code. If false, these are flagged
-     *                                 as errors.
-     * @param warningsAreErrors        A boolean value - true means assembler warnings will be
-     *                                 considered errors and terminate the assemble; false means the
-     *                                 assembler will produce warning message but otherwise ignore
-     *                                 warnings.
-     * @return An ArrayList representing the assembled program. Each member of
-     * the list is a ProgramStatement object containing the source,
-     * intermediate, and machine binary representations of a program
-     * statement.
-     * @see ProgramStatement
-     **/
-    public ArrayList assemble(MIPSprogram p, boolean extendedAssemblerEnabled,
-                              boolean warningsAreErrors) throws ProcessingException {
-        ArrayList<MIPSprogram> programFiles = new ArrayList<>();
-        programFiles.add(p);
-        return this.assemble(programFiles, extendedAssemblerEnabled, warningsAreErrors);
-    }
-
-    /**
      * Get list of assembler errors and warnings
      *
      * @return ErrorList of any assembler errors and warnings.
      */
     public ErrorList getErrorList() {
         return errors;
-    }
-
-    /**
-     * Parse and generate machine code for the given MIPS program. All source
-     * files must have already been tokenized. Warnings will not be considered
-     * errors.
-     *
-     * @param tokenizedProgramFiles    An ArrayList of MIPSprogram objects, each produced from a
-     *                                 different source code file, representing the program source.
-     * @param extendedAssemblerEnabled A boolean value that if true permits use of extended (pseudo)
-     *                                 instructions in the source code. If false, these are flagged
-     *                                 as errors.
-     * @return An ArrayList representing the assembled program. Each member of
-     * the list is a ProgramStatement object containing the source,
-     * intermediate, and machine binary representations of a program
-     * statement. Returns null if incoming array list is null or empty.
-     * @see ProgramStatement
-     **/
-    public ArrayList<ProgramStatement> assemble(ArrayList<MIPSprogram> tokenizedProgramFiles, boolean extendedAssemblerEnabled)
-            throws ProcessingException {
-        return assemble(tokenizedProgramFiles, extendedAssemblerEnabled, false);
     }
 
     /**
@@ -174,7 +106,7 @@ public class Assembler {
         accumulatedDataSegmentForwardReferences = new DataSegmentForwardReferences();
         Globals.symbolTable.clear();
         Globals.memory.clear();
-        this.machineList = new ArrayList<>();
+        ArrayList<ProgramStatement> machineList = new ArrayList<>();
         this.errors = new ErrorList();
         if (Globals.debug)
             System.out.println("Assembler first pass begins:");
@@ -270,7 +202,7 @@ public class Assembler {
                     throw new ProcessingException(errors);
                 }
                 if (statement.getInstruction() instanceof BasicInstruction) {
-                    this.machineList.add(statement);
+                    machineList.add(statement);
                 } else {
                     // It is a pseudo-instruction:
                     // 1. Fetch its basic instruction template list
@@ -341,7 +273,7 @@ public class Assembler {
                                 newTokenList, instr, textAddress.get(), statement.getSourceLine());
                         textAddress.increment(Instruction.INSTRUCTION_LENGTH);
                         ps.buildBasicStatementFromBasicInstruction(errors);
-                        this.machineList.add(ps);
+                        machineList.add(ps);
                     } // end of FOR loop, repeated for each template in list.
                 } // end of ELSE part for extended instruction.
 
@@ -353,7 +285,7 @@ public class Assembler {
         // Generates machine code statements from the list of basic assembler statements
         // and writes the statement to memory.
 
-        for (ProgramStatement statement : this.machineList) {
+        for (ProgramStatement statement : machineList) {
             if (errors.errorLimitExceeded())
                 break;
             statement.buildMachineStatementFromBasicStatement(errors);
@@ -380,21 +312,21 @@ public class Assembler {
         // Such occurances will be flagged as errors.
         // Yes, I would not have to sort here if I used SortedSet rather than ArrayList
         // but in case of duplicate I like having both statements handy for error message.
-        Collections.sort(this.machineList, new ProgramStatementComparator());
-        catchDuplicateAddresses(this.machineList, errors);
+        Collections.sort(machineList);
+        catchDuplicateAddresses(machineList, errors);
         if (errors.errorsOccurred() || errors.warningsOccurred() && warningsAreErrors) {
             throw new ProcessingException(errors);
         }
-        return this.machineList;
+        return machineList;
     } // assemble()
 
     // //////////////////////////////////////////////////////////////////////
     // Will check for duplicate text addresses, which can happen inadvertantly when using
     // operand on .text directive. Will generate error message for each one that occurs.
-    private void catchDuplicateAddresses(ArrayList instructions, ErrorList errors) {
+    private void catchDuplicateAddresses(ArrayList<ProgramStatement> instructions, ErrorList errors) {
         for (int i = 0; i < instructions.size() - 1; i++) {
-            ProgramStatement ps1 = (ProgramStatement) instructions.get(i);
-            ProgramStatement ps2 = (ProgramStatement) instructions.get(i + 1);
+            ProgramStatement ps1 = instructions.get(i);
+            ProgramStatement ps2 = instructions.get(i + 1);
             if (ps1.getAddress() == ps2.getAddress()) {
                 errors.add(new ErrorMessage(ps2.getSourceMIPSprogram(), ps2.getSourceLine(), 0,
                         "Duplicate text segment address: "
@@ -1280,33 +1212,6 @@ public class Assembler {
     }
 
     // ///////////////////////////////////////////////////////////////////////////////////
-    // Private class used as Comparator to sort the final ArrayList of
-    // ProgramStatements.
-    // Sorting is based on unsigned integer value of
-    // ProgramStatement.getAddress()
-    private class ProgramStatementComparator implements Comparator {
-        // Will be used to sort the collection. Unsigned int compare, because
-        // all kernel 32-bit
-        // addresses have 1 in high order bit, which makes the int negative.
-        // "Unsigned" compare
-        // is needed when signs of the two operands differ.
-        public int compare(Object obj1, Object obj2) {
-            if (obj1 instanceof ProgramStatement && obj2 instanceof ProgramStatement) {
-                int addr1 = ((ProgramStatement) obj1).getAddress();
-                int addr2 = ((ProgramStatement) obj2).getAddress();
-                return (addr1 < 0 && addr2 >= 0 || addr1 >= 0 && addr2 < 0) ? addr2 : addr1 - addr2;
-            } else {
-                throw new ClassCastException();
-            }
-        }
-
-        // Take a hard line.
-        public boolean equals(Object obj) {
-            return this == obj;
-        }
-    }
-
-    // ///////////////////////////////////////////////////////////////////////////////////
     // Private class to simultaneously track addresses in both user and kernel
     // address spaces.
     // Instantiate one for data segment and one for text segment.
@@ -1398,8 +1303,7 @@ public class Assembler {
         // is applied and the forward reference removed. If search is not successful,
         // the forward reference remains (it is either undefined or a global label
         // defined in a file not yet parsed).
-        private int resolve(SymbolTable localSymtab) {
-            int count = 0;
+        private void resolve(SymbolTable localSymtab) {
             int labelAddress;
             DataSegmentForwardReference entry;
             for (int i = 0; i < forwardReferenceList.size(); i++) {
@@ -1413,10 +1317,8 @@ public class Assembler {
                     }
                     forwardReferenceList.remove(i);
                     i--; // needed because removal shifted the remaining list indices down
-                    count++;
                 }
             }
-            return count;
         }
 
         // Call this when you are confident that remaining list entries are to

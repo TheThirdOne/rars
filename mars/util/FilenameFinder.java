@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.StringTokenizer;
@@ -99,7 +100,7 @@ public class FilenameFinder {
         //
         URI uri;
         try {
-            Enumeration urls = classLoader.getResources(directoryPath);
+            Enumeration<URL> urls = classLoader.getResources(directoryPath);
 
             while (urls.hasMoreElements()) {
                 uri = new URI(urls.nextElement().toString());
@@ -332,7 +333,7 @@ public class FilenameFinder {
      * @return a FileFilter object that accepts files with given extensions, and directories if so indicated.
      */
 
-    public static FileFilter getFileFilter(ArrayList extensions, String description, boolean acceptDirectories) {
+    public static FileFilter getFileFilter(ArrayList<String> extensions, String description, boolean acceptDirectories) {
         return new MarsFileFilter(extensions, description, acceptDirectories);
     }
 
@@ -345,7 +346,7 @@ public class FilenameFinder {
      * @return a FileFilter object that accepts files with given extensions, and directories if so indicated.
      */
 
-    public static FileFilter getFileFilter(ArrayList extensions, String description) {
+    public static FileFilter getFileFilter(ArrayList<String> extensions, String description) {
         return getFileFilter(extensions, description, true);
     }
 
@@ -400,9 +401,9 @@ public class FilenameFinder {
         }
         try {
             ZipFile zf = new ZipFile(new File(jarName));
-            Enumeration list = zf.entries();
+            Enumeration<? extends ZipEntry> list = zf.entries();
             while (list.hasMoreElements()) {
-                ZipEntry ze = (ZipEntry) list.nextElement();
+                ZipEntry ze = list.nextElement();
                 if (ze.getName().startsWith(directoryPath + "/") &&
                         fileExtensionMatch(ze.getName(), fileExtension)) {
                     nameList.add(ze.getName().substring(ze.getName().lastIndexOf('/') + 1));
@@ -458,13 +459,13 @@ public class FilenameFinder {
         // We will attach it to description of the extensions.  For example, if the extensions
         // given are s and asm and the description is "Assembler Programs" the full description
         // generated here will be "Assembler Programs (*.s; *.asm)"
-        private String buildFullDescription(String description, ArrayList extensions) {
+        private String buildFullDescription(String description, ArrayList<String> extensions) {
             String result = (description == null) ? "" : description;
             if (extensions.size() > 0) {
                 result += "  (";
             }
             for (int i = 0; i < extensions.size(); i++) {
-                String extension = (String) extensions.get(i);
+                String extension = extensions.get(i);
                 if (extension != null && extension.length() > 0) {
                     result += ((i == 0) ? "" : "; ") + "*" + ((extension.charAt(0) == '.') ? "" : ".") + extension;
                 }

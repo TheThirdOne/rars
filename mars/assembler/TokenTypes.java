@@ -156,7 +156,7 @@ public final class TokenTypes {
 
             int i = Binary.stringToInt(value);   // KENV 1/6/05
 
-            /***************************************************************************
+            /* **************************************************************************
              *  MODIFICATION AND COMMENT, DPS 3-July-2008
              *
              * The modifications of January 2005 documented below are being rescinded.
@@ -194,7 +194,7 @@ public final class TokenTypes {
              *     }
              *    // ------------- END    KENV 1/4/05   MODIFICATIONS --------------
              *
-             **************************  END DPS 3-July-2008 COMMENTS *******************************/
+             * *************************  END DPS 3-July-2008 COMMENTS *******************************/
             // shift operands must be in range 0-31
             if (i >= 0 && i <= 31) {
                 return TokenTypes.INTEGER_5;
