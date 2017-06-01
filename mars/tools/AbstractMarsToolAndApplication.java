@@ -2,6 +2,7 @@ package mars.tools;
 
 import mars.Globals;
 import mars.MIPSprogram;
+import mars.Settings;
 import mars.mips.hardware.*;
 import mars.util.FilenameFinder;
 
@@ -699,12 +700,12 @@ public abstract class AbstractMarsToolAndApplication extends JFrame implements M
     // called when the Assemble and Run button is pressed.  Used only by stand-alone app.
     private class CreateAssembleRunMIPSprogram implements Runnable {
         public void run() {
-            String noSupportForExceptionHandler = null;  // no auto-loaded exception handlers.
+            //String noSupportForExceptionHandler = null;  // no auto-loaded exception handlers.
             // boolean extendedAssemblerEnabled = true;     // In this context, no reason to constrain.
             // boolean warningsAreErrors = false;           // Ditto.
 
             String exceptionHandler = null;
-            if (Globals.getSettings().getExceptionHandlerEnabled() &&
+            if (Globals.getSettings().getBooleanSetting(Settings.EXCEPTION_HANDLER_ENABLED) &&
                     Globals.getSettings().getExceptionHandler() != null &&
                     Globals.getSettings().getExceptionHandler().length() > 0) {
                 exceptionHandler = Globals.getSettings().getExceptionHandler();
@@ -733,7 +734,8 @@ public abstract class AbstractMarsToolAndApplication extends JFrame implements M
             }
 
             try {
-                program.assemble(programsToAssemble, Globals.getSettings().getExtendedAssemblerEnabled(), Globals.getSettings().getWarningsAreErrors());
+                program.assemble(programsToAssemble, Globals.getSettings().getBooleanSetting(Settings.EXTENDED_ASSEMBLER_ENABLED),
+                        Globals.getSettings().getBooleanSetting(Settings.WARNINGS_ARE_ERRORS));
             } catch (mars.ProcessingException pe) {
                 operationStatusMessages.displayTerminatingMessage("Assembly Error: " + fileToAssemble);
                 return;
@@ -759,7 +761,6 @@ public abstract class AbstractMarsToolAndApplication extends JFrame implements M
                 observing = false;
                 operationStatusMessages.displayTerminatingMessage(terminatingMessage + fileToAssemble);
             }
-            return;
         }
     }
 

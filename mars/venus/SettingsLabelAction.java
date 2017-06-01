@@ -1,6 +1,7 @@
 package mars.venus;
 
 import mars.Globals;
+import mars.Settings;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -47,7 +48,7 @@ public class SettingsLabelAction extends GuiAction {
     public void actionPerformed(ActionEvent e) {
         boolean visibility = ((JCheckBoxMenuItem) e.getSource()).isSelected();
         Globals.getGui().getMainPane().getExecutePane().setLabelWindowVisibility(visibility);
-        Globals.getSettings().setLabelWindowVisibility(visibility);
+        Globals.getSettings().setBooleanSetting(Settings.LABEL_WINDOW_VISIBILITY, visibility);
     }
 
 }

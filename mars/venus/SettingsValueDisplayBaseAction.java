@@ -1,6 +1,7 @@
 package mars.venus;
 
 import mars.Globals;
+import mars.Settings;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -47,7 +48,7 @@ public class SettingsValueDisplayBaseAction extends GuiAction {
     public void actionPerformed(ActionEvent e) {
         boolean isHex = ((JCheckBoxMenuItem) e.getSource()).isSelected();
         Globals.getGui().getMainPane().getExecutePane().getValueDisplayBaseChooser().setSelected(isHex);
-        Globals.getSettings().setDisplayValuesInHex(isHex);
+        Globals.getSettings().setBooleanSetting(Settings.DISPLAY_VALUES_IN_HEX, isHex);
     }
 
 }

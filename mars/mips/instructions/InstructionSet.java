@@ -3,6 +3,7 @@ package mars.mips.instructions;
 import mars.Globals;
 import mars.ProcessingException;
 import mars.ProgramStatement;
+import mars.Settings;
 import mars.mips.hardware.RegisterFile;
 import mars.simulator.DelayedBranch;
 import mars.simulator.Exceptions;
@@ -300,7 +301,7 @@ public class InstructionSet {
     // the bottom (currently line 194, heavily commented).
 
     public static void processBranch(int displacement) {
-        if (Globals.getSettings().getDelayedBranchingEnabled()) {
+        if (Globals.getSettings().getBooleanSetting(Settings.DELAYED_BRANCHING_ENABLED)) {
             // Register the branch target address (absolute byte address).
             DelayedBranch.register(RegisterFile.getProgramCounter() + (displacement << 2));
         } else {
@@ -322,7 +323,7 @@ public class InstructionSet {
    	 */
 
     public static void processJump(int targetAddress) {
-        if (Globals.getSettings().getDelayedBranchingEnabled()) {
+        if (Globals.getSettings().getBooleanSetting(Settings.DELAYED_BRANCHING_ENABLED)) {
             DelayedBranch.register(targetAddress);
         } else {
             RegisterFile.setProgramCounter(targetAddress);
@@ -343,7 +344,7 @@ public class InstructionSet {
 
     public static void processReturnAddress(int register) {
         RegisterFile.updateRegister(register, RegisterFile.getProgramCounter() +
-                ((Globals.getSettings().getDelayedBranchingEnabled()) ?
+                ((Globals.getSettings().getBooleanSetting(Settings.DELAYED_BRANCHING_ENABLED)) ?
                         Instruction.INSTRUCTION_LENGTH : 0));
     }
 

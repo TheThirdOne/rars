@@ -2,6 +2,7 @@ package mars.venus;
 
 import mars.Globals;
 import mars.ProcessingException;
+import mars.Settings;
 import mars.mips.hardware.RegisterFile;
 import mars.simulator.ProgramArgumentList;
 import mars.simulator.Simulator;
@@ -196,7 +197,7 @@ public class RunGoAction extends GuiAction {
     private void processProgramArgumentsIfAny() {
         String programArguments = executePane.getTextSegmentWindow().getProgramArguments();
         if (programArguments == null || programArguments.length() == 0 ||
-                !Globals.getSettings().getProgramArguments()) {
+                !Globals.getSettings().getBooleanSetting(Settings.PROGRAM_ARGUMENTS)) {
             return;
         }
         new ProgramArgumentList(programArguments).storeProgramArguments();

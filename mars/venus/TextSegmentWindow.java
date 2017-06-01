@@ -192,7 +192,7 @@ public class TextSegmentWindow extends JInternalFrame implements Observer {
         tableScroller = new JScrollPane(table, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
                 ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
         contentPane.add(tableScroller);
-        if (Globals.getSettings().getProgramArguments()) {
+        if (Globals.getSettings().getBooleanSetting(Settings.PROGRAM_ARGUMENTS)) {
             addProgramArgumentsPanel();
         }
 

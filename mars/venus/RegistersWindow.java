@@ -94,7 +94,7 @@ public class RegistersWindow extends JPanel implements Observer {
      **/
 
     public Object[][] setupWindow() {
-        int valueBase = NumberDisplayBaseChooser.getBase(settings.getDisplayValuesInHex());
+        int valueBase = NumberDisplayBaseChooser.getBase(settings.getBooleanSetting(Settings.DISPLAY_VALUES_IN_HEX));
         tableData = new Object[35][3];
         registers = RegisterFile.getRegisters();
         for (int i = 0; i < registers.length; i++) {
@@ -257,7 +257,7 @@ public class RegistersWindow extends JPanel implements Observer {
                     isSelected, hasFocus, row, column);
             cell.setFont(font);
             cell.setHorizontalAlignment(alignment);
-            if (settings.getRegistersHighlighting() && highlighting && row == highlightRow) {
+            if (settings.getBooleanSetting(Settings.REGISTERS_HIGHLIGHTING) && highlighting && row == highlightRow) {
                 cell.setBackground(settings.getColorSettingByPosition(Settings.REGISTER_HIGHLIGHT_BACKGROUND));
                 cell.setForeground(settings.getColorSettingByPosition(Settings.REGISTER_HIGHLIGHT_FOREGROUND));
                 cell.setFont(settings.getFontByPosition(Settings.REGISTER_HIGHLIGHT_FONT));

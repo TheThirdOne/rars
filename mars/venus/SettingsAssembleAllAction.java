@@ -1,6 +1,7 @@
 package mars.venus;
 
 import mars.Globals;
+import mars.Settings;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -46,7 +47,7 @@ public class SettingsAssembleAllAction extends GuiAction {
     }
 
     public void actionPerformed(ActionEvent e) {
-        Globals.getSettings().setAssembleAllEnabled(
+        Globals.getSettings().setBooleanSetting(Settings.ASSEMBLE_ALL_ENABLED,
                 ((JCheckBoxMenuItem) e.getSource()).isSelected());
     }
 

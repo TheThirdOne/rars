@@ -153,7 +153,7 @@ public class EditPane extends JPanel implements Observer {
         showLineNumbers.setToolTipText("If checked, will display line number for each line of text.");
         showLineNumbers.setEnabled(false);
         // Show line numbers by default.
-        showLineNumbers.setSelected(Globals.getSettings().getEditorLineNumbersDisplayed());
+        showLineNumbers.setSelected(Globals.getSettings().getBooleanSetting(Settings.EDITOR_LINE_NUMBERS_DISPLAYED));
 
         this.setSourceCode("", false);
 
@@ -174,7 +174,7 @@ public class EditPane extends JPanel implements Observer {
                             lineNumbers.setVisible(false);
                         }
                         sourceCode.revalidate(); // added 16 Jan 2012 to assure label redrawn.
-                        Globals.getSettings().setEditorLineNumbersDisplayed(showLineNumbers.isSelected());
+                        Globals.getSettings().setBooleanSetting(Settings.EDITOR_LINE_NUMBERS_DISPLAYED, showLineNumbers.isSelected());
                         // needed because caret disappears when checkbox clicked
                         sourceCode.setCaretVisible(true);
                         sourceCode.requestFocusInWindow();

@@ -1,6 +1,7 @@
 package mars.venus;
 
 import mars.Globals;
+import mars.Settings;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -59,7 +60,7 @@ public class SettingsExceptionHandlerAction extends GuiAction {
 
     // launch dialog for setting and filename specification
     public void actionPerformed(ActionEvent e) {
-        initialSelected = Globals.getSettings().getExceptionHandlerEnabled();
+        initialSelected = Globals.getSettings().getBooleanSetting(Settings.EXCEPTION_HANDLER_ENABLED);
         initialPathname = Globals.getSettings().getExceptionHandler();
         exceptionHandlerDialog = new JDialog(Globals.getGui(), "Exception Handler", true);
         exceptionHandlerDialog.setContentPane(buildDialogPanel());
@@ -82,7 +83,7 @@ public class SettingsExceptionHandlerAction extends GuiAction {
         contents.setBorder(new EmptyBorder(10, 10, 10, 10));
         // Top row - the check box for setting...
         exceptionHandlerSetting = new JCheckBox("Include this exception handler file in all assemble operations");
-        exceptionHandlerSetting.setSelected(Globals.getSettings().getExceptionHandlerEnabled());
+        exceptionHandlerSetting.setSelected(Globals.getSettings().getBooleanSetting(Settings.EXCEPTION_HANDLER_ENABLED));
         exceptionHandlerSetting.addActionListener(new ExceptionHandlerSettingAction());
         contents.add(exceptionHandlerSetting, BorderLayout.NORTH);
         // Middle row - the button and text field for exception handler file selection
@@ -130,7 +131,7 @@ public class SettingsExceptionHandlerAction extends GuiAction {
         if (initialSelected != finalSelected
                 || initialPathname == null && finalPathname != null
                 || initialPathname != null && !initialPathname.equals(finalPathname)) {
-            Globals.getSettings().setExceptionHandlerEnabled(finalSelected);
+            Globals.getSettings().setBooleanSetting(Settings.EXCEPTION_HANDLER_ENABLED, finalSelected);
             if (finalSelected) {
                 Globals.getSettings().setExceptionHandler(finalPathname);
             }

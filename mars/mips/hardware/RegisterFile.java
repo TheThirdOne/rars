@@ -1,6 +1,7 @@
 package mars.mips.hardware;
 
 import mars.Globals;
+import mars.Settings;
 import mars.assembler.SymbolTable;
 import mars.mips.instructions.Instruction;
 import mars.util.Binary;
@@ -301,7 +302,7 @@ public class RegisterFile {
         for (Register r : regFile) {
             r.resetValue();
         }
-        initializeProgramCounter(Globals.getSettings().getStartAtMain());// replaces "programCounter.resetValue()", DPS 3/3/09
+        initializeProgramCounter(Globals.getSettings().getBooleanSetting(Settings.START_AT_MAIN));// replaces "programCounter.resetValue()", DPS 3/3/09
         hi.resetValue();
         lo.resetValue();
     }

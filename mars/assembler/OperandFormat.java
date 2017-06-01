@@ -3,6 +3,7 @@ package mars.assembler;
 import mars.ErrorList;
 import mars.ErrorMessage;
 import mars.Globals;
+import mars.Settings;
 import mars.mips.instructions.Instruction;
 import mars.util.Binary;
 
@@ -130,7 +131,7 @@ public class OperandFormat {
 
             if ((specType == TokenTypes.REGISTER_NAME || specType == TokenTypes.REGISTER_NUMBER) &&
                     candType == TokenTypes.REGISTER_NAME) {
-                if (Globals.getSettings().getBareMachineEnabled()) {
+                if (Globals.getSettings().getBooleanSetting(Settings.BARE_MACHINE_ENABLED)) {
                     // On 10-Aug-2010, I noticed this cannot happen since the IDE provides no access
                     // to this setting, whose default value is false.
                     generateMessage(candToken, "Use register number instead of name.  See Settings.", errors);

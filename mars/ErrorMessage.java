@@ -57,62 +57,6 @@ public class ErrorMessage {
     public static final boolean ERROR = false;
 
     /**
-     * Constructor for ErrorMessage.
-     *
-     * @param filename String containing name of source file in which this error appears.
-     * @param line     Line number in source program being processed when error occurred.
-     * @param position Position within line being processed when error occurred.  Normally is starting
-     *                 position of source token.
-     * @param message  String containing appropriate error message.
-     * @deprecated Newer constructors replace the String filename parameter with a MIPSprogram parameter to provide more information.
-     **/
-    // Added filename October 2006 
-    @Deprecated
-    public ErrorMessage(String filename, int line, int position, String message) {
-        this(ERROR, filename, line, position, message, "");
-    }
-
-    /**
-     * Constructor for ErrorMessage.
-     *
-     * @param filename              String containing name of source file in which this error appears.
-     * @param line                  Line number in source program being processed when error occurred.
-     * @param position              Position within line being processed when error occurred.  Normally is starting
-     *                              position of source token.
-     * @param message               String containing appropriate error message.
-     * @param macroExpansionHistory
-     * @deprecated Newer constructors replace the String filename parameter with a MIPSprogram parameter to provide more information.
-     **/
-    // Added macroExpansionHistory Dec 2012
-    @Deprecated
-    public ErrorMessage(String filename, int line, int position, String message, String macroExpansionHistory) {
-        this(ERROR, filename, line, position, message, macroExpansionHistory);
-    }
-
-    /**
-     * Constructor for ErrorMessage.
-     *
-     * @param isWarning             set to WARNING if message is a warning not error, else set to ERROR or omit.
-     * @param filename              String containing name of source file in which this error appears.
-     * @param line                  Line number in source program being processed when error occurred.
-     * @param position              Position within line being processed when error occurred.  Normally is starting
-     *                              position of source token.
-     * @param message               String containing appropriate error message.
-     * @param macroExpansionHistory provided so message for macro can include both definition and usage line numbers
-     * @deprecated Newer constructors replace the String filename parameter with a MIPSprogram parameter to provide more information.
-     **/
-    @Deprecated
-    public ErrorMessage(boolean isWarning, String filename, int line, int position, String message, String macroExpansionHistory) {
-        this.isWarning = isWarning;
-        this.filename = filename;
-        this.line = line;
-        this.position = position;
-        this.message = message;
-        this.macroExpansionHistory = macroExpansionHistory;
-    }
-
-
-    /**
      * Constructor for ErrorMessage.  Assumes line number is calculated after any .include files expanded, and
      * if there were, it will adjust filename and line number so message reflects original file and line number.
      *

@@ -1,6 +1,7 @@
 package mars.venus;
 
 import mars.Globals;
+import mars.Settings;
 
 import javax.swing.*;
 import java.awt.*;
@@ -65,9 +66,9 @@ public class ExecutePane extends JDesktopPane {
         // Although these are displayed in Data Segment, they apply to all three internal
         // windows within the Execute pane.  So they will be housed here.
         addressDisplayBase = new NumberDisplayBaseChooser("Hexadecimal Addresses",
-                Globals.getSettings().getDisplayAddressesInHex());
+                Globals.getSettings().getBooleanSetting(Settings.DISPLAY_ADDRESSES_IN_HEX));
         valueDisplayBase = new NumberDisplayBaseChooser("Hexadecimal Values",
-                Globals.getSettings().getDisplayValuesInHex());//VenusUI.DEFAULT_NUMBER_BASE);
+                Globals.getSettings().getBooleanSetting(Settings.DISPLAY_VALUES_IN_HEX));//VenusUI.DEFAULT_NUMBER_BASE);
         addressDisplayBase.setToolTipText("If checked, displays all memory addresses in hexadecimal.  Otherwise, decimal.");
         valueDisplayBase.setToolTipText("If checked, displays all memory and register contents in hexadecimal.  Otherwise, decimal.");
         NumberDisplayBaseChooser[] choosers = {addressDisplayBase, valueDisplayBase};
@@ -77,7 +78,7 @@ public class ExecutePane extends JDesktopPane {
         textSegment = new TextSegmentWindow();
         dataSegment = new DataSegmentWindow(choosers);
         labelValues = new LabelsWindow();
-        labelWindowVisible = Globals.getSettings().getLabelWindowVisibility();
+        labelWindowVisible = Globals.getSettings().getBooleanSetting(Settings.LABEL_WINDOW_VISIBILITY);
         this.add(textSegment);  // these 3 LOC moved up.  DPS 3-Sept-2014
         this.add(dataSegment);
         this.add(labelValues);
