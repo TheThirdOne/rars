@@ -29,7 +29,7 @@ public class DefaultInputHandler extends InputHandler {
      * Creates a new input handler with no key bindings defined.
      */
     public DefaultInputHandler() {
-        bindings = currentBindings = new Hashtable();
+        bindings = currentBindings = new BindingMap();
     }
 
     /**
@@ -94,7 +94,7 @@ public class DefaultInputHandler extends InputHandler {
      * @param action     The action
      */
     public void addKeyBinding(String keyBinding, ActionListener action) {
-        Hashtable current = bindings;
+        BindingMap current = bindings;
 
         StringTokenizer st = new StringTokenizer(keyBinding);
         while (st.hasMoreTokens()) {
@@ -103,16 +103,16 @@ public class DefaultInputHandler extends InputHandler {
                 return;
 
             if (st.hasMoreTokens()) {
-                Object o = current.get(keyStroke);
-                if (o instanceof Hashtable)
-                    current = (Hashtable) o;
+                Binding o = current.get(keyStroke);
+                if (o instanceof BindingMap)
+                    current = (BindingMap) o;
                 else {
-                    o = new Hashtable();
+                    o = new BindingMap();
                     current.put(keyStroke, o);
-                    current = (Hashtable) o;
+                    current = (BindingMap) o;
                 }
             } else
-                current.put(keyStroke, action);
+                current.put(keyStroke, new BindingAction(action));
         }
     }
 
@@ -168,7 +168,7 @@ public class DefaultInputHandler extends InputHandler {
             }
 
             KeyStroke keyStroke = KeyStroke.getKeyStroke(keyCode, modifiers);
-            Object o = currentBindings.get(keyStroke);
+            Binding o = currentBindings.get(keyStroke);
 
             if (o == null) {
                 // Don't beep if the user presses some
@@ -188,14 +188,14 @@ public class DefaultInputHandler extends InputHandler {
                 // (mnemonic, accelerator).  DPS 4-may-2010
                 mars.Globals.getGui().dispatchEventToMenu(evt);
                 evt.consume();
-            } else if (o instanceof ActionListener) {
+            } else if (o instanceof BindingAction) {
                 currentBindings = bindings;
-                executeAction(((ActionListener) o),
+                executeAction(((BindingAction) o).actionListener,
                         evt.getSource(), null);
 
                 evt.consume();
-            } else if (o instanceof Hashtable) {
-                currentBindings = (Hashtable) o;
+            } else if (o instanceof BindingMap) {
+                currentBindings = (BindingMap) o;
                 evt.consume();
             }
         }
@@ -255,10 +255,10 @@ public class DefaultInputHandler extends InputHandler {
             if (c >= 0x20 && c != 0x7f) {
                 KeyStroke keyStroke = KeyStroke.getKeyStroke(
                         Character.toUpperCase(c));
-                Object o = currentBindings.get(keyStroke);
+                Binding o = currentBindings.get(keyStroke);
 
-                if (o instanceof Hashtable) {
-                    currentBindings = (Hashtable) o;
+                if (o instanceof BindingMap) {
+                    currentBindings = (BindingMap) o;
                     return;
                 } else if (o instanceof ActionListener) {
                     currentBindings = bindings;
@@ -350,8 +350,39 @@ public class DefaultInputHandler extends InputHandler {
     }
 
     // private members
-    private Hashtable bindings;
-    private Hashtable currentBindings;
+    private BindingMap bindings;
+    private BindingMap currentBindings;
+
+    private class Binding {
+    }
+
+    private class BindingAction extends Binding {
+        ActionListener actionListener;
+
+        BindingAction(ActionListener ac) {
+            actionListener = ac;
+        }
+    }
+
+    private class BindingMap extends Binding {
+        Hashtable<KeyStroke, Binding> map;
+
+        BindingMap() {
+            map = new Hashtable<>();
+        }
+
+        void clear() {
+            map.clear();
+        }
+
+        void put(KeyStroke k, Binding b) {
+            map.put(k, b);
+        }
+
+        Binding get(KeyStroke k) {
+            return map.get(k);
+        }
+    }
 
     private DefaultInputHandler(DefaultInputHandler copy) {
         bindings = currentBindings = copy.bindings;
