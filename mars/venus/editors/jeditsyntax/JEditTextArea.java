@@ -79,15 +79,15 @@ public class JEditTextArea extends JComponent {
         this(TextAreaDefaults.getDefaults(), lineNumbers);
     }
 
+
+
+    private JScrollBar lineNumbersVertical;
+
     /**
      * Creates a new JEditTextArea with the specified settings.
      *
      * @param defaults The default settings
      */
-
-    private JScrollBar lineNumbersVertical;//************************************
-
-
     public JEditTextArea(TextAreaDefaults defaults, JComponent lineNumbers) {
         // Enable the necessary events
         enableEvents(AWTEvent.KEY_EVENT_MASK);
@@ -1308,9 +1308,6 @@ public class JEditTextArea extends JComponent {
 
     }
 
-    JPopupMenu popupMenu;
-
-
     /**
      * Returns true if overwrite mode is enabled, false otherwise.
      */
@@ -1461,9 +1458,8 @@ public class JEditTextArea extends JComponent {
                 inputHandler.keyTyped(evt);
                 break;
             case KeyEvent.KEY_PRESSED:
-                if (!checkPopupCompletion(evt)) {
-                    inputHandler.keyPressed(evt);
-                }
+                inputHandler.keyPressed(evt);
+
                 checkPopupMenu(evt);
                 break;
             case KeyEvent.KEY_RELEASED:
@@ -2054,9 +2050,6 @@ public class JEditTextArea extends JComponent {
         int lineStart = getLineStartOffset(line);
         int offset = Math.max(1, Math.min(getLineLength(line),
                 getCaretPosition() - lineStart));
-
-        popupMenu.setVisible(false);
-        popupMenu = null;
     }
 
     private void checkAutoIndent(KeyEvent evt) {
@@ -2090,67 +2083,7 @@ public class JEditTextArea extends JComponent {
     private void checkPopupMenu(KeyEvent evt) {
         if (evt.getKeyCode() == KeyEvent.VK_BACK_SPACE || evt.getKeyCode() == KeyEvent.VK_DELETE)
             applySyntaxSensitiveHelp();
-        if ((evt.getKeyCode() == KeyEvent.VK_ENTER || evt.getKeyCode() == KeyEvent.VK_ESCAPE)
-                && popupMenu != null && popupMenu.isVisible())
-            popupMenu.setVisible(false);
     }
-
-
-    ////////////////////////////////////////////////////////////////////////////////////
-    // Called before processing Key Pressed event. If popup menu is visible, will process
-    // tab and enter keys to select from the menu, and arrow keys to traverse the menu.
-    private boolean checkPopupCompletion(KeyEvent evt) {
-        if ((evt.getKeyCode() == KeyEvent.VK_UP || evt.getKeyCode() == KeyEvent.VK_DOWN)
-                && popupMenu != null && popupMenu.isVisible() && popupMenu.getComponentCount() > 0) {
-            MenuElement[] path = MenuSelectionManager.defaultManager().getSelectedPath();
-            if (path.length < 1 || !(path[path.length - 1] instanceof AbstractButton))
-                return false;
-            AbstractButton item = (AbstractButton) path[path.length - 1].getComponent();
-            if (item.isEnabled()) {
-                int index = popupMenu.getComponentIndex(item);
-                if (index < 0)
-                    return false;
-                if (evt.getKeyCode() == KeyEvent.VK_UP) {
-                    index = (index == 0) ? popupMenu.getComponentCount() - 1 : index - 1;
-                } else {
-                    index = (index == popupMenu.getComponentCount() - 1) ? 0 : index + 1;
-                }
-                // Neither popupMenu.setSelected() nor popupMenu.getSelectionModel().setSelectedIndex()
-                // have the desired effect (changing the menu item selected).  Found references to
-                // this in a Sun forum.  http://forums.sun.com/thread.jspa?forumID=57&threadID=641745
-                // The solution, as shown here, is to use invokeLater.
-                final MenuElement[] newPath = new MenuElement[2];
-                newPath[0] = path[0];
-                newPath[1] = (MenuElement) popupMenu.getComponentAtIndex(index);
-                SwingUtilities.invokeLater(
-                        new Runnable() {
-                            public void run() {
-                                MenuSelectionManager.defaultManager().setSelectedPath(newPath);
-                            }
-                        });
-                return true;
-            } else {
-                return false;
-            }
-        }
-        if ((evt.getKeyCode() == KeyEvent.VK_TAB || evt.getKeyCode() == KeyEvent.VK_ENTER)
-                && popupMenu != null && popupMenu.isVisible() && popupMenu.getComponentCount() > 0) {
-            MenuElement[] path = MenuSelectionManager.defaultManager().getSelectedPath();
-            if (path.length < 1 || !(path[path.length - 1] instanceof AbstractButton))
-                return false;
-            AbstractButton item = (AbstractButton) path[path.length - 1].getComponent();
-            if (item.isEnabled()) {
-                ActionListener[] listeners = item.getActionListeners();
-                if (listeners.length > 0) {
-                    listeners[0].actionPerformed(new ActionEvent(item, ActionEvent.ACTION_FIRST,
-                            (evt.getKeyCode() == KeyEvent.VK_TAB) ? "\t" : " "));
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
 
     static {
         caretTimer = new Timer(500, new CaretBlinker());
