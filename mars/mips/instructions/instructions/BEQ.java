@@ -1,23 +1,43 @@
 package mars.mips.instructions.instructions;
 
-import mars.ProcessingException;
 import mars.ProgramStatement;
 import mars.mips.hardware.RegisterFile;
-import mars.mips.instructions.BasicInstruction;
-import mars.mips.instructions.BasicInstructionFormat;
-import mars.mips.instructions.InstructionSet;
+import mars.mips.instructions.Branch;
 
-public class BEQ extends BasicInstruction {
+/*
+Copyright (c) 2017,  Benjamin Landers
+
+Developed by Benjamin Landers (benjaminrlanders@gmail.com)
+
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject
+to the following conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR
+ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+(MIT license, http://www.opensource.org/licenses/mit-license.html)
+ */
+
+public class BEQ extends Branch {
     public BEQ() {
-        super("beq $t1,$t2,label", "Branch if equal : Branch to statement at label's address if $t1 and $t2 are equal",
-                BasicInstructionFormat.S_BRANCH_FORMAT, "ttttttt sssss fffff 000 ttttt 1100011 ");
+        super("beq $t1,$t2,label", "Branch if equal : Branch to statement at label's address if $t1 and $t2 are equal", "000");
     }
 
-    public void simulate(ProgramStatement statement) throws ProcessingException {
+    public boolean willBranch(ProgramStatement statement) {
         int[] operands = statement.getOperands();
-
-        if (RegisterFile.getValue(operands[0]) == RegisterFile.getValue(operands[1])) {
-            InstructionSet.processBranch(operands[2]);
-        }
+        return RegisterFile.getValue(operands[0]) == RegisterFile.getValue(operands[1]);
     }
 }

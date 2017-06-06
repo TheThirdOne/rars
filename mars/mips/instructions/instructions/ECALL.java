@@ -5,6 +5,7 @@ import mars.ProgramStatement;
 import mars.mips.hardware.RegisterFile;
 import mars.mips.instructions.BasicInstruction;
 import mars.mips.instructions.BasicInstructionFormat;
+import mars.mips.instructions.InstructionSet;
 
 /*
 Copyright (c) 2017,  Benjamin Landers
@@ -33,17 +34,13 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 (MIT license, http://www.opensource.org/licenses/mit-license.html)
  */
 
-public class ADDI extends BasicInstruction {
-    public ADDI() {
-        super("addi $t1,$t2,-100", "Addition immediate: set $t1 to ($t2 plus signed 12-bit immediate)",
-                BasicInstructionFormat.I_FORMAT, "tttttttttttt sssss 000 fffff 0010011");
+public class ECALL extends BasicInstruction {
+    public ECALL() {
+        super("ecall", "Issue a system call : Execute the system call specified by value in $v0",
+                BasicInstructionFormat.I_FORMAT, "000000000000 00000 000 00000 1110011");
     }
 
     public void simulate(ProgramStatement statement) throws ProcessingException {
-        int[] operands = statement.getOperands();
-        int add1 = RegisterFile.getValue(operands[1]);
-        int add2 = operands[2] << 12 >> 12;
-        int sum = add1 + add2;
-        RegisterFile.updateRegister(operands[0], sum);
+        InstructionSet.findAndSimulateSyscall(RegisterFile.getValue(2), statement);
     }
 }
