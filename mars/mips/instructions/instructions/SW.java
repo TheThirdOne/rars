@@ -1,9 +1,8 @@
-package mars.mips.instructions;
+package mars.mips.instructions.instructions;
 
-import mars.ProcessingException;
-import mars.ProgramStatement;
+import mars.Globals;
 import mars.mips.hardware.AddressErrorException;
-import mars.mips.hardware.RegisterFile;
+import mars.mips.instructions.Store;
 
 /*
 Copyright (c) 2017,  Benjamin Landers
@@ -32,30 +31,15 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 (MIT license, http://www.opensource.org/licenses/mit-license.html)
  */
 
-/**
- * Base class for all Load instructions
- *
- * @author Benjamin Landers
- * @version June 2017
- */
-public abstract class Load extends BasicInstruction {
-    public Load(String usage, String description, String funct) {
-        super(usage, description, BasicInstructionFormat.I_FORMAT,
-                "ssssssssssss ttttt " + funct + " fffff 0000011");
+public class SW extends Store {
+    public SW() {
+        super("sw $t1, -100($t2)", "Store word : Store contents of $t1 into effective memory word address", "010");
     }
 
-    public void simulate(ProgramStatement statement) throws ProcessingException {
-        int[] operands = statement.getOperands();
-        try {
-            RegisterFile.updateRegister(operands[0], load(RegisterFile.getValue(operands[2]) + operands[1]));
-        } catch (AddressErrorException e) {
-            throw new ProcessingException(statement, e);
-        }
+    public void store(int address, int data) throws AddressErrorException {
+        Globals.memory.setWord(address, data);
     }
-
-    /**
-     * @param address the address to load from
-     * @return The value to store to the register
-     */
-    protected abstract int load(int address) throws AddressErrorException;
 }
+
+
+

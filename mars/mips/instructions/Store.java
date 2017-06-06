@@ -33,29 +33,29 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 /**
- * Base class for all Load instructions
+ * Base class for all Store instructions
  *
  * @author Benjamin Landers
  * @version June 2017
  */
-public abstract class Load extends BasicInstruction {
-    public Load(String usage, String description, String funct) {
-        super(usage, description, BasicInstructionFormat.I_FORMAT,
-                "ssssssssssss ttttt " + funct + " fffff 0000011");
+public abstract class Store extends BasicInstruction {
+    public Store(String usage, String description, String funct) {
+        super(usage, description, BasicInstructionFormat.S_FORMAT,
+                "sssssss fffff ttttt " + funct + " sssss 0100011");
     }
 
     public void simulate(ProgramStatement statement) throws ProcessingException {
         int[] operands = statement.getOperands();
         try {
-            RegisterFile.updateRegister(operands[0], load(RegisterFile.getValue(operands[2]) + operands[1]));
+            store((RegisterFile.getValue(operands[2]) + operands[1]), RegisterFile.getValue(operands[2]));
         } catch (AddressErrorException e) {
             throw new ProcessingException(statement, e);
         }
     }
 
     /**
-     * @param address the address to load from
-     * @return The value to store to the register
+     * @param address the address to store to
+     * @param value   the value to store
      */
-    protected abstract int load(int address) throws AddressErrorException;
+    protected abstract void store(int address, int value) throws AddressErrorException;
 }
