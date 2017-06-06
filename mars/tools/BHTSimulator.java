@@ -29,13 +29,12 @@ package mars.tools;
 
 import mars.ProgramStatement;
 import mars.mips.hardware.*;
+import mars.mips.instructions.Branch;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Observable;
-//import mars.tools.bhtsim.BHTSimGUI;
-//import mars.tools.bhtsim.BHTableModel;
 
 
 /**
@@ -252,82 +251,6 @@ public class BHTSimulator extends AbstractMarsToolAndApplication implements Acti
         m_bhtModel.updatePredictionAtIdx(idx, branchTaken);
     }
 
-
-    /**
-     * Determines if the instruction is a branch instruction or not.
-     *
-     * @param stmt the statement to investigate
-     * @return true, if stmt is a branch instruction, otherwise false
-     */
-    protected static boolean isBranchInstruction(ProgramStatement stmt) {
-
-        int opCode = stmt.getBinaryStatement() >>> (32 - 6);
-        int funct = stmt.getBinaryStatement() & 0x1F;
-
-        if (opCode == 0x01) {
-            if (0x00 <= funct && funct <= 0x07) return true; //  bltz, bgez, bltzl, bgezl
-            if (0x10 <= funct && funct <= 0x13) return true; // bltzal, bgezal, bltzall, bgczall
-        }
-
-        if (0x04 <= opCode && opCode <= 0x07) return true; // beq, bne, blez, bgtz
-        if (0x14 <= opCode && opCode <= 0x17) return true; // beql, bnel, blezl, bgtzl
-
-        return false;
-    }
-
-
-    /**
-     * Checks if the branch instruction delivered as parameter will branch or not.
-     *
-     * @param stmt the branch instruction to be investigated
-     * @return true if the branch will be taken, otherwise false
-     */
-    protected static boolean willBranch(ProgramStatement stmt) {
-        int opCode = stmt.getBinaryStatement() >>> (32 - 6);
-        int funct = stmt.getBinaryStatement() & 0x1F;
-        int rs = stmt.getBinaryStatement() >>> (32 - 6 - 5) & 0x1F;
-        int rt = stmt.getBinaryStatement() >>> (32 - 6 - 5 - 5) & 0x1F;
-
-        int valRS = RegisterFile.getRegisters()[rs].getValue();
-        int valRT = RegisterFile.getRegisters()[rt].getValue();
-
-
-        if (opCode == 0x01) {
-            switch (funct) {
-                case 0x00:
-                    return valRS < 0; // bltz
-                case 0x01:
-                    return valRS >= 0; // bgez
-                case 0x02:
-                    return valRS < 0; // bltzl
-                case 0x03:
-                    return valRS >= 0; // bgezl
-            }
-        }
-
-        switch (opCode) {
-            case 0x04:
-                return valRS == valRT;
-            case 0x05:
-                return valRS != valRT;
-            case 0x06:
-                return valRS <= 0;
-            case 0x07:
-                return valRS >= 0;
-            case 0x14:
-                return valRS == valRT;
-            case 0x15:
-                return valRS != valRT;
-            case 0x16:
-                return valRS <= 0;
-            case 0x17:
-                return valRS >= 0;
-        }
-
-        return true;
-    }
-
-
     /**
      * Extracts the target address of the branch.
      * <p>
@@ -382,9 +305,9 @@ public class BHTSimulator extends AbstractMarsToolAndApplication implements Acti
 
 
                     // if current instruction is branch instruction
-                    if (BHTSimulator.isBranchInstruction(stmt)) {
+                    if (stmt.getInstruction() instanceof Branch) {
                         handlePreBranchInst(stmt);
-                        m_lastBranchTaken = willBranch(stmt);
+                        m_lastBranchTaken = ((Branch) stmt.getInstruction()).willBranch(stmt);
                         m_pendingBranchInstAddress = stmt.getAddress();
                         clearTextFields = false;
                     }
