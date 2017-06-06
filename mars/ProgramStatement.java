@@ -134,16 +134,17 @@ public class ProgramStatement implements Comparable<ProgramStatement> {
             String fmt = instr.getOperationMask();
             BasicInstructionFormat instrFormat = instr.getInstructionFormat();
             int numOps = 0;
+            // TODO: fix decoding for different types
             for (int i = 0; i < opandCodes.length(); i++) {
-                int code = opandCodes.charAt(i);
+                char code = opandCodes.charAt(i);
                 int j = fmt.indexOf(code);
                 if (j >= 0) {
                     int k0 = 31 - fmt.lastIndexOf(code);
                     int k1 = 31 - j;
                     int opand = (binaryStatement >> k0) & ((1 << (k1 - k0 + 1)) - 1);
-                    if (instrFormat == BasicInstructionFormat.I_BRANCH_FORMAT && numOps == 2) {
+                    if (instrFormat == BasicInstructionFormat.S_BRANCH_FORMAT && numOps == 2) {
                         opand = opand << 16 >> 16;
-                    } else if (instrFormat == BasicInstructionFormat.J_FORMAT && numOps == 0) {
+                    } else if (instrFormat == BasicInstructionFormat.U_JUMP_FORMAT && numOps == 0) {
                         opand |= (textAddress >> 2) & 0x3C000000;
                     }
                     this.operands[numOps] = opand;
@@ -247,9 +248,24 @@ public class ProgramStatement implements Comparable<ProgramStatement> {
 
                 if (instruction instanceof BasicInstruction) {
                     BasicInstructionFormat format = ((BasicInstruction) instruction).getInstructionFormat();
-                    if (format == BasicInstructionFormat.I_BRANCH_FORMAT) {
-                        //address = (address - (this.textAddress+((Globals.getSettings().getDelayedBranchingEnabled())? Instruction.INSTRUCTION_LENGTH : 0))) >> 2;
-                        address = (address - (this.textAddress + Instruction.INSTRUCTION_LENGTH)) >> 2;
+                    if (format == BasicInstructionFormat.S_BRANCH_FORMAT) {
+                        //address = (address - (this.textAddress + Instruction.INSTRUCTION_LENGTH)) >> 2;
+                        address = (address - (this.textAddress + Instruction.INSTRUCTION_LENGTH)) >> 1;
+                        if (address >= (1 << 19) || address < -(1 << 19)) {
+                            // attempt to jump beyond 21-bit byte (20-bit word) address range.
+                            // SPIM flags as warning, I'll flag as error b/c MARS text segment not long enough for it to be OK.
+                            errors.add(new ErrorMessage(this.sourceMIPSprogram, this.sourceLine, 0,
+                                    "Jump target word address beyond 20-bit range"));
+                            return;
+                        }
+                        absoluteAddress = false;
+                    } else if (format == BasicInstructionFormat.U_JUMP_FORMAT) {
+                        address = (address - (this.textAddress + Instruction.INSTRUCTION_LENGTH)) >> 1;
+                        if (address >= (1 << 11) || address < -(1 << 11)) {
+                            errors.add(new ErrorMessage(this.sourceMIPSprogram, this.sourceLine, 0,
+                                    "Jump target word address beyond 12-bit range"));
+                            return;
+                        }
                         absoluteAddress = false;
                     }
                 }
@@ -342,44 +358,50 @@ public class ProgramStatement implements Comparable<ProgramStatement> {
      **/
     public void buildMachineStatementFromBasicStatement(ErrorList errors) {
 
-        try {
-            //mask indicates bit positions for 'f'irst, 's'econd, 't'hird operand
-            this.machineStatement = ((BasicInstruction) instruction).getOperationMask();
-        }   // This means the pseudo-instruction expansion generated another
-        // pseudo-instruction (expansion must be to all basic instructions).
-        // This is an error on the part of the pseudo-instruction author.
-        catch (ClassCastException cce) {
+        if (!(instruction instanceof BasicInstruction)) {
+            // This means the pseudo-instruction expansion generated another
+            // pseudo-instruction (expansion must be to all basic instructions).
+            // This is an error on the part of the pseudo-instruction author.
             errors.add(new ErrorMessage(this.sourceMIPSprogram, this.sourceLine, 0,
                     "INTERNAL ERROR: pseudo-instruction expansion contained a pseudo-instruction"));
             return;
         }
+
+        //mask indicates bit positions for 'f'irst, 's'econd, 't'hird operand
+        this.machineStatement = ((BasicInstruction) instruction).getOperationMask();
         BasicInstructionFormat format = ((BasicInstruction) instruction).getInstructionFormat();
 
-        if (format == BasicInstructionFormat.J_FORMAT) {
-            if ((this.textAddress & 0xF0000000) != (this.operands[0] & 0xF0000000)) {
-                // attempt to jump beyond 28-bit byte (26-bit word) address range.
-                // SPIM flags as warning, I'll flag as error b/c MARS text segment not long enough for it to be OK.
-                errors.add(new ErrorMessage(this.sourceMIPSprogram, this.sourceLine, 0,
-                        "Jump target word address beyond 26-bit range"));
-                return;
-            }
-            // Note the  bit shift to make this a word address.
-            this.operands[0] = this.operands[0] >>> 2;
+        if (format == BasicInstructionFormat.U_JUMP_FORMAT) {
             this.insertBinaryCode(this.operands[0], Instruction.operandMask[0], errors);
-        } else if (format == BasicInstructionFormat.I_BRANCH_FORMAT) {
-            for (int i = 0; i < this.numOperands - 1; i++) {
-                this.insertBinaryCode(this.operands[i], Instruction.operandMask[i], errors);
-            }
-            this.insertBinaryCode(operands[this.numOperands - 1], Instruction.operandMask[this.numOperands - 1], errors);
-        } else {  // R_FORMAT or I_FORMAT
+            this.insertBinaryCode(toJumpImmediate(this.operands[1]), Instruction.operandMask[1], errors);
+        } else if (format == BasicInstructionFormat.S_BRANCH_FORMAT) {
+            this.insertBinaryCode(this.operands[0], Instruction.operandMask[0], errors);
+            this.insertBinaryCode(this.operands[1], Instruction.operandMask[1], errors);
+            this.insertBinaryCode(toBranchImmediate(this.operands[2]), Instruction.operandMask[2], errors);
+        } else {  // Everything else is normal
             for (int i = 0; i < this.numOperands; i++)
                 this.insertBinaryCode(this.operands[i], Instruction.operandMask[i], errors);
         }
         this.binaryStatement = Binary.binaryStringToInt(this.machineStatement);
-    } // buildMachineStatementFromBasicStatement(
+    }
 
 
     /////////////////////////////////////////////////////////////////////////////
+    private int toJumpImmediate(int address) {
+        // trying to produce imm[20|10:1|11|19:12] where address = imm[20:1]
+
+        return (address & (1 << 19)) | // keep the top bit in the same place
+                ((address & ((1 << 10) - 1)) << 9) | // move imm[10:1] to the right place
+                ((address & (1 << 10)) >> 2) | // move imm[11] to the right place
+                ((address & ((1 << 19) - 1)) >> 11); // move imm[19:12] to the right place
+    }
+
+    private int toBranchImmediate(int address) {
+        // trying to produce imm[12|10:1|11]  where address = imm[12:1]
+        return (address & (1 << 11)) | // keep the top bit in the same place
+                ((address & ((1 << 10) - 1)) << 1) | // move imm[10:1] to the right place
+                ((address & (1 << 10)) >> 10);     // move imm[11] to the right place
+    }
 
     /**
      * Crude attempt at building String representation of this complex structure.
@@ -598,24 +620,47 @@ public class ProgramStatement implements Comparable<ProgramStatement> {
         }
     }
 
-
-    //////////////////////////////////////////////////////////////////////////////
-    //  Given operand (register or integer) and mask character ('f', 's', or 't'),
-    //  generate the correct sequence of bits and replace the mask with them.
+    /**
+     * Given operand (register or integer) and mask character ('f', 's', or 't'),
+     * generate the correct sequence of bits and replace the mask with them.
+     *
+     * @param value  the value to be masked in (will be converted to binary)
+     * @param mask   the value (f,s, or t) to mask out
+     * @param errors error list to append errors to in the event of unrecoverable errors
+     */
     private void insertBinaryCode(int value, char mask, ErrorList errors) {
-        int startPos = this.machineStatement.indexOf(mask);
-        int endPos = this.machineStatement.lastIndexOf(mask);
-        if (startPos == -1 || endPos == -1) { // should NEVER occur
+        StringBuilder state = new StringBuilder(this.machineStatement);
+
+
+        // Just counts the number of occurrences of the mask in machineStatement.
+        // This could be done with a method from StringUtils, but I didn't think
+        // bringing in another dependency was worth it.
+        int length = 0;
+        for (int i = 0; i < state.length(); i++) {
+            if (state.charAt(i) == mask) length++;
+        }
+
+        // should NEVER occur
+        // if it does, then one of the BasicInstructions is malformed
+        if (length == 0) {
             errors.add(new ErrorMessage(this.sourceMIPSprogram, this.sourceLine, 0,
                     "INTERNAL ERROR: mismatch in number of operands in statement vs mask"));
             return;
         }
-        String bitString = Binary.intToBinaryString(value, endPos - startPos + 1);
-        String state = this.machineStatement.substring(0, startPos) + bitString;
-        if (endPos < this.machineStatement.length() - 1)
-            state = state + this.machineStatement.substring(endPos + 1);
-        this.machineStatement = state;
-    } // insertBinaryCode()
+
+        // Replace the mask bit for bit with the binary version of the value
+        // The old version of this function assumed that the mask was continuous
+        String bitString = Binary.intToBinaryString(value, length);
+        int valueIndex = 0;
+        for (int i = 0; i < state.length(); i++) {
+            if (state.charAt(i) == mask) {
+                state.setCharAt(i, bitString.charAt(valueIndex));
+                valueIndex++;
+            }
+        }
+
+        this.machineStatement = state.toString();
+    }
 
 
     //////////////////////////////////////////////////////////////////////////////

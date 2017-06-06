@@ -308,7 +308,7 @@ public class InstructionSet {
             // Decrement needed because PC has already been incremented
             RegisterFile.setProgramCounter(
                     RegisterFile.getProgramCounter()
-                            + (displacement << 2)); // - Instruction.INSTRUCTION_LENGTH);
+                            + (displacement << 1)); // - Instruction.INSTRUCTION_LENGTH);
         }
     }
 

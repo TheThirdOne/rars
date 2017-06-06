@@ -9,13 +9,13 @@ import mars.mips.instructions.InstructionSet;
 
 public class JAL extends BasicInstruction {
     public JAL() {
-        super("jal target", "Jump and link : Set $ra to Program Counter (return address) then jump to statement at target address",
-                BasicInstructionFormat.J_FORMAT, "000011 ffffffffffffffffffffffffff");
+        super("jal $t1, target", "Jump and link : Set $ra to Program Counter (return address) then jump to statement at target address",
+                BasicInstructionFormat.U_JUMP_FORMAT, "s ssssssssss s ssssssss fffff 1101111 ");
     }
 
     public void simulate(ProgramStatement statement) throws ProcessingException {
         int[] operands = statement.getOperands();
-        InstructionSet.processReturnAddress(31);// RegisterFile.updateRegister(31, RegisterFile.getProgramCounter());
-        InstructionSet.processJump((RegisterFile.getProgramCounter() & 0xF0000000) | (operands[0] << 2));
+        InstructionSet.processReturnAddress(operands[0]);// RegisterFile.updateRegister(31, RegisterFile.getProgramCounter());
+        InstructionSet.processJump(RegisterFile.getProgramCounter() + (operands[1] << 1));
     }
 }

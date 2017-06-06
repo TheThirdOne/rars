@@ -73,11 +73,18 @@ public class InstructionCounter extends AbstractMarsToolAndApplication {
     private JProgressBar progressbarI;
 
     /**
-     * Number of instructions of type J.
+     * Number of instructions of type S.
      */
-    private int counterJ = 0;
-    private JTextField counterJField;
-    private JProgressBar progressbarJ;
+    private int counterS = 0;
+    private JTextField counterSField;
+    private JProgressBar progressbarS;
+
+    /**
+     * Number of instructions of type U.
+     */
+    private int counterU = 0;
+    private JTextField counterUField;
+    private JProgressBar progressbarU;
 
 
     /**
@@ -127,10 +134,15 @@ public class InstructionCounter extends AbstractMarsToolAndApplication {
         progressbarI = new JProgressBar(JProgressBar.HORIZONTAL);
         progressbarI.setStringPainted(true);
 
-        counterJField = new JTextField("0", 10);
-        counterJField.setEditable(false);
-        progressbarJ = new JProgressBar(JProgressBar.HORIZONTAL);
-        progressbarJ.setStringPainted(true);
+        counterSField = new JTextField("0", 10);
+        counterSField.setEditable(false);
+        progressbarS = new JProgressBar(JProgressBar.HORIZONTAL);
+        progressbarS.setStringPainted(true);
+
+        counterUField = new JTextField("0", 10);
+        counterUField.setEditable(false);
+        progressbarU = new JProgressBar(JProgressBar.HORIZONTAL);
+        progressbarU.setStringPainted(true);
 
         // Add them to the panel
 
@@ -151,7 +163,10 @@ public class InstructionCounter extends AbstractMarsToolAndApplication {
         panel.add(counterIField, c);
 
         c.gridy++;
-        panel.add(counterJField, c);
+        panel.add(counterSField, c);
+
+        c.gridy++;
+        panel.add(counterUField, c);
 
         // Labels
         c.anchor = GridBagConstraints.LINE_END;
@@ -171,7 +186,10 @@ public class InstructionCounter extends AbstractMarsToolAndApplication {
         panel.add(new JLabel("I-type: "), c);
 
         c.gridy++;
-        panel.add(new JLabel("J-type: "), c);
+        panel.add(new JLabel("S-type: "), c);
+
+        c.gridy++;
+        panel.add(new JLabel("U-type: "), c);
 
         // Progress bars
         c.insets = new Insets(3, 3, 3, 3);
@@ -183,7 +201,10 @@ public class InstructionCounter extends AbstractMarsToolAndApplication {
         panel.add(progressbarI, c);
 
         c.gridy++;
-        panel.add(progressbarJ, c);
+        panel.add(progressbarS, c);
+
+        c.gridy++;
+        panel.add(progressbarU, c);
 
         return panel;
     }
@@ -208,11 +229,12 @@ public class InstructionCounter extends AbstractMarsToolAndApplication {
             BasicInstructionFormat format = instr.getInstructionFormat();
             if (format == BasicInstructionFormat.R_FORMAT)
                 counterR++;
-            else if (format == BasicInstructionFormat.I_FORMAT
-                    || format == BasicInstructionFormat.I_BRANCH_FORMAT)
+            else if (format == BasicInstructionFormat.I_FORMAT)
                 counterI++;
-            else if (format == BasicInstructionFormat.J_FORMAT)
-                counterJ++;
+            else if (format == BasicInstructionFormat.S_FORMAT || format == BasicInstructionFormat.S_BRANCH_FORMAT)
+                counterS++;
+            else if (format == BasicInstructionFormat.U_FORMAT || format == BasicInstructionFormat.U_JUMP_FORMAT)
+                counterU++;
         } catch (AddressErrorException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -222,13 +244,13 @@ public class InstructionCounter extends AbstractMarsToolAndApplication {
 
     //	@Override
     protected void initializePreGUI() {
-        counter = counterR = counterI = counterJ = 0;
+        counter = counterR = counterI = counterS = counterU = 0;
         lastAddress = -1;
     }
 
     // @Override
     protected void reset() {
-        counter = counterR = counterI = counterJ = 0;
+        counter = counterR = counterI = counterS = 0;
         lastAddress = -1;
         updateDisplay();
     }
@@ -245,18 +267,24 @@ public class InstructionCounter extends AbstractMarsToolAndApplication {
         progressbarI.setMaximum(counter);
         progressbarI.setValue(counterI);
 
-        counterJField.setText(String.valueOf(counterJ));
-        progressbarJ.setMaximum(counter);
-        progressbarJ.setValue(counterJ);
+        counterSField.setText(String.valueOf(counterS));
+        progressbarS.setMaximum(counter);
+        progressbarS.setValue(counterS);
+
+        counterUField.setText(String.valueOf(counterU));
+        progressbarU.setMaximum(counter);
+        progressbarU.setValue(counterU);
 
         if (counter == 0) {
             progressbarR.setString("0%");
             progressbarI.setString("0%");
-            progressbarJ.setString("0%");
+            progressbarS.setString("0%");
+            progressbarU.setString("0%");
         } else {
             progressbarR.setString((counterR * 100) / counter + "%");
             progressbarI.setString((counterI * 100) / counter + "%");
-            progressbarJ.setString((counterJ * 100) / counter + "%");
+            progressbarS.setString((counterS * 100) / counter + "%");
+            progressbarU.setString((counterU * 100) / counter + "%");
         }
     }
 }

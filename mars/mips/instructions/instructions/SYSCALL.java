@@ -9,8 +9,8 @@ import mars.mips.instructions.InstructionSet;
 
 public class SYSCALL extends BasicInstruction {
     public SYSCALL() {
-        super("syscall", "Issue a system call : Execute the system call specified by value in $v0",
-                BasicInstructionFormat.R_FORMAT, "000000 00000 00000 00000 00000 001100");
+        super("ecall", "Issue a system call : Execute the system call specified by value in $v0",
+                BasicInstructionFormat.I_FORMAT, "000000000000 00000 000 00000 1110011");
     }
 
     public void simulate(ProgramStatement statement) throws ProcessingException {

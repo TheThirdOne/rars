@@ -10,7 +10,7 @@ import mars.mips.instructions.InstructionSet;
 public class BEQ extends BasicInstruction {
     public BEQ() {
         super("beq $t1,$t2,label", "Branch if equal : Branch to statement at label's address if $t1 and $t2 are equal",
-                BasicInstructionFormat.I_BRANCH_FORMAT, "000100 fffff sssss tttttttttttttttt");
+                BasicInstructionFormat.S_BRANCH_FORMAT, "ttttttt sssss fffff 000 ttttt 1100011 ");
     }
 
     public void simulate(ProgramStatement statement) throws ProcessingException {
