@@ -29,13 +29,15 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 (MIT license, http://www.opensource.org/licenses/mit-license.html)
  */
 
-public class SUB extends Arithmetic {
-    public SUB() {
-        super("sub $t1,$t2,$t3", "Subtraction: set $t1 to ($t2 minus $t3)",
-                "0100000", "000");
+
+public class SRL extends Arithmetic {
+    public SRL() {
+        super("srl $t1,$t2,$t3", "Shift right logical: Set $t1 to result of shifting $t2 right by number of bits specified by value in low-order 5 bits of $t3",
+                "0000000", "101");
     }
 
     public int compute(int value, int value2) {
-        return value - value2;
+        /// Use >>> to zero-fill
+        return value >>> (value2 & 0x0000001F); // Only use the bottom 5 bits
     }
 }

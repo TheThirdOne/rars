@@ -29,13 +29,14 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 (MIT license, http://www.opensource.org/licenses/mit-license.html)
  */
 
-public class SUB extends Arithmetic {
-    public SUB() {
-        super("sub $t1,$t2,$t3", "Subtraction: set $t1 to ($t2 minus $t3)",
-                "0100000", "000");
+
+public class XOR extends Arithmetic {
+    public XOR() {
+        super("xor $t1,$t2,$t3", "Bitwise XOR : Set $t1 to bitwise XOR of $t2 and $t3",
+                "0000000", "101");
     }
 
     public int compute(int value, int value2) {
-        return value - value2;
+        return value ^ value2;
     }
 }

@@ -29,13 +29,14 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 (MIT license, http://www.opensource.org/licenses/mit-license.html)
  */
 
-public class SUB extends Arithmetic {
-    public SUB() {
-        super("sub $t1,$t2,$t3", "Subtraction: set $t1 to ($t2 minus $t3)",
-                "0100000", "000");
+
+public class SLTU extends Arithmetic {
+    public SLTU() {
+        super("sltu $t1,$t2,$t3", "Set less than : If $t2 is less than $t3 using unsigned comparision, then set $t1 to 1 else set $t1 to 0",
+                "0000000", "011");
     }
 
     public int compute(int value, int value2) {
-        return value - value2;
+        return (Integer.compareUnsigned(value, value2) < 0) ? 1 : 0;
     }
 }

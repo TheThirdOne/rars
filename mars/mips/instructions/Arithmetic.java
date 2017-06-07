@@ -1,6 +1,8 @@
-package mars.mips.instructions.instructions;
+package mars.mips.instructions;
 
-import mars.mips.instructions.Arithmetic;
+import mars.ProcessingException;
+import mars.ProgramStatement;
+import mars.mips.hardware.RegisterFile;
 
 /*
 Copyright (c) 2017,  Benjamin Landers
@@ -29,13 +31,27 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 (MIT license, http://www.opensource.org/licenses/mit-license.html)
  */
 
-public class SUB extends Arithmetic {
-    public SUB() {
-        super("sub $t1,$t2,$t3", "Subtraction: set $t1 to ($t2 minus $t3)",
-                "0100000", "000");
+/**
+ * Base class for all integer instructions using immediates
+ *
+ * @author Benjamin Landers
+ * @version June 2017
+ */
+public abstract class Arithmetic extends BasicInstruction {
+    public Arithmetic(String usage, String description, String funct3, String funct7) {
+        super(usage, description, BasicInstructionFormat.R_FORMAT,
+                funct7 + " ttttt sssss " + funct3 + " fffff 0110011");
     }
 
-    public int compute(int value, int value2) {
-        return value - value2;
+    public void simulate(ProgramStatement statement) throws ProcessingException {
+        int[] operands = statement.getOperands();
+        RegisterFile.updateRegister(operands[0], compute(RegisterFile.getValue(operands[1]), RegisterFile.getValue(operands[2])));
     }
+
+    /**
+     * @param value  the value from the first register
+     * @param value2 the value from the second register
+     * @return the result to be stored from the instruction
+     */
+    protected abstract int compute(int value, int value2);
 }
