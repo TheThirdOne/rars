@@ -29,12 +29,13 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 (MIT license, http://www.opensource.org/licenses/mit-license.html)
  */
 
-public class ADDI extends ImmediateInstruction {
-    public ADDI() {
-        super("addi $t1,$t2,-100", "Addition immediate: set $t1 to ($t2 plus signed 12-bit immediate)", "000");
+public class SLTIU extends ImmediateInstruction {
+    public SLTIU() {
+        super("sltiu $t1,$t2,-100", "Set less than immediate unsigned : If $t2 is less than  sign-extended 16-bit immediate using unsigned comparison, then set $t1 to 1 else set $t1 to 0",
+                "011");
     }
 
     public int compute(int value, int immediate) {
-        return value + immediate;
+        return (Integer.compareUnsigned(value, immediate) < 0) ? 1 : 0;
     }
 }

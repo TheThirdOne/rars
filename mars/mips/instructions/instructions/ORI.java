@@ -29,12 +29,12 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 (MIT license, http://www.opensource.org/licenses/mit-license.html)
  */
 
-public class ADDI extends ImmediateInstruction {
-    public ADDI() {
-        super("addi $t1,$t2,-100", "Addition immediate: set $t1 to ($t2 plus signed 12-bit immediate)", "000");
+public class ORI extends ImmediateInstruction {
+    public ORI() {
+        super("ori $t1,$t2,-100", "Bitwise OR immediate : Set $t1 to bitwise OR of $t2 and sign-extended 12-bit immediate", "110");
     }
 
     public int compute(int value, int immediate) {
-        return value + immediate;
+        return value | immediate;
     }
 }

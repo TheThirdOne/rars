@@ -1,6 +1,8 @@
-package mars.mips.instructions.instructions;
+package mars.mips.instructions;
 
-import mars.mips.instructions.ImmediateInstruction;
+import mars.ProcessingException;
+import mars.ProgramStatement;
+import mars.mips.hardware.RegisterFile;
 
 /*
 Copyright (c) 2017,  Benjamin Landers
@@ -29,12 +31,28 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 (MIT license, http://www.opensource.org/licenses/mit-license.html)
  */
 
-public class ADDI extends ImmediateInstruction {
-    public ADDI() {
-        super("addi $t1,$t2,-100", "Addition immediate: set $t1 to ($t2 plus signed 12-bit immediate)", "000");
+/**
+ * Base class for all integer instructions using immediates
+ *
+ * @author Benjamin Landers
+ * @version June 2017
+ */
+public abstract class ImmediateInstruction extends BasicInstruction {
+    public ImmediateInstruction(String usage, String description, String funct) {
+        super(usage, description, BasicInstructionFormat.I_FORMAT,
+                "tttttttttttt sssss " + funct + " fffff 0010011");
     }
 
-    public int compute(int value, int immediate) {
-        return value + immediate;
+    public void simulate(ProgramStatement statement) throws ProcessingException {
+        int[] operands = statement.getOperands();
+        RegisterFile.updateRegister(operands[0], compute(RegisterFile.getValue(operands[1]),
+                (operands[2] << 20) >> 20)); // make sure the immediate is sign-extended
     }
+
+    /**
+     * @param value     the value from the register
+     * @param immediate the value from the immediate
+     * @return the result to be stored from teh instruction
+     */
+    protected abstract int compute(int value, int immediate);
 }
