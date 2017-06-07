@@ -34,15 +34,15 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 (MIT license, http://www.opensource.org/licenses/mit-license.html)
  */
 
-public class JAL extends BasicInstruction {
-    public JAL() {
-        super("jal $t1, target", "Jump and link : Set $t1 to Program Counter (return address) then jump to statement at target address",
-                BasicInstructionFormat.U_JUMP_FORMAT, "s ssssssssss s ssssssss fffff 1101111 ");
+public class JALR extends BasicInstruction {
+    public JALR() {
+        super("jalr $t1, $t2, -100", "Jump and link register: Set $t1 to Program Counter (return address) then jump to statement at $t2 + immediate",
+                BasicInstructionFormat.I_FORMAT, "tttttttttttt sssss 000 fffff 1100111");
     }
 
     public void simulate(ProgramStatement statement) throws ProcessingException {
         int[] operands = statement.getOperands();
         InstructionSet.processReturnAddress(operands[0]);// RegisterFile.updateRegister(31, RegisterFile.getProgramCounter());
-        InstructionSet.processJump(RegisterFile.getProgramCounter() + (operands[1] << 1));
+        InstructionSet.processJump(RegisterFile.getProgramCounter() + RegisterFile.getValue(operands[1]) + (operands[2]));
     }
 }
