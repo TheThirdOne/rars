@@ -328,7 +328,7 @@ public class Simulator extends Observable {
             // *********************************************************************
 
             int pc = 0;  // added: 7/26/06 (explanation above)
-
+            boolean ebreak = false;
             while (statement != null) {
                 pc = RegisterFile.getProgramCounter(); // added: 7/26/06 (explanation above)
                 RegisterFile.incrementPC();
@@ -356,6 +356,12 @@ public class Simulator extends Observable {
                         if (Globals.getSettings().getBackSteppingEnabled()) {
                             Globals.program.getBackStepper().addDoNothing(pc);
                         }
+                    } catch (BreakpointException b) {
+                        // EBREAK needs backstepping support too.
+                        if (Globals.getSettings().getBackSteppingEnabled()) {
+                            Globals.program.getBackStepper().addDoNothing(pc);
+                        }
+                        ebreak = true;
                     } catch (ProcessingException pe) {
                         if (pe.errors() == null) {
                             this.constructReturnReason = NORMAL_TERMINATION;
@@ -405,7 +411,7 @@ public class Simulator extends Observable {
                     return false;
                 }
                 //	Return if we've reached a breakpoint.
-                if ((breakPoints != null) &&
+                if (ebreak || (breakPoints != null) &&
                         (Arrays.binarySearch(breakPoints, RegisterFile.getProgramCounter()) >= 0)) {
                     this.constructReturnReason = BREAKPOINT;
                     this.done = false;
