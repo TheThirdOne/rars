@@ -189,9 +189,9 @@ public class ProgramArgumentList {
             // Need to set $sp register to stack address, $a0 to argc, $a1 to argv
             // Need to by-pass the backstepping mechanism so go directly to Register instead of RegisterFile
             //Register[] registers = RegisterFile.getRegisters();
-            RegisterFile.getUserRegister("$sp").setValue(stackAddress + Memory.WORD_LENGTH_BYTES);
-            RegisterFile.getUserRegister("$a0").setValue(argStartAddress.length); // argc
-            RegisterFile.getUserRegister("$a1").setValue(stackAddress + Memory.WORD_LENGTH_BYTES + Memory.WORD_LENGTH_BYTES); // argv
+            RegisterFile.getUserRegister("sp").setValue(stackAddress + Memory.WORD_LENGTH_BYTES);
+            RegisterFile.getUserRegister("a0").setValue(argStartAddress.length); // argc
+            RegisterFile.getUserRegister("a1").setValue(stackAddress + Memory.WORD_LENGTH_BYTES + Memory.WORD_LENGTH_BYTES); // argv
             //RegisterFile.updateRegister("$sp",stackAddress+Memory.WORD_LENGTH_BYTES);
             //RegisterFile.updateRegister("$a0",argStartAddress.length); // argc
             //RegisterFile.updateRegister("$a1",stackAddress+Memory.WORD_LENGTH_BYTES+Memory.WORD_LENGTH_BYTES); // argv

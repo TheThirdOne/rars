@@ -32,7 +32,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 public class REMU extends Arithmetic {
     public REMU() {
-        super("remu $t1,$t2,$t3", "Remainder: set $t1 to the remainder of $t2/$t3 using unsigned division",
+        super("remu t1,t2,t3", "Remainder: set t1 to the remainder of t2/t3 using unsigned division",
                 "0000001", "111");
     }
 

@@ -32,7 +32,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 public class OR extends Arithmetic {
     public OR() {
-        super("or $t1,$t2,$t3", "Bitwise OR : Set $t1 to bitwise OR of $t2 and $t3",
+        super("or t1,t2,t3", "Bitwise OR : Set t1 to bitwise OR of t2 and t3",
                 "0000000", "110");
     }
 

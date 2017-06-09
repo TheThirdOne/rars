@@ -32,7 +32,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 public class MUL extends Arithmetic {
     public MUL() {
-        super("mul $t1,$t2,$t3", "Multiplication: set $t1 to the lower 32 bits of $t2*$t3",
+        super("mul t1,t2,t3", "Multiplication: set t1 to the lower 32 bits of t2*t3",
                 "0000001", "000");
     }
 

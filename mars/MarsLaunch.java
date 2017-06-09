@@ -396,7 +396,7 @@ public class MarsLaunch {
             }
 
 
-            if (args[i].indexOf("$") == 0) {
+            if (args[i].indexOf("x") == 0) {
                 if (RegisterFile.getUserRegister(args[i]) == null &&
                         Coprocessor1.getRegister(args[i]) == null) {
                     out.println("Invalid Register Name: " + args[i]);
@@ -406,9 +406,9 @@ public class MarsLaunch {
                 continue;
             }
             // check for register name w/o $.  added 14-July-2008 DPS
-            if (RegisterFile.getUserRegister("$" + args[i]) != null ||
-                    Coprocessor1.getRegister("$" + args[i]) != null) {
-                registerDisplayList.add("$" + args[i]);
+            if (RegisterFile.getUserRegister(args[i]) != null ||
+                    Coprocessor1.getRegister(args[i]) != null) {
+                registerDisplayList.add(args[i]);
                 continue;
             }
             if (new File(args[i]).exists()) {  // is it a file name?
@@ -792,7 +792,7 @@ public class MarsLaunch {
         out.println("    smc  -- Self Modifying Code - Program can write and branch to either text or data segment");
         out.println("    <n>  -- where <n> is an integer maximum count of steps to simulate.");
         out.println("            If 0, negative or not specified, there is no maximum.");
-        out.println(" $<reg>  -- where <reg> is number or name (e.g. 5, t3, f10) of register whose ");
+        out.println(" x<reg>  -- where <reg> is number or name (e.g. 5, t3, f10) of register whose ");
         out.println("            content to display at end of run.  Option may be repeated.");
         out.println("<reg_name>  -- where <reg_name> is name (e.g. t3, f10) of register whose");
         out.println("            content to display at end of run.  Option may be repeated. ");

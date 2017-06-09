@@ -35,7 +35,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 public class AUIPC extends BasicInstruction {
     public AUIPC() {
-        super("auipc $t1,-100", "Add upper immediate to pc: set $t1 to ($pc plus an upper signed 20-bit immediate)",
+        super("auipc t1,-100", "Add upper immediate to pc: set t1 to (pc plus an upper signed 20-bit immediate)",
                 BasicInstructionFormat.U_FORMAT, "ssssssssssssssssssss fffff 0010111");
     }
 

@@ -31,7 +31,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 public class SUB extends Arithmetic {
     public SUB() {
-        super("sub $t1,$t2,$t3", "Subtraction: set $t1 to ($t2 minus $t3)",
+        super("sub t1,t2,t3", "Subtraction: set t1 to (t2 minus t3)",
                 "0100000", "000");
     }
 

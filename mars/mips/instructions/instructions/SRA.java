@@ -32,7 +32,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 public class SRA extends Arithmetic {
     public SRA() {
-        super("sra $t1,$t2,$t3", "Shift right arithmetic: Set $t1 to result of sign-extended shifting $t2 right by number of bits specified by value in low-order 5 bits of $t3",
+        super("sra t1,t2,t3", "Shift right arithmetic: Set t1 to result of sign-extended shifting t2 right by number of bits specified by value in low-order 5 bits of t3",
                 "0100000", "101");
     }
 

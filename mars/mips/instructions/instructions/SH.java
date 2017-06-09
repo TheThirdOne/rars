@@ -33,7 +33,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 public class SH extends Store {
     public SH() {
-        super("sh $t1, -100($t2)", "Store halfword : Store the low-order 16 bits of $t1 into the effective memory halfword address", "001");
+        super("sh t1, -100(t2)", "Store halfword : Store the low-order 16 bits of t1 into the effective memory halfword address", "001");
     }
 
     public void store(int address, int data) throws AddressErrorException {

@@ -33,7 +33,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 public class LW extends Load {
     public LW() {
-        super("lw $t1, -100($t2)", "Set $t1 to contents of effective memory word address", "010");
+        super("lw t1, -100(t2)", "Set t1 to contents of effective memory word address", "010");
     }
 
     public int load(int address) throws AddressErrorException {

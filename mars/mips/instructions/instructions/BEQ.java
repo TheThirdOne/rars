@@ -33,7 +33,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 public class BEQ extends Branch {
     public BEQ() {
-        super("beq $t1,$t2,label", "Branch if equal : Branch to statement at label's address if $t1 and $t2 are equal", "000");
+        super("beq t1,t2,label", "Branch if equal : Branch to statement at label's address if t1 and t2 are equal", "000");
     }
 
     public boolean willBranch(ProgramStatement statement) {

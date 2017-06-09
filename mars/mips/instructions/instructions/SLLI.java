@@ -36,7 +36,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 public class SLLI extends BasicInstruction {
     public SLLI() {
-        super("slli $t1,$t2,10", "Shift left logical : Set $t1 to result of shifting $t2 left by number of bits specified by immediate",
+        super("slli t1,t2,10", "Shift left logical : Set t1 to result of shifting t2 left by number of bits specified by immediate",
                 BasicInstructionFormat.R_FORMAT, "0000000 ttttt sssss 001 fffff 0010011");
     }
 

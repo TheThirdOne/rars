@@ -32,7 +32,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 public class REM extends Arithmetic {
     public REM() {
-        super("rem $t1,$t2,$t3", "Remainder: set $t1 to the remainder of $t2/$t3",
+        super("rem t1,t2,t3", "Remainder: set t1 to the remainder of t2/t3",
                 "0000001", "110");
     }
 

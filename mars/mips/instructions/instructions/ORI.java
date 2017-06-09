@@ -31,7 +31,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 public class ORI extends ImmediateInstruction {
     public ORI() {
-        super("ori $t1,$t2,-100", "Bitwise OR immediate : Set $t1 to bitwise OR of $t2 and sign-extended 12-bit immediate", "110");
+        super("ori t1,t2,-100", "Bitwise OR immediate : Set t1 to bitwise OR of t2 and sign-extended 12-bit immediate", "110");
     }
 
     public int compute(int value, int immediate) {

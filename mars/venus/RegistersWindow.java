@@ -95,7 +95,7 @@ public class RegistersWindow extends JPanel implements Observer {
 
     public Object[][] setupWindow() {
         int valueBase = NumberDisplayBaseChooser.getBase(settings.getBooleanSetting(Settings.DISPLAY_VALUES_IN_HEX));
-        tableData = new Object[35][3];
+        tableData = new Object[33][3];
         registers = RegisterFile.getRegisters();
         for (int i = 0; i < registers.length; i++) {
             tableData[i][0] = registers[i].getName();
@@ -105,14 +105,6 @@ public class RegistersWindow extends JPanel implements Observer {
         tableData[32][0] = "pc";
         tableData[32][1] = "";//new Integer(32);
         tableData[32][2] = NumberDisplayBaseChooser.formatUnsignedInteger(RegisterFile.getProgramCounter(), valueBase);
-
-        tableData[33][0] = "hi";
-        tableData[33][1] = "";//new Integer(33);
-        tableData[33][2] = NumberDisplayBaseChooser.formatNumber(RegisterFile.getValue(33), valueBase);
-
-        tableData[34][0] = "lo";
-        tableData[34][1] = "";//new Integer(34);
-        tableData[34][2] = NumberDisplayBaseChooser.formatNumber(RegisterFile.getValue(34), valueBase);
 
         return tableData;
     }
@@ -164,8 +156,6 @@ public class RegistersWindow extends JPanel implements Observer {
             updateRegisterValue(register.getNumber(), register.getValue(), base);
         }
         updateRegisterUnsignedValue(32, RegisterFile.getProgramCounter(), base);
-        updateRegisterValue(33, RegisterFile.getValue(33), base);
-        updateRegisterValue(34, RegisterFile.getValue(34), base);
     }
 
     /**
@@ -386,41 +376,39 @@ public class RegistersWindow extends JPanel implements Observer {
         }
 
         private String[] regToolTips = {
-            /* $zero */  "constant 0",  
-            /* $at   */  "reserved for assembler",
-            /* $v0   */  "expression evaluation and results of a function",
-            /* $v1   */  "expression evaluation and results of a function",
-            /* $a0   */  "argument 1",
-            /* $a1   */  "argument 2",
-            /* $a2   */  "argument 3",
-            /* $a3   */  "argument 4",
-            /* $t0   */  "temporary (not preserved across call)",
-            /* $t1   */  "temporary (not preserved across call)",
-            /* $t2   */  "temporary (not preserved across call)",
-            /* $t3   */  "temporary (not preserved across call)",
-            /* $t4   */  "temporary (not preserved across call)",
-            /* $t5   */  "temporary (not preserved across call)",
-            /* $t6   */  "temporary (not preserved across call)",
-            /* $t7   */  "temporary (not preserved across call)",
-            /* $s0   */  "saved temporary (preserved across call)",
-            /* $s1   */  "saved temporary (preserved across call)",
-            /* $s2   */  "saved temporary (preserved across call)",
-            /* $s3   */  "saved temporary (preserved across call)",
-            /* $s4   */  "saved temporary (preserved across call)",
-            /* $s5   */  "saved temporary (preserved across call)",
-            /* $s6   */  "saved temporary (preserved across call)",
-            /* $s7   */  "saved temporary (preserved across call)",
-            /* $t8   */  "temporary (not preserved across call)",
-            /* $t9   */  "temporary (not preserved across call)",
-            /* $k0   */  "reserved for OS kernel",
-            /* $k1   */  "reserved for OS kernel",
-            /* $gp   */  "pointer to global area",
-            /* $sp   */  "stack pointer",
-            /* $fp   */  "frame pointer",
-            /* $ra   */  "return address (used by function call)",
-            /* pc    */  "program counter",
-            /* hi    */  "high-order word of multiply product, or divide remainder",
-            /* lo    */  "low-order word of multiply product, or divide quotient"
+                /* zero */  "constant 0",
+                /* ra   */  "return address (used by function call)",
+                /* sp   */  "stack pointer",
+                /* gp   */  "pointer to global area",
+                /* tp   */  "pointer to thread local data (not given a value)",
+                /* t0   */  "temporary (not preserved across call)",
+                /* t1   */  "temporary (not preserved across call)",
+                /* t2   */  "temporary (not preserved across call)",
+                /* s0   */  "saved temporary (preserved across call)",
+                /* s1   */  "saved temporary (preserved across call)",
+                /* a0   */  "argument 1 / return 1",
+                /* a1   */  "argument 2 / return 2",
+                /* a2   */  "argument 3",
+                /* a3   */  "argument 4",
+                /* a4   */  "argument 5",
+                /* a5   */  "argument 6",
+                /* a6   */  "argument 7",
+                /* a7   */  "argument 8",
+                /* s2   */  "saved temporary (preserved across call)",
+                /* s3   */  "saved temporary (preserved across call)",
+                /* s4   */  "saved temporary (preserved across call)",
+                /* s5   */  "saved temporary (preserved across call)",
+                /* s6   */  "saved temporary (preserved across call)",
+                /* s7   */  "saved temporary (preserved across call)",
+                /* s8   */  "saved temporary (preserved across call)",
+                /* s9   */  "saved temporary (preserved across call)",
+                /* s10  */  "saved temporary (preserved across call)",
+                /* s11  */  "saved temporary (preserved across call)",
+                /* t3   */  "temporary (not preserved across call)",
+                /* t4   */  "temporary (not preserved across call)",
+                /* t5   */  "temporary (not preserved across call)",
+                /* t6   */  "temporary (not preserved across call)",
+                /* pc   */  "program counter",
         };
 
         //Implement table cell tool tips.

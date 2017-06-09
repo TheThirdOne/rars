@@ -33,7 +33,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 public class SW extends Store {
     public SW() {
-        super("sw $t1, -100($t2)", "Store word : Store contents of $t1 into effective memory word address", "010");
+        super("sw t1, -100(t2)", "Store word : Store contents of t1 into effective memory word address", "010");
     }
 
     public void store(int address, int data) throws AddressErrorException {

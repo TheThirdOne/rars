@@ -33,7 +33,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 public class BGE extends Branch {
     public BGE() {
-        super("bge $t1,$t2,label", "Branch if greater than or equal: Branch to statement at label's address if $t1 is greater than or equal to $t2", "110");
+        super("bge t1,t2,label", "Branch if greater than or equal: Branch to statement at label's address if t1 is greater than or equal to t2", "110");
     }
 
     public boolean willBranch(ProgramStatement statement) {

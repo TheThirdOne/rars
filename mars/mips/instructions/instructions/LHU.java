@@ -33,7 +33,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 public class LHU extends Load {
     public LHU() {
-        super("lhu $t1, -100($t2)", "Set $t1 to zero-extended 16-bit value from effective memory halfword address", "101");
+        super("lhu t1, -100(t2)", "Set t1 to zero-extended 16-bit value from effective memory halfword address", "101");
     }
 
     public int load(int address) throws AddressErrorException {

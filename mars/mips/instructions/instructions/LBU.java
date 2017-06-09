@@ -33,7 +33,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 public class LBU extends Load {
     public LBU() {
-        super("lbu $t1, -100($t2)", "Set $t1 to zero-extended 8-bit value from effective memory byte address", "100");
+        super("lbu t1, -100(t2)", "Set t1 to zero-extended 8-bit value from effective memory byte address", "100");
     }
 
     public int load(int address) throws AddressErrorException {

@@ -36,7 +36,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 public class JALR extends BasicInstruction {
     public JALR() {
-        super("jalr $t1, $t2, -100", "Jump and link register: Set $t1 to Program Counter (return address) then jump to statement at $t2 + immediate",
+        super("jalr t1, t2, -100", "Jump and link register: Set t1 to Program Counter (return address) then jump to statement at t2 + immediate",
                 BasicInstructionFormat.I_FORMAT, "tttttttttttt sssss 000 fffff 1100111");
     }
 

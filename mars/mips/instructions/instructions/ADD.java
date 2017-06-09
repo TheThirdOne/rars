@@ -32,7 +32,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 public class ADD extends Arithmetic {
     public ADD() {
-        super("add $t1,$t2,$t3", "Addition: set $t1 to ($t2 plus $t3)",
+        super("add t1,t2,t3", "Addition: set t1 to (t2 plus t3)",
                 "0000000", "000");
     }
 

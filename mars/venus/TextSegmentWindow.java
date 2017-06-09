@@ -100,7 +100,7 @@ public class TextSegmentWindow extends JInternalFrame implements Observer {
         programArgumentsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         programArgumentsPanel.add(new JLabel("Program Arguments: "));
         programArgumentsTextField = new JTextField(PROGRAM_ARGUMENT_TEXTFIELD_COLUMNS);
-        programArgumentsTextField.setToolTipText("Arguments provided to program at runtime via $a0 (argc) and $a1 (argv)");
+        programArgumentsTextField.setToolTipText("Arguments provided to program at runtime via a0 (argc) and a1 (argv)");
         programArgumentsPanel.add(programArgumentsTextField);
     }
 

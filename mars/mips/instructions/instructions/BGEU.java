@@ -33,7 +33,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 public class BGEU extends Branch {
     public BGEU() {
-        super("bgeu $t1,$t2,label", "Branch if greater than or equal to (unsigned): Branch to statement at label's address if $t1 is greater than or equal to $t2 (with an unsigned interpretation)", "100");
+        super("bgeu t1,t2,label", "Branch if greater than or equal to (unsigned): Branch to statement at label's address if t1 is greater than or equal to t2 (with an unsigned interpretation)", "100");
     }
 
     public boolean willBranch(ProgramStatement statement) {

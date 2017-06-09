@@ -509,7 +509,7 @@ public class ExtendedInstruction extends Instruction {
                 try { // if token is a RegisterFile register, substitute next higher register
                     regNumber = RegisterFile.getUserRegister(token).getNumber();
                     if (regNumber >= 0) {
-                        instruction = substitute(instruction, "NR" + op, "$" + (regNumber + 1));
+                        instruction = substitute(instruction, "NR" + op, "x" + (regNumber + 1));
                     }
                 } catch (NullPointerException e) { // not in RegisterFile, must be Coprocessor1 register
                     regNumber = Coprocessor1.getRegisterNumber(token);

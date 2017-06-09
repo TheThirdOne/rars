@@ -33,7 +33,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 public class LB extends Load {
     public LB() {
-        super("lb $t1, -100($t2)", "Set $t1 to sign-extended 8-bit value from effective memory byte address", "000");
+        super("lb t1, -100(t2)", "Set t1 to sign-extended 8-bit value from effective memory byte address", "000");
     }
 
     public int load(int address) throws AddressErrorException {

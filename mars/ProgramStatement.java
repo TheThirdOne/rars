@@ -200,7 +200,7 @@ public class ProgramStatement implements Comparable<ProgramStatement> {
                 this.operands[this.numOperands++] = registerNumber;
             } else if (tokenType == TokenTypes.REGISTER_NAME) {
                 registerNumber = RegisterFile.getNumber(tokenValue);
-                basicStatementElement = "$" + registerNumber;
+                basicStatementElement = "x" + registerNumber;
                 basic += basicStatementElement;
                 basicStatementList.addString(basicStatementElement);
                 if (registerNumber < 0) {

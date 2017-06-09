@@ -32,7 +32,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 public class DIVU extends Arithmetic {
     public DIVU() {
-        super("divu $t1,$t2,$t3", "Division: set $t1 to the result of $t2/$t3 using unsigned division",
+        super("divu t1,t2,t3", "Division: set t1 to the result of t2/t3 using unsigned division",
                 "0000001", "101");
     }
 

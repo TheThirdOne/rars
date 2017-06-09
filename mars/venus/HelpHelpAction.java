@@ -213,7 +213,7 @@ public class HelpHelpAction extends GuiAction {
                         "<tr>" +
                         "<td><tt>label, target</tt></td><td>any textual label</td>" +
                         "</tr><tr>" +
-                        "<td><tt>$t1, $t2, $t3</tt></td><td>any integer register</td>" +
+                        "<td><tt>t1, t2, t3</tt></td><td>any integer register</td>" +
                         "</tr><tr>" +
                         "<td><tt>$f2, $f4, $f6</tt></td><td><i>even-numbered</i> floating point register</td>" +
                         "</tr><tr>" +
@@ -234,12 +234,12 @@ public class HelpHelpAction extends GuiAction {
                         "</tr><tr>" +
                         "<td colspan=2><b><i><font size=+1>Load & Store addressing mode, basic instructions</font></i></b></td>" +
                         "</tr><tr>" +
-                        "<td><tt>-100($t2)</tt></td><td>sign-extended 16-bit integer added to contents of $t2</td>" +
+                        "<td><tt>-100(t2)</tt></td><td>sign-extended 16-bit integer added to contents of t2</td>" +
                         "</tr><tr>" +
                         "</tr><tr>" +
                         "<td colspan=2><b><i><font size=+1>Load & Store addressing modes, pseudo instructions</font></i></b></td>" +
                         "</tr><tr>" +
-                        "<td><tt>($t2)</tt></td><td>contents of $t2</td>" +
+                        "<td><tt>(t2)</tt></td><td>contents of t2</td>" +
                         "</tr><tr>" +
                         "<td><tt>-100</tt></td><td>signed 16-bit integer</td>" +
                         "</tr><tr>" +
@@ -247,17 +247,17 @@ public class HelpHelpAction extends GuiAction {
                         "</tr><tr>" +
                         "<td><tt>100000</tt></td><td>signed 32-bit integer</td>" +
                         "</tr><tr>" +
-                        "<td><tt>100($t2)</tt></td><td>zero-extended unsigned 16-bit integer added to contents of $t2</td>" +
+                        "<td><tt>100(t2)</tt></td><td>zero-extended unsigned 16-bit integer added to contents of t2</td>" +
                         "</tr><tr>" +
-                        "<td><tt>100000($t2)</tt></td><td>signed 32-bit integer added to contents of $t2</td>" +
+                        "<td><tt>100000(t2)</tt></td><td>signed 32-bit integer added to contents of t2</td>" +
                         "</tr><tr>" +
                         "<td><tt>label</tt></td><td>32-bit address of label</td>" +
                         "</tr><tr>" +
-                        "<td><tt>label($t2)</tt></td><td>32-bit address of label added to contents of $t2</td>" +
+                        "<td><tt>label(t2)</tt></td><td>32-bit address of label added to contents of t2</td>" +
                         "</tr><tr>" +
                         "<td><tt>label+100000</tt></td><td>32-bit integer added to label's address</td>" +
                         "</tr><tr>" +
-                        "<td><tt>label+100000($t2)&nbsp;&nbsp;&nbsp;</tt></td><td>sum of 32-bit integer, label's address, and contents of $t2</td>" +
+                        "<td><tt>label+100000(t2)&nbsp;&nbsp;&nbsp;</tt></td><td>sum of 32-bit integer, label's address, and contents of t2</td>" +
                         "</tr>" +
                         "</table></center></html>";
         // Original code:         mipsHelpInfo.add(new JLabel(helpRemarks, JLabel.CENTER), BorderLayout.NORTH);

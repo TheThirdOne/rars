@@ -33,7 +33,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 public class SB extends Store {
     public SB() {
-        super("sb $t1, -100($t2)", "Store byte : Store the low-order 8 bits of $t1 into the effective memory byte address", "000");
+        super("sb t1, -100(t2)", "Store byte : Store the low-order 8 bits of t1 into the effective memory byte address", "000");
     }
 
     public void store(int address, int data) throws AddressErrorException {

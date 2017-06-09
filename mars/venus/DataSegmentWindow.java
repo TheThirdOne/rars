@@ -328,8 +328,8 @@ public class DataSegmentWindow extends JInternalFrame implements Observer {
             -1 /*Memory.stackPointer*/, Memory.textBaseAddress, Memory.kernelDataBaseAddress,
             Memory.memoryMapBaseAddress,};
     // Must agree with above in number and order...
-    String[] descriptions = {" (.extern)", " (.data)", " (heap)", "current $gp",
-            "current $sp", " (.text)", " (.kdata)", " (MMIO)"};
+    String[] descriptions = {" (.extern)", " (.data)", " (heap)", "current gp",
+            "current sp", " (.text)", " (.kdata)", " (MMIO)"};
 
     private void initializeBaseAddressChoices() {
         // Also must agree in number and order.  Upon combo box item selection, will invoke

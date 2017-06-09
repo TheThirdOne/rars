@@ -32,7 +32,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 public class DIV extends Arithmetic {
     public DIV() {
-        super("div $t1,$t2,$t3", "Division: set $t1 to the result of $t2/$t3",
+        super("div t1,t2,t3", "Division: set t1 to the result of t2/t3",
                 "0000001", "100");
     }
 

@@ -32,7 +32,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 public class MULHU extends Arithmetic {
     public MULHU() {
-        super("mulhu $t1,$t2,$t3", "Multiplication: set $t1 to the upper 32 bits of $t2*$t3 using unsigned multiplication",
+        super("mulhu t1,t2,t3", "Multiplication: set t1 to the upper 32 bits of t2*t3 using unsigned multiplication",
                 "0000001", "011");
     }
 

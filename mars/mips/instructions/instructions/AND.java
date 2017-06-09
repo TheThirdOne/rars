@@ -32,7 +32,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 public class AND extends Arithmetic {
     public AND() {
-        super("and $t1,$t2,$t3", "Bitwise AND : Set $t1 to bitwise AND of $t2 and $t3",
+        super("and t1,t2,t3", "Bitwise AND : Set t1 to bitwise AND of t2 and t3",
                 "0000000", "111");
     }
 

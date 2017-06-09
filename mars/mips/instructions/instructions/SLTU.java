@@ -32,7 +32,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 public class SLTU extends Arithmetic {
     public SLTU() {
-        super("sltu $t1,$t2,$t3", "Set less than : If $t2 is less than $t3 using unsigned comparision, then set $t1 to 1 else set $t1 to 0",
+        super("sltu t1,t2,t3", "Set less than : If t2 is less than t3 using unsigned comparision, then set t1 to 1 else set t1 to 0",
                 "0000000", "011");
     }
 

@@ -31,7 +31,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 public class SLTI extends ImmediateInstruction {
     public SLTI() {
-        super("slti $t1,$t2,-100", "Set less than immediate : If $t2 is less than sign-extended 12-bit immediate, then set $t1 to 1 else set $t1 to 0",
+        super("slti t1,t2,-100", "Set less than immediate : If t2 is less than sign-extended 12-bit immediate, then set t1 to 1 else set t1 to 0",
                 "010");
     }
 

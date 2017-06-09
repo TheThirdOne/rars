@@ -11,7 +11,9 @@ package mars.venus.editors.jeditsyntax.tokenmarker;
 
 import mars.Settings;
 import mars.assembler.Directives;
+import mars.mips.hardware.Coprocessor1;
 import mars.mips.hardware.Register;
+import mars.mips.hardware.RegisterFile;
 import mars.mips.instructions.BasicInstruction;
 import mars.mips.instructions.Instruction;
 import mars.venus.editors.jeditsyntax.KeywordMap;
@@ -61,7 +63,7 @@ public class MIPSTokenMarker extends TokenMarker {
             tokenExamples[Token.LABEL] = "main:";
             tokenExamples[Token.KEYWORD1] = "lui";
             tokenExamples[Token.KEYWORD2] = ".text";
-            tokenExamples[Token.KEYWORD3] = "$zero";
+            tokenExamples[Token.KEYWORD3] = "zero";
             tokenExamples[Token.INVALID] = "\"Regi";
             tokenExamples[Token.MACRO_ARG] = "%arg";
         }
@@ -455,13 +457,13 @@ public class MIPSTokenMarker extends TokenMarker {
                 cKeywords.add(direct.getName(), Token.KEYWORD2);
             }
             // add integer register file
-            Register[] registerFile = mars.mips.hardware.RegisterFile.getRegisters();
+            Register[] registerFile = RegisterFile.getRegisters();
             for (int i = 0; i < registerFile.length; i++) {
                 cKeywords.add(registerFile[i].getName(), Token.KEYWORD3);
-                cKeywords.add("$" + i, Token.KEYWORD3);  // also recognize $0, $1, $2, etc
+                cKeywords.add("x" + i, Token.KEYWORD3);  // also recognize x0, x1, x2, etc
             }
             // add Coprocessor 1 (floating point) register file
-            Register[] coprocessor1RegisterFile = mars.mips.hardware.Coprocessor1.getRegisters();
+            Register[] coprocessor1RegisterFile = Coprocessor1.getRegisters();
             for (Register crf : coprocessor1RegisterFile) {
                 cKeywords.add(crf.getName(), Token.KEYWORD3);
             }

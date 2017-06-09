@@ -58,10 +58,10 @@ public class MemoryConfigurations {
             ".text base address",
             "data segment base address",
             ".extern base address",
-            "global pointer $gp",
+            "global pointer (gp)",
             ".data base address",
             "heap base address",
-            "stack pointer $sp",
+            "stack pointer (sp)",
             "stack base address",
             "user space high address",
             "kernel space base address",
@@ -220,8 +220,8 @@ public class MemoryConfigurations {
         if (config != currentConfiguration) {
             currentConfiguration = config;
             Globals.memory.clear();
-            RegisterFile.getUserRegister("$gp").changeResetValue(config.getGlobalPointer());
-            RegisterFile.getUserRegister("$sp").changeResetValue(config.getStackPointer());
+            RegisterFile.getUserRegister("gp").changeResetValue(config.getGlobalPointer());
+            RegisterFile.getUserRegister("sp").changeResetValue(config.getStackPointer());
             RegisterFile.getProgramCounterRegister().changeResetValue(config.getTextBaseAddress());
             RegisterFile.initializeProgramCounter(config.getTextBaseAddress());
             RegisterFile.resetRegisters();
