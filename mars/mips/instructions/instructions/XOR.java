@@ -33,7 +33,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 public class XOR extends Arithmetic {
     public XOR() {
         super("xor $t1,$t2,$t3", "Bitwise XOR : Set $t1 to bitwise XOR of $t2 and $t3",
-                "0000000", "101");
+                "0000000", "100");
     }
 
     public int compute(int value, int value2) {

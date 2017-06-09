@@ -303,12 +303,12 @@ public class InstructionSet {
     public static void processBranch(int displacement) {
         if (Globals.getSettings().getBooleanSetting(Settings.DELAYED_BRANCHING_ENABLED)) {
             // Register the branch target address (absolute byte address).
-            DelayedBranch.register(RegisterFile.getProgramCounter() + (displacement << 2));
+            DelayedBranch.register(RegisterFile.getProgramCounter() + (displacement << 1)
+                    - Instruction.INSTRUCTION_LENGTH);
         } else {
             // Decrement needed because PC has already been incremented
-            RegisterFile.setProgramCounter(
-                    RegisterFile.getProgramCounter()
-                            + (displacement << 1)); // - Instruction.INSTRUCTION_LENGTH);
+            RegisterFile.setProgramCounter(RegisterFile.getProgramCounter() + (displacement << 1)
+                    - Instruction.INSTRUCTION_LENGTH);
         }
     }
 

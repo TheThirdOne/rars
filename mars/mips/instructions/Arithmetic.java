@@ -38,7 +38,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * @version June 2017
  */
 public abstract class Arithmetic extends BasicInstruction {
-    public Arithmetic(String usage, String description, String funct3, String funct7) {
+    public Arithmetic(String usage, String description, String funct7, String funct3) {
         super(usage, description, BasicInstructionFormat.R_FORMAT,
                 funct7 + " ttttt sssss " + funct3 + " fffff 0110011");
     }

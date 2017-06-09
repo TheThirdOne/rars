@@ -42,7 +42,8 @@ public class JALR extends BasicInstruction {
 
     public void simulate(ProgramStatement statement) throws ProcessingException {
         int[] operands = statement.getOperands();
-        InstructionSet.processReturnAddress(operands[0]);// RegisterFile.updateRegister(31, RegisterFile.getProgramCounter());
-        InstructionSet.processJump(RegisterFile.getProgramCounter() + RegisterFile.getValue(operands[1]) + (operands[2]));
+        InstructionSet.processReturnAddress(operands[0]);
+        // Set PC = $t2 + immediate with the last bit set to 0
+        InstructionSet.processJump((RegisterFile.getValue(operands[1]) + operands[2]) & 0xFFFFFFFE);
     }
 }

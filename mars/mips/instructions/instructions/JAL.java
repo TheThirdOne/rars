@@ -5,6 +5,7 @@ import mars.ProgramStatement;
 import mars.mips.hardware.RegisterFile;
 import mars.mips.instructions.BasicInstruction;
 import mars.mips.instructions.BasicInstructionFormat;
+import mars.mips.instructions.Instruction;
 import mars.mips.instructions.InstructionSet;
 
 /*
@@ -43,6 +44,6 @@ public class JAL extends BasicInstruction {
     public void simulate(ProgramStatement statement) throws ProcessingException {
         int[] operands = statement.getOperands();
         InstructionSet.processReturnAddress(operands[0]);// RegisterFile.updateRegister(31, RegisterFile.getProgramCounter());
-        InstructionSet.processJump(RegisterFile.getProgramCounter() + (operands[1] << 1));
+        InstructionSet.processJump(RegisterFile.getProgramCounter() - Instruction.INSTRUCTION_LENGTH + (operands[1] << 1));
     }
 }
