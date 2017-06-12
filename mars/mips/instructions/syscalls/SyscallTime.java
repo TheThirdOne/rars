@@ -36,26 +36,21 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
 /**
- * Service to read a character from input console into $a0.
+ * Performs syscall function to place current system time into $a0 (low order 32 bits)
+ * and $a1 (high order 32 bits).<br>
+ * <p>
+ * Service Number: 30, Name: Time
  */
 
 public class SyscallTime extends AbstractSyscall {
-    /**
-     * Build an instance of the Read Char syscall.  Default service number
-     * is 12 and name is "ReadChar".
-     */
     public SyscallTime() {
         super(30, "Time");
     }
 
-    /**
-     * Performs syscall function to place current system time into $a0 (low order 32 bits)
-     * and $a1 (high order 32 bits).
-     */
     public void simulate(ProgramStatement statement) throws ProcessingException {
         long value = new java.util.Date().getTime();
-        RegisterFile.updateRegister(4, Binary.lowOrderLongToInt(value)); // $a0
-        RegisterFile.updateRegister(5, Binary.highOrderLongToInt(value)); // $a1
+        RegisterFile.updateRegister("a0", Binary.lowOrderLongToInt(value));
+        RegisterFile.updateRegister("a1", Binary.highOrderLongToInt(value));
     }
 
 }

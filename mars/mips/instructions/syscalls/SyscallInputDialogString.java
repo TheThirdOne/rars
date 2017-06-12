@@ -38,47 +38,29 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 /**
- * Service to input data.
+ * Service to input data.<br>
+ * <p>
+ * Service Number: 54, Name: InputDialogString<br>
+ * <p>
+ * Input arguments:<br>
+ * a0 = address of null-terminated string that is the message to user <br>
+ * a1 = address of input buffer for the input string                  <br>
+ * a2 = maximum number of characters to read                          <br>
+ * Outputs:<br>
+ * a1 contains status value                                   <br>
+ * 0: valid input data, correctly parsed                   <br>
+ * -1: input data cannot be correctly parsed               <br>
+ * -2: Cancel was chosen                                   <br>
+ * -3: OK was chosen but no data had been input into field <br>
  */
 
 public class SyscallInputDialogString extends AbstractSyscall {
-    /**
-     * Build an instance of the syscall with its default service number and name.
-     */
     public SyscallInputDialogString() {
         super(54, "InputDialogString");
     }
 
-    /**
-     * System call to input data.
-     */
     public void simulate(ProgramStatement statement) throws ProcessingException {
-        // Input arguments:
-        //    $a0 = address of null-terminated string that is the message to user
-        //    $a1 = address of input buffer for the input string
-        //    $a2 = maximum number of characters to read
-        // Outputs:
-        //    $a1 contains status value
-        //       0: valid input data, correctly parsed
-        //       -1: input data cannot be correctly parsed
-        //       -2: Cancel was chosen
-        //       -3: OK was chosen but no data had been input into field
-
-
-        String message = new String(); // = "";
-        int byteAddress = RegisterFile.getValue(4); // byteAddress of string is in $a0
-        char ch[] = {' '}; // Need an array to convert to String
-        try {
-            ch[0] = (char) Globals.memory.getByte(byteAddress);
-            while (ch[0] != 0) // only uses single location ch[0]
-            {
-                message = message.concat(new String(ch)); // parameter to String constructor is a char[] array
-                byteAddress++;
-                ch[0] = (char) Globals.memory.getByte(byteAddress);
-            }
-        } catch (AddressErrorException e) {
-            throw new ProcessingException(statement, e);
-        }
+        String message = NullString.get(statement);
 
         // Values returned by Java's InputDialog:
         // A null return value means that "Cancel" was chosen rather than OK.
@@ -86,16 +68,16 @@ public class SyscallInputDialogString extends AbstractSyscall {
         // means that OK was chosen but no string was input.
         String inputString = null;
         inputString = JOptionPane.showInputDialog(message);
-        byteAddress = RegisterFile.getValue(5); // byteAddress of string is in $a1
-        int maxLength = RegisterFile.getValue(6); // input buffer size for input string is in $a2
+        int byteAddress = RegisterFile.getValue("a1"); // byteAddress of string is in a1
+        int maxLength = RegisterFile.getValue("a2"); // input buffer size for input string is in a2
 
         try {
             if (inputString == null)  // Cancel was chosen
             {
-                RegisterFile.updateRegister(5, -2);  // set $a1 to -2 flag
+                RegisterFile.updateRegister("a1", -2);
             } else if (inputString.length() == 0)  // OK was chosen but there was no input
             {
-                RegisterFile.updateRegister(5, -3);  // set $a1 to -3 flag
+                RegisterFile.updateRegister("a1", -3);
             } else {
                 // The buffer will contain characters, a '\n' character, and the null character
                 // Copy the input data to buffer as space permits
@@ -110,9 +92,9 @@ public class SyscallInputDialogString extends AbstractSyscall {
 
                 if (inputString.length() > maxLength - 1) {
                     //  length of the input string exceeded the specified maximum
-                    RegisterFile.updateRegister(5, -4);  // set $a1 to -4 flag
+                    RegisterFile.updateRegister("a1", -4);
                 } else {
-                    RegisterFile.updateRegister(5, 0);  // set $a1 to 0 flag
+                    RegisterFile.updateRegister("a1", 0);
                 }
             } // end else
 

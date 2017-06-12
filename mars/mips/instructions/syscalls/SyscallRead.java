@@ -39,35 +39,28 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 /**
  * Service to read from file descriptor given in $a0.  $a1 specifies buffer
- * and $a2 specifies length.  Number of characters read is returned in $v0.
- * (this was changed from $a0 in MARS 3.7 for SPIM compatibility.  The table
- * in COD erroneously shows $a0). *
+ * and $a2 specifies length.  Number of characters read is returned in $v0. <br>
+ * <p>
+ * Service Number: 14, Name: Read
  */
 
 public class SyscallRead extends AbstractSyscall {
-    /**
-     * Build an instance of the Read file syscall.  Default service number
-     * is 14 and name is "Read".
-     */
     public SyscallRead() {
         super(14, "Read");
     }
 
-    /**
-     * Performs syscall function to read from file descriptor given in $a0.  $a1 specifies buffer
-     * and $a2 specifies length.  Number of characters read is returned in $v0 (starting MARS 3.7).
-     */
     public void simulate(ProgramStatement statement) throws ProcessingException {
-        int byteAddress = RegisterFile.getValue(5); // destination of characters read from file
-        byte b = 0;
+        int byteAddress = RegisterFile.getValue("a1"); // destination of characters read from file
         int index = 0;
-        byte myBuffer[] = new byte[RegisterFile.getValue(6)]; // specified length
+        int length = RegisterFile.getValue("a2");
+        byte myBuffer[] = new byte[length]; // specified length
         // Call to SystemIO.xxxx.read(xxx,xxx,xxx)  returns actual length
         int retLength = SystemIO.readFromFile(
-                RegisterFile.getValue(4), // fd
+                RegisterFile.getValue("a0"), // fd
                 myBuffer, // buffer
-                RegisterFile.getValue(6)); // length
-        RegisterFile.updateRegister(2, retLength); // set returned value in register
+                length); // length
+        RegisterFile.updateRegister("a0", retLength); // set returned value in register
+
 
         // Getting rid of processing exception.  It is the responsibility of the
         // user program to check the syscall's return value.  MARS should not

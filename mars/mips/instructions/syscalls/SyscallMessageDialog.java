@@ -1,9 +1,7 @@
 package mars.mips.instructions.syscalls;
 
-import mars.Globals;
 import mars.ProcessingException;
 import mars.ProgramStatement;
-import mars.mips.hardware.AddressErrorException;
 import mars.mips.hardware.RegisterFile;
 import mars.mips.instructions.AbstractSyscall;
 
@@ -38,54 +36,31 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 /**
- * Service to display a message to user.
+ * Service to display a message to user.<br>
+ * <p>
+ * Service Number: 55, Name: MessageDialog<br>
+ * <p>
+ * Input arguments:<br>
+ * a0 = address of null-terminated string that is the message to user<br>
+ * a1 = the type of the message to the user, which is one of:<br>
+ * 1: error message       <br>
+ * 2: information message <br>
+ * 3: warning message     <br>
+ * 4: question message    <br>
+ * other: plain message   <br>
+ * Output: none
  */
 
 public class SyscallMessageDialog extends AbstractSyscall {
-    /**
-     * Build an instance of the syscall with its default service number and name.
-     */
     public SyscallMessageDialog() {
         super(55, "MessageDialog");
     }
 
-    /**
-     * System call to display a message to user.
-     */
     public void simulate(ProgramStatement statement) throws ProcessingException {
-        // Input arguments:
-        //   $a0 = address of null-terminated string that is the message to user
-        //   $a1 = the type of the message to the user, which is one of:
-        //       1: error message
-        //       2: information message
-        //       3: warning message
-        //       4: question message
-        //       other: plain message
-        // Output: none
-
-        String message = new String(); // = "";
-        int byteAddress = RegisterFile.getValue(4);
-        char ch[] = {' '}; // Need an array to convert to String
-        try {
-            ch[0] = (char) Globals.memory.getByte(byteAddress);
-            while (ch[0] != 0) // only uses single location ch[0]
-            {
-                message = message.concat(new String(ch)); // parameter to String constructor is a char[] array
-                byteAddress++;
-                ch[0] = (char) Globals.memory.getByte(byteAddress);
-            }
-        } catch (AddressErrorException e) {
-            throw new ProcessingException(statement, e);
-        }
-
-
         // Display the dialog.
-        int msgType = RegisterFile.getValue(5);
+        int msgType = RegisterFile.getValue("a1");
         if (msgType < 0 || msgType > 3)
             msgType = -1; // See values in http://java.sun.com/j2se/1.5.0/docs/api/constant-values.html
-        JOptionPane.showMessageDialog(null, message, null, msgType);
-
-
+        JOptionPane.showMessageDialog(null, NullString.get(statement), null, msgType);
     }
-
 }

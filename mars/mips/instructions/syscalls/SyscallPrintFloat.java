@@ -36,21 +36,16 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
 /**
- * Service to display on the console float whose bits are stored in $f12
+ * Service to display on the console float whose bits are stored in $f12 <br>
+ * <p>
+ * Service Number: 11, Name: PrintFloat
  */
 
 public class SyscallPrintFloat extends AbstractSyscall {
-    /**
-     * Build an instance of the Print Float syscall.  Default service number
-     * is 2 and name is "PrintFloat".
-     */
     public SyscallPrintFloat() {
         super(2, "PrintFloat");
     }
 
-    /**
-     * Performs syscall function to display float whose bits are stored in $f12
-     */
     public void simulate(ProgramStatement statement) throws ProcessingException {
         SystemIO.printString(Float.toString(Float.intBitsToFloat(
                 Coprocessor1.getValue(12))));

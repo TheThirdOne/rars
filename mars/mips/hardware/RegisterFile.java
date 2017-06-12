@@ -116,20 +116,14 @@ public class RegisterFile {
      **/
 
     public static void updateRegister(String reg, int val) {
-        if (reg.equals("zero")) {
-            //System.out.println("You can not change the value of the zero register.");
-        } else {
-            for (int i = 0; i < regFile.length; i++) {
-                if (regFile[i].getName().equals(reg)) {
-                    updateRegister(i, val);
-                    break;
-                }
-            }
+        int i = getNumber(reg);
+        if (i != -1) {
+            updateRegister(i, val);
         }
     }
 
     /**
-     * Returns the value of the register who's number is num.
+     * Returns the value of the register.
      *
      * @param num The register number.
      * @return The value of the given register.
@@ -137,6 +131,18 @@ public class RegisterFile {
 
     public static int getValue(int num) {
         return regFile[num].getValue();
+
+    }
+
+    /**
+     * Returns the value of the register.
+     *
+     * @param name The register's name.
+     * @return The value of the given register.
+     **/
+
+    public static int getValue(String name) {
+        return regFile[getNumber(name)].getValue();
 
     }
 

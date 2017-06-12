@@ -37,30 +37,24 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
 /**
- * Service to allocate amount of heap memory specified in $a0, putting address into $v0.
+ * Service to allocate amount of heap memory specified in a0, putting address into a0.<br>
+ * <p>
+ * Service Number: 9, Name: Sbrk
  */
 
 public class SyscallSbrk extends AbstractSyscall {
-    /**
-     * Build an instance of the Sbrk syscall.  Default service number
-     * is 9 and name is "Sbrk".
-     */
     public SyscallSbrk() {
         super(9, "Sbrk");
     }
 
-    /**
-     * Performs syscall function to allocate amount of heap memory specified in $a0, putting address into $v0.
-     */
+
     public void simulate(ProgramStatement statement) throws ProcessingException {
-        int address = 0;
         try {
-            address = Globals.memory.allocateBytesFromHeap(RegisterFile.getValue(4));
+            RegisterFile.updateRegister("a0", Globals.memory.allocateBytesFromHeap(RegisterFile.getValue("a0")));
         } catch (IllegalArgumentException iae) {
             throw new ProcessingException(statement,
                     iae.getMessage() + " (syscall " + this.getNumber() + ")",
                     Exceptions.SYSCALL_EXCEPTION);
         }
-        RegisterFile.updateRegister(2, address);
     }
 }

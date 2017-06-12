@@ -37,22 +37,17 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
 /**
- * Service to display integer stored in $a0 on the console.
+ * Service to display on the console the integer stored in a0, in binary format. <br>
+ * <p>
+ * Service Number: 35, Name: PrintIntBinary
  */
 
 public class SyscallPrintIntBinary extends AbstractSyscall {
-    /**
-     * Build an instance of the Print Integer syscall.  Default service number
-     * is 1 and name is "PrintInt".
-     */
     public SyscallPrintIntBinary() {
         super(35, "PrintIntBinary");
     }
 
-    /**
-     * Performs syscall function to print on the console the integer stored in $a0, in hexadecimal format.
-     */
     public void simulate(ProgramStatement statement) throws ProcessingException {
-        SystemIO.printString(Binary.intToBinaryString(RegisterFile.getValue(4)));
+        SystemIO.printString(Binary.intToBinaryString(RegisterFile.getValue("a0")));
     }
 }

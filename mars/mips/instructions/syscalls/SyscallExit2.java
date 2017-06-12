@@ -36,26 +36,21 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
 /**
- * Service to exit the MIPS program with return value given in $a0.  Ignored if running from GUI.
+ * Service to exit the MIPS program with return value given in $a0.
+ * If running in command mode, MARS will exit with that value.  If running under GUI,
+ * return value is ignored.<br>
+ * <p>
+ * Service Number: 17, Name: Exit2
  */
 
 public class SyscallExit2 extends AbstractSyscall {
-    /**
-     * Build an instance of the Exit2 syscall.  Default service number
-     * is 17 and name is "Exit2".
-     */
     public SyscallExit2() {
         super(17, "Exit2");
     }
 
-    /**
-     * Performs syscall function to exit the MIPS program with return value given in $a0.
-     * If running in command mode, MARS will exit with that value.  If running under GUI,
-     * return value is ignored.
-     */
     public void simulate(ProgramStatement statement) throws ProcessingException {
         if (Globals.getGui() == null) {
-            Globals.exitCode = RegisterFile.getValue(4);
+            Globals.exitCode = RegisterFile.getValue("a0");
         }
         throw new ProcessingException(); // empty error list
     }

@@ -36,22 +36,17 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
 /**
- * Service to close file descriptor given in $a0.
+ * Service to close file descriptor given in a0.<br>
+ * <p>
+ * Service Number: 16, Name: Close
  */
 
 public class SyscallClose extends AbstractSyscall {
-    /**
-     * Build an instance of the Close syscall.  Default service number
-     * is 16 and name is "Close".
-     */
     public SyscallClose() {
         super(16, "Close");
     }
 
-    /**
-     * Performs syscall function to close file descriptor given in $a0.
-     */
     public void simulate(ProgramStatement statement) throws ProcessingException {
-        SystemIO.closeFile(RegisterFile.getValue(4));
+        SystemIO.closeFile(RegisterFile.getValue("a0"));
     }
 }

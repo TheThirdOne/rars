@@ -38,31 +38,23 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
 /**
- * Service to write to file descriptor given in $a0.  $a1 specifies buffer
- * and $a2 specifies length.  Number of characters written is returned in $v0
- * (this was changed from $a0 in MARS 3.7 for SPIM compatibility.  The table
- * in COD erroneously shows $a0).
+ * Service to write to file descriptor given in a0.  a1 specifies buffer
+ * and a2 specifies length.  Number of characters written is returned in a0, starting in MARS 3.7.<br>
+ * <p>
+ * Service Number: 15, Name: write
  */
 
 public class SyscallWrite extends AbstractSyscall {
-    /**
-     * Build an instance of the Write file syscall.  Default service number
-     * is 15 and name is "Write".
-     */
     public SyscallWrite() {
         super(15, "Write");
     }
 
-    /**
-     * Performs syscall function to write to file descriptor given in $a0.  $a1 specifies buffer
-     * and $a2 specifies length.  Number of characters written is returned in $v0, starting in MARS 3.7.
-     */
     public void simulate(ProgramStatement statement) throws ProcessingException {
-        int byteAddress = RegisterFile.getValue(5); // source of characters to write to file
+        int byteAddress = RegisterFile.getValue("a2"); // source of characters to write to file
         byte b = 0;
-        int reqLength = RegisterFile.getValue(6); // user-requested length
+        int reqLength = RegisterFile.getValue("a2"); // user-requested length
         int index = 0;
-        byte myBuffer[] = new byte[RegisterFile.getValue(6) + 1]; // specified length plus null termination
+        byte myBuffer[] = new byte[RegisterFile.getValue("a2") + 1]; // specified length plus null termination
         try {
             b = (byte) Globals.memory.getByte(byteAddress);
             while (index < reqLength) // Stop at requested length. Null bytes are included.
@@ -79,10 +71,10 @@ public class SyscallWrite extends AbstractSyscall {
             throw new ProcessingException(statement, e);
         }
         int retValue = SystemIO.writeToFile(
-                RegisterFile.getValue(4), // fd
+                RegisterFile.getValue("a0"), // fd
                 myBuffer, // buffer
-                RegisterFile.getValue(6)); // length
-        RegisterFile.updateRegister(2, retValue); // set returned value in register
+                RegisterFile.getValue("a2")); // length
+        RegisterFile.updateRegister("a0", retValue); // set returned value in register
 
         // Getting rid of processing exception.  It is the responsibility of the
         // user program to check the syscall's return value.  MARS should not

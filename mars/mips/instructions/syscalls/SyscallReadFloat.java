@@ -37,23 +37,18 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
 /**
- * Service to read the bits of input float into $f0
+ * Service to read the bits of input float into $f0<br>
+ * <p>
+ * Service Number: 6, Name: ReadFloat
  */
 
 public class SyscallReadFloat extends AbstractSyscall {
-    /**
-     * Build an instance of the Read Float syscall.  Default service number
-     * is 6 and name is "ReadFloat".
-     */
     public SyscallReadFloat() {
         super(6, "ReadFloat");
     }
 
-    /**
-     * Performs syscall function to read the bits of input float into $f0
-     */
     public void simulate(ProgramStatement statement) throws ProcessingException {
-        float floatValue = 0;
+        float floatValue;
         try {
             floatValue = SystemIO.readFloat(this.getNumber());
         } catch (NumberFormatException e) {

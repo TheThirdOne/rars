@@ -37,33 +37,29 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
 /**
- * Service to set seed for the underlying Java pseudorandom number generator. No values are returned.
+ * Service to set seed for the underlying Java pseudorandom number generator.<br>
+ * <p>
+ * Service Number: 40, Name: RandSeed<br>
+ * <p>
+ * Input arguments:<br>
+ * a0 = index of pseudorandom number generator <br>
+ * a1 = the seed <br>
+ * Return: none
  */
 
 public class SyscallRandSeed extends AbstractSyscall {
-    /**
-     * Build an instance of the syscall with its default service number and name.
-     */
     public SyscallRandSeed() {
         super(40, "RandSeed");
     }
 
-    /**
-     * Set the seed of the underlying Java pseudorandom number generator.
-     */
     public void simulate(ProgramStatement statement) throws ProcessingException {
-        // Arguments: $a0 = index of pseudorandom number generator
-        //   $a1 = seed for pseudorandom number generator.
-        // Result: No values are returned. Sets the seed of the underlying Java pseudorandom number generator.
-
-        Integer index = RegisterFile.getValue(4);
+        Integer index = RegisterFile.getValue("a0");
         Random stream = RandomStreams.randomStreams.get(index);
         if (stream == null) {
-            RandomStreams.randomStreams.put(index, new Random(RegisterFile.getValue(5)));
+            RandomStreams.randomStreams.put(index, new Random(RegisterFile.getValue("a1")));
         } else {
-            stream.setSeed(RegisterFile.getValue(5));
+            stream.setSeed(RegisterFile.getValue("a1"));
         }
     }
-
 }
 

@@ -1,5 +1,7 @@
 package mars.mips.instructions.syscalls;
 
+import mars.mips.hardware.RegisterFile;
+
 import java.util.HashMap;
 import java.util.Random;
 
@@ -44,4 +46,20 @@ public class RandomStreams {
      * The streams are by default not seeded.
      */
     static final HashMap<Integer, Random> randomStreams = new HashMap<>();
+
+    /**
+     * Just a little helper method to initialize streams on stream being empty
+     *
+     * @param reg The name of the register that holds the stream index
+     * @return the stream a that index
+     */
+    static Random get(String reg) {
+        int index = RegisterFile.getValue(reg);
+        Random stream = randomStreams.get(index);
+        if (stream == null) {
+            stream = new Random(); // create a non-seeded stream
+            RandomStreams.randomStreams.put(index, stream);
+        }
+        return stream;
+    }
 }
