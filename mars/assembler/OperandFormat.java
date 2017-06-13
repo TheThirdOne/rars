@@ -5,7 +5,6 @@ import mars.ErrorMessage;
 import mars.Globals;
 import mars.Settings;
 import mars.mips.instructions.Instruction;
-import mars.util.Binary;
 
 import java.util.ArrayList;
 
@@ -139,28 +138,19 @@ public class OperandFormat {
             if (specType == TokenTypes.REGISTER_NAME &&
                     candType == TokenTypes.REGISTER_NUMBER)
                 continue;
-            if ((specType == TokenTypes.INTEGER_16 && candType == TokenTypes.INTEGER_5) ||
-                    (specType == TokenTypes.INTEGER_16U && candType == TokenTypes.INTEGER_5) ||
+            if ((specType == TokenTypes.INTEGER_12 && candType == TokenTypes.INTEGER_5) ||
+                    (specType == TokenTypes.INTEGER_20 && candType == TokenTypes.INTEGER_5) ||
+                    (specType == TokenTypes.INTEGER_20 && candType == TokenTypes.INTEGER_12) ||
                     (specType == TokenTypes.INTEGER_32 && candType == TokenTypes.INTEGER_5) ||
-                    (specType == TokenTypes.INTEGER_32 && candType == TokenTypes.INTEGER_16U) ||
-                    (specType == TokenTypes.INTEGER_32 && candType == TokenTypes.INTEGER_16))
+                    (specType == TokenTypes.INTEGER_32 && candType == TokenTypes.INTEGER_12) ||
+                    (specType == TokenTypes.INTEGER_32 && candType == TokenTypes.INTEGER_20))
                 continue;
-            if (candType == TokenTypes.INTEGER_16U || candType == TokenTypes.INTEGER_16) {
-                int temp = Binary.stringToInt(candToken.getValue());
-                if (specType == TokenTypes.INTEGER_16 && candType == TokenTypes.INTEGER_16U &&
-                        temp >= DataTypes.MIN_HALF_VALUE && temp <= DataTypes.MAX_HALF_VALUE)
-                    continue;
-                if (specType == TokenTypes.INTEGER_16U && candType == TokenTypes.INTEGER_16 &&
-                        temp >= DataTypes.MIN_UHALF_VALUE && temp <= DataTypes.MAX_UHALF_VALUE)
-                    continue;
-            }
-            if ((specType == TokenTypes.INTEGER_5 && candType == TokenTypes.INTEGER_16) ||
-                    (specType == TokenTypes.INTEGER_5 && candType == TokenTypes.INTEGER_16U) ||
+            if ((specType == TokenTypes.INTEGER_5 && candType == TokenTypes.INTEGER_12) ||
+                    (specType == TokenTypes.INTEGER_5 && candType == TokenTypes.INTEGER_20) ||
                     (specType == TokenTypes.INTEGER_5 && candType == TokenTypes.INTEGER_32) ||
-                    (specType == TokenTypes.INTEGER_16 && candType == TokenTypes.INTEGER_16U) ||
-                    (specType == TokenTypes.INTEGER_16U && candType == TokenTypes.INTEGER_16) ||
-                    (specType == TokenTypes.INTEGER_16U && candType == TokenTypes.INTEGER_32) ||
-                    (specType == TokenTypes.INTEGER_16 && candType == TokenTypes.INTEGER_32)) {
+                    (specType == TokenTypes.INTEGER_12 && candType == TokenTypes.INTEGER_20) ||
+                    (specType == TokenTypes.INTEGER_12 && candType == TokenTypes.INTEGER_32) ||
+                    (specType == TokenTypes.INTEGER_20 && candType == TokenTypes.INTEGER_32)) {
                 generateMessage(candToken, "operand is out of range", errors);
                 return false;
             }

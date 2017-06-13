@@ -324,7 +324,7 @@ public class ExtendedInstruction extends Instruction {
                 int extra = Binary.bitValue(val, 15);
                 instruction = substitute(instruction, "VH" + op + "P" + add, String.valueOf((val >> 16) + extra));
             }
-            // substitute upper 16 bits of value, adjusted if necessary (see "extra" below)
+            // substitute upper 20 bits of value, adjusted if necessary (see "extra" below)
             // NOTE: if VHnPm appears it will not match here; already substituted by code above
             if (instruction.contains("VH" + op)) {
                 String value = tokenList.get(op).getValue();
@@ -334,10 +334,10 @@ public class ExtendedInstruction extends Instruction {
                 } catch (NumberFormatException e) {
                     // this won't happen...
                 }
-                // If bit 15 is 1, that means lower 16 bits will become a negative offset!  To
-                // compensate if that is the case, we need to add 1 to the high 16 bits.
-                int extra = Binary.bitValue(val, 15);
-                instruction = substitute(instruction, "VH" + op, String.valueOf((val >> 16) + extra));
+                // If bit 11 is 1, that means lower 12 bits will become a negative offset!  To
+                // compensate if that is the case, we need to add 1 to the high 20 bits.
+                int extra = Binary.bitValue(val, 11);
+                instruction = substitute(instruction, "VH" + op, String.valueOf((val >> 12) + extra));
             }
             // substitute lower 16 bits of value after adding specified amount (1,2,3,4)
             if ((index = instruction.indexOf("VL" + op + "P")) >= 0) {
@@ -355,7 +355,7 @@ public class ExtendedInstruction extends Instruction {
                     instruction = substitute(instruction, "VL" + op + "P" + add, String.valueOf(val << 16 >> 16));//val & 0xffff));
                 }
             }
-            // substitute lower 16 bits of value.  NOTE: VLnPm already substituted by above code.
+            // substitute lower 12 bits of value.  NOTE: VLnPm already substituted by above code.
             if ((index = instruction.indexOf("VL" + op)) >= 0) {
                 String value = tokenList.get(op).getValue();
                 int val = 0;
@@ -365,9 +365,9 @@ public class ExtendedInstruction extends Instruction {
                     // this won't happen...
                 }
                 if ((instruction.length() > index + 3) && (instruction.charAt(index + 3) == 'U')) {
-                    instruction = substitute(instruction, "VL" + op + "U", String.valueOf(val & 0xffff));
+                    instruction = substitute(instruction, "VL" + op + "U", String.valueOf(val & 0xfff));
                 } else {
-                    instruction = substitute(instruction, "VL" + op, String.valueOf(val << 16 >> 16));//val & 0xffff));
+                    instruction = substitute(instruction, "VL" + op, String.valueOf(val << 20 >> 20));
                 }
             }
             // substitute upper 16 bits of 32 bit value

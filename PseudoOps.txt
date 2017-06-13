@@ -242,9 +242,8 @@ remu $t1,$t2,100000	lui $1, VHL3	ori $1, $1, VL3U	divu RG2, $1	mfhi RG1	#REMaind
 #  specifying load/store address.
 #
 
-li $t1,-100	addiu RG1, $0, VL2	#Load Immediate : Set $t1 to 16-bit immediate (sign-extended)
-li $t1,100	ori RG1, $0, VL2U	#Load Immediate : Set $t1 to unsigned 16-bit immediate (zero-extended)
-li $t1,100000	lui $1, VHL2	ori RG1, $1, VL2U	#Load Immediate : Set $t1 to 32-bit immediate
+li t1,-100	addiu RG1, x0, VL2	#Load Immediate : Set t1 to 16-bit immediate (sign-extended)
+li t1,100000	lui RG1, VH2	addi RG1, RG1, VL2	#Load Immediate : Set t1 to 32-bit immediate
 
 la $t1,($t2)	addi RG1, RG3, 0	#Load Address : Set $t1 to contents of $t2
 la $t1,-100	addiu RG1, $0, VL2	#Load Address : Set $t1 to 16-bit immediate (sign-extended) 

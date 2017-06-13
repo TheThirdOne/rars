@@ -62,8 +62,8 @@ public final class TokenTypes {
     public static final TokenTypes RIGHT_PAREN = new TokenTypes("RIGHT_PAREN");
     //public static final TokenTypes INTEGER       = new TokenTypes("INTEGER");
     public static final TokenTypes INTEGER_5 = new TokenTypes("INTEGER_5");
-    public static final TokenTypes INTEGER_16 = new TokenTypes("INTEGER_16");
-    public static final TokenTypes INTEGER_16U = new TokenTypes("INTEGER_16U");
+    public static final TokenTypes INTEGER_12 = new TokenTypes("INTEGER_12");
+    public static final TokenTypes INTEGER_20 = new TokenTypes("INTEGER_20");
     public static final TokenTypes INTEGER_32 = new TokenTypes("INTEGER_32");
     public static final TokenTypes REAL_NUMBER = new TokenTypes("REAL_NUMBER");
     public static final TokenTypes QUOTED_STRING = new TokenTypes("QUOTED_STRING");
@@ -199,11 +199,11 @@ public final class TokenTypes {
             if (i >= 0 && i <= 31) {
                 return TokenTypes.INTEGER_5;
             }
-            if (i >= DataTypes.MIN_UHALF_VALUE && i <= DataTypes.MAX_UHALF_VALUE) {
-                return TokenTypes.INTEGER_16U;
+            if (i >= DataTypes.MIN_IMMEDIATE_VALUE && i <= DataTypes.MAX_IMMEDIATE_VALUE) {
+                return TokenTypes.INTEGER_12;
             }
-            if (i >= DataTypes.MIN_HALF_VALUE && i <= DataTypes.MAX_HALF_VALUE) {
-                return TokenTypes.INTEGER_16;
+            if (i >= DataTypes.MIN_UPPER_VALUE && i <= DataTypes.MAX_UPPER_VALUE) {
+                return TokenTypes.INTEGER_20;
             }
             return TokenTypes.INTEGER_32;  // default when no other type is applicable
         } catch (NumberFormatException e) {
@@ -250,8 +250,8 @@ public final class TokenTypes {
      * @return true if type is an integer type, false otherwise.
      **/
     public static boolean isIntegerTokenType(TokenTypes type) {
-        return type == TokenTypes.INTEGER_5 || type == TokenTypes.INTEGER_16 ||
-                type == TokenTypes.INTEGER_16U || type == TokenTypes.INTEGER_32;
+        return type == TokenTypes.INTEGER_5 || type == TokenTypes.INTEGER_12 ||
+                type == TokenTypes.INTEGER_20 || type == TokenTypes.INTEGER_32;
     }
 
 

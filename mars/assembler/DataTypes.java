@@ -78,13 +78,21 @@ public final class DataTypes {
      **/
     public static final int MIN_HALF_VALUE = -32768; //0 - (int) Math.pow(2,15);
     /**
-     * Maximum value that can be stored in an unsigned MIPS halfword is 2<sup>16</sup>-1
+     * Maximum value that can be stored in a 12 bit immediate is 2<sup>11</sup>-1
      **/
-    public static final int MAX_UHALF_VALUE = 65535;
+    public static final int MAX_IMMEDIATE_VALUE = 0x000007FF;
     /**
-     * Lowest value that can be stored in na unsigned MIPS halfword is 0
+     * Lowest value that can be stored in a 12 bit immediate is -2<sup>11</sup>
      **/
-    public static final int MIN_UHALF_VALUE = 0;
+    public static final int MIN_IMMEDIATE_VALUE = 0xFFFFF800;
+    /**
+     * Maximum value that can be stored in a 20 bit immediate is 2<sup>19</sup>-1
+     **/
+    public static final int MAX_UPPER_VALUE = 0x0007FFFF;
+    /**
+     * Lowest value that can be stored in a 20 bit immediate is -2<sup>19</sup>
+     **/
+    public static final int MIN_UPPER_VALUE = 0xFFF80000;
     /**
      * Maximum value that can be stored in a MIPS byte is 2<sup>7</sup>-1
      **/
@@ -101,14 +109,6 @@ public final class DataTypes {
      * Largest magnitude negative value that can be stored in a MIPS float (negative of the max)
      **/
     public static final double LOW_FLOAT_VALUE = -Float.MAX_VALUE;
-    /**
-     * Maximum positive finite value that can be stored in a MIPS double is same as Java Double
-     **/
-    public static final double MAX_DOUBLE_VALUE = Double.MAX_VALUE;
-    /**
-     * Largest magnitude negative value that can be stored in a MIPS double(negative of the max)
-     **/
-    public static final double LOW_DOUBLE_VALUE = -Double.MAX_VALUE;
 
     /**
      * Get length in bytes for numeric MIPS directives.
