@@ -36,11 +36,11 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 public class ECALL extends BasicInstruction {
     public ECALL() {
-        super("ecall", "Issue a system call : Execute the system call specified by value in $v0",
+        super("ecall", "Issue a system call : Execute the system call specified by value in a7",
                 BasicInstructionFormat.I_FORMAT, "000000000000 00000 000 00000 1110011");
     }
 
     public void simulate(ProgramStatement statement) throws ProcessingException {
-        InstructionSet.findAndSimulateSyscall(RegisterFile.getValue(2), statement);
+        InstructionSet.findAndSimulateSyscall(RegisterFile.getValue("a7"), statement);
     }
 }
