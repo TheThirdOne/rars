@@ -90,8 +90,8 @@
 
 #######################  arithmetic and branch pseudo-ops #####################
 
-not t1,t2 ;xori RG1, RG2, -1  ;#Bitwise NOT (bit inversion)
-mv  t1,t2 ;add RG1, x0, RG2 ;#MoVe : Set t1 to contents of t2
+not t1,t2 ;xori RG1, RG2, -1 ;#Bitwise NOT (bit inversion)
+mv  t1,t2 ;add RG1, x0, RG2  ;#MoVe : Set t1 to contents of t2
 neg t1,t2 ;sub RG1, x0, RG2  ;#NEGate : Set t1 to negation of t2
 
 
@@ -129,7 +129,8 @@ li t1,-100     ;addi RG1, x0, VL2                ;#Load Immediate : Set t1 to 12
 li t1,10000000 ;lui RG1, VH2 ;addi RG1, RG1, VL2 ;#Load Immediate : Set t1 to 32-bit immediate
 
 #TODO: make the thingy to do AUIPC templates
-#la $t1,label	lui $1, LHL	ori RG1, $1, LL2U	COMPACT	addi RG1, $0, LL2	#Load Address : Set $t1 to label's address
+#Currently, this doesn't use auipc which is not what Spike does or what the spec says to do
+la t1,label  ;lui RG1, LH2 ; addi RG1, RG1, LL2;#Load Address : Set t1 to label's address
 
 #TODO: Stores need a temp register passed in
 #TODO: Rewrite all of the not-simple instructions

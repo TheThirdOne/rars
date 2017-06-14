@@ -262,8 +262,8 @@ public class ExtendedInstruction extends Instruction {
                 }
                 // If bit 15 is 1, that means lower 16 bits will become a negative offset!  To
                 // compensate if that is the case, we need to add 1 to the high 16 bits.
-                int extra = Binary.bitValue(addr, 15);
-                instruction = substitute(instruction, "LH" + op, String.valueOf((addr >> 16) + extra));
+                int extra = Binary.bitValue(addr, 11);
+                instruction = substitute(instruction, "LH" + op, String.valueOf((addr >> 12) + extra));
             }
             // substitute lower 16 bits of label address, after adding single digit that follows P
             if ((index = instruction.indexOf("LL" + op + "P")) >= 0) {
@@ -292,7 +292,7 @@ public class ExtendedInstruction extends Instruction {
                 if ((instruction.length() > index + 3) && (instruction.charAt(index + 3) == 'U')) {
                     instruction = substitute(instruction, "LL" + op + "U", String.valueOf(addr & 0xffff));
                 } else {
-                    instruction = substitute(instruction, "LL" + op, String.valueOf(addr << 16 >> 16));//addr & 0xffff));
+                    instruction = substitute(instruction, "LL" + op, String.valueOf(addr << 20 >> 20));//addr & 0xffff));
                 }
             }
             // Substitute upper 16 bits of value after adding 1,2,3,4, (any single digit)
