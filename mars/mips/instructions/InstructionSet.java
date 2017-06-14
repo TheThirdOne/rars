@@ -180,7 +180,7 @@ public class InstructionSet {
                 if (!line.startsWith("#") && !line.startsWith(" ")
                         && line.length() > 0) {
                     description = "";
-                    tokenizer = new StringTokenizer(line, "\t");
+                    tokenizer = new StringTokenizer(line, ";");
                     pseudoOp = tokenizer.nextToken();
                     template = "";
                     firstTemplate = null;

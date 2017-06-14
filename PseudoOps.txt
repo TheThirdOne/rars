@@ -90,56 +90,34 @@
 
 #######################  arithmetic and branch pseudo-ops #####################
 
-not $t1,$t2	xor RG1, RG2, -1	#Bitwise NOT (bit inversion)
-mv $t1,$t2	addu RG1, $0, RG2	#MoVe : Set $t1 to contents of $t2
-neg $t1,$t2	sub RG1, $0, RG2	#NEGate : Set $t1 to negation of $t2
+not t1,t2 ;xori RG1, RG2, -1  ;#Bitwise NOT (bit inversion)
+mv  t1,t2 ;add RG1, x0, RG2 ;#MoVe : Set t1 to contents of t2
+neg t1,t2 ;sub RG1, x0, RG2  ;#NEGate : Set t1 to negation of t2
 
 
 # feel free to add more convenience arithmetic pseduo-ops.
 
 # Note: most of the expansions in this group were rewritten for Release 3.4.1 to remove internal branching.
-sgt $t1,$t2,$t3	slt RG1, RG3, RG2	#Set Greater Than : if $t2 greater than $t3 then set $t1 to 1 else 0
-sgtu $t1,$t2,$t3	sltu RG1, RG3, RG2	#Set Greater Than Unsigned : if $t2 greater than $t3 (unsigned compare) then set $t1 to 1 else 0
-# TODO: more =zero ops neded to be added
+sgt  t1,t2,t3 ;slt  RG1, RG3, RG2 ;#Set Greater Than : if t2 greater than t3 then set t1 to 1 else 0
+sgtu t1,t2,t3 ;sltu RG1, RG3, RG2 ;#Set Greater Than Unsigned : if t2 greater than t3 (unsigned compare) then set t1 to 1 else 0
+seqz t1,t2    ;sltiu RG1, RG2, 1  ;#Set EQual to Zero :     if t2 == 0 then set t1 to 1 else 0
+snez t1,t2    ;sltu RG1, x0, RG2  ;#Set Not Equal to Zero : if t2 != 0 then set t1 to 1 else 0
+sgtz t1,t2    ;slt RG1, x0, RG2   ;#Set Greater Than Zero : if t2 >  0 then set t1 to 1 else 0
+sltz t1,t2    ;slt RG1, RG2, x0   ;#Set Less Than Zero :    if t2 <  0 then set t1 to 1 else 0
 
-b label	bgez $0, LAB	#Branch : Branch to statement at label unconditionally
-beqz $t1,label	beq RG1, $0, LAB	#Branch if EQual Zero : Branch to statement at label if $t1 is equal to zero
-bnez $t1,label	bne RG1, $0, LAB	#Branch if Not Equal Zero : Branch to statement at label if $t1 is not equal to zero
-# TODO: more =zero ops neded to be added
-
-
-bgt $t1,$t2,label	slt $1, RG2, RG1	bne $1, $0, LAB	#Branch if Greater Than : Branch to statement at label if $t1 is greater than $t2
-bgtu $t1,$t2,label	sltu $1, RG2, RG1	bne $1, $0, LAB	#Branch if Greater Than Unsigned: Branch to statement at label if $t1 is greater than $t2 (unsigned compare)
-ble $t1,$t2,label	slt $1, RG2, RG1	beq $1, $0, LAB	#Branch if Less or Equal : Branch to statement at label if $t1 is less than or equal to $t2
-bleu $t1,$t2,label	sltu $1, RG2, RG1	beq $1, $0, LAB	#Branch if Less or Equal Unsigned : Branch to statement at label if $t1 is less than or equal to $t2 (unsigned compare)
+#b label	bgez $0, LAB	#Branch : Branch to statement at label unconditionally
+beqz t1,label ;beq RG1, x0, LAB ;#Branch if EQual Zero : Branch to statement at label if t1 == 0
+bnez t1,label ;bne RG1, x0, LAB ;#Branch if Not Equal Zero : Branch to statement at label if t1 != 0
+bgez t1,label ;bge RG1, x0, LAB ;#Branch if Greater than or Equal to Zero : Branch to statement at label if t1 >= 0
+bltz t1,label ;blt RG1, x0, LAB ;#Branch if Less Than Zero : Branch to statement at label if t1 < 0
+bgtz t1,label ;blt x0, RG1, LAB ;#Branch if Greater Than: Branch to statement at label if t1 > 0
+blez t1,label ;bge x0, RG1, LAB ;#Branch if Less than or Equal to Zero : Branch to statement at label if t1 <= 0
+bgt  t1,t2,label ;blt  RG2, RG1, LAB ;#Branch if Greater Than : Branch to statement at label if t1 > t2
+bgtu t1,t2,label ;bltu RG2, RG1, LAB ;#Branch if Greater Than Unsigned: Branch to statement at label if t1 > t2 (unsigned compare)
+ble  t1,t2,label ;bge  RG2, RG1, LAB ;#Branch if Less or Equal : Branch to statement at label if t1 <= t2
+bleu t1,t2,label ;bgeu RG2, RG1, LAB ;#Branch if Less or Equal Unsigned : Branch to statement at label if t1 <= t2 (unsigned compare)
 
 # TODO: implement jump ps-ins
-
-# TODO: This needs to be looked at carefully later
-mul $t1,$t2,-100	addi $1, $0, VL3	mul RG1, RG2, $1	#MULtiplication : Set HI to high-order 32 bits, LO and $t1 to low-order 32 bits of the product of $t2 and 16-bit signed immediate (use mfhi to access HI, mflo to access LO)
-mul $t1,$t2,100000	lui $1, VHL3	ori $1, $1, VL3U	mul RG1, RG2, $1	#MULtiplication : Set HI to high-order 32 bits, LO and $t1 to low-order 32 bits of the product of $t2 and 32-bit immediate (use mfhi to access HI, mflo to access LO)
-mulu $t1,$t2,$t3	multu RG2, RG3	mflo RG1	#MULtiplication Unsigned : Set HI to high-order 32 bits, LO and $t1 to low-order 32 bits of ($t2 multiplied by $t3, unsigned multiplication)
-mulu $t1,$t2,-100	addi $1, $0, VL3	multu RG2, $1	mflo RG1	#MULtiplication Unsigned :  Set HI to high-order 32 bits, LO and $t1 to low-order 32 bits of ($t2 multiplied by 16-bit immediate, unsigned multiplication)
-mulu $t1,$t2,100000	lui $1, VHL3	ori $1, $1, VL3U	multu RG2, $1	mflo RG1	#MULtiplication Unsigned :  Set HI to high-order 32 bits, LO and $t1 to low-order 32 bits of ($t2 multiplied by 32-bit immediate, unsigned multiplication)
-mulo $t1,$t2,$t3	mult RG2, RG3	mfhi $1	mflo RG1	sra RG1, RG1, 31	beq $1, RG1, BROFF12	DBNOP	break	mflo RG1	#MULtiplication with Overflow : Set $t1 to low-order 32 bits of the product of $t2 and $t3
-mulo $t1,$t2,-100	addi $1, $0, VL3	mult RG2, $1	mfhi $1	mflo RG1	sra RG1, RG1, 31	beq $1, RG1, BROFF12	DBNOP	break	mflo RG1	#MULtiplication with Overflow : Set $t1 to low-order 32 bits of the product of $t2 and signed 16-bit immediate
-mulo $t1,$t2,100000	lui $1, VHL3	ori $1, $1, VL3U	mult RG2, $1	mfhi $1	mflo RG1	sra RG1, RG1, 31	beq $1, RG1, BROFF12	DBNOP	break	mflo RG1	#MULtiplication with Overflow : Set $t1 to low-order 32 bits of the product of $t2 and 32-bit immediate
-mulou $t1,$t2,$t3	multu RG2, RG3	mfhi $1	beq $1,$0, BROFF12	DBNOP	break	mflo RG1	#MULtiplication with Overflow Unsigned : Set $t1 to low-order 32 bits of the product of $t2 and $t3
-mulou $t1,$t2,-100	addi $1, $0, VL3	multu RG2, $1	mfhi $1	beq $1,$0, BROFF12	DBNOP	break	mflo RG1	#MULtiplication with Overflow Unsigned : Set $t1 to low-order 32 bits of the product of $t2 and signed 16-bit immediate
-mulou $t1,$t2,100000	lui $1, VHL3	ori $1, $1, VL3U	multu RG2, $1	mfhi $1	beq $1,$0, BROFF12	DBNOP	break	mflo RG1	#MULtiplication with Overflow Unsigned : Set $t1 to low-order 32 bits of the product of $t2 and 32-bit immediate
-div $t1,$t2,$t3	bne RG3, $0, BROFF12	DBNOP	break	div RG2, RG3	mflo RG1	#DIVision : Set $t1 to ($t2 divided by $t3, integer division)
-div $t1,$t2,-100	addi $1, $0, VL3	div RG2, $1	mflo RG1	#DIVision : Set $t1 to ($t2 divided by 16-bit immediate, integer division)
-div $t1,$t2,100000	lui $1, VHL3	ori $1, $1, VL3U	div RG2, $1	mflo RG1	#DIVision : Set $t1 to ($t2 divided by 32-bit immediate, integer division)
-divu $t1,$t2,$t3	bne RG3, $0, BROFF12	DBNOP	break	divu RG2, RG3	mflo RG1	#DIVision Unsigned :  Set $t1 to ($t2 divided by $t3, unsigned integer division)
-divu $t1,$t2,-100	addi $1, $0, VL3	divu RG2, $1	mflo RG1	#DIVision Unsigned :  Set $t1 to ($t2 divided by 16-bit immediate, unsigned integer division)
-divu $t1,$t2,100000	lui $1, VHL3	ori $1, $1, VL3U	divu RG2, $1	mflo RG1	#DIVision Unsigned :  Set $t1 to ($t2 divided by 32-bit immediate, unsigned integer division)
-rem $t1,$t2,$t3	bne RG3, $0, BROFF12	DBNOP	break	div RG2, RG3	mfhi RG1	#REMainder : Set $t1 to (remainder of $t2 divided by $t3)
-rem $t1,$t2,-100	addi $1, $0, VL3	div RG2, $1	mfhi RG1	#REMainder : Set $t1 to (remainder of $t2 divided by 16-bit immediate)
-rem $t1,$t2,100000	lui $1, VHL3	ori $1, $1, VL3U	div RG2, $1	mfhi RG1	#REMainder : Set $t1 to (remainder of $t2 divided by 32-bit immediate)
-remu $t1,$t2,$t3	bne RG3, $0, BROFF12	DBNOP	break	divu RG2, RG3	mfhi RG1	#REMainder : Set $t1 to (remainder of $t2 divided by $t3, unsigned division)
-remu $t1,$t2,-100	addi $1, $0, VL3	divu RG2, $1	mfhi RG1	#REMainder : Set $t1 to (remainder of $t2 divided by 16-bit immediate, unsigned division)
-remu $t1,$t2,100000	lui $1, VHL3	ori $1, $1, VL3U	divu RG2, $1	mfhi RG1	#REMainder : Set $t1 to (remainder of $t2 divided by 32-bit immediate, unsigned division)
-
 
 #########################  load/store pseudo-ops start here  ##########################
 #
@@ -147,80 +125,72 @@ remu $t1,$t2,100000	lui $1, VHL3	ori $1, $1, VL3U	divu RG2, $1	mfhi RG1	#REMaind
 #  specifying load/store address.
 #
 
-li t1,-100	addi RG1, x0, VL2	#Load Immediate : Set t1 to 16-bit immediate (sign-extended)
-li t1,100000	lui RG1, VH2	addi RG1, RG1, VL2	#Load Immediate : Set t1 to 32-bit immediate
+li t1,-100     ;addi RG1, x0, VL2                ;#Load Immediate : Set t1 to 12-bit immediate (sign-extended)
+li t1,10000000 ;lui RG1, VH2 ;addi RG1, RG1, VL2 ;#Load Immediate : Set t1 to 32-bit immediate
 
-la $t1,label	lui $1, LHL	ori RG1, $1, LL2U	COMPACT	addi RG1, $0, LL2	#Load Address : Set $t1 to label's address
+#TODO: make the thingy to do AUIPC templates
+#la $t1,label	lui $1, LHL	ori RG1, $1, LL2U	COMPACT	addi RG1, $0, LL2	#Load Address : Set $t1 to label's address
 
 #TODO: Stores need a temp register passed in
-lw $t1,($t2)	lw RG1,0(RG3)	#Load Word : Set $t1 to contents of effective memory word address
-lw $t1,-100	lw RG1, VL2($0)	#Load Word : Set $t1 to contents of effective memory word address
-lw $t1,100000	lui $1, VH2	lw RG1,VL2($1)	#Load Word : Set $t1 to contents of effective memory word address
-lw $t1,label	lui $1, LH2	lw RG1, LL2($1)	COMPACT	lw RG1, LL2($0)	#Load Word : Set $t1 to contents of memory word at label's address
+#TODO: Rewrite all of the not-simple instructions
+lw t1,(t2)   ;lw RG1,0(RG3)   ;#Load Word : Set t1 to contents of effective memory word address
+lw t1,-100   ;lw RG1, VL2(x0) ;#Load Word : Set t1 to contents of effective memory word address
+#lw $t1,100000	lui $1, VH2	lw RG1,VL2($1)	#Load Word : Set $t1 to contents of effective memory word address
+#lw $t1,label	lui $1, LH2	lw RG1, LL2($1)	COMPACT	lw RG1, LL2($0)	#Load Word : Set $t1 to contents of memory word at label's address
 
-sw $t1,($t2)	sw RG1,0(RG3)	#Store Word : Store $t1 contents into effective memory word address
-sw $t1,-100	sw RG1, VL2($0)	#Store Word : Store $t1 contents into effective memory word address
-sw $t1,100000	lui $1, VH2	sw RG1,VL2($1)	#Store Word : Store $t1 contents into effective memory word address
-sw $t1,label	lui $1, LH2	sw RG1, LL2($1)	COMPACT	sw RG1, LL2($0)	#Store Word : Store $t1 contents into memory word at label's address
+sw t1,(t2)   ;sw RG1,0(RG3) ;#Store Word : Store t1 contents into effective memory word address
+#sw $t1,-100	sw RG1, VL2($0)	#Store Word : Store $t1 contents into effective memory word address
+#sw $t1,100000	lui $1, VH2	sw RG1,VL2($1)	#Store Word : Store $t1 contents into effective memory word address
+#sw $t1,label	lui $1, LH2	sw RG1, LL2($1)	COMPACT	sw RG1, LL2($0)	#Store Word : Store $t1 contents into memory word at label's address
 
-lh $t1,($t2)	lh RG1,0(RG3)	#Load Halfword : Set $t1 to sign-extended 16-bit value from effective memory halfword address
-lh $t1,-100	lh RG1, VL2($0)	#Load Halfword : Set $t1 to sign-extended 16-bit value from effective memory halfword address
-lh $t1,100000	lui $1, VH2	lh RG1,VL2($1)	#Load Halfword : Set $t1 to sign-extended 16-bit value from effective memory halfword address
-lh $t1,label	lui $1, LH2	lh RG1, LL2($1)	COMPACT	lh RG1, LL2($0)	#Load Halfword : Set $t1 to sign-extended 16-bit value from effective memory halfword address
+lh t1,(t2)   ;lh RG1,  0(RG3) ;#Load Halfword : Set t1 to sign-extended 16-bit value from effective memory halfword address
+lh t1,-100   ;lh RG1, VL2(x0) ;#Load Halfword : Set t1 to sign-extended 16-bit value from effective memory halfword address
+#lh $t1,100000	lui $1, VH2	lh RG1,VL2($1)	#Load Halfword : Set $t1 to sign-extended 16-bit value from effective memory halfword address
+#lh $t1,label	lui $1, LH2	lh RG1, LL2($1)	COMPACT	lh RG1, LL2($0)	#Load Halfword : Set $t1 to sign-extended 16-bit value from effective memory halfword address
 
-sh $t1,($t2)	sh RG1,0(RG3)	#Store Halfword : Store the low-order 16 bits of $t1 into the effective memory halfword address
-sh $t1,-100	sh RG1, VL2($0)	#Store Halfword : Store the low-order 16 bits of $t1 into the effective memory halfword address
-sh $t1,100000	lui $1, VH2	sh RG1,VL2($1)	#Store Halfword : Store the low-order 16 bits of $t1 into the effective memory halfword address
-sh $t1,label	lui $1, LH2	sh RG1, LL2($1)	COMPACT	sh RG1, LL2($0)	#Store Halfword : Store the low-order 16 bits of $t1 into the effective memory halfword address
+sh t1,(t2)   ;sh RG1,0(RG3) ;#Store Halfword : Store the low-order 16 bits of $1 into the effective memory halfword address
+#sh $t1,-100	sh RG1, VL2($0)	#Store Halfword : Store the low-order 16 bits of $t1 into the effective memory halfword address
+#sh $t1,100000	lui $1, VH2	sh RG1,VL2($1)	#Store Halfword : Store the low-order 16 bits of $t1 into the effective memory halfword address
+#sh $t1,label	lui $1, LH2	sh RG1, LL2($1)	COMPACT	sh RG1, LL2($0)	#Store Halfword : Store the low-order 16 bits of $t1 into the effective memory halfword address
 
-lb $t1,($t2)	lb RG1,0(RG3)	#Load Byte : Set $t1 to sign-extended 8-bit value from effective memory byte address
-lb $t1,-100	lb RG1, VL2($0)	#Load Byte : Set $t1 to sign-extended 8-bit value from effective memory byte address
-lb $t1,100000	lui $1, VH2	lb RG1,VL2($1)	#Load Byte : Set $t1 to sign-extended 8-bit value from effective memory byte address
-lb $t1,label	lui $1, LH2	lb RG1, LL2($1)	COMPACT	lb RG1, LL2($0)	#Load Byte : Set $t1 to sign-extended 8-bit value from effective memory byte address
+lb t1,(t2)   ;lb RG1,0(RG3)   ;#Load Byte : Set t1 to sign-extended 8-bit value from effective memory byte address
+lb t1,-100   ;lb RG1, VL2(x0) ;#Load Byte : Set $1 to sign-extended 8-bit value from effective memory byte address
+#lb $t1,100000	lui $1, VH2	lb RG1,VL2($1)	#Load Byte : Set $t1 to sign-extended 8-bit value from effective memory byte address
+#lb $t1,label	lui $1, LH2	lb RG1, LL2($1)	COMPACT	lb RG1, LL2($0)	#Load Byte : Set $t1 to sign-extended 8-bit value from effective memory byte address
 
-sb $t1,($t2)	sb RG1,0(RG3)	#Store Byte : Store the low-order 8 bits of $t1 into the effective memory byte address
-sb $t1,-100	sb RG1, VL2($0)	#Store Byte : Store the low-order 8 bits of $t1 into the effective memory byte address
-sb $t1,100000	lui $1, VH2	sb RG1,VL2($1)	#Store Byte : Store the low-order 8 bits of $t1 into the effective memory byte address
-sb $t1,label	lui $1, LH2	sb RG1, LL2($1)	COMPACT	sb RG1, LL2($0)	#Store Byte : Store the low-order 8 bits of $t1 into the effective memory byte address
+sb t1,(t2)   ;sb RG1,0(RG3) ;#Store Byte : Store the low-order 8 bits of t1 into the effective memory byte address
+#sb $t1,-100	sb RG1, VL2($0)	#Store Byte : Store the low-order 8 bits of $t1 into the effective memory byte address
+#sb $t1,100000	lui $1, VH2	sb RG1,VL2($1)	#Store Byte : Store the low-order 8 bits of $t1 into the effective memory byte address
+#sb $t1,label	lui $1, LH2	sb RG1, LL2($1)	COMPACT	sb RG1, LL2($0)	#Store Byte : Store the low-order 8 bits of $t1 into the effective memory byte address
 
-lhu $t1,($t2)	lhu RG1,0(RG3)	#Load Halfword Unsigned : Set $t1 to zero-extended 16-bit value from effective memory halfword address
-lhu $t1,-100	lhu RG1,VL2($0)	#Load Halfword Unsigned : Set $t1 to zero-extended 16-bit value from effective memory halfword address
-lhu $t1,100000	lui $1, VH2	lhu RG1,VL2($1)	#Load Halfword Unsigned : Set $t1 to zero-extended 16-bit value from effective memory halfword address
-lhu $t1,label	lui $1, LH2	lhu RG1, LL2($1)	COMPACT	lhu RG1, LL2($0)	#Load Halfword Unsigned : Set $t1 to zero-extended 16-bit value from effective memory halfword address
+lhu t1,(t2)   ;lhu RG1,0(RG3)   ;#Load Halfword Unsigned : Set t1 to zero-extended 16-bit value from effective memory halfword address
+lhu t1,-100   ;lhu RG1, VL2(x0) ;#Load Halfword Unsigned : Set t1 to zero-extended 16-bit value from effective memory halfword address
+#lhu $t1,100000	lui $1, VH2	lhu RG1,VL2($1)	#Load Halfword Unsigned : Set $t1 to zero-extended 16-bit value from effective memory halfword address
+#lhu $t1,label	lui $1, LH2	lhu RG1, LL2($1)	COMPACT	lhu RG1, LL2($0)	#Load Halfword Unsigned : Set $t1 to zero-extended 16-bit value from effective memory halfword address
 
-lbu $t1,($t2)	lbu RG1,0(RG3)	#Load Byte Unsigned : Set $t1 to zero-extended 8-bit value from effective memory byte address
-lbu $t1,-100	lbu RG1,VL2($0)	#Load Byte Unsigned : Set $t1 to zero-extended 8-bit value from effective memory byte address
-lbu $t1,100000	lui $1, VH2	lbu RG1,VL2($1)	#Load Byte Unsigned : Set $t1 to zero-extended 8-bit value from effective memory byte address
-lbu $t1,label	lui $1, LH2	lbu RG1, LL2($1)	COMPACT	lbu RG1, LL2($0)	#Load Byte Unsigned : Set $t1 to zero-extended 8-bit value from effective memory byte address
+lbu t1,(t2)   ;lbu RG1,0(RG3)   ;#Load Byte Unsigned : Set $t1 to zero-extended 8-bit value from effective memory byte address
+lbu t1,-100   ;lbu RG1, VL2(x0) ;#Load Byte Unsigned : Set $t1 to zero-extended 8-bit value from effective memory byte address
+#lbu $t1,100000	lui $1, VH2	lbu RG1,VL2($1)	#Load Byte Unsigned : Set $t1 to zero-extended 8-bit value from effective memory byte address
+#lbu $t1,label	lui $1, LH2	lbu RG1, LL2($1)	COMPACT	lbu RG1, LL2($0)	#Load Byte Unsigned : Set $t1 to zero-extended 8-bit value from effective memory byte address
 
 # load and store pseudo-instructions for floating point (coprocessor 1) registers
 # TODO: look at these again after implementing floating point
-lwc1 $f1,($t2)	lwc1 RG1,0(RG3)	#Load Word Coprocessor 1 : Set $f1 to 32-bit value from effective memory word address
-lwc1 $f1,-100	lwc1 RG1,VL2($0)	#Load Word Coprocessor 1 : Set $f1 to 32-bit value from effective memory word address
-lwc1 $f1,100000	lui $1, VH2	lwc1 RG1,VL2($1)	#Load Word Coprocessor 1 : Set $f1 to 32-bit value from effective memory word address
-lwc1 $f1,label	lui $1, LH2	lwc1 RG1, LL2($1)	COMPACT	lwc1 RG1, LL2($0)	#Load Word Coprocessor 1 : Set $f1 to 32-bit value from effective memory word address
+#lwc1 $f1,($t2)	lwc1 RG1,0(RG3)	#Load Word Coprocessor 1 : Set $f1 to 32-bit value from effective memory word address
+#lwc1 $f1,-100	lwc1 RG1,VL2($0)	#Load Word Coprocessor 1 : Set $f1 to 32-bit value from effective memory word address
+#lwc1 $f1,100000	lui $1, VH2	lwc1 RG1,VL2($1)	#Load Word Coprocessor 1 : Set $f1 to 32-bit value from effective memory word address
+#lwc1 $f1,label	lui $1, LH2	lwc1 RG1, LL2($1)	COMPACT	lwc1 RG1, LL2($0)	#Load Word Coprocessor 1 : Set $f1 to 32-bit value from effective memory word address
 
-ldc1 $f2,($t2)	ldc1 RG1,0(RG3)	#Load Doubleword Coprocessor 1 : Set $f2 and $f3 register pair to 64-bit value at effective memory doubleword address
-ldc1 $f2,-100	ldc1 RG1,VL2($0)	#Load Doubleword Coprocessor 1 : Set $f2 and $f3 register pair to 64-bit value at effective memory doubleword address
-ldc1 $f2,100000	lui $1, VH2	ldc1 RG1,VL2($1)	#Load Doubleword Coprocessor 1 : Set $f2 and $f3 register pair to 64-bit value at effective memory doubleword address
-ldc1 $f2,label	lui $1, LH2	ldc1 RG1, LL2($1)	COMPACT	ldc1 RG1, LL2($0)	#Load Doubleword Coprocessor 1 : Set $f2 and $f3 register pair to 64-bit value at effective memory doubleword address
+#swc1 $f1,($t2)	swc1 RG1,0(RG3)	#Store Word Coprocessor 1 : Store 32-bit value from $f1 to effective memory word address
+#swc1 $f1,-100	swc1 RG1,VL2($0)	#Store Word Coprocessor 1 : Store 32-bit value from $f1 to effective memory word address
+#swc1 $f1,100000	lui $1, VH2	swc1 RG1,VL2($1)	#Store Word Coprocessor 1 : Store 32-bit value from $f1 to effective memory word address
+#swc1 $f1,label	lui $1, LH2	swc1 RG1, LL2($1)	COMPACT	swc1 RG1, LL2($0)	#Store Word Coprocessor 1 : Store 32-bit value from $f1 to effective memory word address
 
-swc1 $f1,($t2)	swc1 RG1,0(RG3)	#Store Word Coprocessor 1 : Store 32-bit value from $f1 to effective memory word address
-swc1 $f1,-100	swc1 RG1,VL2($0)	#Store Word Coprocessor 1 : Store 32-bit value from $f1 to effective memory word address
-swc1 $f1,100000	lui $1, VH2	swc1 RG1,VL2($1)	#Store Word Coprocessor 1 : Store 32-bit value from $f1 to effective memory word address
-swc1 $f1,label	lui $1, LH2	swc1 RG1, LL2($1)	COMPACT	swc1 RG1, LL2($0)	#Store Word Coprocessor 1 : Store 32-bit value from $f1 to effective memory word address
+#l.s $f1,($t2)	lwc1 RG1,0(RG3)	#Load floating point Single precision : Set $f1 to 32-bit value at effective memory word address
+#l.s $f1,-100	lwc1 RG1,VL2($0)	#Load floating point Single precision : Set $f1 to 32-bit value at effective memory word address
+#l.s $f1,100000	lui $1, VH2	lwc1 RG1,VL2($1)	#Load floating point Single precision : Set $f1 to 32-bit value at effective memory word address
+#l.s $f1,label	lui $1, LH2	lwc1 RG1, LL2($1)	COMPACT	lwc1 RG1, LL2($0)	#Load floating point Single precision : Set $f1 to 32-bit value at effective memory word address
 
-sdc1 $f2,($t2)	sdc1 RG1,0(RG3)	#Store Doubleword Coprocessor 1 : Store 64 bits from $f2 and $f3 register pair to effective memory doubleword address
-sdc1 $f2,-100	sdc1 RG1,VL2($0)	#Store Doubleword Coprocessor 1 : Store 64 bits from $f2 and $f3 register pair to effective memory doubleword address
-sdc1 $f2,100000	lui $1, VH2	sdc1 RG1,VL2($1)	#Store Doubleword Coprocessor 1 : Store 64 bits from $f2 and $f3 register pair to effective memory doubleword address
-sdc1 $f2,label	lui $1, LH2	sdc1 RG1, LL2($1)	COMPACT	sdc1 RG1, LL2($0)	#Store Doubleword Coprocessor 1 : Store 64 bits from $f2 and $f3 register pair to effective memory doubleword address
-
-l.s $f1,($t2)	lwc1 RG1,0(RG3)	#Load floating point Single precision : Set $f1 to 32-bit value at effective memory word address
-l.s $f1,-100	lwc1 RG1,VL2($0)	#Load floating point Single precision : Set $f1 to 32-bit value at effective memory word address
-l.s $f1,100000	lui $1, VH2	lwc1 RG1,VL2($1)	#Load floating point Single precision : Set $f1 to 32-bit value at effective memory word address
-l.s $f1,label	lui $1, LH2	lwc1 RG1, LL2($1)	COMPACT	lwc1 RG1, LL2($0)	#Load floating point Single precision : Set $f1 to 32-bit value at effective memory word address
-
-s.s $f1,($t2)	swc1 RG1,0(RG3)	#Store floating point Single precision : Store 32-bit value from $f1 to effective memory word address
-s.s $f1,-100	swc1 RG1,VL2($0)	#Store floating point Single precision : Store 32-bit value from $f1 to effective memory word address
-s.s $f1,100000	lui $1, VH2	swc1 RG1,VL2($1)	#Store floating point Single precision : Store 32-bit value from $f1 to effective memory word address
-s.s $f1,label	lui $1, LH2	swc1 RG1, LL2($1)	COMPACT	swc1 RG1, LL2($0)	#Store floating point Single precision : Store 32-bit value from $f1 to effective memory word address
+#s.s $f1,($t2)	swc1 RG1,0(RG3)	#Store floating point Single precision : Store 32-bit value from $f1 to effective memory word address
+#s.s $f1,-100	swc1 RG1,VL2($0)	#Store floating point Single precision : Store 32-bit value from $f1 to effective memory word address
+#s.s $f1,100000	lui $1, VH2	swc1 RG1,VL2($1)	#Store floating point Single precision : Store 32-bit value from $f1 to effective memory word address
+#s.s $f1,label	lui $1, LH2	swc1 RG1, LL2($1)	COMPACT	swc1 RG1, LL2($0)	#Store floating point Single precision : Store 32-bit value from $f1 to effective memory word address
