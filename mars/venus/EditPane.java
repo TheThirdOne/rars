@@ -469,15 +469,15 @@ public class EditPane extends JPanel implements Observer {
         caretPositionLabel.setText("Line: " + p.y + " Column: " + p.x);
     }
 
+    private static final char newline = '\n';
+
     /**
      * Given byte stream position in text being edited, calculate its column and line
      * number coordinates.
      *
-     * @param stream position of character
+     * @param position position of character
      * @return position Its column and line number coordinate as a Point.
      */
-    private static final char newline = '\n';
-
     public Point convertStreamPositionToLineColumn(int position) {
         String textStream = sourceCode.getText();
         int line = 1;

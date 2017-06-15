@@ -845,7 +845,7 @@ public class Settings extends Observable {
      * Store a Font setting
      *
      * @param fontSettingPosition Constant that identifies the item the font goes with
-     * @font The font to set that item to
+     * @param font The font to set that item to
      */
     public void setFontByPosition(int fontSettingPosition, Font font) {
         if (fontSettingPosition >= 0 && fontSettingPosition < fontFamilySettingsValues.length) {

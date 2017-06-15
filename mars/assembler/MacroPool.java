@@ -42,7 +42,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * source code) and Nested macro definition (defining a macro inside other macro
  * definition) are not supported.
  *
- * @author M.H.Sekhavat <sekhavat17@gmail.com>
+ * @author M.H.Sekhavat sekhavat17@gmail.com
  */
 public class MacroPool {
     private MIPSprogram program;

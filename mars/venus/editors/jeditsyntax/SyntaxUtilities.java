@@ -133,6 +133,10 @@ public class SyntaxUtilities {
         return styles;
     }
 
+
+    public static boolean popupShowing = false;
+    public static Popup popup;
+
     /**
      * Paints the specified line onto the graphics context. Note that this
      * method munges the offset and count values of the segment.
@@ -147,9 +151,6 @@ public class SyntaxUtilities {
      * @param y The y co-ordinate
      * @return The x co-ordinate, plus the width of the painted string
      */
-    public static boolean popupShowing = false;
-    public static Popup popup;
-
     public static int paintSyntaxLine(Segment line, Token tokens,
                                       SyntaxStyle[] styles, TabExpander expander, Graphics gfx,
                                       int x, int y) {

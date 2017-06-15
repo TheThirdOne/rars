@@ -106,7 +106,7 @@ public abstract class Instruction {
     /**
      * Get TokenList corresponding to correct instruction syntax.
      * For example, the instruction with format "sw $1,100($2)" yields token list
-     * <operator><register_number><integer><left_paren><register_number><right_parent>
+     * operator:register_number:integer:left_paren:register_number:right_parent
      *
      * @return TokenList object representing correct instruction usage.
      */
