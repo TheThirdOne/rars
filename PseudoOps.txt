@@ -36,10 +36,13 @@
 #      (n=0,1,2,3,...) is token position in source statement (operator is token 0, parentheses are tokens but commas aren't)
 #      RGn means substitute register found in n'th token of source statement
 #      LLn means substitute low order 16-bits from label address in source token n.
-#      LHn means substitute high order 16-bits from label address in source token n. Must add 1 if address bit 15 is 1.
+#      LHn means substitute high order 16-bits from label address in source token n. Must add 1 if address bit 11 is 1.
+#      PCLn is similar to LLn except the value substituted will be relative to PC.
+#      PCHn is similar to LHn except the value substituted will be relative to PC.
 #      VLn means substitute low order 16-bits from 32-bit value in source token n.
-#      VHn means substitute high order 16-bits from 32-bit value in source token n, then add 1 if value's bit 15 is 1.  Use this only if later instruction uses VLn($1) to calculate 32-bit address.  See loads and stores.
-#      LAB means substitute textual label from last token of source statement.  Used for various branches.#   Everything else is copied as is into the generated statement (you must use register numbers not mnemonics)
+#      VHn means substitute high order 16-bits from 32-bit value in source token n, then add 1 if value's bit 11 is 1.
+#      LAB means substitute textual label from last token of source statement.  Used for various branches.
+#   Everything else is copied as is into the generated statement (you must use register numbers not mnemonics)
 #   The list of basic instruction templates is optionally followed a description of the instruction for help purposes.
 #   To add optional description, append a tab then the '#' character followed immediately (no spaces) by the description.
 #
@@ -105,51 +108,47 @@ bleu t1,t2,label ;bgeu RG2, RG1, LAB ;#Branch if Less or Equal Unsigned : Branch
 li t1,-100     ;addi RG1, x0, VL2                ;#Load Immediate : Set t1 to 12-bit immediate (sign-extended)
 li t1,10000000 ;lui RG1, VH2 ;addi RG1, RG1, VL2 ;#Load Immediate : Set t1 to 32-bit immediate
 
-#TODO: make the thingy to do AUIPC templates
-#Currently, this doesn't use auipc which is not what Spike does or what the spec says to do
-la t1,label  ;lui RG1, LH2 ; addi RG1, RG1, LL2;#Load Address : Set t1 to label's address
+la t1,label  ;auipc RG1, PCH2 ; addi RG1, RG1, PCL2;#Load Address : Set t1 to label's address
 
-#TODO: Stores need a temp register passed in
-#TODO: Rewrite all of the not-simple instructions
-lw t1,(t2)   ;lw RG1,0(RG3)   ;#Load Word : Set t1 to contents of effective memory word address
-lw t1,-100   ;lw RG1, VL2(x0) ;#Load Word : Set t1 to contents of effective memory word address
-#lw $t1,100000	lui $1, VH2	lw RG1,VL2($1)	#Load Word : Set $t1 to contents of effective memory word address
-#lw $t1,label	lui $1, LH2	lw RG1, LL2($1)	#Load Word : Set $t1 to contents of memory word at label's address
+lw t1,(t2)     ;lw RG1,0(RG3)   ;#Load Word : Set t1 to contents of effective memory word address
+lw t1,-100     ;lw RG1, VL2(x0) ;#Load Word : Set t1 to contents of effective memory word address
+lw t1,10000000 ;lui   RG1, VH2  ;lw RG1, VL2(RG1)  ;#Load Word : Set t1 to contents of effective memory word address
+lw t1,label	   ;auipc RG1, PCH2 ;lw RG1, PCL2(RG1) ;#Load Word : Set t1 to contents of memory word at label's address
 
-sw t1,(t2)   ;sw RG1,0(RG3) ;#Store Word : Store t1 contents into effective memory word address
-#sw $t1,-100	sw RG1, VL2($0)	#Store Word : Store $t1 contents into effective memory word address
-#sw $t1,100000	lui $1, VH2	sw RG1,VL2($1)	#Store Word : Store $t1 contents into effective memory word address
-#sw $t1,label	lui $1, LH2	sw RG1, LL2($1)	#Store Word : Store $t1 contents into memory word at label's address
+sw t1,(t2)        ;sw RG1,0(RG3)   ;#Store Word : Store t1 contents into effective memory word address
+sw t1,-100        ;sw RG1, VL2(x0) ;#Store Word : Store $t1 contents into effective memory word address
+sw t1,10000000,t2 ;lui   RG3, VH2  ;sw RG1, VL2(RG3)  ;#Store Word : Store $t1 contents into effective memory word address using t2 as a temporary
+sw t1,label,t2    ;auipc RG3, PCH2 ;sw RG1, PCL2(RG3) ;#Store Word : Store $t1 contents into memory word at label's address using t2 as a temporary
 
-lh t1,(t2)   ;lh RG1,  0(RG3) ;#Load Halfword : Set t1 to sign-extended 16-bit value from effective memory halfword address
-lh t1,-100   ;lh RG1, VL2(x0) ;#Load Halfword : Set t1 to sign-extended 16-bit value from effective memory halfword address
-#lh $t1,100000	lui $1, VH2	lh RG1,VL2($1)	#Load Halfword : Set $t1 to sign-extended 16-bit value from effective memory halfword address
-#lh $t1,label	lui $1, LH2	lh RG1, LL2($1)	#Load Halfword : Set $t1 to sign-extended 16-bit value from effective memory halfword address
+lh t1,(t2)     ;lh RG1,  0(RG3) ;#Load Halfword : Set t1 to sign-extended 16-bit value from effective memory halfword address
+lh t1,-100     ;lh RG1, VL2(x0) ;#Load Halfword : Set t1 to sign-extended 16-bit value from effective memory halfword address
+lh t1,10000000 ;lui RG1, VH2    ;lh RG1, VL2(RG1)  ;#Load Halfword : Set t1 to sign-extended 16-bit value from effective memory halfword address
+lh t1,label	   ;auipc RG1, PCH2 ;lh RG1, PCL2(RG1) ;#Load Halfword : Set t1 to sign-extended 16-bit value from effective memory halfword address
 
-sh t1,(t2)   ;sh RG1,0(RG3) ;#Store Halfword : Store the low-order 16 bits of $1 into the effective memory halfword address
-#sh $t1,-100	sh RG1, VL2($0)	#Store Halfword : Store the low-order 16 bits of $t1 into the effective memory halfword address
-#sh $t1,100000	lui $1, VH2	sh RG1,VL2($1)	#Store Halfword : Store the low-order 16 bits of $t1 into the effective memory halfword address
-#sh $t1,label	lui $1, LH2	sh RG1, LL2($1)	#Store Halfword : Store the low-order 16 bits of $t1 into the effective memory halfword address
+sh t1,(t2)        ;sh RG1,0(RG3)   ;#Store Halfword : Store the low-order 16 bits of $1 into the effective memory halfword address
+sh t1,-100        ;sh RG1, VL2(x0) ;#Store Halfword : Store the low-order 16 bits of $t1 into the effective memory halfword address
+sh t1,10000000,t2 ;lui   RG3, VH2  ;sh RG1, VL2(RG3)  ;#Store Halfword : Store the low-order 16 bits of t1 into the effective memory halfword address using t2 as a temporary
+sh t1,label,t2    ;auipc RG3, PCH2 ;sh RG1, PCL2(RG3) ;#Store Halfword : Store the low-order 16 bits of t1 into the effective memory halfword address using t2 as a temporary
 
-lb t1,(t2)   ;lb RG1,0(RG3)   ;#Load Byte : Set t1 to sign-extended 8-bit value from effective memory byte address
-lb t1,-100   ;lb RG1, VL2(x0) ;#Load Byte : Set $1 to sign-extended 8-bit value from effective memory byte address
-#lb $t1,100000	lui $1, VH2	lb RG1,VL2($1)	#Load Byte : Set $t1 to sign-extended 8-bit value from effective memory byte address
-#lb $t1,label	lui $1, LH2	lb RG1, LL2($1)	#Load Byte : Set $t1 to sign-extended 8-bit value from effective memory byte address
+lb t1,(t2)     ;lb RG1,0(RG3)   ;#Load Byte : Set t1 to sign-extended 8-bit value from effective memory byte address
+lb t1,-100     ;lb RG1, VL2(x0) ;#Load Byte : Set $1 to sign-extended 8-bit value from effective memory byte address
+lb t1,10000000 ;lui RG1, VH2    ;lb RG1, VL2(RG1)  ;#Load Byte : Set $t1 to sign-extended 8-bit value from effective memory byte address
+lb t1,label	   ;auipc RG1, PCH2 ;lb RG1, PCL2(RG1) ;#Load Byte : Set $t1 to sign-extended 8-bit value from effective memory byte address
 
-sb t1,(t2)   ;sb RG1,0(RG3) ;#Store Byte : Store the low-order 8 bits of t1 into the effective memory byte address
-#sb $t1,-100	sb RG1, VL2($0)	#Store Byte : Store the low-order 8 bits of $t1 into the effective memory byte address
-#sb $t1,100000	lui $1, VH2	sb RG1,VL2($1)	#Store Byte : Store the low-order 8 bits of $t1 into the effective memory byte address
-#sb $t1,label	lui $1, LH2	sb RG1, LL2($1)	#Store Byte : Store the low-order 8 bits of $t1 into the effective memory byte address
+sb t1,(t2)        ;sb RG1,0(RG3)   ;#Store Byte : Store the low-order 8 bits of t1 into the effective memory byte address
+sb t1,-100        ;sb RG1, VL2(x0) ;#Store Byte : Store the low-order 8 bits of $t1 into the effective memory byte address
+sb t1,10000000,t2 ;lui   RG3, VH2  ;sb RG1, VL2(RG3)  ;#Store Byte : Store the low-order 8 bits of $t1 into the effective memory byte address
+sb t1,label,t2    ;auipc RG3, PCH2 ;sb RG1, PCL2(RG3) ;#Store Byte : Store the low-order 8 bits of $t1 into the effective memory byte address
 
-lhu t1,(t2)   ;lhu RG1,0(RG3)   ;#Load Halfword Unsigned : Set t1 to zero-extended 16-bit value from effective memory halfword address
-lhu t1,-100   ;lhu RG1, VL2(x0) ;#Load Halfword Unsigned : Set t1 to zero-extended 16-bit value from effective memory halfword address
-#lhu $t1,100000	lui $1, VH2	lhu RG1,VL2($1)	#Load Halfword Unsigned : Set $t1 to zero-extended 16-bit value from effective memory halfword address
-#lhu $t1,label	lui $1, LH2	lhu RG1, LL2($1)	#Load Halfword Unsigned : Set $t1 to zero-extended 16-bit value from effective memory halfword address
+lhu t1,(t2)     ;lhu RG1,0(RG3)   ;#Load Halfword Unsigned : Set t1 to zero-extended 16-bit value from effective memory halfword address
+lhu t1,-100     ;lhu RG1, VL2(x0) ;#Load Halfword Unsigned : Set t1 to zero-extended 16-bit value from effective memory halfword address
+lhu t1,10000000 ;lui RG1, VH2     ;lhu RG1, VL2(RG1)  ;#Load Halfword Unsigned : Set t1 to zero-extended 16-bit value from effective memory halfword address
+lhu t1,label	;auipc RG1, PCH2  ;lhu RG1, PCL2(RG1) ;#Load Halfword Unsigned : Set t1 to zero-extended 16-bit value from effective memory halfword address
 
-lbu t1,(t2)   ;lbu RG1,0(RG3)   ;#Load Byte Unsigned : Set $t1 to zero-extended 8-bit value from effective memory byte address
-lbu t1,-100   ;lbu RG1, VL2(x0) ;#Load Byte Unsigned : Set $t1 to zero-extended 8-bit value from effective memory byte address
-#lbu $t1,100000	lui $1, VH2	lbu RG1,VL2($1)	#Load Byte Unsigned : Set $t1 to zero-extended 8-bit value from effective memory byte address
-#lbu $t1,label	lui $1, LH2	lbu RG1, LL2($1)	#Load Byte Unsigned : Set $t1 to zero-extended 8-bit value from effective memory byte address
+lbu t1,(t2)     ;lbu RG1,0(RG3)   ;#Load Byte Unsigned : Set $t1 to zero-extended 8-bit value from effective memory byte address
+lbu t1,-100     ;lbu RG1, VL2(x0) ;#Load Byte Unsigned : Set $t1 to zero-extended 8-bit value from effective memory byte address
+lbu t1,10000000 ;lui RG1, VH2    ;lbu RG1, VL2(RG1)  ;#Load Byte Unsigned : Set t1 to zero-extended 8-bit value from effective memory byte address
+lbu t1,label	;auipc RG1, PCH2 ;lbu RG1, PCL2(RG1) ;#Load Byte Unsigned : Set t1 to zero-extended 8-bit value from effective memory byte address
 
 # load and store pseudo-instructions for floating point (coprocessor 1) registers
 # TODO: look at these again after implementing floating point

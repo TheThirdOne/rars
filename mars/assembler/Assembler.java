@@ -246,7 +246,7 @@ public class Assembler {
                     for (int instrNumber = 0; instrNumber < templateList.size(); instrNumber++) {
                         String instruction = ExtendedInstruction.makeTemplateSubstitutions(
                                 this.fileCurrentlyBeingAssembled,
-                                templateList.get(instrNumber), theTokenList);
+                                templateList.get(instrNumber), theTokenList, textAddress.get());
                         // 23 Jan 2008 by DPS. Template substitution may result in no instruction.
                         // If this is the case, skip remainder of loop iteration. This should only
                         // happen if template substitution was for "nop" instruction but delayed branching

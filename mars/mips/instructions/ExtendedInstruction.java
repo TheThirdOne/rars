@@ -182,8 +182,10 @@ public class ExtendedInstruction extends Instruction {
      * <LI>RGn means substitute register found in n'th token of source statement
      * <LI>LLn means substitute low order 16 bits from label address in source token n.
      * <LI>LHn means substitute high order 16 bits from label address in source token n. Must add 1 if address bit 15 is 1.
+     * <LI>PCLn is similar to LLn except the value substituted will be relative to PC.
+     # <LI>PCHn is similar to LHn except the value substituted will be relative to PC.
      * <LI>VLn means substitute low order 16 bits from 32 bit value in source token n.
-     * <LI>VHn means substitute high order 16 bits from 32 bit value in source token n, then add 1 if value's bit 15 is 1.  Use this only if later instruction uses VLn($1) to calculate 32 bit address.  See loads and stores.
+     * <LI>VHn means substitute high order 16 bits from 32 bit value in source token n, then add 1 if value's bit 15 is 1.
      * <LI>LAB means substitute textual label from last token of source statement.  Used for various branches.
      * </UL>
      *
@@ -192,7 +194,7 @@ public class ExtendedInstruction extends Instruction {
      * @return String representing basic assembler statement.
      */
 
-    public static String makeTemplateSubstitutions(MIPSprogram program, String template, TokenList tokenList) {
+    public static String makeTemplateSubstitutions(MIPSprogram program, String template, TokenList tokenList, int PC) {
         String instruction = template;
         // substitute first operand token for template's RG1 or OP1, second for RG2 or OP2, etc
         for (int op = 1; op < tokenList.size(); op++) {
@@ -207,27 +209,27 @@ public class ExtendedInstruction extends Instruction {
                 continue;
             }
 
-            // substitute upper 20 bits of label address
-            if (instruction.contains("LH" + op)) {
-                // If bit 11 is 1, that means lower 12 bits will become a negative offset!  To
-                // compensate if that is the case, we need to add 1 to the high 16 bits.
-                int extra = Binary.bitValue(val, 11);
-                instruction = substitute(instruction, "LH" + op, String.valueOf((val >> 12) + extra));
+            int relative = val - PC;
+            if (instruction.contains("PCH" + op)) {
+                int extra = Binary.bitValue(relative, 11);// add extra to compesate for sign extention
+                instruction = substitute(instruction, "PCH" + op, String.valueOf((relative >> 12) + extra));
+            }
+            if (instruction.contains("PCL" + op)) {
+                instruction = substitute(instruction, "PCL" + op, String.valueOf(relative << 20 >> 20));
             }
 
-            // substitute lower 12 bits of label address.
+            if (instruction.contains("LH" + op)) {
+                int extra = Binary.bitValue(val, 11);// add extra to compesate for sign extention
+                instruction = substitute(instruction, "LH" + op, String.valueOf((val >> 12) + extra));
+            }
             if (instruction.contains("LL" + op)) {
                 instruction = substitute(instruction, "LL" + op, String.valueOf(val << 20 >> 20));
             }
 
-            // substitute upper 20 bits of value, adjusted if necessary (see "extra" below)
             if (instruction.contains("VH" + op)) {
-                // If bit 11 is 1, that means lower 12 bits will become a negative offset!  To
-                // compensate if that is the case, we need to add 1 to the high 20 bits.
-                int extra = Binary.bitValue(val, 11);
+                int extra = Binary.bitValue(val, 11); // add extra to compesate for sign extention
                 instruction = substitute(instruction, "VH" + op, String.valueOf((val >> 12) + extra));
             }
-
             if (instruction.contains("VL" + op)) {
                 instruction = substitute(instruction, "VL" + op, String.valueOf(val << 20 >> 20));
             }
