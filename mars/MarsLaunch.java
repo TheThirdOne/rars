@@ -796,7 +796,6 @@ public class MarsLaunch {
         out.println("            content to display at end of run.  Option may be repeated.");
         out.println("<reg_name>  -- where <reg_name> is name (e.g. t3, f10) of register whose");
         out.println("            content to display at end of run.  Option may be repeated. ");
-        out.println("            The $ is not required.");
         out.println("<m>-<n>  -- memory address range from <m> to <n> whose contents to");
         out.println("            display at end of run. <m> and <n> may be hex or decimal,");
         out.println("            must be on word boundary, <m> <= <n>.  Option may be repeated.");

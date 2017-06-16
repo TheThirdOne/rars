@@ -43,8 +43,8 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * <p>
  * Input arguments: a0 = address of null-terminated string that is the message to user <br>
  * Outputs:<br>
- * $f0 contains value of float read                           <br>
- * a1 contains status value                                   <br>
+ * f0 contains value of float read                           <br>
+ * a1 contains status value                                  <br>
  * 0: valid input data, correctly parsed                   <br>
  * -1: input data cannot be correctly parsed               <br>
  * -2: Cancel was chosen                                   <br>
@@ -67,7 +67,7 @@ public class SyscallInputDialogFloat extends AbstractSyscall {
         inputValue = JOptionPane.showInputDialog(message);
 
         try {
-            Coprocessor1.setRegisterToFloat(0, (float) 0.0);  // set $f0 to zero
+            Coprocessor1.setRegisterToFloat(0, (float) 0.0);  // set f0 to zero
             if (inputValue == null)  // Cancel was chosen
             {
                 RegisterFile.updateRegister("a1", -2);
@@ -81,7 +81,7 @@ public class SyscallInputDialogFloat extends AbstractSyscall {
                 //System.out.println("SyscallInputDialogFloat: floatValue is " + floatValue);
 
                 // Successful parse of valid input data
-                Coprocessor1.setRegisterToFloat(0, floatValue);  // set $f0 to input data
+                Coprocessor1.setRegisterToFloat(0, floatValue);  // set f0 to input data
                 RegisterFile.updateRegister("a1", 0);  // set to valid flag
 
             }

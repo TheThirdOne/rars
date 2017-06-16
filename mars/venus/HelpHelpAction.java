@@ -215,9 +215,9 @@ public class HelpHelpAction extends GuiAction {
                         "</tr><tr>" +
                         "<td><tt>t1, t2, t3</tt></td><td>any integer register</td>" +
                         "</tr><tr>" +
-                        "<td><tt>$f2, $f4, $f6</tt></td><td><i>even-numbered</i> floating point register</td>" +
+                        "<td><tt>f2, f4, f6</tt></td><td><i>even-numbered</i> floating point register</td>" +
                         "</tr><tr>" +
-                        "<td><tt>$f0, $f1, $f3</tt></td><td><i>any</i> floating point register</td>" +
+                        "<td><tt>f0, f1, f3</tt></td><td><i>any</i> floating point register</td>" +
                         "</tr><tr>" +
                         "<td><tt>$8</tt></td><td>any Coprocessor 0 register</td>" +
                         "</tr><tr>" +

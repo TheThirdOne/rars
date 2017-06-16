@@ -42,7 +42,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * <p>
  * Input arguments:<br>
  * a0 = address of null-terminated string that is the message to user   <br>
- * $f12 = float value to display in string form after the first message <br>
+ * f12 = float value to display in string form after the first message <br>
  * Output: none
  */
 
@@ -56,7 +56,7 @@ public class SyscallMessageDialogFloat extends AbstractSyscall {
 
         // Display the dialog.
         JOptionPane.showMessageDialog(null,
-                message + Float.toString(Coprocessor1.getFloatFromRegister("$f12")),
+                message + Float.toString(Coprocessor1.getFloatFromRegister("f12")),
                 null,
                 JOptionPane.INFORMATION_MESSAGE);
     }

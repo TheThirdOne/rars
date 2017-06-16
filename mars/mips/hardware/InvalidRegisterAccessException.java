@@ -32,7 +32,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 /**
  * Represents attempt to access double precision register using an odd
- * (e.g. $f1, $f23) register name.
+ * (e.g. f1, f23) register name.
  *
  * @author Pete Sanderson
  * @version July 2005

@@ -36,7 +36,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
 /**
- * Service to display on the console float whose bits are stored in $f12 <br>
+ * Service to display on the console float whose bits are stored in f12 <br>
  * <p>
  * Service Number: 11, Name: PrintFloat
  */

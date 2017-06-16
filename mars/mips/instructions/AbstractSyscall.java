@@ -81,7 +81,7 @@ public abstract class AbstractSyscall implements Syscall {
 
     /**
      * Return the assigned service number.  This is the number the MIPS programmer
-     * must store into $v0 before issuing the SYSCALL instruction.
+     * must store into a7 before issuing the SYSCALL instruction.
      *
      * @return assigned service number
      */
@@ -91,7 +91,7 @@ public abstract class AbstractSyscall implements Syscall {
 
     /**
      * Performs syscall function.  It will be invoked when the service is invoked
-     * at simulation time.  Service is identified by value stored in $v0.
+     * at simulation time.  Service is identified by value stored in a7.
      *
      * @param statement ProgramStatement object for this syscall instruction.
      */

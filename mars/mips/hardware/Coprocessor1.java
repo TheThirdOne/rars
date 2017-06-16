@@ -52,22 +52,22 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 public class Coprocessor1 {
     private static final Register[] registers =
-            {new Register("$f0", 0, 0), new Register("$f1", 1, 0),
-                    new Register("$f2", 2, 0), new Register("$f3", 3, 0),
-                    new Register("$f4", 4, 0), new Register("$f5", 5, 0),
-                    new Register("$f6", 6, 0), new Register("$f7", 7, 0),
-                    new Register("$f8", 8, 0), new Register("$f9", 9, 0),
-                    new Register("$f10", 10, 0), new Register("$f11", 11, 0),
-                    new Register("$f12", 12, 0), new Register("$f13", 13, 0),
-                    new Register("$f14", 14, 0), new Register("$f15", 15, 0),
-                    new Register("$f16", 16, 0), new Register("$f17", 17, 0),
-                    new Register("$f18", 18, 0), new Register("$f19", 19, 0),
-                    new Register("$f20", 20, 0), new Register("$f21", 21, 0),
-                    new Register("$f22", 22, 0), new Register("$f23", 23, 0),
-                    new Register("$f24", 24, 0), new Register("$f25", 25, 0),
-                    new Register("$f26", 26, 0), new Register("$f27", 27, 0),
-                    new Register("$f28", 28, 0), new Register("$f29", 29, 0),
-                    new Register("$f30", 30, 0), new Register("$f31", 31, 0)
+            {new Register("f0", 0, 0), new Register("f1", 1, 0),
+                    new Register("f2", 2, 0), new Register("f3", 3, 0),
+                    new Register("f4", 4, 0), new Register("f5", 5, 0),
+                    new Register("f6", 6, 0), new Register("f7", 7, 0),
+                    new Register("f8", 8, 0), new Register("f9", 9, 0),
+                    new Register("f10", 10, 0), new Register("f11", 11, 0),
+                    new Register("f12", 12, 0), new Register("f13", 13, 0),
+                    new Register("f14", 14, 0), new Register("f15", 15, 0),
+                    new Register("f16", 16, 0), new Register("f17", 17, 0),
+                    new Register("f18", 18, 0), new Register("f19", 19, 0),
+                    new Register("f20", 20, 0), new Register("f21", 21, 0),
+                    new Register("f22", 22, 0), new Register("f23", 23, 0),
+                    new Register("f24", 24, 0), new Register("f25", 25, 0),
+                    new Register("f26", 26, 0), new Register("f27", 27, 0),
+                    new Register("f28", 28, 0), new Register("f29", 29, 0),
+                    new Register("f30", 30, 0), new Register("f31", 31, 0)
             };
     // The 8 condition flags will be stored in bits 0-7 for flags 0-7.
     private static Register condition = new Register("cf", 32, 0);
@@ -399,16 +399,16 @@ public class Coprocessor1 {
     /**
      * Get register object corresponding to given name.  If no match, return null.
      *
-     * @param rName The FPU register name, must be "$f0" through "$f31".
+     * @param rName The FPU register name, must be "f0" through "f31".
      * @return The register object,or null if not found.
      **/
 
     public static Register getRegister(String rName) {
         Register reg = null;
-        if (rName.charAt(0) == '$' && rName.length() > 1 && rName.charAt(1) == 'f') {
+        if (rName.length() > 1 && rName.charAt(0) == 'f') {
             try {
                 // check for register number 0-31.
-                reg = registers[Binary.stringToInt(rName.substring(2))];    // KENV 1/6/05
+                reg = registers[Binary.stringToInt(rName.substring(1))];    // KENV 1/6/05
             } catch (Exception e) {
                 // handles both NumberFormat and ArrayIndexOutOfBounds
                 reg = null;

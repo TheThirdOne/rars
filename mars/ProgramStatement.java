@@ -130,7 +130,7 @@ public class ProgramStatement implements Comparable<ProgramStatement> {
             this.numOperands = 0;
             this.instruction = instr;
 
-            String opandCodes = "fst";
+            String opandCodes = "fstq";
             String fmt = instr.getOperationMask();
             BasicInstructionFormat instrFormat = instr.getInstructionFormat();
             int numOps = 0;
@@ -211,7 +211,7 @@ public class ProgramStatement implements Comparable<ProgramStatement> {
                 this.operands[this.numOperands++] = registerNumber;
             } else if (tokenType == TokenTypes.FP_REGISTER_NAME) {
                 registerNumber = Coprocessor1.getRegisterNumber(tokenValue);
-                basicStatementElement = "$f" + registerNumber;
+                basicStatementElement = "f" + registerNumber;
                 basic += basicStatementElement;
                 basicStatementList.addString(basicStatementElement);
                 if (registerNumber < 0) {
@@ -696,7 +696,7 @@ public class ProgramStatement implements Comparable<ProgramStatement> {
                 } else if (tokenType.equals(TokenTypes.RIGHT_PAREN)) {
                     statementList.addString(")");
                 } else if (tokenType.toString().contains("REGISTER")) {
-                    String marker = (tokenType.toString().contains("FP_REGISTER")) ? "$f" : "$";
+                    String marker = (tokenType.toString().contains("FP_REGISTER")) ? "f" : "x";
                     statementList.addString(marker + operands[i]);
                     notOperand = false;
                 } else {

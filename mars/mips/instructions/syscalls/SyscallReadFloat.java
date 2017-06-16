@@ -37,7 +37,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
 /**
- * Service to read the bits of input float into $f0<br>
+ * Service to read the bits of input float into f0<br>
  * <p>
  * Service Number: 6, Name: ReadFloat
  */

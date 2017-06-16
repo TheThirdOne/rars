@@ -42,7 +42,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * Service Number: 43, Name: RandFloat <br>
  * <p>
  * Input arguments: a0 = index of pseudorandom number generator <br>
- * Return: $f0 = the next pseudorandom, uniformly distributed float value between 0.0 and 1.0
+ * Return: f0 = the next pseudorandom, uniformly distributed float value between 0.0 and 1.0
  */
 
 public class SyscallRandFloat extends AbstractSyscall {
