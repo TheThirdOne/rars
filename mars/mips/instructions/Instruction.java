@@ -52,7 +52,7 @@ public abstract class Instruction {
      * Characters used in instruction mask to indicate bit positions
      * for 'f'irst, 's'econd, and 't'hird operands.
      **/
-    public static char[] operandMask = {'f', 's', 't'};
+    public static char[] operandMask = {'f', 's', 't', 'q'};
     /**
      * The instruction name.
      **/

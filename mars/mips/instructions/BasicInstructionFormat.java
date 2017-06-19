@@ -41,6 +41,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 public enum BasicInstructionFormat {
     R_FORMAT,
+    R4_FORMAT,
     I_FORMAT,
     S_FORMAT,
     S_BRANCH_FORMAT,
