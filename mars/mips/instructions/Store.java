@@ -47,7 +47,7 @@ public abstract class Store extends BasicInstruction {
     public void simulate(ProgramStatement statement) throws ProcessingException {
         int[] operands = statement.getOperands();
         try {
-            store((RegisterFile.getValue(operands[2]) + operands[1]), RegisterFile.getValue(operands[0]));
+            store(RegisterFile.getValue(operands[2]) + operands[1], RegisterFile.getValue(operands[0]));
         } catch (AddressErrorException e) {
             throw new ProcessingException(statement, e);
         }
