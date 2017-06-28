@@ -97,13 +97,13 @@ bgtu t1,t2,label ;bltu RG2, RG1, LAB ;#Branch if Greater Than Unsigned: Branch t
 ble  t1,t2,label ;bge  RG2, RG1, LAB ;#Branch if Less or Equal : Branch to statement at label if t1 <= t2
 bleu t1,t2,label ;bgeu RG2, RG1, LAB ;#Branch if Less or Equal Unsigned : Branch to statement at label if t1 <= t2 (unsigned compare)
 
-j label        ;jal  x0, LAB      ;#Jump : Jump to statement at label
-jal label      ;jal  x1, LAB      ;#Jump And Link: Jump to statement at label and set the return address to ra
-jr t0, label   ;jalr x0, REG1, LAB;#Jump Register: Jump to address in t0
-jalr t0, label ;jalr x1, REG1, LAB;#Jump And Link Register: Jump to address in t0 and set the return address to ra
-ret            ;jalr x0, x1, 0    ;#Return: return from a subroutine
-call label     ;auipc x6,PCH1     ;jalr x1, x6, PCL1;#CALL: call a far-away subroutine
-tail label     ;auipc x6,PCH1     ;jalr x0, x6, PCL1;#TAIL call: tail call (call without saving return address)a far-away subroutine
+j label        ;jal  x0, LAB     ;#Jump : Jump to statement at label
+jal label      ;jal  x1, LAB     ;#Jump And Link: Jump to statement at label and set the return address to ra
+jr t0, label   ;jalr x0, RG1, LAB;#Jump Register: Jump to address in t0
+jalr t0, label ;jalr x1, RG1, LAB;#Jump And Link Register: Jump to address in t0 and set the return address to ra
+ret            ;jalr x0, x1, 0   ;#Return: return from a subroutine
+call label     ;auipc x6,PCH1    ;jalr x1, x6, PCL1;#CALL: call a far-away subroutine
+tail label     ;auipc x6,PCH1    ;jalr x0, x6, PCL1;#TAIL call: tail call (call without saving return address)a far-away subroutine
 #########################  load/store pseudo-ops start here  ##########################
 #
 #  Most of these simply provide a variety of convenient memory addressing modes for 
