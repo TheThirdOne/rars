@@ -74,10 +74,11 @@ not t1,t2 ;xori RG1, RG2, -1 ;#Bitwise NOT (bit inversion)
 mv  t1,t2 ;add RG1, x0, RG2  ;#MoVe : Set t1 to contents of t2
 neg t1,t2 ;sub RG1, x0, RG2  ;#NEGate : Set t1 to negation of t2
 
+# non-(load and store) pseudo-instructions for floating point (coprocessor 1) registers
+fmv.s  f1, f2 ;fsgnj.s  RG1, RG2, RG2;# Move the value of f2 to f1
+fabs.s f1, f2 ;fsgnjx.s RG1, RG2, RG2;# Set f1 to the absolute value of f2
+fneg.s f1, f2 ;fsgnjn.s RG1, RG2, RG2;# Set f1 to the negation of f2
 
-# feel free to add more convenience arithmetic pseduo-ops.
-
-# Note: most of the expansions in this group were rewritten for Release 3.4.1 to remove internal branching.
 sgt  t1,t2,t3 ;slt  RG1, RG3, RG2 ;#Set Greater Than : if t2 greater than t3 then set t1 to 1 else 0
 sgtu t1,t2,t3 ;sltu RG1, RG3, RG2 ;#Set Greater Than Unsigned : if t2 greater than t3 (unsigned compare) then set t1 to 1 else 0
 seqz t1,t2    ;sltiu RG1, RG2, 1  ;#Set EQual to Zero :     if t2 == 0 then set t1 to 1 else 0
@@ -104,6 +105,7 @@ jalr t0, label ;jalr x1, RG1, LAB;#Jump And Link Register: Jump to address in t0
 ret            ;jalr x0, x1, 0   ;#Return: return from a subroutine
 call label     ;auipc x6,PCH1    ;jalr x1, x6, PCL1;#CALL: call a far-away subroutine
 tail label     ;auipc x6,PCH1    ;jalr x0, x6, PCL1;#TAIL call: tail call (call without saving return address)a far-away subroutine
+
 #########################  load/store pseudo-ops start here  ##########################
 #
 #  Most of these simply provide a variety of convenient memory addressing modes for 
@@ -156,23 +158,12 @@ lbu t1,10000000 ;lui RG1, VH2    ;lbu RG1, VL2(RG1)  ;#Load Byte Unsigned : Set 
 lbu t1,label	;auipc RG1, PCH2 ;lbu RG1, PCL2(RG1) ;#Load Byte Unsigned : Set t1 to zero-extended 8-bit value from effective memory byte address
 
 # load and store pseudo-instructions for floating point (coprocessor 1) registers
-# TODO: look at these again after implementing floating point
-#lwc1 $f1,($t2)	lwc1 RG1,0(RG3)	#Load Word Coprocessor 1 : Set $f1 to 32-bit value from effective memory word address
-#lwc1 $f1,-100	lwc1 RG1,VL2($0)	#Load Word Coprocessor 1 : Set $f1 to 32-bit value from effective memory word address
-#lwc1 $f1,100000	lui $1, VH2	lwc1 RG1,VL2($1)	#Load Word Coprocessor 1 : Set $f1 to 32-bit value from effective memory word address
-#lwc1 $f1,label	lui $1, LH2	lwc1 RG1, LL2($1)	#Load Word Coprocessor 1 : Set $f1 to 32-bit value from effective memory word address
+flw f1,(t2)     ;flw RG1,0(RG3)  ;#Load Word Coprocessor 1 : Set f1 to 32-bit value from effective memory word address
+flw f1,-100     ;flw RG1, VL2(x0);#Load Word Coprocessor 1 : Set f1 to 32-bit value from effective memory word address
+flw f1,100000,t3;lui RG3, VH2    ;flw RG1, VL2(RG3) ;#Load Word Coprocessor 1 : Set f1 to 32-bit value from effective memory word address using t3 as a temporary
+flw f1,label, t3;auipc RG3, PCH2 ;flw RG1, PCL2(RG3);#Load Word Coprocessor 1 : Set f1 to 32-bit value from effective memory word address using t3 as a temporary
 
-#swc1 $f1,($t2)	swc1 RG1,0(RG3)	#Store Word Coprocessor 1 : Store 32-bit value from $f1 to effective memory word address
-#swc1 $f1,-100	swc1 RG1,VL2($0)	#Store Word Coprocessor 1 : Store 32-bit value from $f1 to effective memory word address
-#swc1 $f1,100000	lui $1, VH2	swc1 RG1,VL2($1)	#Store Word Coprocessor 1 : Store 32-bit value from $f1 to effective memory word address
-#swc1 $f1,label	lui $1, LH2	swc1 RG1, LL2($1)	#Store Word Coprocessor 1 : Store 32-bit value from $f1 to effective memory word address
-
-#l.s $f1,($t2)	lwc1 RG1,0(RG3)	#Load floating point Single precision : Set $f1 to 32-bit value at effective memory word address
-#l.s $f1,-100	lwc1 RG1,VL2($0)	#Load floating point Single precision : Set $f1 to 32-bit value at effective memory word address
-#l.s $f1,100000	lui $1, VH2	lwc1 RG1,VL2($1)	#Load floating point Single precision : Set $f1 to 32-bit value at effective memory word address
-#l.s $f1,label	lui $1, LH2	lwc1 RG1, LL2($1)	#Load floating point Single precision : Set $f1 to 32-bit value at effective memory word address
-
-#s.s $f1,($t2)	swc1 RG1,0(RG3)	#Store floating point Single precision : Store 32-bit value from $f1 to effective memory word address
-#s.s $f1,-100	swc1 RG1,VL2($0)	#Store floating point Single precision : Store 32-bit value from $f1 to effective memory word address
-#s.s $f1,100000	lui $1, VH2	swc1 RG1,VL2($1)	#Store floating point Single precision : Store 32-bit value from $f1 to effective memory word address
-#s.s $f1,label	lui $1, LH2	swc1 RG1, LL2($1)	#Store floating point Single precision : Store 32-bit value from $f1 to effective memory word address
+fsw f1,(t2)     ;fsw RG1,0(RG3)  #Store Word Coprocessor 1 : Store 32-bit value from f1 to effective memory word address
+fsw f1,-100     ;fsw RG1, VL2(x0);#Store Word Coprocessor 1 : Store 32-bit value from f1 to effective memory word address
+fsw f1,100000,t3;lui RG3, VH2    ;fsw RG1, VL2(RG3) ;#Store Word Coprocessor 1 : Store 32-bit value from f1 to effective memory word address using t3 as a temporary
+fsw f1,label, t3;auipc RG3, PCH2 ;fsw RG1, PCL2(RG3);#Store Word Coprocessor 1 : Store 32-bit value from f1 to effective memory word address using t3 as a temporary
