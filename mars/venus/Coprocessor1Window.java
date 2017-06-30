@@ -62,7 +62,8 @@ public class Coprocessor1Window extends JPanel implements Observer {
     private int highlightRow;
     private ExecutePane executePane;
     private static final int NAME_COLUMN = 0;
-    private static final int FLOAT_COLUMN = 1;
+    private static final int NUMBER_COLUMN = 1;
+    private static final int FLOAT_COLUMN = 2;
     private static Settings settings;
 
     /**
@@ -75,10 +76,12 @@ public class Coprocessor1Window extends JPanel implements Observer {
         // Display registers in table contained in scroll pane.
         this.setLayout(new BorderLayout()); // table display will occupy entire width if widened
         table = new MyTippedJTable(new RegTableModel(setupWindow()));
-        table.getColumnModel().getColumn(NAME_COLUMN).setPreferredWidth(20);
-        table.getColumnModel().getColumn(FLOAT_COLUMN).setPreferredWidth(70);
+        table.getColumnModel().getColumn(NAME_COLUMN).setPreferredWidth(25);
+        table.getColumnModel().getColumn(NUMBER_COLUMN).setPreferredWidth(25);
+        table.getColumnModel().getColumn(FLOAT_COLUMN).setPreferredWidth(60);
         // Display register values (String-ified) right-justified in mono font
         table.getColumnModel().getColumn(NAME_COLUMN).setCellRenderer(new RegisterCellRenderer(MonoRightCellRenderer.MONOSPACED_PLAIN_12POINT, SwingConstants.LEFT));
+        table.getColumnModel().getColumn(NUMBER_COLUMN).setCellRenderer(new RegisterCellRenderer(MonoRightCellRenderer.MONOSPACED_PLAIN_12POINT, SwingConstants.RIGHT));
         table.getColumnModel().getColumn(FLOAT_COLUMN).setCellRenderer(new RegisterCellRenderer(MonoRightCellRenderer.MONOSPACED_PLAIN_12POINT, SwingConstants.RIGHT));
         this.add(new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER));
     }
@@ -92,10 +95,11 @@ public class Coprocessor1Window extends JPanel implements Observer {
     private Object[][] setupWindow() {
         registers = Coprocessor1.getRegisters();
         this.highlighting = false;
-        tableData = new Object[registers.length][2];
+        tableData = new Object[registers.length][3];
         for (int i = 0; i < registers.length; i++) {
             tableData[i][0] = registers[i].getName();
-            tableData[i][1] = NumberDisplayBaseChooser.formatFloatNumber(registers[i].getValue(),
+            tableData[i][1] = registers[i].getNumber();
+            tableData[i][2] = NumberDisplayBaseChooser.formatFloatNumber(registers[i].getValue(),
                     NumberDisplayBaseChooser.getBase(settings.getBooleanSetting(Settings.DISPLAY_VALUES_IN_HEX)));//formatNumber(floatValue,NumberDisplayBaseChooser.getBase(settings.getDisplayValuesInHex()));
         }
         return tableData;
@@ -256,7 +260,7 @@ public class Coprocessor1Window extends JPanel implements Observer {
     //  The table model.
 
     class RegTableModel extends AbstractTableModel {
-        final String[] columnNames = {"Name", "Float"};
+        final String[] columnNames = {"Name", "Number", "Float"};
         Object[][] data;
 
         public RegTableModel(Object[][] d) {
