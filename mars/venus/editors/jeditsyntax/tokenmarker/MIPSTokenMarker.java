@@ -447,28 +447,23 @@ public class MIPSTokenMarker extends TokenMarker {
         if (cKeywords == null) {
             cKeywords = new KeywordMap(false);
             // add Instruction mnemonics
-            ArrayList<Instruction> instructionSet = mars.Globals.instructionSet.getInstructionList();
-            for (Instruction inst : instructionSet) {
+            for (Instruction inst : mars.Globals.instructionSet.getInstructionList()) {
                 cKeywords.add(inst.getName(), Token.KEYWORD1);
             }
             // add assembler directives
-            ArrayList<Directives> directiveSet = Directives.getDirectiveList();
-            for (Directives direct : directiveSet) {
+            for (Directives direct : Directives.getDirectiveList()) {
                 cKeywords.add(direct.getName(), Token.KEYWORD2);
             }
             // add integer register file
-            Register[] registerFile = RegisterFile.getRegisters();
-            for (int i = 0; i < registerFile.length; i++) {
-                cKeywords.add(registerFile[i].getName(), Token.KEYWORD3);
-                cKeywords.add("x" + i, Token.KEYWORD3);  // also recognize x0, x1, x2, etc
+            for (Register r: RegisterFile.getRegisters()) {
+                cKeywords.add(r.getName(), Token.KEYWORD3);
+                cKeywords.add("x" + r.getNumber(), Token.KEYWORD3);  // also recognize x0, x1, x2, etc
             }
             // add Coprocessor 1 (floating point) register file
-            Register[] coprocessor1RegisterFile = Coprocessor1.getRegisters();
-            for (Register crf : coprocessor1RegisterFile) {
-                cKeywords.add(crf.getName(), Token.KEYWORD3);
+            for (Register r : Coprocessor1.getRegisters()){
+                cKeywords.add(r.getName(), Token.KEYWORD3);
+                cKeywords.add("f"+r.getNumber(),Token.KEYWORD3);
             }
-            // Note: Coprocessor 0 registers referenced only by number: $8, $12, $13, $14. These are already in the map
-
         }
         return cKeywords;
     }
