@@ -191,7 +191,7 @@ public class ProgramStatement implements Comparable<ProgramStatement> {
                 basic += basicStatementElement;
                 basicStatementList.addString(basicStatementElement);
                 try {
-                    registerNumber = RegisterFile.getUserRegister(tokenValue).getNumber();
+                    registerNumber = RegisterFile.getRegister(tokenValue).getNumber();
                 } catch (Exception e) {
                     // should never happen; should be caught before now...
                     errors.add(new ErrorMessage(this.sourceMIPSprogram, token.getSourceLine(), token.getStartPos(), "invalid register name"));
@@ -199,7 +199,7 @@ public class ProgramStatement implements Comparable<ProgramStatement> {
                 }
                 this.operands[this.numOperands++] = registerNumber;
             } else if (tokenType == TokenTypes.REGISTER_NAME) {
-                registerNumber = RegisterFile.getNumber(tokenValue);
+                registerNumber = RegisterFile.getRegister(tokenValue).getNumber();
                 basicStatementElement = "x" + registerNumber;
                 basic += basicStatementElement;
                 basicStatementList.addString(basicStatementElement);

@@ -4,7 +4,6 @@ import mars.Globals;
 import mars.Settings;
 import mars.assembler.SymbolTable;
 import mars.mips.instructions.Instruction;
-import mars.util.Binary;
 
 import java.util.Observer;
 
@@ -47,42 +46,27 @@ public class RegisterFile {
 
     public static final int GLOBAL_POINTER_REGISTER = 3;
     public static final int STACK_POINTER_REGISTER = 2;
-
-    private static Register[] regFile =
-            {new Register("zero", 0, 0), new Register("ra", 1, 0),
-                    new Register("sp", STACK_POINTER_REGISTER, Memory.stackPointer),
-                    new Register("gp", GLOBAL_POINTER_REGISTER, Memory.globalPointer),
-                    new Register("tp", 4, 0), new Register("t0", 5, 0),
-                    new Register("t1", 6, 0), new Register("t2", 7, 0),
-                    new Register("s0", 8, 0), new Register("s1", 9, 0),
-                    new Register("a0", 10, 0), new Register("a1", 11, 0),
-                    new Register("a2", 12, 0), new Register("a3", 13, 0),
-                    new Register("a4", 14, 0), new Register("a5", 15, 0),
-                    new Register("a6", 16, 0), new Register("a7", 17, 0),
-                    new Register("s2", 18, 0), new Register("s3", 19, 0),
-                    new Register("s4", 20, 0), new Register("s5", 21, 0),
-                    new Register("s6", 22, 0), new Register("s7", 23, 0),
-                    new Register("s8", 24, 0), new Register("s9", 25, 0),
-                    new Register("s10", 26, 0), new Register("s11", 27, 0),
-                    new Register("t3", 28, 0), new Register("t4", 29, 0),
-                    new Register("t5", 30, 0), new Register("t6", 31, 0)
-            };
+    private static final RegisterBlock instance = new RegisterBlock('x', new Register[]{
+            new Register("zero", 0, 0), new Register("ra", 1, 0),
+            new Register("sp", STACK_POINTER_REGISTER, Memory.stackPointer),
+            new Register("gp", GLOBAL_POINTER_REGISTER, Memory.globalPointer),
+            new Register("tp", 4, 0), new Register("t0", 5, 0),
+            new Register("t1", 6, 0), new Register("t2", 7, 0),
+            new Register("s0", 8, 0), new Register("s1", 9, 0),
+            new Register("a0", 10, 0), new Register("a1", 11, 0),
+            new Register("a2", 12, 0), new Register("a3", 13, 0),
+            new Register("a4", 14, 0), new Register("a5", 15, 0),
+            new Register("a6", 16, 0), new Register("a7", 17, 0),
+            new Register("s2", 18, 0), new Register("s3", 19, 0),
+            new Register("s4", 20, 0), new Register("s5", 21, 0),
+            new Register("s6", 22, 0), new Register("s7", 23, 0),
+            new Register("s8", 24, 0), new Register("s9", 25, 0),
+            new Register("s10", 26, 0), new Register("s11", 27, 0),
+            new Register("t3", 28, 0), new Register("t4", 29, 0),
+            new Register("t5", 30, 0), new Register("t6", 31, 0)
+    });
 
     private static Register programCounter = new Register("pc", 32, Memory.textBaseAddress);
-
-    /**
-     * Method for displaying the register values for debugging.
-     **/
-
-    public static void showRegisters() {
-        for (Register r : regFile) {
-            System.out.println("Name: " + r.getName());
-            System.out.println("Number: " + r.getNumber());
-            System.out.println("Value: " + r.getValue());
-            System.out.println("");
-        }
-    }
-
 
     /**
      * This method updates the register value who's number is num.  Also handles the lo and hi registers
@@ -92,34 +76,22 @@ public class RegisterFile {
      **/
 
     public static int updateRegister(int num, int val) {
-        int old = 0;
         if (num == 0) {
-            //System.out.println("You can not change the value of the zero register.");
+            return 0;
         } else {
-            for (Register r : regFile) {
-                if (r.getNumber() == num) {
-                    old = (Globals.getSettings().getBackSteppingEnabled())
-                            ? Globals.program.getBackStepper().addRegisterFileRestore(num, r.setValue(val))
-                            : r.setValue(val);
-                    break;
-                }
-            }
+            return instance.updateRegister(num, val);
         }
-        return old;
     }
 
     /**
      * Sets the value of the register given to the value given.
      *
-     * @param reg Name of register to set the value of.
-     * @param val The desired value for the register.
+     * @param name Name of register to set the value of.
+     * @param val  The desired value for the register.
      **/
 
-    public static void updateRegister(String reg, int val) {
-        int i = getNumber(reg);
-        if (i != -1) {
-            updateRegister(i, val);
-        }
+    public static void updateRegister(String name, int val) {
+        updateRegister(instance.getRegister(name).getNumber(), val);
     }
 
     /**
@@ -130,7 +102,7 @@ public class RegisterFile {
      **/
 
     public static int getValue(int num) {
-        return regFile[num].getValue();
+        return instance.getValue(num);
 
     }
 
@@ -142,27 +114,7 @@ public class RegisterFile {
      **/
 
     public static int getValue(String name) {
-        return regFile[getNumber(name)].getValue();
-
-    }
-
-    /**
-     * For getting the number representation of the register.
-     *
-     * @param n The string formatted register name to look for.
-     * @return The number of the register represented by the string
-     * or -1 if no match.
-     **/
-
-    public static int getNumber(String n) {
-        int j = -1;
-        for (Register r : regFile) {
-            if (r.getName().equals(n)) {
-                j = r.getNumber();
-                break;
-            }
-        }
-        return j;
+        return instance.getValue(name);
     }
 
     /**
@@ -172,32 +124,18 @@ public class RegisterFile {
      **/
 
     public static Register[] getRegisters() {
-        return regFile;
+        return instance.getRegisters();
     }
 
     /**
      * Get register object corresponding to given name.  If no match, return null.
      *
-     * @param Rname The register name, either in $0 or $zero format.
+     * @param name The register name, either in $0 or $zero format.
      * @return The register object,or null if not found.
      **/
 
-    public static Register getUserRegister(String Rname) {
-        for (Register r : regFile) {
-            if (Rname.equals(r.getName())) {
-                return r;
-            }
-        }
-        if (Rname.charAt(0) == 'x') {
-            try {
-                // check for register number 0-31.
-                return regFile[Binary.stringToInt(Rname.substring(1))];    // KENV 1/6/05
-            } catch (Exception e) {
-                // handles both NumberFormat and ArrayIndexOutOfBounds
-                return null;
-            }
-        }
-        return null;
+    public static Register getRegister(String name) {
+        return instance.getRegister(name);
     }
 
     /**
@@ -287,9 +225,7 @@ public class RegisterFile {
      **/
 
     public static void resetRegisters() {
-        for (Register r : regFile) {
-            r.resetValue();
-        }
+        instance.resetRegisters();
         initializeProgramCounter(Globals.getSettings().getBooleanSetting(Settings.START_AT_MAIN));// replaces "programCounter.resetValue()", DPS 3/3/09
     }
 
@@ -307,9 +243,7 @@ public class RegisterFile {
      * Counter.
      */
     public static void addRegistersObserver(Observer observer) {
-        for (Register r : regFile) {
-            r.addObserver(observer);
-        }
+        instance.addRegistersObserver(observer);
     }
 
     /**
@@ -318,8 +252,6 @@ public class RegisterFile {
      * Counter.
      */
     public static void deleteRegistersObserver(Observer observer) {
-        for (Register r : regFile) {
-            r.deleteObserver(observer);
-        }
+        instance.deleteRegistersObserver(observer);
     }
 }

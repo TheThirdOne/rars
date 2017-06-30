@@ -226,7 +226,7 @@ public class Macro {
             // from Coprocessor0 or Coprocessor1 register sets.  Expanded the condition.
             // DPS  7-July-2014.
             if (tokenValue.length() > 0 && tokenValue.charAt(0) == '$' &&
-                    RegisterFile.getUserRegister(tokenValue) == null &&
+                    RegisterFile.getRegister(tokenValue) == null &&
                     Coprocessor0.getRegister(tokenValue) == null &&  // added 7-July-2014
                     Coprocessor1.getRegister(tokenValue) == null)    // added 7-July-2014
             {
