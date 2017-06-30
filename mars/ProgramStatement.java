@@ -210,7 +210,7 @@ public class ProgramStatement implements Comparable<ProgramStatement> {
                 }
                 this.operands[this.numOperands++] = registerNumber;
             } else if (tokenType == TokenTypes.FP_REGISTER_NAME) {
-                registerNumber = Coprocessor1.getRegisterNumber(tokenValue);
+                registerNumber = Coprocessor1.getRegister(tokenValue).getNumber();
                 basicStatementElement = "f" + registerNumber;
                 basic += basicStatementElement;
                 basicStatementList.addString(basicStatementElement);

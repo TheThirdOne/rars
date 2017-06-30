@@ -1,6 +1,5 @@
 package mars.mips.hardware;
 
-import mars.Globals;
 import mars.util.Binary;
 
 import java.util.Observer;
@@ -71,9 +70,7 @@ public class RegisterBlock {
      **/
     public int updateRegister(Register r, int val) {
         if (r == null) return 0;
-        return (Globals.getSettings().getBackSteppingEnabled())
-                ? Globals.program.getBackStepper().addRegisterFileRestore(r.getNumber(), r.setValue(val))
-                : r.setValue(val);
+        return r.setValue(val);
     }
 
     public int updateRegister(int num, int val) {

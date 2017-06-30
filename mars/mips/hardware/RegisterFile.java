@@ -79,7 +79,9 @@ public class RegisterFile {
         if (num == 0) {
             return 0;
         } else {
-            return instance.updateRegister(num, val);
+            return (Globals.getSettings().getBackSteppingEnabled())
+                    ? Globals.program.getBackStepper().addRegisterFileRestore(num, instance.updateRegister(num, val))
+                    : instance.updateRegister(num, val);
         }
     }
 

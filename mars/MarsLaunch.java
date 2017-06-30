@@ -604,7 +604,7 @@ public class MarsLaunch {
             } else {
                 // floating point register
                 float fvalue = Coprocessor1.getFloatFromRegister(reg);
-                int ivalue = Coprocessor1.getIntFromRegister(reg);
+                int ivalue = Coprocessor1.getValue(reg);
                 if (verbose) {
                     out.print(reg + "\t");
                 }
