@@ -2,7 +2,10 @@ package mars.venus;
 
 import mars.Globals;
 import mars.Settings;
-import mars.mips.hardware.*;
+import mars.mips.hardware.AccessNotice;
+import mars.mips.hardware.Coprocessor1;
+import mars.mips.hardware.Register;
+import mars.mips.hardware.RegisterAccessNotice;
 import mars.simulator.Simulator;
 import mars.simulator.SimulatorNotice;
 import mars.util.Binary;
@@ -13,8 +16,6 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.util.Observable;
 import java.util.Observer;
@@ -53,17 +54,15 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * @author Pete Sanderson 2005
  **/
 
-public class Coprocessor1Window extends JPanel implements ActionListener, Observer {
+public class Coprocessor1Window extends JPanel implements Observer {
     private static JTable table;
     private static Register[] registers;
     private Object[][] tableData;
     private boolean highlighting;
     private int highlightRow;
     private ExecutePane executePane;
-    private JCheckBox[] conditionFlagCheckBox;
     private static final int NAME_COLUMN = 0;
     private static final int FLOAT_COLUMN = 1;
-    private static final int DOUBLE_COLUMN = 2;
     private static Settings settings;
 
     /**
@@ -78,57 +77,10 @@ public class Coprocessor1Window extends JPanel implements ActionListener, Observ
         table = new MyTippedJTable(new RegTableModel(setupWindow()));
         table.getColumnModel().getColumn(NAME_COLUMN).setPreferredWidth(20);
         table.getColumnModel().getColumn(FLOAT_COLUMN).setPreferredWidth(70);
-        table.getColumnModel().getColumn(DOUBLE_COLUMN).setPreferredWidth(130);
         // Display register values (String-ified) right-justified in mono font
         table.getColumnModel().getColumn(NAME_COLUMN).setCellRenderer(new RegisterCellRenderer(MonoRightCellRenderer.MONOSPACED_PLAIN_12POINT, SwingConstants.LEFT));
         table.getColumnModel().getColumn(FLOAT_COLUMN).setCellRenderer(new RegisterCellRenderer(MonoRightCellRenderer.MONOSPACED_PLAIN_12POINT, SwingConstants.RIGHT));
-        table.getColumnModel().getColumn(DOUBLE_COLUMN).setCellRenderer(new RegisterCellRenderer(MonoRightCellRenderer.MONOSPACED_PLAIN_12POINT, SwingConstants.RIGHT));
         this.add(new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER));
-        // Display condition flags in panel below the registers
-        JPanel flagsPane = new JPanel(new BorderLayout());
-        flagsPane.setToolTipText(
-                "flags are used by certain floating point instructions, default flag is 0");
-        flagsPane.add(new JLabel("Condition Flags", JLabel.CENTER), BorderLayout.NORTH);
-        int numFlags = Coprocessor1.getConditionFlagCount();
-        conditionFlagCheckBox = new JCheckBox[numFlags];
-        JPanel checksPane = new JPanel(new GridLayout(2, numFlags / 2));
-        // Tried to get interior of checkboxes to be white while its label and
-        // remaining background stays same background color.  Found example
-        // like the following on the web, but does not appear to have any
-        // affect.  Might be worth further study but for now I'll just set
-        // background to white.  I want white so the checkbox appears
-        // "responsive" to user clicking on it (it is responsive anyway but looks
-        // dead when drawn in gray.
-        //Object saveBG = UIManager.getColor("CheckBox.interiorBackground");
-        //UIManager.put("CheckBox.interiorBackground", Color.WHITE);
-        for (int i = 0; i < numFlags; i++) {
-            conditionFlagCheckBox[i] = new JCheckBox(Integer.toString(i));
-            conditionFlagCheckBox[i].addActionListener(this);
-            conditionFlagCheckBox[i].setBackground(Color.WHITE);
-            conditionFlagCheckBox[i].setToolTipText("checked == 1, unchecked == 0");
-            checksPane.add(conditionFlagCheckBox[i]);
-        }
-        //UIManager.put("CheckBox.interiorBackground", saveBG);
-        flagsPane.add(checksPane, BorderLayout.CENTER);
-        this.add(flagsPane, BorderLayout.SOUTH);
-    }
-
-    /**
-     * Called when user clicks on a condition flag checkbox.
-     * Updates both the display and the underlying Coprocessor 1 flag.
-     *
-     * @param e component that triggered this call
-     */
-    public void actionPerformed(ActionEvent e) {
-        JCheckBox checkBox = (JCheckBox) e.getSource();
-        int i = Integer.parseInt(checkBox.getText());
-        if (checkBox.isSelected()) {
-            checkBox.setSelected(true);
-            Coprocessor1.setConditionFlag(i);
-        } else {
-            checkBox.setSelected(false);
-            Coprocessor1.clearConditionFlag(i);
-        }
     }
 
     /**
@@ -140,22 +92,11 @@ public class Coprocessor1Window extends JPanel implements ActionListener, Observ
     private Object[][] setupWindow() {
         registers = Coprocessor1.getRegisters();
         this.highlighting = false;
-        tableData = new Object[registers.length][3];
+        tableData = new Object[registers.length][2];
         for (int i = 0; i < registers.length; i++) {
             tableData[i][0] = registers[i].getName();
             tableData[i][1] = NumberDisplayBaseChooser.formatFloatNumber(registers[i].getValue(),
                     NumberDisplayBaseChooser.getBase(settings.getBooleanSetting(Settings.DISPLAY_VALUES_IN_HEX)));//formatNumber(floatValue,NumberDisplayBaseChooser.getBase(settings.getDisplayValuesInHex()));
-            if (i % 2 == 0) { // even numbered double registers
-                long longValue = 0;
-                try {
-                    longValue = Coprocessor1.getLongFromRegisterPair(registers[i].getName());
-                } catch (InvalidRegisterAccessException e) {
-                } // cannot happen since i must be even
-                tableData[i][2] = NumberDisplayBaseChooser.formatDoubleNumber(longValue,
-                        NumberDisplayBaseChooser.getBase(settings.getBooleanSetting(Settings.DISPLAY_VALUES_IN_HEX)));
-            } else {
-                tableData[i][2] = "";
-            }
         }
         return tableData;
     }
@@ -167,8 +108,6 @@ public class Coprocessor1Window extends JPanel implements ActionListener, Observ
         this.clearHighlighting();
         Coprocessor1.resetRegisters();
         this.updateRegisters(Globals.getGui().getMainPane().getExecutePane().getValueDisplayBase());
-        Coprocessor1.clearConditionFlags();
-        this.updateConditionFlagDisplay();
     }
 
     /**
@@ -204,19 +143,8 @@ public class Coprocessor1Window extends JPanel implements ActionListener, Observ
      * @param base number base for display (10 or 16)
      */
     public void updateRegisters(int base) {
-        registers = Coprocessor1.getRegisters();
-        for (int i = 0; i < registers.length; i++) {
-            updateFloatRegisterValue(registers[i].getNumber(), registers[i].getValue(), base);
-            if (i % 2 == 0) {
-                updateDoubleRegisterValue(i, base);
-            }
-        }
-        updateConditionFlagDisplay();
-    }
-
-    private void updateConditionFlagDisplay() {
-        for (int i = 0; i < conditionFlagCheckBox.length; i++) {
-            conditionFlagCheckBox[i].setSelected(Coprocessor1.getConditionFlag(i) != 0);
+        for (Register r : Coprocessor1.getRegisters()) {
+            updateFloatRegisterValue(r.getNumber(), r.getValue(), base);
         }
     }
 
@@ -233,21 +161,6 @@ public class Coprocessor1Window extends JPanel implements ActionListener, Observ
 
     }
 
-
-    /**
-     * This method handles the updating of the GUI.  Does not affect actual register.
-     *
-     * @param number The number of the double register to update.
-     * @param base   the number base for display (e.g. 10, 16)
-     **/
-    public void updateDoubleRegisterValue(int number, int base) {
-        long val = 0;
-        try {
-            val = Coprocessor1.getLongFromRegisterPair(registers[number].getName());
-        } catch (InvalidRegisterAccessException e) {
-        } // happens only if number is not even
-        ((RegTableModel) table.getModel()).setDisplayAndModelValueAt(NumberDisplayBaseChooser.formatDoubleNumber(val, base), number, DOUBLE_COLUMN);
-    }
 
     /**
      * Required by Observer interface.  Called when notified by an Observable that we are registered with.
@@ -298,24 +211,9 @@ public class Coprocessor1Window extends JPanel implements ActionListener, Observ
     void highlightCellForRegister(Register register) {
         this.highlightRow = register.getNumber();
         table.tableChanged(new TableModelEvent(table.getModel()));
-          /*
-         int registerColumn = FLOAT_COLUMN;
-         registerColumn = table.convertColumnIndexToView(registerColumn); 
-         Rectangle registerCell = table.getCellRect(registerRow, registerColumn, true);
-         // STEP 2:  Select the cell by generating a fake Mouse Pressed event and 
-      	// explicitly invoking the table's mouse listener.
-         MouseEvent fakeMouseEvent = new MouseEvent(table, MouseEvent.MOUSE_PRESSED,
-                                                    new Date().getTime(), MouseEvent.BUTTON1_MASK,
-            													 (int)registerCell.getX()+1,
-            													 (int)registerCell.getY()+1, 1, false);
-         MouseListener[] mouseListeners = table.getMouseListeners();
-         for (int i=0; i<mouseListeners.length; i++) {
-            mouseListeners[i].mousePressed(fakeMouseEvent);
-         }
-      	*/
     }
 
-    /*
+    /**
     * Cell renderer for displaying register entries.  This does highlighting, so if you
     * don't want highlighting for a given column, don't use this.  Currently we highlight
     * all columns.
@@ -358,7 +256,7 @@ public class Coprocessor1Window extends JPanel implements ActionListener, Observ
     //  The table model.
 
     class RegTableModel extends AbstractTableModel {
-        final String[] columnNames = {"Name", "Float", "Double"};
+        final String[] columnNames = {"Name", "Float"};
         Object[][] data;
 
         public RegTableModel(Object[][] d) {
@@ -390,12 +288,12 @@ public class Coprocessor1Window extends JPanel implements ActionListener, Observ
         }
 
         /*
-         * Float column and even-numbered rows of double column are editable. 
+         * Float column are editable.
          */
         public boolean isCellEditable(int row, int col) {
             //Note that the data/cell address is constant,
             //no matter where the cell appears onscreen.
-            return col == FLOAT_COLUMN || (col == DOUBLE_COLUMN && row % 2 == 0);
+            return col == FLOAT_COLUMN;
         }
 
 
@@ -407,7 +305,6 @@ public class Coprocessor1Window extends JPanel implements ActionListener, Observ
         public void setValueAt(Object value, int row, int col) {
             int valueBase = Globals.getGui().getMainPane().getExecutePane().getValueDisplayBase();
             float fVal;
-            double dVal;
             String sVal = (String) value;
             try {
                 if (col == FLOAT_COLUMN) {
@@ -430,41 +327,9 @@ public class Coprocessor1Window extends JPanel implements ActionListener, Observ
                         }
                         data[row][col] = NumberDisplayBaseChooser.formatNumber(fVal, valueBase);
                     }
-                    // have to update corresponding double display
-                    int dReg = row - (row % 2);
-                    setDisplayAndModelValueAt(
-                            NumberDisplayBaseChooser.formatDoubleNumber(Coprocessor1.getLongFromRegisterPair(dReg), valueBase), dReg, DOUBLE_COLUMN);
-                } else if (col == DOUBLE_COLUMN) {
-                    if (Binary.isHex(sVal)) {
-                        long lVal = Binary.stringToLong(sVal);
-                        //  Assures that if changed during MIPS program execution, the update will
-                        //  occur only between MIPS instructions.
-                        synchronized (Globals.memoryAndRegistersLock) {
-                            Coprocessor1.setRegisterPairToLong(row, lVal);
-                        }
-                        setDisplayAndModelValueAt(
-                                NumberDisplayBaseChooser.formatDoubleNumber(lVal, valueBase), row, col);
-                    } else { // is not hex, so must be decimal
-                        dVal = Double.parseDouble(sVal);
-                        //  Assures that if changed during MIPS program execution, the update will
-                        //  occur only between MIPS instructions.
-                        synchronized (Globals.memoryAndRegistersLock) {
-                            Coprocessor1.setRegisterPairToDouble(row, dVal);
-                        }
-                        setDisplayAndModelValueAt(
-                                NumberDisplayBaseChooser.formatNumber(dVal, valueBase), row, col);
-                    }
-                    // have to update corresponding float display
-                    setDisplayAndModelValueAt(
-                            NumberDisplayBaseChooser.formatNumber(Coprocessor1.getValue(row), valueBase), row, FLOAT_COLUMN);
-                    setDisplayAndModelValueAt(
-                            NumberDisplayBaseChooser.formatNumber(Coprocessor1.getValue(row + 1), valueBase), row + 1, FLOAT_COLUMN);
                 }
             } catch (NumberFormatException nfe) {
                 data[row][col] = "INVALID";
-                fireTableCellUpdated(row, col);
-            } catch (InvalidRegisterAccessException e) {
-                // Should not occur; code below will re-display original value
                 fireTableCellUpdated(row, col);
             }
         }
@@ -568,8 +433,7 @@ public class Coprocessor1Window extends JPanel implements ActionListener, Observ
 
         private String[] columnToolTips = {
             /* name */   "Each register has a tool tip describing its usage convention",
-            /* float */ "32-bit single precision IEEE 754 floating point register",
-            /* double */  "64-bit double precision IEEE 754 floating point register (uses a pair of 32-bit registers)"
+            /* float */ "32-bit single precision IEEE 754 floating point register"
         };
 
         //Implement table header tool tips.

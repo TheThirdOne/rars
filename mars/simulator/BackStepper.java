@@ -2,8 +2,6 @@ package mars.simulator;
 
 import mars.Globals;
 import mars.ProgramStatement;
-import mars.mips.hardware.Coprocessor0;
-import mars.mips.hardware.Coprocessor1;
 import mars.mips.hardware.RegisterFile;
 import mars.mips.instructions.Instruction;
 
@@ -164,18 +162,6 @@ public class BackStepper {
                             break;
                         case PC_RESTORE:
                             RegisterFile.setProgramCounter(step.param1);
-                            break;
-                        case COPROC0_REGISTER_RESTORE:
-                            Coprocessor0.updateRegister(step.param1, step.param2);
-                            break;
-                        case COPROC1_REGISTER_RESTORE:
-                            Coprocessor1.updateRegister(step.param1, step.param2);
-                            break;
-                        case COPROC1_CONDITION_CLEAR:
-                            Coprocessor1.clearConditionFlag(step.param1);
-                            break;
-                        case COPROC1_CONDITION_SET:
-                            Coprocessor1.setConditionFlag(step.param1);
                             break;
                         case DO_NOTHING:
                             break;

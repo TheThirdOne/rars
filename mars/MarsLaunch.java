@@ -605,47 +605,21 @@ public class MarsLaunch {
                 // floating point register
                 float fvalue = Coprocessor1.getFloatFromRegister(reg);
                 int ivalue = Coprocessor1.getIntFromRegister(reg);
-                double dvalue = Double.NaN;
-                long lvalue = 0;
-                boolean hasDouble = false;
-                try {
-                    dvalue = Coprocessor1.getDoubleFromRegisterPair(reg);
-                    lvalue = Coprocessor1.getLongFromRegisterPair(reg);
-                    hasDouble = true;
-                } catch (InvalidRegisterAccessException irae) {
-                }
                 if (verbose) {
                     out.print(reg + "\t");
                 }
                 if (displayFormat == HEXADECIMAL) {
                     // display float (and double, if applicable) in hex
-                    out.print(
+                    out.println(
                             Binary.binaryStringToHexString(
                                     Binary.intToBinaryString(ivalue)));
-                    if (hasDouble) {
-                        out.println("\t" +
-                                Binary.binaryStringToHexString(
-                                        Binary.longToBinaryString(lvalue)));
-                    } else {
-                        out.println("");
-                    }
+
                 } else if (displayFormat == DECIMAL) {
                     // display float (and double, if applicable) in decimal
-                    out.print(fvalue);
-                    if (hasDouble) {
-                        out.println("\t" + dvalue);
-                    } else {
-                        out.println("");
-                    }
+                    out.println(fvalue);
+
                 } else { // displayFormat == ASCII
-                    out.print(Binary.intToAscii(ivalue));
-                    if (hasDouble) {
-                        out.println("\t" +
-                                Binary.intToAscii(Binary.highOrderLongToInt(lvalue)) +
-                                Binary.intToAscii(Binary.lowOrderLongToInt(lvalue)));
-                    } else {
-                        out.println("");
-                    }
+                    out.println(Binary.intToAscii(ivalue));
                 }
             }
         }

@@ -69,9 +69,6 @@ public class Coprocessor1 {
                     new Register("f28", 28, 0), new Register("f29", 29, 0),
                     new Register("f30", 30, 0), new Register("f31", 31, 0)
             };
-    // The 8 condition flags will be stored in bits 0-7 for flags 0-7.
-    private static Register condition = new Register("cf", 32, 0);
-    private static int numConditionFlags = 8;
 
     /**
      * Method for displaying the register values for debugging.
@@ -111,107 +108,6 @@ public class Coprocessor1 {
             registers[reg].setValue(Float.floatToRawIntBits(val));
         }
     }
-
-    /**
-     * Sets the value of the FPU register given to the 32-bit
-     * pattern given by the int parameter.
-     *
-     * @param reg Register to set the value of.
-     * @param val The desired int bit pattern for the register.
-     **/
-
-    public static void setRegisterToInt(String reg, int val) {
-        setRegisterToInt(getRegisterNumber(reg), val);
-    }
-
-
-    /**
-     * Sets the value of the FPU register given to the 32-bit
-     * pattern given by the int parameter.
-     *
-     * @param reg Register to set the value of.
-     * @param val The desired int bit pattern for the register.
-     **/
-
-    public static void setRegisterToInt(int reg, int val) {
-        if (reg >= 0 && reg < registers.length) {
-            registers[reg].setValue(val);
-        }
-    }
-
-
-    /**
-     * Sets the value of the FPU register given to the double value given.  The register
-     * must be even-numbered, and the low order 32 bits are placed in it.  The high order
-     * 32 bits are placed in the (odd numbered) register that follows it.
-     *
-     * @param reg Register to set the value of.
-     * @param val The desired double value for the register.
-     * @throws InvalidRegisterAccessException if register ID is invalid or odd-numbered.
-     **/
-
-    public static void setRegisterPairToDouble(int reg, double val)
-            throws InvalidRegisterAccessException {
-        if (reg % 2 != 0) {
-            throw new InvalidRegisterAccessException();
-        }
-        long bits = Double.doubleToRawLongBits(val);
-        registers[reg + 1].setValue(Binary.highOrderLongToInt(bits));  // high order 32 bits
-        registers[reg].setValue(Binary.lowOrderLongToInt(bits)); // low order 32 bits
-    }
-
-
-    /**
-     * Sets the value of the FPU register given to the double value given.  The register
-     * must be even-numbered, and the low order 32 bits are placed in it.  The high order
-     * 32 bits are placed in the (odd numbered) register that follows it.
-     *
-     * @param reg Register to set the value of.
-     * @param val The desired double value for the register.
-     * @throws InvalidRegisterAccessException if register ID is invalid or odd-numbered.
-     **/
-    public static void setRegisterPairToDouble(String reg, double val)
-            throws InvalidRegisterAccessException {
-        setRegisterPairToDouble(getRegisterNumber(reg), val);
-    }
-
-
-    /**
-     * Sets the value of the FPU register pair given to the long value containing 64 bit pattern
-     * given.  The register
-     * must be even-numbered, and the low order 32 bits from the long are placed in it.  The high order
-     * 32 bits from the long are placed in the (odd numbered) register that follows it.
-     *
-     * @param reg Register to set the value of.  Must be even register of even/odd pair.
-     * @param val The desired double value for the register.
-     * @throws InvalidRegisterAccessException if register ID is invalid or odd-numbered.
-     **/
-
-    public static void setRegisterPairToLong(int reg, long val)
-            throws InvalidRegisterAccessException {
-        if (reg % 2 != 0) {
-            throw new InvalidRegisterAccessException();
-        }
-        registers[reg + 1].setValue(Binary.highOrderLongToInt(val));  // high order 32 bits
-        registers[reg].setValue(Binary.lowOrderLongToInt(val)); // low order 32 bits
-    }
-
-
-    /**
-     * Sets the value of the FPU register pair given to the long value containing 64 bit pattern
-     * given.  The register
-     * must be even-numbered, and the low order 32 bits from the long are placed in it.  The high order
-     * 32 bits from the long are placed in the (odd numbered) register that follows it.
-     *
-     * @param reg Register to set the value of.  Must be even register of even/odd pair.
-     * @param val The desired long value containing the 64 bits for the register pair.
-     * @throws InvalidRegisterAccessException if register ID is invalid or odd-numbered.
-     **/
-    public static void setRegisterPairToLong(String reg, long val)
-            throws InvalidRegisterAccessException {
-        setRegisterPairToLong(getRegisterNumber(reg), val);
-    }
-
 
     /**
      * Gets the float value stored in the given FPU register.
@@ -267,71 +163,6 @@ public class Coprocessor1 {
     public static int getIntFromRegister(String reg) {
         return getIntFromRegister(getRegisterNumber(reg));
     }
-
-
-    /**
-     * Gets the double value stored in the given FPU register.  The register
-     * must be even-numbered.
-     *
-     * @param reg Register to get the value of. Must be even number of even/odd pair.
-     * @throws InvalidRegisterAccessException if register ID is invalid or odd-numbered.
-     **/
-
-    public static double getDoubleFromRegisterPair(int reg)
-            throws InvalidRegisterAccessException {
-        if (reg % 2 != 0) {
-            throw new InvalidRegisterAccessException();
-        }
-        long bits = Binary.twoIntsToLong(registers[reg + 1].getValue(), registers[reg].getValue());
-        return Double.longBitsToDouble(bits);
-    }
-
-
-    /**
-     * Gets the double value stored in the given FPU register.  The register
-     * must be even-numbered.
-     *
-     * @param reg Register to get the value of. Must be even number of even/odd pair.
-     * @throws InvalidRegisterAccessException if register ID is invalid or odd-numbered.
-     **/
-
-    public static double getDoubleFromRegisterPair(String reg)
-            throws InvalidRegisterAccessException {
-        return getDoubleFromRegisterPair(getRegisterNumber(reg));
-    }
-
-
-    /**
-     * Gets a long representing the double value stored in the given double
-     * precision FPU register.
-     * The register must be even-numbered.
-     *
-     * @param reg Register to get the value of. Must be even number of even/odd pair.
-     * @throws InvalidRegisterAccessException if register ID is invalid or odd-numbered.
-     **/
-
-    public static long getLongFromRegisterPair(int reg)
-            throws InvalidRegisterAccessException {
-        if (reg % 2 != 0) {
-            throw new InvalidRegisterAccessException();
-        }
-        return Binary.twoIntsToLong(registers[reg + 1].getValue(), registers[reg].getValue());
-    }
-
-
-    /**
-     * Gets the double value stored in the given FPU register.  The register
-     * must be even-numbered.
-     *
-     * @param reg Register to get the value of. Must be even number of even/odd pair.
-     * @throws InvalidRegisterAccessException if register ID is invalid or odd-numbered.
-     **/
-
-    public static long getLongFromRegisterPair(String reg)
-            throws InvalidRegisterAccessException {
-        return getLongFromRegisterPair(getRegisterNumber(reg));
-    }
-
 
     /**
      * This method updates the FPU register value who's number is num.  Note the
@@ -424,7 +255,6 @@ public class Coprocessor1 {
 
     public static void resetRegisters() {
         for (Register register : registers) register.resetValue();
-        clearConditionFlags();
     }
 
 
@@ -438,7 +268,6 @@ public class Coprocessor1 {
         }
     }
 
-
     /**
      * Each individual register is a separate object and Observable.  This handy method
      * will delete the given Observer from each one.
@@ -447,94 +276,5 @@ public class Coprocessor1 {
         for (Register register : registers) {
             register.deleteObserver(observer);
         }
-    }
-
-    /**
-     * Set condition flag to 1 (true).
-     *
-     * @param flag condition flag number (0-7)
-     * @return previous flag setting (0 or 1)
-     */
-    public static int setConditionFlag(int flag) {
-        int old = 0;
-        if (flag >= 0 && flag < numConditionFlags) {
-            old = getConditionFlag(flag);
-            condition.setValue(Binary.setBit(condition.getValue(), flag));
-            if (Globals.getSettings().getBackSteppingEnabled())
-                if (old == 0) {
-                    Globals.program.getBackStepper().addConditionFlagClear(flag);
-                } else {
-                    Globals.program.getBackStepper().addConditionFlagSet(flag);
-                }
-        }
-        return old;
-    }
-
-    /**
-     * Set condition flag to 0 (false).
-     *
-     * @param flag condition flag number (0-7)
-     * @return previous flag setting (0 or 1)
-     */
-    public static int clearConditionFlag(int flag) {
-        int old = 0;
-        if (flag >= 0 && flag < numConditionFlags) {
-            old = getConditionFlag(flag);
-            condition.setValue(Binary.clearBit(condition.getValue(), flag));
-            if (Globals.getSettings().getBackSteppingEnabled())
-                if (old == 0) {
-                    Globals.program.getBackStepper().addConditionFlagClear(flag);
-                } else {
-                    Globals.program.getBackStepper().addConditionFlagSet(flag);
-                }
-        }
-        return old;
-    }
-
-
-    /**
-     * Get value of specified condition flag (0-7).
-     *
-     * @param flag condition flag number (0-7)
-     * @return 0 if condition is false, 1 if condition is true
-     */
-    public static int getConditionFlag(int flag) {
-        if (flag < 0 || flag >= numConditionFlags)
-            flag = 0;
-        return Binary.bitValue(condition.getValue(), flag);
-    }
-
-
-    /**
-     * Get array of condition flags (0-7).
-     *
-     * @return array of int condition flags
-     */
-    public static int getConditionFlags() {
-        return condition.getValue();
-    }
-
-
-    /**
-     * Clear all condition flags (0-7).
-     */
-    public static void clearConditionFlags() {
-        condition.setValue(0);  // sets all 32 bits to 0.
-    }
-
-    /**
-     * Set all condition flags (0-7).
-     */
-    public static void setConditionFlags() {
-        condition.setValue(-1);  // sets all 32 bits to 1.
-    }
-
-    /**
-     * Get count of condition flags.
-     *
-     * @return number of condition flags
-     */
-    public static int getConditionFlagCount() {
-        return numConditionFlags;
     }
 }
