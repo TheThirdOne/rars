@@ -3,7 +3,6 @@ package mars.assembler;
 import mars.ErrorList;
 import mars.ErrorMessage;
 import mars.MIPSprogram;
-import mars.mips.hardware.Coprocessor0;
 import mars.mips.hardware.Coprocessor1;
 import mars.mips.hardware.RegisterFile;
 
@@ -227,7 +226,6 @@ public class Macro {
             // DPS  7-July-2014.
             if (tokenValue.length() > 0 && tokenValue.charAt(0) == '$' &&
                     RegisterFile.getRegister(tokenValue) == null &&
-                    Coprocessor0.getRegister(tokenValue) == null &&  // added 7-July-2014
                     Coprocessor1.getRegister(tokenValue) == null)    // added 7-July-2014
             {
                 return true;

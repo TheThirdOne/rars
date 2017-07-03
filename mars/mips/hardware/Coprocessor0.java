@@ -53,46 +53,12 @@ public class Coprocessor0 {
     // bit 1 (exception level) not set, bit 0 (interrupt enable) set.
     public static final int DEFAULT_STATUS_VALUE = 0x0000FF11;
 
-    private static final Register[] registers =
-            {new Register("$8 (vaddr)", 8, 0),
-                    new Register("$12 (status)", 12, DEFAULT_STATUS_VALUE),
-                    new Register("$13 (cause)", 13, 0),
-                    new Register("$14 (epc)", 14, 0)
-            };
-
-
-    /**
-     * Method for displaying the register values for debugging.
-     **/
-
-    public static void showRegisters() {
-        for (Register register : registers) {
-            System.out.println("Name: " + register.getName());
-            System.out.println("Number: " + register.getNumber());
-            System.out.println("Value: " + register.getValue());
-            System.out.println("");
-        }
-    }
-
-    /**
-     * Sets the value of the register given to the value given.
-     *
-     * @param n   name of register to set the value of ($n, where n is reg number).
-     * @param val The desired value for the register.
-     * @return old value in register prior to update
-     **/
-
-    public static int updateRegister(String n, int val) {
-        int oldValue = 0;
-        for (Register register : registers) {
-            if (("$" + register.getNumber()).equals(n) || register.getName().equals(n)) {
-                oldValue = register.getValue();
-                register.setValue(val);
-                break;
-            }
-        }
-        return oldValue;
-    }
+    private static final RegisterBlock instance = new RegisterBlock('_', new Register[]{ // Prefix is not used
+            new Register("vaddr", 8, 0),
+            new Register("status", 12, DEFAULT_STATUS_VALUE),
+            new Register("cause", 13, 0),
+            new Register("epc", 14, 0)
+    });
 
     /**
      * This method updates the register value who's number is num.
@@ -102,16 +68,9 @@ public class Coprocessor0 {
      * @return old value in register prior to update
      **/
     public static int updateRegister(int num, int val) {
-        int old = 0;
-        for (Register register : registers) {
-            if (register.getNumber() == num) {
-                old = (Globals.getSettings().getBackSteppingEnabled())
-                        ? Globals.program.getBackStepper().addCoprocessor0Restore(num, register.setValue(val))
-                        : register.setValue(val);
-                break;
-            }
-        }
-        return old;
+        return (Globals.getSettings().getBackSteppingEnabled())
+                ? Globals.program.getBackStepper().addCoprocessor0Restore(num, instance.updateRegister(num, val))
+                : instance.updateRegister(num, val);
     }
 
 
@@ -123,28 +82,7 @@ public class Coprocessor0 {
      **/
 
     public static int getValue(int num) {
-        for (Register register : registers) {
-            if (register.getNumber() == num) {
-                return register.getValue();
-            }
-        }
-        return 0;
-    }
-
-    /**
-     * For getting the number representation of the register.
-     *
-     * @param n The string formatted register name to look for.
-     * @return The number of the register represented by the string. -1 if no match.
-     **/
-
-    public static int getNumber(String n) {
-        for (Register register : registers) {
-            if (("$" + register.getNumber()).equals(n) || register.getName().equals(n)) {
-                return register.getNumber();
-            }
-        }
-        return -1;
+        return instance.getValue(num);
     }
 
     /**
@@ -154,7 +92,7 @@ public class Coprocessor0 {
      **/
 
     public static Register[] getRegisters() {
-        return registers;
+        return instance.getRegisters();
     }
 
 
@@ -168,6 +106,7 @@ public class Coprocessor0 {
      **/
 
     public static int getRegisterPosition(Register r) {
+        Register[] registers = instance.getRegisters();
         for (int i = 0; i < registers.length; i++) {
             if (registers[i] == r) {
                 return i;
@@ -177,30 +116,11 @@ public class Coprocessor0 {
     }
 
     /**
-     * Get register object corresponding to given name.  If no match, return null.
-     *
-     * @param rname The register name,  in $0 format.
-     * @return The register object,or null if not found.
-     **/
-
-    public static Register getRegister(String rname) {
-        for (Register register : registers) {
-            if (("$" + register.getNumber()).equals(rname) || register.getName().equals(rname)) {
-                return register;
-            }
-        }
-        return null;
-    }
-
-
-    /**
      * Method to reinitialize the values of the registers.
      **/
 
     public static void resetRegisters() {
-        for (Register register : registers) {
-            register.resetValue();
-        }
+        instance.resetRegisters();
     }
 
     /**
@@ -208,9 +128,7 @@ public class Coprocessor0 {
      * will add the given Observer to each one.
      */
     public static void addRegistersObserver(Observer observer) {
-        for (Register register : registers) {
-            register.addObserver(observer);
-        }
+        instance.addRegistersObserver(observer);
     }
 
     /**
@@ -218,9 +136,7 @@ public class Coprocessor0 {
      * will delete the given Observer from each one.
      */
     public static void deleteRegistersObserver(Observer observer) {
-        for (Register register : registers) {
-            register.deleteObserver(observer);
-        }
+        instance.deleteRegistersObserver(observer);
     }
 
 }
