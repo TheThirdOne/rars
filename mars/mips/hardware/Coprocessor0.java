@@ -40,28 +40,20 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  **/
 
 public class Coprocessor0 {
-    /**
-     * Coprocessor register names
-     */
-    public static final int VADDR = 8;
-    public static final int STATUS = 12;
-    public static final int CAUSE = 13;
-    public static final int EPC = 14;
-
     public static final int EXCEPTION_LEVEL = 1;  // bit position in STATUS register
     // bits 8-15 (mask for interrupt levels) all set, bit 4 (user mode) set,
     // bit 1 (exception level) not set, bit 0 (interrupt enable) set.
     public static final int DEFAULT_STATUS_VALUE = 0x0000FF11;
 
     private static final RegisterBlock instance = new RegisterBlock('_', new Register[]{ // Prefix is not used
-            new Register("vaddr", 8, 0),
-            new Register("status", 12, DEFAULT_STATUS_VALUE),
-            new Register("cause", 13, 0),
-            new Register("epc", 14, 0)
+            new Register("ustatus", 0x000, DEFAULT_STATUS_VALUE),
+            new Register("uepc", 0x041, 0),
+            new Register("ucause", 0x042, 0),
+            new Register("utval", 0x043, 0)
     });
 
     /**
-     * This method updates the register value who's number is num.
+     * This method updates the register value
      *
      * @param num Number of register to set the value of.
      * @param val The desired value for the register.
@@ -73,9 +65,20 @@ public class Coprocessor0 {
                 : instance.updateRegister(num, val);
     }
 
+    /**
+     * This method updates the register value
+     *
+     * @param name Name of register to set the value of.
+     * @param val  The desired value for the register.
+     * @return old value in register prior to update
+     **/
+    public static int updateRegister(String name, int val) {
+        return updateRegister(instance.getRegister(name).getNumber(), val);
+    }
+
 
     /**
-     * Returns the value of the register who's number is num.
+     * Returns the value of the register
      *
      * @param num The register number.
      * @return The value of the given register.  0 for non-implemented registers
@@ -83,6 +86,17 @@ public class Coprocessor0 {
 
     public static int getValue(int num) {
         return instance.getValue(num);
+    }
+
+    /**
+     * Returns the value of the register
+     *
+     * @param name The register's name
+     * @return The value of the given register.  0 for non-implemented registers
+     **/
+
+    public static int getValue(String name) {
+        return instance.getValue(name);
     }
 
     /**

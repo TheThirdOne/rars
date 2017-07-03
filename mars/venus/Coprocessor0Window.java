@@ -61,7 +61,6 @@ public class Coprocessor0Window extends JPanel implements Observer {
     private boolean highlighting;
     private int highlightRow;
     private ExecutePane executePane;
-    private int[] rowGivenRegNumber; // translate register number to table row.
     private static final int NAME_COLUMN = 0;
     private static final int NUMBER_COLUMN = 1;
     private static final int VALUE_COLUMN = 2;
@@ -97,9 +96,7 @@ public class Coprocessor0Window extends JPanel implements Observer {
     private Object[][] setupWindow() {
         registers = Coprocessor0.getRegisters();
         tableData = new Object[registers.length][3];
-        rowGivenRegNumber = new int[32]; // maximum number of registers
         for (int i = 0; i < registers.length; i++) {
-            rowGivenRegNumber[registers[i].getNumber()] = i;
             tableData[i][0] = registers[i].getName();
             tableData[i][1] = registers[i].getNumber();
             tableData[i][2] = NumberDisplayBaseChooser.formatNumber(registers[i].getValue(),
@@ -150,24 +147,11 @@ public class Coprocessor0Window extends JPanel implements Observer {
      * @param base number base for display (10 or 16)
      */
     public void updateRegisters(int base) {
-        registers = Coprocessor0.getRegisters();
-        for (Register register : registers) {
-            this.updateRegisterValue(register.getNumber(), register.getValue(), base);
+        for (int i = 0; i < registers.length; i++) {
+            ((RegTableModel) table.getModel()).setDisplayAndModelValueAt(
+                    NumberDisplayBaseChooser.formatNumber(registers[i].getValue(), base), i, 2);
         }
     }
-
-    /**
-     * This method handles the updating of the GUI.
-     *
-     * @param number The number of the register to update.
-     * @param val    New value.
-     **/
-
-    private void updateRegisterValue(int number, int val, int base) {
-        ((RegTableModel) table.getModel()).setDisplayAndModelValueAt(
-                NumberDisplayBaseChooser.formatNumber(val, base), rowGivenRegNumber[number], 2);
-    }
-
 
     /**
      * Required by Observer interface.  Called when notified by an Observable that we are registered with.

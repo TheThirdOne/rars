@@ -288,7 +288,7 @@ public class Simulator extends Observable {
                 // because it assumes the bad address comes from an operand so the ProgramCounter has already been
                 // incremented.  In this case, bad address is the instruction fetch itself so Program Counter has
                 // not yet been incremented.  We'll set the EPC directly here.  DPS 8-July-2013
-                Coprocessor0.updateRegister(Coprocessor0.EPC, RegisterFile.getProgramCounter());
+                Coprocessor0.updateRegister("uepc", RegisterFile.getProgramCounter());
                 this.constructReturnReason = EXCEPTION;
                 this.done = true;
                 SystemIO.resetFiles(); // close any files opened in MIPS program
@@ -460,7 +460,7 @@ public class Simulator extends Observable {
                     // because it assumes the bad address comes from an operand so the ProgramCounter has already been
                     // incremented.  In this case, bad address is the instruction fetch itself so Program Counter has
                     // not yet been incremented.  We'll set the EPC directly here.  DPS 8-July-2013
-                    Coprocessor0.updateRegister(Coprocessor0.EPC, RegisterFile.getProgramCounter());
+                    Coprocessor0.updateRegister("uepc", RegisterFile.getProgramCounter());
                     this.constructReturnReason = EXCEPTION;
                     this.done = true;
                     SystemIO.resetFiles(); // close any files opened in MIPS program

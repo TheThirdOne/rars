@@ -281,8 +281,8 @@ public class KeyboardAndDisplaySimulator extends AbstractMarsToolAndApplication 
                 int updatedTransmitterControl = readyBitSet(TRANSMITTER_CONTROL);
                 updateMMIOControl(TRANSMITTER_CONTROL, updatedTransmitterControl);
                 if (updatedTransmitterControl != 1
-                        && (Coprocessor0.getValue(Coprocessor0.STATUS) & 2) == 0  // Added by Carl Hauser Nov 2008
-                        && (Coprocessor0.getValue(Coprocessor0.STATUS) & 1) == 1) {
+                        && (Coprocessor0.getValue("ustatus") & 2) == 0  // Added by Carl Hauser Nov 2008
+                        && (Coprocessor0.getValue("ustatus") & 1) == 1) {
                     // interrupt-enabled bit is set in both Tranmitter Control and in
                     // Coprocessor0 Status register, and Interrupt Level Bit is 0, so trigger external interrupt.
                     mars.simulator.Simulator.externalInterruptingDevice = Exceptions.EXTERNAL_INTERRUPT_DISPLAY;
@@ -799,8 +799,8 @@ public class KeyboardAndDisplaySimulator extends AbstractMarsToolAndApplication 
             int updatedReceiverControl = readyBitSet(RECEIVER_CONTROL);
             updateMMIOControlAndData(RECEIVER_CONTROL, updatedReceiverControl, RECEIVER_DATA, e.getKeyChar() & 0x00000ff);
             if (updatedReceiverControl != 1
-                    && (Coprocessor0.getValue(Coprocessor0.STATUS) & 2) == 0   // Added by Carl Hauser Nov 2008
-                    && (Coprocessor0.getValue(Coprocessor0.STATUS) & 1) == 1) {
+                    && (Coprocessor0.getValue("ustatus") & 2) == 0   // Added by Carl Hauser Nov 2008
+                    && (Coprocessor0.getValue("ustatus") & 1) == 1) {
                 // interrupt-enabled bit is set in both Receiver Control and in
                 // Coprocessor0 Status register, and Interrupt Level Bit is 0, so trigger external interrupt.
                 mars.simulator.Simulator.externalInterruptingDevice = Exceptions.EXTERNAL_INTERRUPT_KEYBOARD;
