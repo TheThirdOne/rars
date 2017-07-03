@@ -2,6 +2,7 @@ package mars.mips.instructions;
 
 import mars.ProcessingException;
 import mars.ProgramStatement;
+import mars.mips.hardware.Coprocessor0;
 import mars.mips.hardware.Coprocessor1;
 
 /*
@@ -52,8 +53,23 @@ public abstract class Floating extends BasicInstruction {
         int[] operands = statement.getOperands();
         float result = compute(Coprocessor1.getFloatFromRegister(operands[1]),
                 Coprocessor1.getFloatFromRegister(operands[2]));
+        if (Float.isNaN(result)) {
+            Coprocessor0.orRegister("fcsr", 0x10); // Set invalid flag
+        }
+        if (Float.isInfinite(result)) {
+            Coprocessor0.orRegister("fcsr", 0x4); // Set Overflow flag
+        }
+        if (subnormal(result)) {
+            Coprocessor0.orRegister("fcsr", 0x2); // Set Underflow flag
+        }
         Coprocessor1.setRegisterToFloat(operands[0], result);
     }
 
     public abstract float compute(float f1, float f2);
+
+    public static boolean subnormal(float f) {
+        int bits = Float.floatToRawIntBits(f);
+        return (bits & 0x7F800000) == 0 && (bits & 0x007FFFFF) > 0; // Exponent is minimum and the faction is non-zero
+    }
+
 }

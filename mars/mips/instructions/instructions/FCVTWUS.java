@@ -3,6 +3,7 @@ package mars.mips.instructions.instructions;
 import mars.ProcessingException;
 import mars.ProgramStatement;
 import mars.assembler.DataTypes;
+import mars.mips.hardware.Coprocessor0;
 import mars.mips.hardware.Coprocessor1;
 import mars.mips.hardware.RegisterFile;
 import mars.mips.instructions.BasicInstruction;
@@ -46,9 +47,14 @@ public class FCVTWUS extends BasicInstruction {
         int[] operands = statement.getOperands();
         float in = Coprocessor1.getFloatFromRegister(operands[1]);
         if (Float.isNaN(in)) {
+            Coprocessor0.orRegister("fcsr", 0x10); // Set invalid flag
             RegisterFile.updateRegister(operands[0], DataTypes.MAX_WORD_VALUE);
         } else if (in < 0) {
+            Coprocessor0.orRegister("fcsr", 0x10); // Set invalid flag
             RegisterFile.updateRegister(operands[0], 0);
+        } else if (in > (DataTypes.MIN_WORD_VALUE & 0xFFFFFFFFL)) {
+            Coprocessor0.orRegister("fcsr", 0x10); // Set invalid flag
+            RegisterFile.updateRegister(operands[0], DataTypes.MIN_WORD_VALUE);
         } else if (in < DataTypes.MAX_WORD_VALUE) {
             RegisterFile.updateRegister(operands[0], Math.round(in));
         } else {

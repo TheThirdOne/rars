@@ -1,5 +1,6 @@
 package mars.mips.instructions.instructions;
 
+import mars.mips.hardware.Coprocessor0;
 import mars.mips.instructions.Floating;
 
 /*
@@ -35,6 +36,7 @@ public class FDIVS extends Floating {
     }
 
     public float compute(float f1, float f2) {
+        if (f2 == 0.0f) Coprocessor0.orRegister("fcsr", 0x8); // Set Divide by zero flag
         return f1 / f2;
     }
 }

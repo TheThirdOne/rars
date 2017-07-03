@@ -88,6 +88,16 @@ public class Coprocessor0 {
     }
 
     /**
+     * ORs a register with a value
+     *
+     * @param name Name of register to change
+     * @param val  The value to OR with
+     **/
+    public static void orRegister(String name, int val) {
+        updateRegister(name, instance.getValue(name) | val);
+    }
+
+    /**
      * Clears bits from a register according to a value
      *
      * @param num Number of register to change

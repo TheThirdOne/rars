@@ -1,5 +1,6 @@
 package mars.mips.instructions.instructions;
 
+import mars.mips.hardware.Coprocessor0;
 import mars.mips.instructions.Arithmetic;
 
 /*
@@ -37,9 +38,15 @@ public class REM extends Arithmetic {
     }
 
     public int compute(int value, int value2) {
-        if (value2 == 0) return value;
+        if (value2 == 0) {
+            Coprocessor0.orRegister("fcsr", 0x8); // Set Divide by Zero flag
+            return value;
+        }
         // Overflow
-        if (value == Integer.MIN_VALUE && value2 == -1) return 0;
+        if (value == Integer.MIN_VALUE && value2 == -1) {
+            Coprocessor0.orRegister("fcsr", 0x4); // Set Overflow flag
+            return 0;
+        }
         return value % value2;
     }
 }

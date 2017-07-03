@@ -1,5 +1,6 @@
 package mars.mips.instructions.instructions;
 
+import mars.mips.hardware.Coprocessor0;
 import mars.mips.instructions.Arithmetic;
 
 /*
@@ -37,7 +38,10 @@ public class REMU extends Arithmetic {
     }
 
     public int compute(int value, int value2) {
-        if (value2 == 0) return value;
+        if (value2 == 0) {
+            Coprocessor0.orRegister("fcsr", 0x8); // Set Divide by Zero flag
+            return value;
+        }
         return Integer.remainderUnsigned(value, value2);
     }
 }

@@ -2,6 +2,7 @@ package mars.mips.instructions;
 
 import mars.ProcessingException;
 import mars.ProgramStatement;
+import mars.mips.hardware.Coprocessor0;
 import mars.mips.hardware.Coprocessor1;
 
 /*
@@ -45,6 +46,15 @@ public abstract class FusedFloat extends BasicInstruction {
         float result = compute(Float.intBitsToFloat(Coprocessor1.getValue(operands[1])),
                 Float.intBitsToFloat(Coprocessor1.getValue(operands[2])),
                 Float.intBitsToFloat(Coprocessor1.getValue(operands[3])));
+        if (Float.isNaN(result)) {
+            Coprocessor0.orRegister("fcsr", 0x10); // Set invalid flag
+        }
+        if (Float.isInfinite(result)) {
+            Coprocessor0.orRegister("fcsr", 0x4); // Set Overflow flag
+        }
+        if (Floating.subnormal(result)) {
+            Coprocessor0.orRegister("fcsr", 0x2); // Set Underflow flag
+        }
         Coprocessor1.setRegisterToFloat(operands[0], result);
     }
 

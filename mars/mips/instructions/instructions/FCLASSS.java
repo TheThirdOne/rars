@@ -6,6 +6,7 @@ import mars.mips.hardware.Coprocessor1;
 import mars.mips.hardware.RegisterFile;
 import mars.mips.instructions.BasicInstruction;
 import mars.mips.instructions.BasicInstructionFormat;
+import mars.mips.instructions.Floating;
 
 /*
 Copyright (c) 2017,  Benjamin Landers
@@ -59,13 +60,12 @@ public class FCLASSS extends BasicInstruction {
         if (Float.isNaN(in)) {
             RegisterFile.updateRegister(operands[0], 0x200);
         } else {
-            int bits = Coprocessor1.getValue(operands[1]);
-            boolean negative = (bits & 0x80000000) == 0x80000000;
+            boolean negative = in < 0.0f;
             if (Float.isInfinite(in)) {
                 RegisterFile.updateRegister(operands[0], negative ? 0x001 : 0x080);
             } else if (in == 0.0f) {
                 RegisterFile.updateRegister(operands[0], negative ? 0x008 : 0x010);
-            } else if ((bits & 0x7F800000) == 0 && (bits & 0x007FFFFF) > 0) { // Exponent is minimum and the faction is non-zero
+            } else if (Floating.subnormal(in)) {
                 RegisterFile.updateRegister(operands[0], negative ? 0x004 : 0x020);
             } else {
                 RegisterFile.updateRegister(operands[0], negative ? 0x002 : 0x040);

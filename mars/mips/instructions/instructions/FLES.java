@@ -2,6 +2,7 @@ package mars.mips.instructions.instructions;
 
 import mars.ProcessingException;
 import mars.ProgramStatement;
+import mars.mips.hardware.Coprocessor0;
 import mars.mips.hardware.Coprocessor1;
 import mars.mips.hardware.RegisterFile;
 import mars.mips.instructions.BasicInstruction;
@@ -42,7 +43,10 @@ public class FLES extends BasicInstruction {
 
     public void simulate(ProgramStatement statement) throws ProcessingException {
         int[] operands = statement.getOperands();
-        boolean result = Coprocessor1.getFloatFromRegister(operands[1]) <= Coprocessor1.getFloatFromRegister(operands[2]);
+        float f1 = Coprocessor1.getFloatFromRegister(operands[1]), f2 = Coprocessor1.getFloatFromRegister(operands[2]);
+        if (Float.isNaN(f1) || Float.isNaN(f2))
+            Coprocessor0.orRegister("fcsr", 0x10); // Set invalid flag if either input is NaN
+        boolean result = f1 <= f2;
         RegisterFile.updateRegister(operands[0], result ? 1 : 0);
     }
 }
