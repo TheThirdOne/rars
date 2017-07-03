@@ -1,11 +1,8 @@
 package mars.mips.instructions;
 
-import mars.Globals;
 import mars.ProcessingException;
 import mars.ProgramStatement;
-import mars.Settings;
 import mars.mips.hardware.RegisterFile;
-import mars.simulator.DelayedBranch;
 import mars.simulator.Exceptions;
 import mars.util.FilenameFinder;
 
@@ -290,26 +287,12 @@ public class InstructionSet {
    	 * whereas the jump operand is an absolute address in bytes.
    	 *
    	 * The parameter is displacement operand from instruction.
-   	 *
-   	 * Handles delayed branching if that setting is enabled.
    	 */
-    // 4 January 2008 DPS:  The subtraction of 4 bytes (instruction length) after
-    // the shift has been removed.  It is left in as commented-out code below.
-    // This has the effect of always branching as if delayed branching is enabled,
-    // even if it isn't.  This mod must work in conjunction with
-    // ProgramStatement.java, buildBasicStatementFromBasicInstruction() method near
-    // the bottom (currently line 194, heavily commented).
 
     public static void processBranch(int displacement) {
-        if (Globals.getSettings().getBooleanSetting(Settings.DELAYED_BRANCHING_ENABLED)) {
-            // Register the branch target address (absolute byte address).
-            DelayedBranch.register(RegisterFile.getProgramCounter() + (displacement << 1)
-                    - Instruction.INSTRUCTION_LENGTH);
-        } else {
-            // Decrement needed because PC has already been incremented
-            RegisterFile.setProgramCounter(RegisterFile.getProgramCounter() + (displacement << 1)
-                    - Instruction.INSTRUCTION_LENGTH);
-        }
+        // Decrement needed because PC has already been incremented
+        RegisterFile.setProgramCounter(RegisterFile.getProgramCounter() + (displacement << 1)
+                - Instruction.INSTRUCTION_LENGTH);
     }
 
    	/*
@@ -318,34 +301,21 @@ public class InstructionSet {
    	 * whereas the jump operand is an absolute address in bytes.
    	 *
    	 * The parameter is jump target absolute byte address.
-   	 *
-   	 * Handles delayed branching if that setting is enabled.
    	 */
 
     public static void processJump(int targetAddress) {
-        if (Globals.getSettings().getBooleanSetting(Settings.DELAYED_BRANCHING_ENABLED)) {
-            DelayedBranch.register(targetAddress);
-        } else {
-            RegisterFile.setProgramCounter(targetAddress);
-        }
+        RegisterFile.setProgramCounter(targetAddress);
     }
 
    	/*
         * Method to process storing of a return address in the given
    	 * register.  This is used only by the "and link"
-   	 * instructions: jal, jalr, bltzal, bgezal.  If delayed branching
-   	 * setting is off, the return address is the address of the
-   	 * next instruction (e.g. the current PC value).  If on, the
-   	 * return address is the instruction following that, to skip over
-   	 * the delay slot.
-   	 *
+   	 * instructions: jal and jalr
    	 * The parameter is register number to receive the return address.
    	 */
 
     public static void processReturnAddress(int register) {
-        RegisterFile.updateRegister(register, RegisterFile.getProgramCounter() +
-                ((Globals.getSettings().getBooleanSetting(Settings.DELAYED_BRANCHING_ENABLED)) ?
-                        Instruction.INSTRUCTION_LENGTH : 0));
+        RegisterFile.updateRegister(register, RegisterFile.getProgramCounter());
     }
 
     private static class MatchMap implements Comparable<MatchMap> {

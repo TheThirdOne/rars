@@ -102,65 +102,59 @@ public class Settings extends Observable {
      */
     public static final int EXCEPTION_HANDLER_ENABLED = 7;
     /**
-     * Flag to determine whether or not delayed branching is in effect at MIPS execution.
-     * This means we simulate the pipeline and statement FOLLOWING a successful branch
-     * is executed before branch is taken. DPS 14 June 2007.
-     */
-    public static final int DELAYED_BRANCHING_ENABLED = 8;
-    /**
      * Flag to determine whether or not the editor will display line numbers.
      */
-    public static final int EDITOR_LINE_NUMBERS_DISPLAYED = 9;
+    public static final int EDITOR_LINE_NUMBERS_DISPLAYED = 8;
     /**
      * Flag to determine whether or not assembler warnings are considered errors.
      */
-    public static final int WARNINGS_ARE_ERRORS = 10;
+    public static final int WARNINGS_ARE_ERRORS = 9;
     /**
      * Flag to determine whether or not to display and use program arguments
      */
-    public static final int PROGRAM_ARGUMENTS = 11;
+    public static final int PROGRAM_ARGUMENTS = 10;
     /**
      * Flag to control whether or not highlighting is applied to data segment window
      */
-    public static final int DATA_SEGMENT_HIGHLIGHTING = 12;
+    public static final int DATA_SEGMENT_HIGHLIGHTING = 11;
     /**
      * Flag to control whether or not highlighting is applied to register windows
      */
-    public static final int REGISTERS_HIGHLIGHTING = 13;
+    public static final int REGISTERS_HIGHLIGHTING = 12;
     /**
      * Flag to control whether or not assembler automatically initializes program counter to 'main's address
      */
-    public static final int START_AT_MAIN = 14;
+    public static final int START_AT_MAIN = 13;
     /**
      * Flag to control whether or not editor will highlight the line currently being edited
      */
-    public static final int EDITOR_CURRENT_LINE_HIGHLIGHTING = 15;
+    public static final int EDITOR_CURRENT_LINE_HIGHLIGHTING = 14;
     /**
      * Flag to control whether or not editor will provide popup instruction guidance while typing
      */
-    public static final int POPUP_INSTRUCTION_GUIDANCE = 16;
+    public static final int POPUP_INSTRUCTION_GUIDANCE = 15;
     /**
      * Flag to control whether or not simulator will use popup dialog for input syscalls
      */
-    public static final int POPUP_SYSCALL_INPUT = 17;
+    public static final int POPUP_SYSCALL_INPUT = 16;
     /**
      * Flag to control whether or not to use generic text editor instead of language-aware styled editor
      */
-    public static final int GENERIC_TEXT_EDITOR = 18;
+    public static final int GENERIC_TEXT_EDITOR = 17;
     /**
      * Flag to control whether or not language-aware editor will use auto-indent feature
      */
-    public static final int AUTO_INDENT = 19;
+    public static final int AUTO_INDENT = 18;
     /**
      * Flag to determine whether a program can write binary code to the text or data segment and
      * execute that code.
      */
-    public static final int SELF_MODIFYING_CODE_ENABLED = 20;
+    public static final int SELF_MODIFYING_CODE_ENABLED = 19;
 
     // NOTE: key sequence must match up with labels above which are used for array indexes!
     private static String[] booleanSettingsKeys = {"ExtendedAssembler", "BareMachine", "AssembleOnOpen", "AssembleAll",
             "LabelWindowVisibility", "DisplayAddressesInHex", "DisplayValuesInHex",
-            "LoadExceptionHandler", "DelayedBranching", "EditorLineNumbersDisplayed",
+            "LoadExceptionHandler", "EditorLineNumbersDisplayed",
             "WarningsAreErrors", "ProgramArguments", "DataSegmentHighlighting",
             "RegistersHighlighting", "StartAtMain", "EditorCurrentLineHighlighting",
             "PopupInstructionGuidance", "PopupSyscallInput", "GenericTextEditor",
@@ -173,7 +167,7 @@ public class Settings extends Observable {
      * Values are matched to keys by list position.
      */
     public static boolean[] defaultBooleanSettingsValues = { // match the above list by position
-            true, false, false, false, false, true, true, false, false,
+            true, false, false, false, false, true, true, false,
             true, false, false, true, true, false, true, true, false, false, true, false};
 
     // STRING SETTINGS.  Each array position has associated name.
@@ -761,26 +755,6 @@ public class Settings extends Observable {
             throw new IllegalArgumentException("Invalid boolean setting ID");
         }
     }
-
-
-    /**
-     * Establish setting for whether delayed branching will be applied during
-     * MIPS program execution.  This setting will NOT be written to persisent
-     * store!  This method should be called only to temporarily set this
-     * setting -- currently this is needed only when running MARS from the
-     * command line.
-     *
-     * @param value True to enabled delayed branching, false otherwise.
-     * @deprecated Use <code>setBooleanSettingNonPersistent(int id, boolean value)</code> with the appropriate boolean setting ID
-     * (e.g. <code>Settings.DELAYED_BRANCHING_ENABLED</code>)
-     */
-    public void setDelayedBranchingEnabledNonPersistent(boolean value) {
-        // Note: Doing assignment to array results in non-persistent
-        // setting (lost when MARS terminates).  For persistent, use
-        // the internalSetBooleanSetting() method instead.
-        booleanSettingsValues[DELAYED_BRANCHING_ENABLED] = value;
-    }
-
 
     /**
      * Set name of exception handler file and write it to persistent storage.

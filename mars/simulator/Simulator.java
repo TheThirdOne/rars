@@ -95,22 +95,6 @@ public class Simulator extends Observable {
         }
     }
 
-
-    /**
-     * Determine whether or not the next instruction to be executed is in a
-     * "delay slot".  This means delayed branching is enabled, the branch
-     * condition has evaluated true, and the next instruction executed will
-     * be the one following the branch.  It is said to occupy the "delay slot."
-     * Normally programmers put a nop instruction here but it can be anything.
-     *
-     * @return true if next instruction is in delay slot, false otherwise.
-     */
-
-    public static boolean inDelaySlot() {
-        return DelayedBranch.isTriggered();
-    }
-
-
     /**
      * Simulate execution of given MIPS program.  It must have already been assembled.
      *
@@ -394,14 +378,6 @@ public class Simulator extends Observable {
                     }
                 }// end synchronized block
 
-                ///////// DPS 15 June 2007.  Handle delayed branching if it occurs./////
-                if (DelayedBranch.isTriggered()) {
-                    RegisterFile.setProgramCounter(DelayedBranch.getBranchTargetAddress());
-                    DelayedBranch.clear();
-                } else if (DelayedBranch.isRegistered()) {
-                    DelayedBranch.trigger();
-                }//////////////////////////////////////////////////////////////////////
-
                 // Volatile variable initialized false but can be set true by the main thread.
                 // Used to stop or pause a running MIPS program.  See stopSimulation() above.
                 if (stop) {
@@ -468,13 +444,7 @@ public class Simulator extends Observable {
                     return true;
                 }
             }
-            // DPS July 2007.  This "if" statement is needed for correct program
-            // termination if delayed branching on and last statement in
-            // program is a branch/jump.  Program will terminate rather than branch,
-            // because that's what MARS does when execution drops off the bottom.
-            if (DelayedBranch.isTriggered() || DelayedBranch.isRegistered()) {
-                DelayedBranch.clear();
-            }
+
             // If we got here it was due to null statement, which means program
             // counter "fell off the end" of the program.  NOTE: Assumes the
             // "while" loop contains no "break;" statements.

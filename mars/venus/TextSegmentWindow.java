@@ -73,7 +73,6 @@ public class TextSegmentWindow extends JInternalFrame implements Observer {
     private boolean breakpointsEnabled;  // Added 31 Dec 2009
     private int highlightAddress;
     private TableModelListener tableModelListener;
-    private boolean inDelaySlot; // Added 25 June 2007
 
     private static String[] columnNames = {"Bkpt", "Address", "Code", "Basic", "Source"};
     private static final int BREAK_COLUMN = 0;
@@ -486,44 +485,18 @@ public class TextSegmentWindow extends JInternalFrame implements Observer {
      * execution and when reaching breakpoints.
      */
     public void highlightStepAtPC() {
-        highlightStepAtAddress(RegisterFile.getProgramCounter(), false);
+        highlightStepAtAddress(RegisterFile.getProgramCounter());
     }
 
-    /**
-     * Highlights the source code line whose address matches the current
-     * program counter value.  This is used for stepping through code
-     * execution and when reaching breakpoints.
-     *
-     * @param inDelaySlot Set true if delayed branching is enabled and the
-     *                    instruction at this address is executing in the delay slot, false
-     *                    otherwise.
-     */
-    public void highlightStepAtPC(boolean inDelaySlot) {
-        highlightStepAtAddress(RegisterFile.getProgramCounter(), inDelaySlot);
-    }
-
-    /**
-     * Highlights the source code line whose address matches the given
-     * text segment address.
-     *
-     * @param address text segment address of instruction to be highlighted.
-     */
-
-    public void highlightStepAtAddress(int address) {
-        highlightStepAtAddress(address, false);
-    }
 
     /**
      * Highlights the source code line whose address matches the given
      * text segment address.
      *
      * @param address     Text segment address of instruction to be highlighted.
-     * @param inDelaySlot Set true if delayed branching is enabled and the
-     *                    instruction at this address is executing in the delay slot, false
-     *                    otherwise.
      */
 
-    public void highlightStepAtAddress(int address, boolean inDelaySlot) {
+    public void highlightStepAtAddress(int address) {
         highlightAddress = address;
         // Scroll if necessary to assure highlighted row is visible.
         int row = 0;
@@ -533,7 +506,6 @@ public class TextSegmentWindow extends JInternalFrame implements Observer {
             return;
         }
         table.scrollRectToVisible(table.getCellRect(row, 0, true));
-        this.inDelaySlot = inDelaySlot;// Added 25 June 2007
         // Trigger highlighting, which is done by the column's cell renderer.
         // IMPLEMENTATION NOTE: Pretty crude implementation; mark all rows
         // as changed so assure that the previously highlighted row is
@@ -830,15 +802,9 @@ public class TextSegmentWindow extends JInternalFrame implements Observer {
             boolean highlighting = textSegment.getCodeHighlighting();
 
             if (highlighting && textSegment.getIntCodeAddressAtRow(row) == highlightAddress) {
-                if (mars.simulator.Simulator.inDelaySlot() || textSegment.inDelaySlot) {
-                    cell.setBackground(settings.getColorSettingByPosition(Settings.TEXTSEGMENT_DELAYSLOT_HIGHLIGHT_BACKGROUND));
-                    cell.setForeground(settings.getColorSettingByPosition(Settings.TEXTSEGMENT_DELAYSLOT_HIGHLIGHT_FOREGROUND));
-                    cell.setFont(settings.getFontByPosition(Settings.TEXTSEGMENT_DELAYSLOT_HIGHLIGHT_FONT));
-                } else {
-                    cell.setBackground(settings.getColorSettingByPosition(Settings.TEXTSEGMENT_HIGHLIGHT_BACKGROUND));
-                    cell.setForeground(settings.getColorSettingByPosition(Settings.TEXTSEGMENT_HIGHLIGHT_FOREGROUND));
-                    cell.setFont(settings.getFontByPosition(Settings.TEXTSEGMENT_HIGHLIGHT_FONT));
-                }
+                cell.setBackground(settings.getColorSettingByPosition(Settings.TEXTSEGMENT_HIGHLIGHT_BACKGROUND));
+                cell.setForeground(settings.getColorSettingByPosition(Settings.TEXTSEGMENT_HIGHLIGHT_FOREGROUND));
+                cell.setFont(settings.getFontByPosition(Settings.TEXTSEGMENT_HIGHLIGHT_FONT));
             } else if (row % 2 == 0) {
                 cell.setBackground(settings.getColorSettingByPosition(Settings.EVEN_ROW_BACKGROUND));
                 cell.setForeground(settings.getColorSettingByPosition(Settings.EVEN_ROW_FOREGROUND));

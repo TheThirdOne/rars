@@ -228,23 +228,6 @@ public class ProgramStatement implements Comparable<ProgramStatement> {
                     return;
                 }
                 boolean absoluteAddress = true; // (used below)
-                //////////////////////////////////////////////////////////////////////
-                // added code 12-20-2004. If basic instruction with I_BRANCH format, then translate
-                // address from absolute to relative and shift left 2.
-                //
-                // DPS 14 June 2007: Apply delayed branching if enabled.  This adds 4 bytes to the
-                // address used to calculate branch distance in relative words.
-                //
-                // DPS 4 January 2008: Apply the delayed branching 4-byte (instruction length) addition
-                // regardless of whether delayed branching is enabled or not.  This was in response to
-                // several people complaining about machine code not matching that from the COD3 example
-                // on p 98-99.  In that example, the branch offset reflect delayed branching because
-                // all MIPS machines implement delayed branching.  But the topic of delayed branching
-                // is not yet introduced at that point, and instructors want to avoid the messiness
-                // that comes along with it.  Our original strategy was to do it like SPIM does, which
-                // the June 2007 mod (shown below as commented-out assignment to address) does.
-                // This mod must be made in conjunction with InstructionSet.java's processBranch()
-                // method.  There are some comments there as well.
 
                 if (instruction instanceof BasicInstruction) {
                     BasicInstructionFormat format = ((BasicInstruction) instruction).getInstructionFormat();

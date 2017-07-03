@@ -67,7 +67,6 @@ public class RunBackstepAction extends GuiAction {
         executePane.getTextSegmentWindow().setCodeHighlighting(true);
 
         if (Globals.getSettings().getBackSteppingEnabled()) {
-            boolean inDelaySlot = Globals.program.getBackStepper().inDelaySlot(); // Added 25 June 2007
             Memory.getInstance().addObserver(executePane.getDataSegmentWindow());
             RegisterFile.addRegistersObserver(executePane.getRegistersWindow());
             Coprocessor0.addRegistersObserver(executePane.getCoprocessor0Window());
@@ -79,7 +78,7 @@ public class RunBackstepAction extends GuiAction {
             executePane.getCoprocessor1Window().updateRegisters();
             executePane.getCoprocessor0Window().updateRegisters();
             executePane.getDataSegmentWindow().updateValues();
-            executePane.getTextSegmentWindow().highlightStepAtPC(inDelaySlot); // Argument aded 25 June 2007
+            executePane.getTextSegmentWindow().highlightStepAtPC(); // Argument aded 25 June 2007
             FileStatus.set(FileStatus.RUNNABLE);
             // if we've backed all the way, disable the button
             //    if (Globals.program.getBackStepper().empty()) {

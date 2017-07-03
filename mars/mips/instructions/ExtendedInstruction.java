@@ -106,8 +106,7 @@ public class ExtendedInstruction extends Instruction {
     /**
      * Get length in bytes that this extended instruction requires in its
      * binary form. The answer depends on how many basic instructions it
-     * expands to.  This may vary, if expansion includes a nop, depending on
-     * whether or not delayed branches are enabled. Each requires 4 bytes.
+     * expands to.
      *
      * @return int length in bytes of corresponding binary instruction(s).
      */
@@ -132,9 +131,7 @@ public class ExtendedInstruction extends Instruction {
      * Get length in bytes that this extended instruction requires in its
      * binary form if it includes an alternative expansion for compact
      * memory (16 bit addressing) configuration. The answer depends on
-     * how many basic instructions it expands to.  This may vary, if
-     * expansion includes a nop, depending on whether or not delayed
-     * branches are enabled. Each requires 4 bytes.
+     * how many basic instructions it expands to.
      *
      * @return int length in bytes of corresponding binary instruction(s).
      * Returns 0 if an alternative expansion is not defined for this
@@ -304,8 +301,7 @@ public class ExtendedInstruction extends Instruction {
     /*
      * Get length in bytes that this extended instruction requires in its 
      * binary form. The answer depends on how many basic instructions it 
-     * expands to.  This may vary, if expansion includes a nop, depending on
-     * whether or not delayed branches are enabled. Each requires 4 bytes.
+     * expands to.
      * Returns length in bytes of corresponding binary instruction(s).
      * Returns 0 if the ArrayList is null or empty.
      */

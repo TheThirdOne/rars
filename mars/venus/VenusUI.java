@@ -79,7 +79,7 @@ public class VenusUI extends JFrame {
     private JMenuItem runGo, runStep, runBackstep, runReset, runAssemble, runStop, runPause, runClearBreakpoints, runToggleBreakpoints;
     private JCheckBoxMenuItem settingsLabel, settingsPopupInput, settingsValueDisplayBase, settingsAddressDisplayBase,
             settingsExtended, settingsAssembleOnOpen, settingsAssembleAll, settingsWarningsAreErrors, settingsStartAtMain,
-            settingsDelayedBranching, settingsProgramArguments, settingsSelfModifyingCode;
+            settingsProgramArguments, settingsSelfModifyingCode;
     private JMenuItem settingsExceptionHandler, settingsEditor, settingsHighlighting, settingsMemoryConfiguration;
     private JMenuItem helpHelp, helpAbout;
 
@@ -103,7 +103,7 @@ public class VenusUI extends JFrame {
     private Action settingsLabelAction, settingsPopupInputAction, settingsValueDisplayBaseAction, settingsAddressDisplayBaseAction,
             settingsExtendedAction, settingsAssembleOnOpenAction, settingsAssembleAllAction,
             settingsWarningsAreErrorsAction, settingsStartAtMainAction, settingsProgramArgumentsAction,
-            settingsDelayedBranchingAction, settingsExceptionHandlerAction, settingsEditorAction,
+            settingsExceptionHandlerAction, settingsEditorAction,
             settingsHighlightingAction, settingsMemoryConfigurationAction, settingsSelfModifyingCodeAction;
     private Action helpHelpAction, helpAboutAction;
 
@@ -417,11 +417,6 @@ public class VenusUI extends JFrame {
                     "If set, program arguments for MIPS program can be entered in border of Text Segment window.",
                     null, null,
                     mainUI);
-            settingsDelayedBranchingAction = new SettingsDelayedBranchingAction("Delayed branching",
-                    null,
-                    "If set, delayed branching will occur during MIPS execution.",
-                    null, null,
-                    mainUI);
             settingsSelfModifyingCodeAction = new SettingsSelfModifyingCodeAction("Self-modifying code",
                     null,
                     "If set, the MIPS program can write and branch to both text and data segments.",
@@ -589,8 +584,6 @@ public class VenusUI extends JFrame {
         mainPane.getExecutePane().getAddressDisplayBaseChooser().setSettingsMenuItem(settingsAddressDisplayBase);
         settingsExtended = new JCheckBoxMenuItem(settingsExtendedAction);
         settingsExtended.setSelected(Globals.getSettings().getBooleanSetting(Settings.EXTENDED_ASSEMBLER_ENABLED));
-        settingsDelayedBranching = new JCheckBoxMenuItem(settingsDelayedBranchingAction);
-        settingsDelayedBranching.setSelected(Globals.getSettings().getBooleanSetting(Settings.DELAYED_BRANCHING_ENABLED));
         settingsSelfModifyingCode = new JCheckBoxMenuItem(settingsSelfModifyingCodeAction);
         settingsSelfModifyingCode.setSelected(Globals.getSettings().getBooleanSetting(Settings.SELF_MODIFYING_CODE_ENABLED));
         settingsAssembleOnOpen = new JCheckBoxMenuItem(settingsAssembleOnOpenAction);
@@ -620,7 +613,6 @@ public class VenusUI extends JFrame {
         settings.add(settingsStartAtMain);
         settings.addSeparator();
         settings.add(settingsExtended);
-        settings.add(settingsDelayedBranching);
         settings.add(settingsSelfModifyingCode);
         settings.addSeparator();
         settings.add(settingsEditor);
@@ -798,7 +790,6 @@ public class VenusUI extends JFrame {
         editPasteAction.setEnabled(false);
         editFindReplaceAction.setEnabled(false);
         editSelectAllAction.setEnabled(false);
-        settingsDelayedBranchingAction.setEnabled(true); // added 25 June 2007
         settingsMemoryConfigurationAction.setEnabled(true); // added 21 July 2009
         runAssembleAction.setEnabled(false);
         runGoAction.setEnabled(false);
@@ -835,7 +826,6 @@ public class VenusUI extends JFrame {
         editPasteAction.setEnabled(true);
         editFindReplaceAction.setEnabled(true);
         editSelectAllAction.setEnabled(true);
-        settingsDelayedBranchingAction.setEnabled(true);
         settingsMemoryConfigurationAction.setEnabled(true);
         runAssembleAction.setEnabled(true);
         // If assemble-all, allow previous Run menu settings to remain.
@@ -874,7 +864,6 @@ public class VenusUI extends JFrame {
         editPasteAction.setEnabled(true);
         editFindReplaceAction.setEnabled(true);
         editSelectAllAction.setEnabled(true);
-        settingsDelayedBranchingAction.setEnabled(true); // added 25 June 2007
         settingsMemoryConfigurationAction.setEnabled(true); // added 21 July 2009
         runAssembleAction.setEnabled(true);
         runGoAction.setEnabled(false);
@@ -910,7 +899,6 @@ public class VenusUI extends JFrame {
         editPasteAction.setEnabled(true);
         editFindReplaceAction.setEnabled(true);
         editSelectAllAction.setEnabled(true);
-        settingsDelayedBranchingAction.setEnabled(true); // added 25 June 2007
         settingsMemoryConfigurationAction.setEnabled(true); // added 21 July 2009
         runAssembleAction.setEnabled(false);
         runGoAction.setEnabled(false);
@@ -946,7 +934,6 @@ public class VenusUI extends JFrame {
         editPasteAction.setEnabled(true);
         editFindReplaceAction.setEnabled(true);
         editSelectAllAction.setEnabled(true);
-        settingsDelayedBranchingAction.setEnabled(true); // added 25 June 2007
         settingsMemoryConfigurationAction.setEnabled(true); // added 21 July 2009
         runAssembleAction.setEnabled(true);
         runGoAction.setEnabled(true);
@@ -982,7 +969,6 @@ public class VenusUI extends JFrame {
         editPasteAction.setEnabled(false);
         editFindReplaceAction.setEnabled(false);
         editSelectAllAction.setEnabled(false);
-        settingsDelayedBranchingAction.setEnabled(false); // added 25 June 2007
         settingsMemoryConfigurationAction.setEnabled(false); // added 21 July 2009
         runAssembleAction.setEnabled(false);
         runGoAction.setEnabled(false);
@@ -1017,7 +1003,6 @@ public class VenusUI extends JFrame {
         editPasteAction.setEnabled(true);
         editFindReplaceAction.setEnabled(true);
         editSelectAllAction.setEnabled(true);
-        settingsDelayedBranchingAction.setEnabled(true); // added 25 June 2007
         settingsMemoryConfigurationAction.setEnabled(true); // added 21 July 2009
         runAssembleAction.setEnabled(true);
         runGoAction.setEnabled(false);

@@ -107,18 +107,6 @@ public class BackStepper {
     }
 
     /**
-     * Determine whether the next back-step action occurred as the result of
-     * an instruction that executed in the "delay slot" of a delayed branch.
-     *
-     * @return true if next backstep is instruction that executed in delay slot,
-     * false otherwise.
-     */
-    // Added 25 June 2007
-    public boolean inDelaySlot() {
-        return !empty() && backSteps.peek().inDelaySlot;
-    }
-
-    /**
      * Carry out a "back step", which will undo the latest execution step.
      * Does nothing if backstepping not enabled or if there are no steps to undo.
      */
@@ -337,7 +325,6 @@ public class BackStepper {
         private ProgramStatement ps;   // statement whose action is being "undone" here
         private int param1;  // first parameter required by that action
         private int param2;  // optional second parameter required by that action
-        private boolean inDelaySlot; // true if instruction executed in "delay slot" (delayed branching enabled)
 
         // it is critical that BackStep object get its values by calling this method
         // rather than assigning to individual members, because of the technique used
@@ -361,7 +348,6 @@ public class BackStepper {
             }
             param1 = parm1;
             param2 = parm2;
-            inDelaySlot = Simulator.inDelaySlot(); // ADDED 25 June 2007
          /*				
             System.out.println("backstep PUSH: action "+action+" pc "+mars.util.Binary.intToHexString(pc)+
          		                   " source "+((ps==null)? "none":ps.getSource())+

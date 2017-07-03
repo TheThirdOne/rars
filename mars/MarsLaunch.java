@@ -67,7 +67,6 @@ public class MarsLaunch {
      * b  -- brief - do not display register/memory address along with contents<br>
      * d  -- print debugging statements<br>
      * da  -- both a and d<br>
-     * db  -- MIPS delayed branching is enabled.<br>
      * dec  -- display memory or register contents in decimal.<br>
      * dump  -- dump memory contents to file.  Option has 3 arguments, e.g. <br>
      * <tt>dump &lt;segment&gt; &lt;format&gt; &lt;file&gt;</tt>.  Also supports<br>
@@ -111,7 +110,6 @@ public class MarsLaunch {
     private boolean verbose;  // display register name or address along with contents
     private boolean assembleProject; // assemble only the given file or all files in its directory
     private boolean pseudo;  // pseudo instructions allowed in source code or not.
-    private boolean delayedBranching;  // MIPS delayed branching is enabled.
     private boolean warningsAreErrors; // Whether assembler warnings should be considered errors.
     private boolean startAtMain; // Whether to start execution at statement labeled 'main'
     private boolean countInstructions; // Whether to count and report number of instructions executed
@@ -147,7 +145,6 @@ public class MarsLaunch {
             verbose = true;
             assembleProject = false;
             pseudo = true;
-            delayedBranching = false;
             warningsAreErrors = false;
             startAtMain = false;
             countInstructions = false;
@@ -370,10 +367,6 @@ public class MarsLaunch {
                 verbose = false;
                 continue;
             }
-            if (args[i].toLowerCase().equals("db")) {
-                delayedBranching = true;
-                continue;
-            }
             if (args[i].toLowerCase().equals("np") || args[i].toLowerCase().equals("ne")) {
                 pseudo = false;
                 continue;
@@ -452,7 +445,6 @@ public class MarsLaunch {
             return programRan;
         }
         try {
-            Globals.getSettings().setBooleanSettingNonPersistent(Settings.DELAYED_BRANCHING_ENABLED, delayedBranching);
             Globals.getSettings().setBooleanSettingNonPersistent(Settings.SELF_MODIFYING_CODE_ENABLED, selfModifyingCode);
             File mainFile = new File(filenameList.get(0)).getAbsoluteFile();// First file is "main" file
             ArrayList<String> filesToAssemble;
@@ -740,7 +732,6 @@ public class MarsLaunch {
         out.println("  ascii  -- display memory or register contents interpreted as ASCII codes.");
         out.println("      b  -- brief - do not display register/memory address along with contents");
         out.println("      d  -- display MARS debugging statements");
-        out.println("     db  -- MIPS delayed branching is enabled");
         out.println("    dec  -- display memory or register contents in decimal.");
         out.println("   dump <segment> <format> <file> -- memory dump of specified memory segment");
         out.println("            in specified format to specified file.  Option may be repeated.");
