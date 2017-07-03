@@ -47,6 +47,7 @@ public class Coprocessor0 {
 
     private static final RegisterBlock instance = new RegisterBlock('_', new Register[]{ // Prefix is not used
             new Register("ustatus", 0x000, DEFAULT_STATUS_VALUE),
+            new Register("fcsr", 0x003, 0),
             new Register("uepc", 0x041, 0),
             new Register("ucause", 0x042, 0),
             new Register("utval", 0x043, 0)
@@ -76,6 +77,25 @@ public class Coprocessor0 {
         return updateRegister(instance.getRegister(name).getNumber(), val);
     }
 
+    /**
+     * ORs a register with a value
+     *
+     * @param num Number of register to change
+     * @param val The value to OR with
+     **/
+    public static void orRegister(int num, int val) {
+        updateRegister(num, instance.getValue(num) | val);
+    }
+
+    /**
+     * Clears bits from a register according to a value
+     *
+     * @param num Number of register to change
+     * @param val The value to clear by
+     **/
+    public static void clearRegister(int num, int val) {
+        updateRegister(num, instance.getValue(num) & ~val);
+    }
 
     /**
      * Returns the value of the register
