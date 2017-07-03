@@ -43,11 +43,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // The FPU registers will be implemented by Register objects.  Such objects
 // can only hold int values, but we can use Float.floatToIntBits() to translate
 // a 32 bit float value into its equivalent 32-bit int representation, and
-// Float.intBitsToFloat() to bring it back.  More importantly, there are 
-// similar methods Double.doubleToLongBits() and Double.LongBitsToDouble()
-// which can be used to extend a double value over 2 registers.  The resulting
-// long is split into 2 int values (high order 32 bits, low order 32 bits) for
-// storing into registers, and reassembled upon retrieval.
+// Float.intBitsToFloat() to bring it back.
 
 public class Coprocessor1 {
     private static final RegisterBlock instance = new RegisterBlock('f', new Register[]{
