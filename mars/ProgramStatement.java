@@ -129,29 +129,25 @@ public class ProgramStatement implements Comparable<ProgramStatement> {
             this.operands = new int[4];
             this.numOperands = 0;
             this.instruction = instr;
-
-            String opandCodes = "fstq";
-            String fmt = instr.getOperationMask();
-            BasicInstructionFormat instrFormat = instr.getInstructionFormat();
-            int numOps = 0;
-            // TODO: fix decoding for different types
-            for (int i = 0; i < opandCodes.length(); i++) {
-                char code = opandCodes.charAt(i);
-                int j = fmt.indexOf(code);
-                if (j >= 0) {
-                    int k0 = 31 - fmt.lastIndexOf(code);
-                    int k1 = 31 - j;
-                    int opand = (binaryStatement >> k0) & ((1 << (k1 - k0 + 1)) - 1);
-                    if (instrFormat == BasicInstructionFormat.S_BRANCH_FORMAT && numOps == 2) {
-                        opand = opand << 16 >> 16;
-                    } else if (instrFormat == BasicInstructionFormat.U_JUMP_FORMAT && numOps == 0) {
-                        opand |= (textAddress >> 2) & 0x3C000000;
+            String mask = instr.getOperationMask();
+            BasicInstructionFormat format = instr.getInstructionFormat();
+            if (format == BasicInstructionFormat.U_JUMP_FORMAT) {
+                this.operands[0] = this.readBinaryCode(mask, Instruction.operandMask[0], binaryStatement);
+                this.operands[1] = fromJumpImmediate(this.readBinaryCode(mask, Instruction.operandMask[1], binaryStatement));
+                this.numOperands = 2;
+            } else if (format == BasicInstructionFormat.S_BRANCH_FORMAT) {
+                this.operands[0] = this.readBinaryCode(mask, Instruction.operandMask[0], binaryStatement);
+                this.operands[1] = this.readBinaryCode(mask, Instruction.operandMask[1], binaryStatement);
+                this.operands[2] = fromBranchImmediate(this.readBinaryCode(mask, Instruction.operandMask[2], binaryStatement));
+                this.numOperands = 3;
+            } else {  // Everything else is normal
+                for (int i = 0; i < 4; i++) {
+                    if (mask.indexOf(Instruction.operandMask[i]) != -1) {
+                        this.operands[i] = this.readBinaryCode(mask, Instruction.operandMask[i], binaryStatement);
+                        this.numOperands++;
                     }
-                    this.operands[numOps] = opand;
-                    numOps++;
                 }
             }
-            this.numOperands = numOps;
         }
         this.altered = false;
         this.basicStatementList = buildBasicStatementListFromBinaryCode(binaryStatement, instr, operands, numOperands);
@@ -340,7 +336,6 @@ public class ProgramStatement implements Comparable<ProgramStatement> {
      * @param errors The list of assembly errors encountered so far.  May add to it here.
      **/
     public void buildMachineStatementFromBasicStatement(ErrorList errors) {
-
         if (!(instruction instanceof BasicInstruction)) {
             // This means the pseudo-instruction expansion generated another
             // pseudo-instruction (expansion must be to all basic instructions).
@@ -369,23 +364,39 @@ public class ProgramStatement implements Comparable<ProgramStatement> {
     }
 
 
-    /////////////////////////////////////////////////////////////////////////////
     private int toJumpImmediate(int address) {
-        // trying to produce imm[20|10:1|11|19:12] where address = imm[20:1]
+        // trying to produce immediate[20:1] where immediate = address[20|10:1|11|19:12]
 
-        return (address & (1 << 19)) | // keep the top bit in the same place
-                ((address & ((1 << 10) - 1)) << 9) | // move imm[10:1] to the right place
-                ((address & (1 << 10)) >> 2) | // move imm[11] to the right place
-                ((address & ((1 << 19) - 1)) >> 11); // move imm[19:12] to the right place
+        return (address & (1 << 19)) |         // keep the top bit in the same place
+                ((address & 0x3FF) << 9) |     // move address[10:1] to the right place
+                ((address & (1 << 10)) >> 2) | // move address[11] to the right place
+                ((address & 0x7F800) >> 11);   // move address[19:12] to the right place
+    }
+
+    private int fromJumpImmediate(int immediate) {
+        // trying to produce address[20:1] where immediate = address[20|10:1|11|19:12]
+        int tmp = ((immediate) & (1 << 19)) |    // keep the top bit in the same place
+                ((immediate & 0x7FE00) >> 9) | // move address[10:1] to the right place
+                ((immediate & (1 << 8)) << 2) |// move address[11] to the right place
+                ((immediate & 0xFF) << 11);   // move address[19:12] to the right place
+        return (tmp << 12) >> 12; // sign-extend
+
     }
 
     private int toBranchImmediate(int address) {
-        // trying to produce imm[12|10:1|11]  where address = imm[12:1]
-        return (address & (1 << 11)) | // keep the top bit in the same place
-                ((address & ((1 << 10) - 1)) << 1) | // move imm[10:1] to the right place
-                ((address & (1 << 10)) >> 10);     // move imm[11] to the right place
+        // trying to produce imm[12:1] where immediate = address[12|10:1|11]
+        return (address & (1 << 11)) |         // keep the top bit in the same place
+                ((address & 0x3FF) << 1) |     // move address[10:1] to the right place
+                ((address & (1 << 10)) >> 10); // move address[11] to the right place
     }
 
+    private int fromBranchImmediate(int immediate) {
+        // trying to produce address[12:1] where immediate = address[12|10:1|11]
+        int tmp = (immediate & (1 << 11)) |  // keep the top bit in the same place
+                ((immediate & 0x7FE) >> 1) | // move address[10:1] to the right place
+                ((immediate & 1) << 10);     // move address[11] to the right place
+        return (tmp << 20) >> 20; // sign-extend
+    }
     /**
      * Crude attempt at building String representation of this complex structure.
      *
@@ -601,6 +612,30 @@ public class ProgramStatement implements Comparable<ProgramStatement> {
         } else {
             return -1;
         }
+    }
+
+    /**
+     * Reads an operand from a binary statement according to a mask and format
+     * <p>
+     * i.e.
+     * <pre>
+     * 0b01001 == readBinaryCode("ttttttttttttttsssss010fffff1101001",'f',
+     *                          0b0101000001000001000010010011101001)</pre>
+     *
+     * @param format          the format of the full binary statement (all operands present)
+     * @param mask            the value (f,s, or t) to mask out
+     * @param binaryStatement the binary statement to read from
+     * @return the bits read pushed to the right
+     */
+    private int readBinaryCode(String format, char mask, int binaryStatement) {
+        int out = 0;
+        for (int i = 0; i < 32; i++) {
+            if (format.charAt(i) == mask) {
+                // if the mask says to read, shift the output left and add substitute bit i
+                out = (out << 1) | ((binaryStatement >> (31 - i)) & 1);
+            }
+        }
+        return out;
     }
 
     /**
