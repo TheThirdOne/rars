@@ -1,7 +1,7 @@
 package mars.mips.instructions.syscalls;
 
+import mars.ExitingException;
 import mars.Globals;
-import mars.ProcessingException;
 import mars.ProgramStatement;
 import mars.mips.hardware.AddressErrorException;
 import mars.mips.hardware.RegisterFile;
@@ -49,7 +49,7 @@ public class SyscallWrite extends AbstractSyscall {
         super(15, "Write");
     }
 
-    public void simulate(ProgramStatement statement) throws ProcessingException {
+    public void simulate(ProgramStatement statement) throws ExitingException {
         int byteAddress = RegisterFile.getValue("a2"); // source of characters to write to file
         byte b = 0;
         int reqLength = RegisterFile.getValue("a2"); // user-requested length
@@ -68,7 +68,7 @@ public class SyscallWrite extends AbstractSyscall {
             myBuffer[index] = 0; // Add string termination
         } // end try
         catch (AddressErrorException e) {
-            throw new ProcessingException(statement, e);
+            throw new ExitingException(statement, e);
         }
         int retValue = SystemIO.writeToFile(
                 RegisterFile.getValue("a0"), // fd

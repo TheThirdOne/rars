@@ -1,11 +1,10 @@
 package mars.mips.instructions.syscalls;
 
+import mars.ExitingException;
 import mars.Globals;
-import mars.ProcessingException;
 import mars.ProgramStatement;
 import mars.mips.hardware.RegisterFile;
 import mars.mips.instructions.AbstractSyscall;
-import mars.simulator.Exceptions;
 
 /*
 Copyright (c) 2003-2006,  Pete Sanderson and Kenneth Vollmar
@@ -48,13 +47,12 @@ public class SyscallSbrk extends AbstractSyscall {
     }
 
 
-    public void simulate(ProgramStatement statement) throws ProcessingException {
+    public void simulate(ProgramStatement statement) throws ExitingException {
         try {
             RegisterFile.updateRegister("a0", Globals.memory.allocateBytesFromHeap(RegisterFile.getValue("a0")));
         } catch (IllegalArgumentException iae) {
-            throw new ProcessingException(statement,
-                    iae.getMessage() + " (syscall " + this.getNumber() + ")",
-                    Exceptions.SYSCALL_EXCEPTION);
+            throw new ExitingException(statement,
+                    iae.getMessage() + " (syscall " + this.getNumber() + ")");
         }
     }
 }

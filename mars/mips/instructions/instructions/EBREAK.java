@@ -1,8 +1,8 @@
 package mars.mips.instructions.instructions;
 
 import mars.BreakpointException;
-import mars.ProcessingException;
 import mars.ProgramStatement;
+import mars.SimulationException;
 import mars.mips.instructions.BasicInstruction;
 import mars.mips.instructions.BasicInstructionFormat;
 
@@ -39,7 +39,7 @@ public class EBREAK extends BasicInstruction {
                 BasicInstructionFormat.I_FORMAT, "000000000001 00000 000 00000 1110011");
     }
 
-    public void simulate(ProgramStatement statement) throws ProcessingException {
+    public void simulate(ProgramStatement statement) throws SimulationException {
         throw new BreakpointException();
     }
 }

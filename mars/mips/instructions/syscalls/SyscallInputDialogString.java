@@ -1,7 +1,7 @@
 package mars.mips.instructions.syscalls;
 
+import mars.ExitingException;
 import mars.Globals;
-import mars.ProcessingException;
 import mars.ProgramStatement;
 import mars.mips.hardware.AddressErrorException;
 import mars.mips.hardware.RegisterFile;
@@ -59,7 +59,7 @@ public class SyscallInputDialogString extends AbstractSyscall {
         super(54, "InputDialogString");
     }
 
-    public void simulate(ProgramStatement statement) throws ProcessingException {
+    public void simulate(ProgramStatement statement) throws ExitingException {
         String message = NullString.get(statement);
 
         // Values returned by Java's InputDialog:
@@ -100,7 +100,7 @@ public class SyscallInputDialogString extends AbstractSyscall {
 
         } // end try
         catch (AddressErrorException e) {
-            throw new ProcessingException(statement, e);
+            throw new ExitingException(statement, e);
         }
 
 

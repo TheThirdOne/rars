@@ -1,6 +1,6 @@
 package mars.mips.instructions;
 
-import mars.ProcessingException;
+import mars.ExitingException;
 import mars.ProgramStatement;
 
 /*
@@ -76,5 +76,5 @@ public interface Syscall {
      *
      * @param statement ProgramStatement for this syscall statement.
      */
-    void simulate(ProgramStatement statement) throws ProcessingException;
+    void simulate(ProgramStatement statement) throws ExitingException;
 }

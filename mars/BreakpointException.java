@@ -5,8 +5,5 @@ package mars;
  * <p>
  * Its a bit of a hack, but it works and somewhat makes logical sense.
  */
-public class BreakpointException extends ProcessingException {
-    public BreakpointException() {
-        super(null);
-    }
+public class BreakpointException extends SimulationException {
 }

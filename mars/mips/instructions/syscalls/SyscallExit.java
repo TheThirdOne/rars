@@ -1,6 +1,6 @@
 package mars.mips.instructions.syscalls;
 
-import mars.ProcessingException;
+import mars.ExitingException;
 import mars.ProgramStatement;
 import mars.mips.instructions.AbstractSyscall;
 
@@ -44,7 +44,7 @@ public class SyscallExit extends AbstractSyscall {
         super(10, "Exit");
     }
 
-    public void simulate(ProgramStatement statement) throws ProcessingException {
-        throw new ProcessingException();  // empty exception list.
+    public void simulate(ProgramStatement statement) throws ExitingException {
+        throw new ExitingException();  // empty exception list.
     }
 }

@@ -28,8 +28,8 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 (MIT license, http://www.opensource.org/licenses/mit-license.html)
  */
 
-import mars.ProcessingException;
 import mars.ProgramStatement;
+import mars.SimulationException;
 
 /**
  * Class to represent a basic instruction in the MIPS instruction set.
@@ -131,8 +131,8 @@ public abstract class BasicInstruction extends Instruction {
      * Method to simulate the execution of a specific MIPS basic instruction.
      *
      * @param statement A ProgramStatement representing the MIPS instruction to simulate.
-     * @throws ProcessingException This is a run-time exception generated during simulation.
+     * @throws SimulationException This is a run-time exception generated during simulation.
      **/
 
-    public abstract void simulate(ProgramStatement statement) throws ProcessingException;
+    public abstract void simulate(ProgramStatement statement) throws SimulationException;
 }

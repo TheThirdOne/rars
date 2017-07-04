@@ -1,10 +1,9 @@
 package mars.mips.instructions.syscalls;
 
-import mars.ProcessingException;
+import mars.ExitingException;
 import mars.ProgramStatement;
 import mars.mips.hardware.RegisterFile;
 import mars.mips.instructions.AbstractSyscall;
-import mars.simulator.Exceptions;
 import mars.util.SystemIO;
 
 /*
@@ -47,13 +46,12 @@ public class SyscallReadInt extends AbstractSyscall {
         super(5, "ReadInt");
     }
 
-    public void simulate(ProgramStatement statement) throws ProcessingException {
+    public void simulate(ProgramStatement statement) throws ExitingException {
         try {
             RegisterFile.updateRegister("a0", SystemIO.readInteger(this.getNumber()));
         } catch (NumberFormatException e) {
-            throw new ProcessingException(statement,
-                    "invalid integer input (syscall " + this.getNumber() + ")",
-                    Exceptions.SYSCALL_EXCEPTION);
+            throw new ExitingException(statement,
+                    "invalid integer input (syscall " + this.getNumber() + ")");
         }
     }
 

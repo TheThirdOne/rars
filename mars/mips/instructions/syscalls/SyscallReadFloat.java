@@ -1,10 +1,9 @@
 package mars.mips.instructions.syscalls;
 
-import mars.ProcessingException;
+import mars.ExitingException;
 import mars.ProgramStatement;
 import mars.mips.hardware.Coprocessor1;
 import mars.mips.instructions.AbstractSyscall;
-import mars.simulator.Exceptions;
 import mars.util.SystemIO;
 
 /*
@@ -47,14 +46,13 @@ public class SyscallReadFloat extends AbstractSyscall {
         super(6, "ReadFloat");
     }
 
-    public void simulate(ProgramStatement statement) throws ProcessingException {
+    public void simulate(ProgramStatement statement) throws ExitingException {
         float floatValue;
         try {
             floatValue = SystemIO.readFloat(this.getNumber());
         } catch (NumberFormatException e) {
-            throw new ProcessingException(statement,
-                    "invalid float input (syscall " + this.getNumber() + ")",
-                    Exceptions.SYSCALL_EXCEPTION);
+            throw new ExitingException(statement,
+                    "invalid float input (syscall " + this.getNumber() + ")");
         }
         Coprocessor1.updateRegister(0, Float.floatToRawIntBits(floatValue));
     }

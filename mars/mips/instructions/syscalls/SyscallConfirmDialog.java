@@ -1,6 +1,6 @@
 package mars.mips.instructions.syscalls;
 
-import mars.ProcessingException;
+import mars.ExitingException;
 import mars.ProgramStatement;
 import mars.mips.hardware.RegisterFile;
 import mars.mips.instructions.AbstractSyscall;
@@ -52,7 +52,7 @@ public class SyscallConfirmDialog extends AbstractSyscall {
         super(50, "ConfirmDialog");
     }
 
-    public void simulate(ProgramStatement statement) throws ProcessingException {
+    public void simulate(ProgramStatement statement) throws ExitingException {
         String message = NullString.get(statement);
         // update register a0 with the value from showConfirmDialog.
         // showConfirmDialog returns an int with one of three possible values:

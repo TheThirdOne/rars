@@ -1,7 +1,7 @@
 package mars.mips.instructions.syscalls;
 
+import mars.ExitingException;
 import mars.Globals;
-import mars.ProcessingException;
 import mars.ProgramStatement;
 import mars.mips.hardware.AddressErrorException;
 import mars.mips.hardware.RegisterFile;
@@ -49,7 +49,7 @@ public class SyscallRead extends AbstractSyscall {
         super(14, "Read");
     }
 
-    public void simulate(ProgramStatement statement) throws ProcessingException {
+    public void simulate(ProgramStatement statement) throws ExitingException {
         int byteAddress = RegisterFile.getValue("a1"); // destination of characters read from file
         int index = 0;
         int length = RegisterFile.getValue("a2");
@@ -81,7 +81,7 @@ public class SyscallRead extends AbstractSyscall {
                         myBuffer[index++]);
             }
         } catch (AddressErrorException e) {
-            throw new ProcessingException(statement, e);
+            throw new ExitingException(statement, e);
         }
     }
 }

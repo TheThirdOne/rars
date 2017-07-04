@@ -1,10 +1,9 @@
 package mars.mips.instructions.syscalls;
 
-import mars.ProcessingException;
+import mars.ExitingException;
 import mars.ProgramStatement;
 import mars.mips.hardware.RegisterFile;
 import mars.mips.instructions.AbstractSyscall;
-import mars.simulator.Exceptions;
 
 import java.util.Random;
 
@@ -53,14 +52,13 @@ public class SyscallRandIntRange extends AbstractSyscall {
         super(42, "RandIntRange");
     }
 
-    public void simulate(ProgramStatement statement) throws ProcessingException {
+    public void simulate(ProgramStatement statement) throws ExitingException {
         Random stream = RandomStreams.get("a0");
         try {
             RegisterFile.updateRegister("a0", stream.nextInt(RegisterFile.getValue("a1")));
         } catch (IllegalArgumentException iae) {
-            throw new ProcessingException(statement,
-                    "Upper bound of range cannot be negative (syscall " + this.getNumber() + ")",
-                    Exceptions.SYSCALL_EXCEPTION);
+            throw new ExitingException(statement,
+                    "Upper bound of range cannot be negative (syscall " + this.getNumber() + ")");
         }
     }
 }

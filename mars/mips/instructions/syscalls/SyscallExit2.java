@@ -1,7 +1,7 @@
 package mars.mips.instructions.syscalls;
 
+import mars.ExitingException;
 import mars.Globals;
-import mars.ProcessingException;
 import mars.ProgramStatement;
 import mars.mips.hardware.RegisterFile;
 import mars.mips.instructions.AbstractSyscall;
@@ -48,10 +48,10 @@ public class SyscallExit2 extends AbstractSyscall {
         super(17, "Exit2");
     }
 
-    public void simulate(ProgramStatement statement) throws ProcessingException {
+    public void simulate(ProgramStatement statement) throws ExitingException {
         if (Globals.getGui() == null) {
             Globals.exitCode = RegisterFile.getValue("a0");
         }
-        throw new ProcessingException(); // empty error list
+        throw new ExitingException(); // empty error list
     }
 }

@@ -325,11 +325,11 @@ public class Simulator extends Observable {
                         if (Simulator.externalInterruptingDevice != NO_DEVICE) {
                             int deviceInterruptCode = externalInterruptingDevice;
                             Simulator.externalInterruptingDevice = NO_DEVICE;
-                            throw new ProcessingException(statement, "External Interrupt", deviceInterruptCode);
+                            throw new SimulationException(statement, "External Interrupt", deviceInterruptCode);
                         }
                         BasicInstruction instruction = (BasicInstruction) statement.getInstruction();
                         if (instruction == null) {
-                            throw new ProcessingException(statement,
+                            throw new SimulationException(statement,
                                     "undefined instruction (" + Binary.intToHexString(statement.getBinaryStatement()) + ")",
                                     Exceptions.RESERVED_INSTRUCTION_EXCEPTION);
                         }
@@ -346,34 +346,37 @@ public class Simulator extends Observable {
                             Globals.program.getBackStepper().addDoNothing(pc);
                         }
                         ebreak = true;
-                    } catch (ProcessingException pe) {
+                    } catch (ExitingException e) {
                         if (pe.errors() == null) {
                             this.constructReturnReason = NORMAL_TERMINATION;
+                        } else {
+                            this.constructReturnReason = EXCEPTION;
+                            this.pe = e;
+                        }
+                        this.done = true;
+                        SystemIO.resetFiles(); // close any files opened in MIPS program
+                        Simulator.getInstance().notifyObserversOfExecutionStop(maxSteps, pc);
+                        return true;
+                    } catch (SimulationException se) {
+                        // See if an exception handler is present.  Assume this is the case
+                        // if and only if memory location Memory.exceptionHandlerAddress
+                        // (e.g. 0x80000180) contains an instruction.  If so, then set the
+                        // program counter there and continue.  Otherwise terminate the
+                        // MIPS program with appropriate error message.
+                        ProgramStatement exceptionHandler = null;
+                        try {
+                            exceptionHandler = Globals.memory.getStatement(Memory.exceptionHandlerAddress);
+                        } catch (AddressErrorException aee) {
+                        } // will not occur with this well-known address
+                        if (exceptionHandler != null) {
+                            RegisterFile.setProgramCounter(Memory.exceptionHandlerAddress);
+                        } else {
+                            this.constructReturnReason = EXCEPTION;
+                            this.pe = se;
                             this.done = true;
                             SystemIO.resetFiles(); // close any files opened in MIPS program
                             Simulator.getInstance().notifyObserversOfExecutionStop(maxSteps, pc);
-                            return true; // execution completed without error.
-                        } else {
-                            // See if an exception handler is present.  Assume this is the case
-                            // if and only if memory location Memory.exceptionHandlerAddress
-                            // (e.g. 0x80000180) contains an instruction.  If so, then set the
-                            // program counter there and continue.  Otherwise terminate the
-                            // MIPS program with appropriate error message.
-                            ProgramStatement exceptionHandler = null;
-                            try {
-                                exceptionHandler = Globals.memory.getStatement(Memory.exceptionHandlerAddress);
-                            } catch (AddressErrorException aee) {
-                            } // will not occur with this well-known addres
-                            if (exceptionHandler != null) {
-                                RegisterFile.setProgramCounter(Memory.exceptionHandlerAddress);
-                            } else {
-                                this.constructReturnReason = EXCEPTION;
-                                this.pe = pe;
-                                this.done = true;
-                                SystemIO.resetFiles(); // close any files opened in MIPS program
-                                Simulator.getInstance().notifyObserversOfExecutionStop(maxSteps, pc);
-                                return true;
-                            }
+                            return true;
                         }
                     }
                 }// end synchronized block

@@ -1,7 +1,7 @@
 package mars.mips.instructions;
 
-import mars.ProcessingException;
 import mars.ProgramStatement;
+import mars.SimulationException;
 import mars.mips.hardware.RegisterFile;
 import mars.simulator.Exceptions;
 import mars.util.FilenameFinder;
@@ -270,13 +270,13 @@ public class InstructionSet {
    	 */
 
     public static void findAndSimulateSyscall(int number, ProgramStatement statement)
-            throws ProcessingException {
+            throws SimulationException {
         Syscall service = SyscallLoader.findSyscall(number);
         if (service != null) {
             service.simulate(statement);
             return;
         }
-        throw new ProcessingException(statement,
+        throw new SimulationException(statement,
                 "invalid or unimplemented syscall service: " +
                         number + " ", Exceptions.SYSCALL_EXCEPTION);
     }

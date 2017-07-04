@@ -1,6 +1,6 @@
 package mars.mips.instructions.syscalls;
 
-import mars.ProcessingException;
+import mars.ExitingException;
 import mars.ProgramStatement;
 import mars.mips.hardware.Coprocessor1;
 import mars.mips.hardware.RegisterFile;
@@ -56,7 +56,7 @@ public class SyscallInputDialogFloat extends AbstractSyscall {
         super(52, "InputDialogFloat");
     }
 
-    public void simulate(ProgramStatement statement) throws ProcessingException {
+    public void simulate(ProgramStatement statement) throws ExitingException {
         String message = NullString.get(statement);
 
         // Values returned by Java's InputDialog:
@@ -89,13 +89,6 @@ public class SyscallInputDialogFloat extends AbstractSyscall {
         } catch (NumberFormatException e)    // Unsuccessful parse of input data
         {
             RegisterFile.updateRegister("a1", -1);
-
-                   /*  Don't throw exception because returning a status flag
-                   throw new ProcessingException(statement,
-                      "invalid float input (syscall "+this.getNumber()+")",
-						          Exceptions.SYSCALL_EXCEPTION);
-                   */
-
         }
     }
 }

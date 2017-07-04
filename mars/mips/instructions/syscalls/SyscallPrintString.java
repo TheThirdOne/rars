@@ -1,6 +1,6 @@
 package mars.mips.instructions.syscalls;
 
-import mars.ProcessingException;
+import mars.ExitingException;
 import mars.ProgramStatement;
 import mars.mips.instructions.AbstractSyscall;
 import mars.util.SystemIO;
@@ -45,7 +45,7 @@ public class SyscallPrintString extends AbstractSyscall {
         super(4, "PrintString");
     }
 
-    public void simulate(ProgramStatement statement) throws ProcessingException {
+    public void simulate(ProgramStatement statement) throws ExitingException {
         SystemIO.printString(NullString.get(statement));
     }
 }

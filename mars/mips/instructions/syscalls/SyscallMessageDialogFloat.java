@@ -1,6 +1,6 @@
 package mars.mips.instructions.syscalls;
 
-import mars.ProcessingException;
+import mars.ExitingException;
 import mars.ProgramStatement;
 import mars.mips.hardware.Coprocessor1;
 import mars.mips.instructions.AbstractSyscall;
@@ -51,7 +51,7 @@ public class SyscallMessageDialogFloat extends AbstractSyscall {
         super(57, "MessageDialogFloat");
     }
 
-    public void simulate(ProgramStatement statement) throws ProcessingException {
+    public void simulate(ProgramStatement statement) throws ExitingException {
         String message = NullString.get(statement);
 
         // Display the dialog.

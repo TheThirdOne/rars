@@ -1,7 +1,7 @@
 package mars.mips.instructions.instructions;
 
-import mars.ProcessingException;
 import mars.ProgramStatement;
+import mars.SimulationException;
 import mars.mips.hardware.RegisterFile;
 import mars.mips.instructions.BasicInstruction;
 import mars.mips.instructions.BasicInstructionFormat;
@@ -40,7 +40,7 @@ public class ECALL extends BasicInstruction {
                 BasicInstructionFormat.I_FORMAT, "000000000000 00000 000 00000 1110011");
     }
 
-    public void simulate(ProgramStatement statement) throws ProcessingException {
+    public void simulate(ProgramStatement statement) throws SimulationException {
         InstructionSet.findAndSimulateSyscall(RegisterFile.getValue("a7"), statement);
     }
 }

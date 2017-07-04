@@ -1,7 +1,7 @@
 package mars.mips.instructions.syscalls;
 
+import mars.ExitingException;
 import mars.Globals;
-import mars.ProcessingException;
 import mars.ProgramStatement;
 import mars.mips.hardware.AddressErrorException;
 import mars.mips.hardware.RegisterFile;
@@ -53,7 +53,7 @@ public class SyscallReadString extends AbstractSyscall {
         super(8, "ReadString");
     }
 
-    public void simulate(ProgramStatement statement) throws ProcessingException {
+    public void simulate(ProgramStatement statement) throws ExitingException {
         String inputString = "";
         int buf = RegisterFile.getValue("a0"); // buf addr
         int maxLength = RegisterFile.getValue("a1") - 1;
@@ -76,7 +76,7 @@ public class SyscallReadString extends AbstractSyscall {
             }
             if (addNullByte) Globals.memory.setByte(buf + stringLength, 0);
         } catch (AddressErrorException e) {
-            throw new ProcessingException(statement, e);
+            throw new ExitingException(statement, e);
         }
     }
 }

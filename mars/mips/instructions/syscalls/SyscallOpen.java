@@ -1,6 +1,6 @@
 package mars.mips.instructions.syscalls;
 
-import mars.ProcessingException;
+import mars.ExitingException;
 import mars.ProgramStatement;
 import mars.mips.hardware.RegisterFile;
 import mars.mips.instructions.AbstractSyscall;
@@ -54,7 +54,7 @@ public class SyscallOpen extends AbstractSyscall {
         super(13, "Open");
     }
 
-    public void simulate(ProgramStatement statement) throws ProcessingException {
+    public void simulate(ProgramStatement statement) throws ExitingException {
         // NOTE: with MARS 3.7, return changed from $a0 to $v0 and the terminology
         // of 'flags' and 'mode' was corrected (they had been reversed).
         //

@@ -1,7 +1,7 @@
 package mars.mips.instructions.syscalls;
 
+import mars.ExitingException;
 import mars.Globals;
-import mars.ProcessingException;
 import mars.ProgramStatement;
 import mars.mips.hardware.AddressErrorException;
 import mars.mips.hardware.RegisterFile;
@@ -42,7 +42,7 @@ public class NullString {
     /**
      * Just a wrapper around #String get(ProgramStatement, String) which passes in the default "a0"
      */
-    public static String get(ProgramStatement statement) throws ProcessingException {
+    public static String get(ProgramStatement statement) throws ExitingException {
         return get(statement, "a0");
     }
 
@@ -52,9 +52,9 @@ public class NullString {
      * @param statement the program statement this was called from (used for error handling)
      * @param reg       The name of the register for the address of the string
      * @return the string read from memory
-     * @throws ProcessingException if it hits a #AddressErrorException
+     * @throws ExitingException if it hits a #AddressErrorException
      */
-    public static String get(ProgramStatement statement, String reg) throws ProcessingException {
+    public static String get(ProgramStatement statement, String reg) throws ExitingException {
         String message = "";
         int byteAddress = RegisterFile.getValue(reg);
         char ch[] = {' '}; // Need an array to convert to String
@@ -67,7 +67,7 @@ public class NullString {
                 ch[0] = (char) Globals.memory.getByte(byteAddress);
             }
         } catch (AddressErrorException e) {
-            throw new ProcessingException(statement, e);
+            throw new ExitingException(statement, e);
         }
         return message;
     }

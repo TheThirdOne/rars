@@ -1,8 +1,8 @@
 package mars.mips.instructions.instructions;
 
 import mars.Globals;
-import mars.ProcessingException;
 import mars.ProgramStatement;
+import mars.SimulationException;
 import mars.mips.hardware.AddressErrorException;
 import mars.mips.hardware.Coprocessor1;
 import mars.mips.hardware.RegisterFile;
@@ -42,12 +42,12 @@ public class FLW extends BasicInstruction {
                 BasicInstructionFormat.I_FORMAT, "ssssssssssss ttttt 010 fffff 0000111");
     }
 
-    public void simulate(ProgramStatement statement) throws ProcessingException {
+    public void simulate(ProgramStatement statement) throws SimulationException {
         int[] operands = statement.getOperands();
         try {
             Coprocessor1.updateRegister(operands[0], Globals.memory.getWord(RegisterFile.getValue(operands[2]) + operands[1]));
         } catch (AddressErrorException e) {
-            throw new ProcessingException(statement, e);
+            throw new SimulationException(statement, e);
         }
     }
 }

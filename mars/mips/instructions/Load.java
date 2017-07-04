@@ -1,7 +1,7 @@
 package mars.mips.instructions;
 
-import mars.ProcessingException;
 import mars.ProgramStatement;
+import mars.SimulationException;
 import mars.mips.hardware.AddressErrorException;
 import mars.mips.hardware.RegisterFile;
 
@@ -44,12 +44,12 @@ public abstract class Load extends BasicInstruction {
                 "ssssssssssss ttttt " + funct + " fffff 0000011");
     }
 
-    public void simulate(ProgramStatement statement) throws ProcessingException {
+    public void simulate(ProgramStatement statement) throws SimulationException {
         int[] operands = statement.getOperands();
         try {
             RegisterFile.updateRegister(operands[0], load(RegisterFile.getValue(operands[2]) + operands[1]));
         } catch (AddressErrorException e) {
-            throw new ProcessingException(statement, e);
+            throw new SimulationException(statement, e);
         }
     }
 

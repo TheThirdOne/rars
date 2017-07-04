@@ -1,6 +1,6 @@
 package mars.mips.instructions;
 
-import mars.ProcessingException;
+import mars.ExitingException;
 import mars.ProgramStatement;
 /*
 Copyright (c) 2003-2006,  Pete Sanderson and Kenneth Vollmar
@@ -96,5 +96,5 @@ public abstract class AbstractSyscall implements Syscall {
      * @param statement ProgramStatement object for this syscall instruction.
      */
     public abstract void simulate(ProgramStatement statement)
-            throws ProcessingException;
+            throws ExitingException;
 }

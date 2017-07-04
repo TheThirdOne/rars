@@ -1,6 +1,6 @@
 package mars.mips.instructions.syscalls;
 
-import mars.ProcessingException;
+import mars.ExitingException;
 import mars.ProgramStatement;
 import mars.mips.hardware.RegisterFile;
 import mars.mips.instructions.AbstractSyscall;
@@ -56,7 +56,7 @@ public class SyscallMessageDialog extends AbstractSyscall {
         super(55, "MessageDialog");
     }
 
-    public void simulate(ProgramStatement statement) throws ProcessingException {
+    public void simulate(ProgramStatement statement) throws ExitingException {
         // Display the dialog.
         int msgType = RegisterFile.getValue("a1");
         if (msgType < 0 || msgType > 3)
