@@ -1,6 +1,5 @@
 package mars.mips.instructions.syscalls;
 
-import mars.ProcessingException;
 import mars.ProgramStatement;
 import mars.mips.hardware.RegisterFile;
 import mars.mips.instructions.AbstractSyscall;
@@ -52,7 +51,7 @@ public class SyscallRandSeed extends AbstractSyscall {
         super(40, "RandSeed");
     }
 
-    public void simulate(ProgramStatement statement) throws ProcessingException {
+    public void simulate(ProgramStatement statement) {
         Integer index = RegisterFile.getValue("a0");
         Random stream = RandomStreams.randomStreams.get(index);
         if (stream == null) {

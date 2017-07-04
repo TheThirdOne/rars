@@ -1,6 +1,5 @@
 package mars.mips.instructions.instructions;
 
-import mars.ProcessingException;
 import mars.ProgramStatement;
 import mars.mips.hardware.RegisterFile;
 import mars.mips.instructions.BasicInstruction;
@@ -39,7 +38,7 @@ public class SRAI extends BasicInstruction {
                 BasicInstructionFormat.R_FORMAT, "0100000 ttttt sssss 101 fffff 0010011");
     }
 
-    public void simulate(ProgramStatement statement) throws ProcessingException {
+    public void simulate(ProgramStatement statement) {
         int[] operands = statement.getOperands();
         // Uses >> because sign fill
         RegisterFile.updateRegister(operands[0], RegisterFile.getValue(operands[1]) >> operands[2]);

@@ -1,6 +1,5 @@
 package mars.mips.instructions;
 
-import mars.ProcessingException;
 import mars.ProgramStatement;
 import mars.mips.hardware.Coprocessor0;
 import mars.mips.hardware.Coprocessor1;
@@ -41,7 +40,7 @@ public abstract class FusedFloat extends BasicInstruction {
                 "qqqqq 00 ttttt sssss " + Floating.ROUNDING_MODE + " fffff 100" + op + "11");
     }
 
-    public void simulate(ProgramStatement statement) throws ProcessingException {
+    public void simulate(ProgramStatement statement) {
         int[] operands = statement.getOperands();
         float result = compute(Float.intBitsToFloat(Coprocessor1.getValue(operands[1])),
                 Float.intBitsToFloat(Coprocessor1.getValue(operands[2])),

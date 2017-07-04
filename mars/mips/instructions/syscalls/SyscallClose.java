@@ -1,6 +1,5 @@
 package mars.mips.instructions.syscalls;
 
-import mars.ProcessingException;
 import mars.ProgramStatement;
 import mars.mips.hardware.RegisterFile;
 import mars.mips.instructions.AbstractSyscall;
@@ -46,7 +45,7 @@ public class SyscallClose extends AbstractSyscall {
         super(16, "Close");
     }
 
-    public void simulate(ProgramStatement statement) throws ProcessingException {
+    public void simulate(ProgramStatement statement) {
         SystemIO.closeFile(RegisterFile.getValue("a0"));
     }
 }

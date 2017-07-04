@@ -1,6 +1,5 @@
 package mars.mips.instructions.instructions;
 
-import mars.ProcessingException;
 import mars.ProgramStatement;
 import mars.mips.hardware.Coprocessor0;
 import mars.mips.hardware.RegisterFile;
@@ -39,7 +38,7 @@ public class CSRRW extends BasicInstruction {
                 BasicInstructionFormat.I_FORMAT, "tttttttttttt sssss 001 fffff 1110011");
     }
 
-    public void simulate(ProgramStatement statement) throws ProcessingException {
+    public void simulate(ProgramStatement statement) {
         int[] operands = statement.getOperands();
         int csr = Coprocessor0.getValue(operands[2]);
         Coprocessor0.updateRegister(operands[2], RegisterFile.getValue(operands[1]));

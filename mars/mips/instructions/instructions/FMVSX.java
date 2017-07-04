@@ -1,6 +1,5 @@
 package mars.mips.instructions.instructions;
 
-import mars.ProcessingException;
 import mars.ProgramStatement;
 import mars.mips.hardware.Coprocessor1;
 import mars.mips.hardware.RegisterFile;
@@ -40,7 +39,7 @@ public class FMVSX extends BasicInstruction {
                 BasicInstructionFormat.I_FORMAT, "1111000 00000 sssss 000 fffff 1010011");
     }
 
-    public void simulate(ProgramStatement statement) throws ProcessingException {
+    public void simulate(ProgramStatement statement) {
         int[] operands = statement.getOperands();
         Coprocessor1.updateRegister(operands[0], RegisterFile.getValue(operands[1]));
     }

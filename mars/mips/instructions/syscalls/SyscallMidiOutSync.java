@@ -1,6 +1,5 @@
 package mars.mips.instructions.syscalls;
 
-import mars.ProcessingException;
 import mars.ProgramStatement;
 import mars.mips.hardware.RegisterFile;
 import mars.mips.instructions.AbstractSyscall;
@@ -76,7 +75,7 @@ public class SyscallMidiOutSync extends AbstractSyscall {
         super(33, "MidiOutSync");
     }
 
-    public void simulate(ProgramStatement statement) throws ProcessingException {
+    public void simulate(ProgramStatement statement) {
         int pitch = RegisterFile.getValue("a0");
         int duration = RegisterFile.getValue("a1");
         int instrument = RegisterFile.getValue("a2");

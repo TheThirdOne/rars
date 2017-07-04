@@ -1,6 +1,5 @@
 package mars.mips.instructions.instructions;
 
-import mars.ProcessingException;
 import mars.ProgramStatement;
 import mars.mips.hardware.RegisterFile;
 import mars.mips.instructions.BasicInstruction;
@@ -39,7 +38,7 @@ public class AUIPC extends BasicInstruction {
                 BasicInstructionFormat.U_FORMAT, "ssssssssssssssssssss fffff 0010111");
     }
 
-    public void simulate(ProgramStatement statement) throws ProcessingException {
+    public void simulate(ProgramStatement statement) {
         int[] operands = statement.getOperands();
         RegisterFile.updateRegister(operands[0], RegisterFile.getProgramCounter() + (operands[1] << 12));
     }

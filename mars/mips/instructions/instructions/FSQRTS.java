@@ -1,6 +1,5 @@
 package mars.mips.instructions.instructions;
 
-import mars.ProcessingException;
 import mars.ProgramStatement;
 import mars.mips.hardware.Coprocessor1;
 import mars.mips.instructions.BasicInstruction;
@@ -40,7 +39,7 @@ public class FSQRTS extends BasicInstruction {
         BasicInstructionFormat.I_FORMAT, "0101100 00000 sssss " + Floating.ROUNDING_MODE + "fffff 1010011");
     }
 
-    public void simulate(ProgramStatement statement) throws ProcessingException {
+    public void simulate(ProgramStatement statement) {
         int[] operands = statement.getOperands();
         float result = (float) Math.sqrt(Coprocessor1.getFloatFromRegister(operands[1]));
         Coprocessor1.setRegisterToFloat(operands[0], result);

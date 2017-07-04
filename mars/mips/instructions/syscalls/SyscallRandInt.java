@@ -1,6 +1,5 @@
 package mars.mips.instructions.syscalls;
 
-import mars.ProcessingException;
 import mars.ProgramStatement;
 import mars.mips.hardware.RegisterFile;
 import mars.mips.instructions.AbstractSyscall;
@@ -50,7 +49,7 @@ public class SyscallRandInt extends AbstractSyscall {
         super(41, "RandInt");
     }
 
-    public void simulate(ProgramStatement statement) throws ProcessingException {
+    public void simulate(ProgramStatement statement) {
         Random stream = RandomStreams.get("a0");
         RegisterFile.updateRegister("a0", stream.nextInt());
     }

@@ -1,6 +1,5 @@
 package mars.mips.instructions.instructions;
 
-import mars.ProcessingException;
 import mars.ProgramStatement;
 import mars.mips.hardware.Coprocessor1;
 import mars.mips.instructions.BasicInstruction;
@@ -39,7 +38,7 @@ public class FSGNJXS extends BasicInstruction {
                 BasicInstructionFormat.R_FORMAT, "0010000 ttttt sssss 010 fffff 1010011");
     }
 
-    public void simulate(ProgramStatement statement) throws ProcessingException {
+    public void simulate(ProgramStatement statement) {
         int[] operands = statement.getOperands();
         int f2 = Coprocessor1.getValue(operands[1]), f3 = Coprocessor1.getValue(operands[1]);
         int result = (f2 & 0x7FFFFFFF) | ((f2 ^ f3) & 0x80000000);

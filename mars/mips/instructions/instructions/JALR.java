@@ -1,6 +1,5 @@
 package mars.mips.instructions.instructions;
 
-import mars.ProcessingException;
 import mars.ProgramStatement;
 import mars.mips.hardware.RegisterFile;
 import mars.mips.instructions.BasicInstruction;
@@ -40,7 +39,7 @@ public class JALR extends BasicInstruction {
                 BasicInstructionFormat.I_FORMAT, "tttttttttttt sssss 000 fffff 1100111");
     }
 
-    public void simulate(ProgramStatement statement) throws ProcessingException {
+    public void simulate(ProgramStatement statement) {
         int[] operands = statement.getOperands();
         InstructionSet.processReturnAddress(operands[0]);
         // Set PC = $t2 + immediate with the last bit set to 0

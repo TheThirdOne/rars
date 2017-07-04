@@ -1,6 +1,5 @@
 package mars.mips.instructions.instructions;
 
-import mars.ProcessingException;
 import mars.ProgramStatement;
 import mars.mips.instructions.BasicInstruction;
 import mars.mips.instructions.BasicInstructionFormat;
@@ -38,7 +37,7 @@ public class FENCEI extends BasicInstruction {
                 BasicInstructionFormat.I_FORMAT, "0000 0000 0000 00000 001 00000 0001111");
     }
 
-    public void simulate(ProgramStatement statement) throws ProcessingException {
+    public void simulate(ProgramStatement statement) {
         // Do nothing, currently all stores are immediately availible to instruction fetches
     }
 }

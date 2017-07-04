@@ -1,6 +1,5 @@
 package mars.mips.instructions.instructions;
 
-import mars.ProcessingException;
 import mars.ProgramStatement;
 import mars.mips.hardware.Coprocessor1;
 import mars.mips.hardware.RegisterFile;
@@ -41,7 +40,7 @@ public class FCVTSW extends BasicInstruction {
                 BasicInstructionFormat.I_FORMAT, "1101000 00000 sssss " + Floating.ROUNDING_MODE + " fffff 1010011");
     }
 
-    public void simulate(ProgramStatement statement) throws ProcessingException {
+    public void simulate(ProgramStatement statement) {
         int[] operands = statement.getOperands();
         Coprocessor1.setRegisterToFloat(operands[0], (float) RegisterFile.getValue(operands[1]));
     }

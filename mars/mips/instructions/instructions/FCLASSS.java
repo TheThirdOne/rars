@@ -1,6 +1,5 @@
 package mars.mips.instructions.instructions;
 
-import mars.ProcessingException;
 import mars.ProgramStatement;
 import mars.mips.hardware.Coprocessor1;
 import mars.mips.hardware.RegisterFile;
@@ -53,7 +52,7 @@ public class FCLASSS extends BasicInstruction {
      * 8 t1 is a signaling NaN (Not implemented due to Java).
      * 9 t1 is a quiet NaN.
      */
-    public void simulate(ProgramStatement statement) throws ProcessingException {
+    public void simulate(ProgramStatement statement) {
         int[] operands = statement.getOperands();
         float in = Coprocessor1.getFloatFromRegister(operands[1]);
 

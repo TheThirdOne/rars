@@ -1,6 +1,5 @@
 package mars.mips.instructions.instructions;
 
-import mars.ProcessingException;
 import mars.ProgramStatement;
 import mars.mips.instructions.BasicInstruction;
 import mars.mips.instructions.BasicInstructionFormat;
@@ -38,7 +37,7 @@ public class FENCE extends BasicInstruction {
                 BasicInstructionFormat.I_FORMAT, "0000 ffff ssss 00000 000 00000 0001111");
     }
 
-    public void simulate(ProgramStatement statement) throws ProcessingException {
+    public void simulate(ProgramStatement statement) {
         // Do nothing, currently there are no other threads so local consitency is enough
     }
 }

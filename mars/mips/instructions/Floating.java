@@ -1,6 +1,5 @@
 package mars.mips.instructions;
 
-import mars.ProcessingException;
 import mars.ProgramStatement;
 import mars.mips.hardware.Coprocessor0;
 import mars.mips.hardware.Coprocessor1;
@@ -49,7 +48,7 @@ public abstract class Floating extends BasicInstruction {
         super(name + " f1, f2, f3", description, BasicInstructionFormat.R_FORMAT, funct + "ttttt sssss " + rm + "fffff 1010011");
     }
 
-    public void simulate(ProgramStatement statement) throws ProcessingException {
+    public void simulate(ProgramStatement statement) {
         int[] operands = statement.getOperands();
         float result = compute(Coprocessor1.getFloatFromRegister(operands[1]),
                 Coprocessor1.getFloatFromRegister(operands[2]));

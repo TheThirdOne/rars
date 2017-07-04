@@ -1,6 +1,5 @@
 package mars.mips.instructions.syscalls;
 
-import mars.ProcessingException;
 import mars.ProgramStatement;
 import mars.mips.hardware.RegisterFile;
 import mars.mips.instructions.AbstractSyscall;
@@ -48,7 +47,7 @@ public class SyscallSleep extends AbstractSyscall {
         super(32, "Sleep");
     }
 
-    public void simulate(ProgramStatement statement) throws ProcessingException {
+    public void simulate(ProgramStatement statement) {
         try {
             Thread.sleep(RegisterFile.getValue("a0")); // units of milliseconds  1000 millisec = 1 sec.
         } catch (InterruptedException e) {

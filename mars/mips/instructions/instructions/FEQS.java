@@ -1,6 +1,5 @@
 package mars.mips.instructions.instructions;
 
-import mars.ProcessingException;
 import mars.ProgramStatement;
 import mars.mips.hardware.Coprocessor0;
 import mars.mips.hardware.Coprocessor1;
@@ -41,7 +40,7 @@ public class FEQS extends BasicInstruction {
                 BasicInstructionFormat.R_FORMAT, "1010000 ttttt sssss 010 fffff 1010011");
     }
 
-    public void simulate(ProgramStatement statement) throws ProcessingException {
+    public void simulate(ProgramStatement statement) {
         int[] operands = statement.getOperands();
         float f1 = Coprocessor1.getFloatFromRegister(operands[1]), f2 = Coprocessor1.getFloatFromRegister(operands[2]);
         // Set invalid flag if either input is NaN (Technically this should only set if there is a "signalling" NaN)

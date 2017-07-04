@@ -1,6 +1,5 @@
 package mars.mips.instructions.syscalls;
 
-import mars.ProcessingException;
 import mars.ProgramStatement;
 import mars.mips.hardware.RegisterFile;
 import mars.mips.instructions.AbstractSyscall;
@@ -47,7 +46,7 @@ public class SyscallTime extends AbstractSyscall {
         super(30, "Time");
     }
 
-    public void simulate(ProgramStatement statement) throws ProcessingException {
+    public void simulate(ProgramStatement statement) {
         long value = new java.util.Date().getTime();
         RegisterFile.updateRegister("a0", Binary.lowOrderLongToInt(value));
         RegisterFile.updateRegister("a1", Binary.highOrderLongToInt(value));

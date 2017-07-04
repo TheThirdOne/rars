@@ -1,6 +1,5 @@
 package mars.mips.instructions.syscalls;
 
-import mars.ProcessingException;
 import mars.ProgramStatement;
 import mars.mips.hardware.RegisterFile;
 import mars.mips.instructions.AbstractSyscall;
@@ -47,7 +46,7 @@ public class SyscallPrintIntBinary extends AbstractSyscall {
         super(35, "PrintIntBinary");
     }
 
-    public void simulate(ProgramStatement statement) throws ProcessingException {
+    public void simulate(ProgramStatement statement) {
         SystemIO.printString(Binary.intToBinaryString(RegisterFile.getValue("a0")));
     }
 }

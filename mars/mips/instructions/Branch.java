@@ -1,6 +1,5 @@
 package mars.mips.instructions;
 
-import mars.ProcessingException;
 import mars.ProgramStatement;
 
 /*
@@ -44,7 +43,7 @@ public abstract class Branch extends BasicInstruction {
                 "ttttttt sssss fffff " + funct + " ttttt 1100011 ");
     }
 
-    public void simulate(ProgramStatement statement) throws ProcessingException {
+    public void simulate(ProgramStatement statement) {
         if (willBranch(statement)) {
             InstructionSet.processBranch(statement.getOperands()[2]);
         }

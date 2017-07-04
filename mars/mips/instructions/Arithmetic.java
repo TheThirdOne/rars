@@ -1,6 +1,5 @@
 package mars.mips.instructions;
 
-import mars.ProcessingException;
 import mars.ProgramStatement;
 import mars.mips.hardware.RegisterFile;
 
@@ -43,7 +42,7 @@ public abstract class Arithmetic extends BasicInstruction {
                 funct7 + " ttttt sssss " + funct3 + " fffff 0110011");
     }
 
-    public void simulate(ProgramStatement statement) throws ProcessingException {
+    public void simulate(ProgramStatement statement) {
         int[] operands = statement.getOperands();
         RegisterFile.updateRegister(operands[0], compute(RegisterFile.getValue(operands[1]), RegisterFile.getValue(operands[2])));
     }

@@ -1,6 +1,5 @@
 package mars.mips.instructions.instructions;
 
-import mars.ProcessingException;
 import mars.ProgramStatement;
 import mars.assembler.DataTypes;
 import mars.mips.hardware.Coprocessor0;
@@ -43,7 +42,7 @@ public class FCVTWUS extends BasicInstruction {
                 BasicInstructionFormat.I_FORMAT, "1100000 00001 sssss " + Floating.ROUNDING_MODE + " fffff 1010011");
     }
 
-    public void simulate(ProgramStatement statement) throws ProcessingException {
+    public void simulate(ProgramStatement statement) {
         int[] operands = statement.getOperands();
         float in = Coprocessor1.getFloatFromRegister(operands[1]);
         if (Float.isNaN(in)) {

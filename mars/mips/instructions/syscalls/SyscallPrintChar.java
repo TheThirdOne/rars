@@ -1,6 +1,5 @@
 package mars.mips.instructions.syscalls;
 
-import mars.ProcessingException;
 import mars.ProgramStatement;
 import mars.mips.hardware.RegisterFile;
 import mars.mips.instructions.AbstractSyscall;
@@ -46,7 +45,7 @@ public class SyscallPrintChar extends AbstractSyscall {
         super(11, "PrintChar");
     }
 
-    public void simulate(ProgramStatement statement) throws ProcessingException {
+    public void simulate(ProgramStatement statement) {
         // mask off the lower byte of register $a0.
         // Convert to a one-character string and use the string technique.
         char t = (char) (RegisterFile.getValue("a0") & 0x000000ff);

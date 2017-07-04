@@ -1,6 +1,5 @@
 package mars.mips.instructions;
 
-import mars.ProcessingException;
 import mars.ProgramStatement;
 import mars.mips.hardware.RegisterFile;
 
@@ -43,7 +42,7 @@ public abstract class ImmediateInstruction extends BasicInstruction {
                 "tttttttttttt sssss " + funct + " fffff 0010011");
     }
 
-    public void simulate(ProgramStatement statement) throws ProcessingException {
+    public void simulate(ProgramStatement statement) {
         int[] operands = statement.getOperands();
         RegisterFile.updateRegister(operands[0], compute(RegisterFile.getValue(operands[1]),
                 (operands[2] << 20) >> 20)); // make sure the immediate is sign-extended
