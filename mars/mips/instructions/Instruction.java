@@ -1,6 +1,6 @@
 package mars.mips.instructions;
 
-import mars.ProcessingException;
+import mars.AssemblyException;
 import mars.assembler.TokenList;
 import mars.assembler.Tokenizer;
 
@@ -145,7 +145,7 @@ public abstract class Instruction {
     protected void createExampleTokenList() {
         try {
             tokenList = ((new Tokenizer()).tokenizeExampleInstruction(exampleFormat));
-        } catch (ProcessingException pe) {
+        } catch (AssemblyException pe) {
             System.out.println("CONFIGURATION ERROR: Instruction example \"" + exampleFormat + "\" contains invalid token(s).");
         }
     }

@@ -130,7 +130,7 @@ public class RunAssembleAction extends GuiAction {
                 // Aug. 24, 2005 Ken Vollmar
                 SystemIO.resetFiles();  // Ensure that I/O "file descriptors" are initialized for a new program run
 
-            } catch (ProcessingException pe) {
+            } catch (AssemblyException pe) {
                 String errorReport = pe.errors().generateErrorAndWarningReport();
                 mainUI.messagesPane.postMarsMessage(errorReport);
                 mainUI.messagesPane.postMarsMessage(

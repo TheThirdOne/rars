@@ -103,10 +103,10 @@ public class Simulator extends Observable {
      * @param breakPoints array of breakpoint program counter values, use null if none
      * @param actor       the GUI component responsible for this call, usually GO or STEP.  null if none.
      * @return true if execution completed, false otherwise
-     * @throws ProcessingException Throws exception if run-time exception occurs.
+     * @throws SimulationException Throws exception if run-time exception occurs.
      **/
 
-    public boolean simulate(int pc, int maxSteps, int[] breakPoints, AbstractAction actor) throws ProcessingException {
+    public boolean simulate(int pc, int maxSteps, int[] breakPoints, AbstractAction actor) throws SimulationException {
         simulatorThread = new SimThread(pc, maxSteps, breakPoints, actor);
         simulatorThread.start();
 
@@ -114,7 +114,7 @@ public class Simulator extends Observable {
         // If so, just stick around until execution thread is finished.
         if (actor == null) {
             simulatorThread.get(); // this should emulate join()
-            ProcessingException pe = simulatorThread.pe;
+            SimulationException pe = simulatorThread.pe;
             boolean done = simulatorThread.done;
             if (done) SystemIO.resetFiles(); // close any files opened in MIPS progra
             this.simulatorThread = null;
@@ -197,7 +197,7 @@ public class Simulator extends Observable {
         private int pc, maxSteps;
         private int[] breakPoints;
         private boolean done;
-        private ProcessingException pe;
+        private SimulationException pe;
         private volatile boolean stop = false;
         private volatile AbstractAction stopper;
         private AbstractAction starter;
@@ -267,7 +267,7 @@ public class Simulator extends Observable {
             } catch (AddressErrorException e) {
                 ErrorList el = new ErrorList();
                 el.add(new ErrorMessage((MIPSprogram) null, 0, 0, "invalid program counter value: " + Binary.intToHexString(RegisterFile.getProgramCounter())));
-                this.pe = new ProcessingException(el, e);
+                this.pe = new SimulationException(el, e);
                 // Next statement is a hack.  Previous statement sets EPC register to ProgramCounter-4
                 // because it assumes the bad address comes from an operand so the ProgramCounter has already been
                 // incremented.  In this case, bad address is the instruction fetch itself so Program Counter has
@@ -434,7 +434,7 @@ public class Simulator extends Observable {
                 } catch (AddressErrorException e) {
                     ErrorList el = new ErrorList();
                     el.add(new ErrorMessage((MIPSprogram) null, 0, 0, "invalid program counter value: " + Binary.intToHexString(RegisterFile.getProgramCounter())));
-                    this.pe = new ProcessingException(el, e);
+                    this.pe = new SimulationException(el, e);
                     // Next statement is a hack.  Previous statement sets EPC register to ProgramCounter-4
                     // because it assumes the bad address comes from an operand so the ProgramCounter has already been
                     // incremented.  In this case, bad address is the instruction fetch itself so Program Counter has

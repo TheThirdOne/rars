@@ -1,7 +1,7 @@
 package mars.venus;
 
+import mars.AssemblyException;
 import mars.Globals;
-import mars.ProcessingException;
 import mars.mips.hardware.Coprocessor0;
 import mars.mips.hardware.Coprocessor1;
 import mars.mips.hardware.Memory;
@@ -68,7 +68,8 @@ public class RunResetAction extends GuiAction {
             Globals.program.assemble(RunAssembleAction.getMIPSprogramsToAssemble(),
                     RunAssembleAction.getExtendedAssemblerEnabled(),
                     RunAssembleAction.getWarningsAreErrors());
-        } catch (ProcessingException pe) {
+        } catch (AssemblyException pe) {
+            // TODO: Make this error message better
             mainUI.getMessagesPane().postMarsMessage(
                     //pe.errors().generateErrorReport());
                     "Unable to reset.  Please close file then re-open and re-assemble.\n");

@@ -93,7 +93,7 @@ public class Assembler {
      * @see ProgramStatement
      **/
     public ArrayList<ProgramStatement> assemble(ArrayList<MIPSprogram> tokenizedProgramFiles, boolean extendedAssemblerEnabled,
-                                                boolean warningsAreErrors) throws ProcessingException {
+                                                boolean warningsAreErrors) throws AssemblyException {
 
         if (tokenizedProgramFiles == null || tokenizedProgramFiles.size() == 0)
             return null;
@@ -185,7 +185,7 @@ public class Assembler {
 
         // Throw collection of errors accumulated through the first pass.
         if (errors.errorsOccurred()) {
-            throw new ProcessingException(errors);
+            throw new AssemblyException(errors);
         }
         if (Globals.debug)
             System.out.println("Assembler second pass begins");
@@ -199,7 +199,7 @@ public class Assembler {
             for (ProgramStatement statement : parsedList) {
                 statement.buildBasicStatementFromBasicInstruction(errors);
                 if (errors.errorsOccurred()) {
-                    throw new ProcessingException(errors);
+                    throw new AssemblyException(errors);
                 }
                 if (statement.getInstruction() instanceof BasicInstruction) {
                     machineList.add(statement);
@@ -308,7 +308,7 @@ public class Assembler {
         Collections.sort(machineList);
         catchDuplicateAddresses(machineList, errors);
         if (errors.errorsOccurred() || errors.warningsOccurred() && warningsAreErrors) {
-            throw new ProcessingException(errors);
+            throw new AssemblyException(errors);
         }
         return machineList;
     } // assemble()

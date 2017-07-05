@@ -1,8 +1,8 @@
 package mars.venus;
 
 import mars.Globals;
-import mars.ProcessingException;
 import mars.Settings;
+import mars.SimulationException;
 import mars.mips.hardware.RegisterFile;
 import mars.simulator.ProgramArgumentList;
 import mars.simulator.Simulator;
@@ -77,8 +77,10 @@ public class RunGoAction extends GuiAction {
                 mainUI.setMenuState(FileStatus.RUNNING);
                 try {
                     int[] breakPoints = executePane.getTextSegmentWindow().getSortedBreakPointsArray();
-                    boolean done = Globals.program.simulateFromPC(breakPoints, maxSteps, this);
-                } catch (ProcessingException pe) {
+                    Globals.program.simulateFromPC(breakPoints, maxSteps, this);
+                } catch (SimulationException se) {
+                    // Handled by doFinished in Simulator.java
+                    // TODO: make simulateFromPC not throw an error which is only needed for command-line (I think)
                 }
             } else {
                 // This should never occur because at termination the Go and Step buttons are disabled.
@@ -97,7 +99,7 @@ public class RunGoAction extends GuiAction {
      * step by step.
      */
 
-    public void paused(boolean done, int pauseReason, ProcessingException pe) {
+    public void paused(boolean done, int pauseReason, SimulationException pe) {
         // I doubt this can happen (pause when execution finished), but if so treat it as stopped.
         if (done) {
             stopped(pe, Simulator.NORMAL_TERMINATION);
@@ -128,7 +130,7 @@ public class RunGoAction extends GuiAction {
      * terminated due to completion or exception.
      */
 
-    public void stopped(ProcessingException pe, int reason) {
+    public void stopped(SimulationException pe, int reason) {
         // show final register and data segment values.
         executePane.getRegistersWindow().updateRegisters();
         executePane.getCoprocessor1Window().updateRegisters();

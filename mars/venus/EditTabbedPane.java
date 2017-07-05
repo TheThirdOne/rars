@@ -1,8 +1,8 @@
 package mars.venus;
 
+import mars.AssemblyException;
 import mars.Globals;
 import mars.MIPSprogram;
-import mars.ProcessingException;
 import mars.Settings;
 import mars.mips.hardware.RegisterFile;
 import mars.util.FilenameFinder;
@@ -615,7 +615,7 @@ public class EditTabbedPane extends JTabbedPane {
                 Globals.program = new MIPSprogram();
                 try {
                     Globals.program.readSource(currentFilePath);
-                } catch (ProcessingException pe) {
+                } catch (AssemblyException pe) {
                 }
                 // DPS 1 Nov 2006.  Defined a StringBuffer to receive all file contents,
                 // one line at a time, before adding to the Edit pane with one setText.

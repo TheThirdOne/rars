@@ -36,6 +36,8 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 /**
  * Class to represent error that occurs while assembling or running a MIPS program.
+ * <p>
+ * This is now only used in SimulationException; it should be reafctored into that quickly
  *
  * @author Pete Sanderson
  * @version August 2003

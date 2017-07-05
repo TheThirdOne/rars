@@ -220,10 +220,10 @@ public class MIPSprogram {
      * when user selects compile or run/step options.
      *
      * @param file String containing name of MIPS source code file.
-     * @throws ProcessingException Will throw exception if there is any problem reading the file.
+     * @throws AssemblyException Will throw exception if there is any problem reading the file.
      **/
 
-    public void readSource(String file) throws ProcessingException {
+    public void readSource(String file) throws AssemblyException {
         this.filename = file;
         this.sourceList = new ArrayList<>();
         ErrorList errors;
@@ -239,17 +239,17 @@ public class MIPSprogram {
         } catch (Exception e) {
             errors = new ErrorList();
             errors.add(new ErrorMessage((MIPSprogram) null, 0, 0, e.toString()));
-            throw new ProcessingException(errors);
+            throw new AssemblyException(errors);
         }
     }
 
     /**
      * Tokenizes the MIPS source program. Program must have already been read from file.
      *
-     * @throws ProcessingException Will throw exception if errors occured while tokenizing.
+     * @throws AssemblyException Will throw exception if errors occured while tokenizing.
      **/
 
-    public void tokenize() throws ProcessingException {
+    public void tokenize() throws AssemblyException {
         this.tokenizer = new Tokenizer();
         this.tokenList = tokenizer.tokenize(this);
         this.localSymbolTable = new SymbolTable(this.filename); // prepare for assembly
@@ -268,10 +268,10 @@ public class MIPSprogram {
      *                         empty String to indicate there is no such designated exception handler.
      * @return ArrayList containing one MIPSprogram object for each file to assemble.
      * objects for any additional files (send ArrayList to assembler)
-     * @throws ProcessingException Will throw exception if errors occured while reading or tokenizing.
+     * @throws AssemblyException Will throw exception if errors occured while reading or tokenizing.
      **/
 
-    public ArrayList<MIPSprogram> prepareFilesForAssembly(ArrayList<String> filenames, String leadFilename, String exceptionHandler) throws ProcessingException {
+    public ArrayList<MIPSprogram> prepareFilesForAssembly(ArrayList<String> filenames, String leadFilename, String exceptionHandler) throws AssemblyException {
         ArrayList<MIPSprogram> MIPSprogramsToAssemble = new ArrayList<>();
         int leadFilePosition = 0;
         if (exceptionHandler != null && exceptionHandler.length() > 0) {
@@ -300,11 +300,11 @@ public class MIPSprogram {
      * @param extendedAssemblerEnabled A boolean value - true means extended (pseudo) instructions
      *                                 are permitted in source code and false means they are to be flagged as errors.
      * @return ErrorList containing nothing or only warnings (otherwise would have thrown exception).
-     * @throws ProcessingException Will throw exception if errors occured while assembling.
+     * @throws AssemblyException Will throw exception if errors occured while assembling.
      **/
 
     public ErrorList assemble(ArrayList<MIPSprogram> MIPSprogramsToAssemble, boolean extendedAssemblerEnabled)
-            throws ProcessingException {
+            throws AssemblyException {
         return assemble(MIPSprogramsToAssemble, extendedAssemblerEnabled, false);
     }
 
@@ -318,11 +318,11 @@ public class MIPSprogram {
      * @param warningsAreErrors        A boolean value - true means assembler warnings will be considered errors and terminate
      *                                 the assemble; false means the assembler will produce warning message but otherwise ignore warnings.
      * @return ErrorList containing nothing or only warnings (otherwise would have thrown exception).
-     * @throws ProcessingException Will throw exception if errors occured while assembling.
+     * @throws AssemblyException Will throw exception if errors occured while assembling.
      **/
 
     public ErrorList assemble(ArrayList<MIPSprogram> MIPSprogramsToAssemble, boolean extendedAssemblerEnabled,
-                              boolean warningsAreErrors) throws ProcessingException {
+                              boolean warningsAreErrors) throws AssemblyException {
         this.backStepper = null;
         Assembler asm = new Assembler();
         this.machineList = asm.assemble(MIPSprogramsToAssemble, extendedAssemblerEnabled, warningsAreErrors);
@@ -337,10 +337,10 @@ public class MIPSprogram {
      *
      * @param breakPoints int array of breakpoints (PC addresses).  Can be null.
      * @return true if execution completed and false otherwise
-     * @throws ProcessingException Will throw exception if errors occured while simulating.
+     * @throws SimulationException Will throw exception if errors occured while simulating.
      **/
 
-    public boolean simulate(int[] breakPoints) throws ProcessingException {
+    public boolean simulate(int[] breakPoints) throws SimulationException {
         return this.simulateFromPC(breakPoints, -1, null);
     }
 
@@ -352,10 +352,10 @@ public class MIPSprogram {
      *
      * @param maxSteps maximum number of steps to simulate.
      * @return true if execution completed and false otherwise
-     * @throws ProcessingException Will throw exception if errors occured while simulating.
+     * @throws SimulationException Will throw exception if errors occured while simulating.
      **/
 
-    public boolean simulate(int maxSteps) throws ProcessingException {
+    public boolean simulate(int maxSteps) throws SimulationException {
         return this.simulateFromPC(null, maxSteps, null);
     }
 
@@ -368,9 +368,9 @@ public class MIPSprogram {
      * @param maxSteps    maximum number of instruction executions.  Default -1 means no maximum.
      * @param a           the GUI component responsible for this call (GO normally).  set to null if none.
      * @return true if execution completed and false otherwise
-     * @throws ProcessingException Will throw exception if errors occured while simulating.
+     * @throws SimulationException Will throw exception if errors occured while simulating.
      **/
-    public boolean simulateFromPC(int[] breakPoints, int maxSteps, AbstractAction a) throws ProcessingException {
+    public boolean simulateFromPC(int[] breakPoints, int maxSteps, AbstractAction a) throws SimulationException {
         steppedExecution = false;
         Simulator sim = Simulator.getInstance();
         return sim.simulate(RegisterFile.getProgramCounter(), maxSteps, breakPoints, a);
@@ -383,9 +383,9 @@ public class MIPSprogram {
      *
      * @param a the GUI component responsible for this call (STEP normally). Set to null if none.
      * @return true if execution completed and false otherwise
-     * @throws ProcessingException Will throw exception if errors occured while simulating.
+     * @throws SimulationException Will throw exception if errors occured while simulating.
      **/
-    public boolean simulateStepAtPC(AbstractAction a) throws ProcessingException {
+    public boolean simulateStepAtPC(AbstractAction a) throws SimulationException {
         steppedExecution = true;
         Simulator sim = Simulator.getInstance();
         return sim.simulate(RegisterFile.getProgramCounter(), 1, null, a);

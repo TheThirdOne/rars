@@ -88,7 +88,7 @@ public class Tokenizer {
      * that represents a tokenized source statement from the MIPS program.
      **/
 
-    public ArrayList<TokenList> tokenize(MIPSprogram p) throws ProcessingException {
+    public ArrayList<TokenList> tokenize(MIPSprogram p) throws AssemblyException {
         sourceMIPSprogram = p;
         equivalents = new HashMap<>(); // DPS 11-July-2012
         ArrayList<TokenList> tokenList = new ArrayList<>();
@@ -111,7 +111,7 @@ public class Tokenizer {
             }
         }
         if (errors.errorsOccurred()) {
-            throw new ProcessingException(errors);
+            throw new AssemblyException(errors);
         }
         return tokenList;
     }
@@ -124,7 +124,7 @@ public class Tokenizer {
     // files that themselves have .include.  Plus it will detect and report recursive
     // includes both direct and indirect.
     // DPS 11-Jan-2013
-    private ArrayList<SourceLine> processIncludes(MIPSprogram program, Map<String, String> inclFiles) throws ProcessingException {
+    private ArrayList<SourceLine> processIncludes(MIPSprogram program, Map<String, String> inclFiles) throws AssemblyException {
         ArrayList<String> source = program.getSourceList();
         ArrayList<SourceLine> result = new ArrayList<>(source.size());
         for (int i = 0; i < source.size(); i++) {
@@ -146,17 +146,17 @@ public class Tokenizer {
                         Token t = tl.get(ii + 1);
                         errors.add(new ErrorMessage(program, t.getSourceLine(), t.getStartPos(),
                                 "Recursive include of file " + filename));
-                        throw new ProcessingException(errors);
+                        throw new AssemblyException(errors);
                     }
                     inclFiles.put(filename, filename);
                     MIPSprogram incl = new MIPSprogram();
                     try {
                         incl.readSource(filename);
-                    } catch (ProcessingException p) {
+                    } catch (AssemblyException p) {
                         Token t = tl.get(ii + 1);
                         errors.add(new ErrorMessage(program, t.getSourceLine(), t.getStartPos(),
                                 "Error reading include file " + filename));
-                        throw new ProcessingException(errors);
+                        throw new AssemblyException(errors);
                     }
                     ArrayList<SourceLine> allLines = processIncludes(incl, inclFiles);
                     result.addAll(allLines);
@@ -178,14 +178,14 @@ public class Tokenizer {
      * @param example The example MIPS instruction to be tokenized.
      * @return An TokenList representing the tokenized instruction.  Each list member is a Token
      * that represents one language element.
-     * @throws ProcessingException This occurs only if the instruction specification itself
+     * @throws AssemblyException This occurs only if the instruction specification itself
      *                             contains one or more lexical (i.e. token) errors.
      **/
 
-    public TokenList tokenizeExampleInstruction(String example) throws ProcessingException {
+    public TokenList tokenizeExampleInstruction(String example) throws AssemblyException {
         TokenList result = tokenizeLine(sourceMIPSprogram, 0, example, false);
         if (errors.errorsOccurred()) {
-            throw new ProcessingException(errors);
+            throw new AssemblyException(errors);
         }
         return result;
     }

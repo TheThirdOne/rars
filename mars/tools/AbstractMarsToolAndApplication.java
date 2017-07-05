@@ -1,8 +1,6 @@
 package mars.tools;
 
-import mars.Globals;
-import mars.MIPSprogram;
-import mars.Settings;
+import mars.*;
 import mars.mips.hardware.*;
 import mars.util.FilenameFinder;
 
@@ -728,7 +726,7 @@ public abstract class AbstractMarsToolAndApplication extends JFrame implements M
             try {
                 operationStatusMessages.displayNonTerminatingMessage("Assembling " + fileToAssemble);
                 programsToAssemble = program.prepareFilesForAssembly(filesToAssemble, fileToAssemble, exceptionHandler);
-            } catch (mars.ProcessingException pe) {
+            } catch (AssemblyException pe) {
                 operationStatusMessages.displayTerminatingMessage("Error reading file(s): " + fileToAssemble);
                 return;
             }
@@ -736,7 +734,7 @@ public abstract class AbstractMarsToolAndApplication extends JFrame implements M
             try {
                 program.assemble(programsToAssemble, Globals.getSettings().getBooleanSetting(Settings.EXTENDED_ASSEMBLER_ENABLED),
                         Globals.getSettings().getBooleanSetting(Settings.WARNINGS_ARE_ERRORS));
-            } catch (mars.ProcessingException pe) {
+            } catch (AssemblyException pe) {
                 operationStatusMessages.displayTerminatingMessage("Assembly Error: " + fileToAssemble);
                 return;
             }
@@ -750,11 +748,13 @@ public abstract class AbstractMarsToolAndApplication extends JFrame implements M
             String terminatingMessage = "Normal termination: ";
             try {
                 operationStatusMessages.displayNonTerminatingMessage("Running " + fileToAssemble);
+                // TODO: why is this using non-threaded simulation
                 program.simulate(-1); // unlimited steps
             } catch (NullPointerException npe) {
                 // This will occur if program execution is interrupted by Stop button.
+                // TODO: remove this, this is scary
                 terminatingMessage = "User interrupt: ";
-            } catch (mars.ProcessingException pe) {
+            } catch (SimulationException pe) {
                 terminatingMessage = "Runtime error: ";
             } finally {
                 deleteAsObserver();

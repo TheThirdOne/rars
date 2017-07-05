@@ -1,8 +1,8 @@
 package mars.venus;
 
 import mars.Globals;
-import mars.ProcessingException;
 import mars.Settings;
+import mars.SimulationException;
 import mars.mips.hardware.RegisterFile;
 import mars.simulator.ProgramArgumentList;
 import mars.simulator.Simulator;
@@ -57,7 +57,6 @@ public class RunStepAction extends GuiAction {
     public void actionPerformed(ActionEvent e) {
         name = this.getValue(Action.NAME).toString();
         executePane = mainUI.getMainPane().getExecutePane();
-        boolean done = false;
         if (FileStatus.isAssembled()) {
             if (!mainUI.getStarted()) {  // DPS 17-July-2008
                 processProgramArgumentsIfAny();
@@ -66,8 +65,10 @@ public class RunStepAction extends GuiAction {
             mainUI.messagesPane.setSelectedComponent(mainUI.messagesPane.runTab);
             executePane.getTextSegmentWindow().setCodeHighlighting(true);
             try {
-                done = Globals.program.simulateStepAtPC(this);
-            } catch (ProcessingException ev) {
+                Globals.program.simulateStepAtPC(this);
+            } catch (SimulationException ev) {
+                // Handled by doFinished in Simulator.java
+                // TODO: make simulateStepAtPC not throw an error which is only needed for command-line (I think)
             }
         } else {
             // note: this should never occur since "Step" is only enabled after successful assembly.
@@ -77,7 +78,7 @@ public class RunStepAction extends GuiAction {
 
     // When step is completed, control returns here (from execution thread, indirectly)
     // to update the GUI.
-    public void stepped(boolean done, int reason, ProcessingException pe) {
+    public void stepped(boolean done, int reason, SimulationException pe) {
         executePane.getRegistersWindow().updateRegisters();
         executePane.getCoprocessor1Window().updateRegisters();
         executePane.getCoprocessor0Window().updateRegisters();

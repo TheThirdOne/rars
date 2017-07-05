@@ -440,36 +440,36 @@ public class MarsLaunch {
     // Returns false if no simulation (run) occurs, true otherwise.
 
     private boolean runCommand() {
-        boolean programRan = false;
         if (filenameList.size() == 0) {
-            return programRan;
+            return false;
         }
-        try {
-            Globals.getSettings().setBooleanSettingNonPersistent(Settings.SELF_MODIFYING_CODE_ENABLED, selfModifyingCode);
-            File mainFile = new File(filenameList.get(0)).getAbsoluteFile();// First file is "main" file
-            ArrayList<String> filesToAssemble;
-            if (assembleProject) {
-                filesToAssemble = FilenameFinder.getFilenameList(mainFile.getParent(), Globals.fileExtensions);
-                if (filenameList.size() > 1) {
-                    // Using "p" project option PLUS listing more than one filename on command line.
-                    // Add the additional files, avoiding duplicates.
-                    filenameList.remove(0); // first one has already been processed
-                    ArrayList<String> moreFilesToAssemble = FilenameFinder.getFilenameList(filenameList, FilenameFinder.MATCH_ALL_EXTENSIONS);
-                    // Remove any duplicates then merge the two lists.
-                    for (int index2 = 0; index2 < moreFilesToAssemble.size(); index2++) {
-                        for (int index1 = 0; index1 < filesToAssemble.size(); index1++) {
-                            if (filesToAssemble.get(index1).equals(moreFilesToAssemble.get(index2))) {
-                                moreFilesToAssemble.remove(index2);
-                                index2--; // adjust for left shift in moreFilesToAssemble...
-                                break;    // break out of inner loop...
-                            }
+
+        Globals.getSettings().setBooleanSettingNonPersistent(Settings.SELF_MODIFYING_CODE_ENABLED, selfModifyingCode);
+        File mainFile = new File(filenameList.get(0)).getAbsoluteFile();// First file is "main" file
+        ArrayList<String> filesToAssemble;
+        if (assembleProject) {
+            filesToAssemble = FilenameFinder.getFilenameList(mainFile.getParent(), Globals.fileExtensions);
+            if (filenameList.size() > 1) {
+                // Using "p" project option PLUS listing more than one filename on command line.
+                // Add the additional files, avoiding duplicates.
+                filenameList.remove(0); // first one has already been processed
+                ArrayList<String> moreFilesToAssemble = FilenameFinder.getFilenameList(filenameList, FilenameFinder.MATCH_ALL_EXTENSIONS);
+                // Remove any duplicates then merge the two lists.
+                for (int index2 = 0; index2 < moreFilesToAssemble.size(); index2++) {
+                    for (int index1 = 0; index1 < filesToAssemble.size(); index1++) {
+                        if (filesToAssemble.get(index1).equals(moreFilesToAssemble.get(index2))) {
+                            moreFilesToAssemble.remove(index2);
+                            index2--; // adjust for left shift in moreFilesToAssemble...
+                            break;    // break out of inner loop...
                         }
                     }
-                    filesToAssemble.addAll(moreFilesToAssemble);
                 }
-            } else {
-                filesToAssemble = FilenameFinder.getFilenameList(filenameList, FilenameFinder.MATCH_ALL_EXTENSIONS);
+                filesToAssemble.addAll(moreFilesToAssemble);
             }
+        } else {
+            filesToAssemble = FilenameFinder.getFilenameList(filenameList, FilenameFinder.MATCH_ALL_EXTENSIONS);
+        }
+        try {
             if (Globals.debug) {
                 out.println("--------  TOKENIZING BEGINS  -----------");
             }
@@ -483,6 +483,13 @@ public class MarsLaunch {
             if (warnings != null && warnings.warningsOccurred()) {
                 out.println(warnings.generateWarningReport());
             }
+        } catch (AssemblyException e) {
+            Globals.exitCode = assembleErrorExitCode;
+            out.println(e.errors().generateErrorAndWarningReport());
+            out.println("Processing terminated due to errors.");
+            return false;
+        }
+        try {
             RegisterFile.initializeProgramCounter(startAtMain); // DPS 3/9/09
             if (simulate) {
                 // store program args (if any) in MIPS memory
@@ -492,21 +499,20 @@ public class MarsLaunch {
                 if (Globals.debug) {
                     out.println("--------  SIMULATION BEGINS  -----------");
                 }
-                programRan = true;
                 boolean done = code.simulate(maxSteps);
                 if (!done) {
                     out.println("\nProgram terminated when maximum step limit " + maxSteps + " reached.");
                 }
             }
-            if (Globals.debug) {
-                out.println("\n--------  ALL PROCESSING COMPLETE  -----------");
-            }
-        } catch (ProcessingException e) {
-            Globals.exitCode = (programRan) ? simulateErrorExitCode : assembleErrorExitCode;
+        } catch (SimulationException e) {
+            Globals.exitCode = simulateErrorExitCode;
             out.println(e.errors().generateErrorAndWarningReport());
-            out.println("Processing terminated due to errors.");
+            out.println("Simulation terminated due to errors.");
         }
-        return programRan;
+        if (Globals.debug) {
+            out.println("\n--------  ALL PROCESSING COMPLETE  -----------");
+        }
+        return simulate;
     }
 
 
