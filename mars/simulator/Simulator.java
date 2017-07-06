@@ -101,29 +101,35 @@ public class Simulator extends Observable {
      * @param pc          address of first instruction to simulate; this goes into program counter
      * @param maxSteps    maximum number of steps to perform before returning false (0 or less means no max)
      * @param breakPoints array of breakpoint program counter values, use null if none
-     * @param actor       the GUI component responsible for this call, usually GO or STEP.  null if none.
      * @return true if execution completed, false otherwise
      * @throws SimulationException Throws exception if run-time exception occurs.
      **/
 
-    public boolean simulate(int pc, int maxSteps, int[] breakPoints, AbstractAction actor) throws SimulationException {
+    public boolean simulate(int pc, int maxSteps, int[] breakPoints) throws SimulationException {
+        simulatorThread = new SimThread(pc, maxSteps, breakPoints, null);
+        simulatorThread.start();
+        simulatorThread.get(); // this should emulate join()
+        SimulationException pe = simulatorThread.pe;
+        boolean done = simulatorThread.done;
+        if (done) SystemIO.resetFiles(); // close any files opened in MIPS progra
+        this.simulatorThread = null;
+        if (pe != null) {
+            throw pe;
+        }
+        return done;
+    }
+
+    /**
+     * Simulate execution of given MIPS program.  It must have already been assembled.
+     *
+     * @param pc          address of first instruction to simulate; this goes into program counter
+     * @param maxSteps    maximum number of steps to perform before returning false (0 or less means no max)
+     * @param breakPoints array of breakpoint program counter values, use null if none
+     **/
+
+    public void startSimulation(int pc, int maxSteps, int[] breakPoints, AbstractAction actor) {
         simulatorThread = new SimThread(pc, maxSteps, breakPoints, actor);
         simulatorThread.start();
-
-        // Condition should only be true if run from command-line instead of GUI.
-        // If so, just stick around until execution thread is finished.
-        if (actor == null) {
-            simulatorThread.get(); // this should emulate join()
-            SimulationException pe = simulatorThread.pe;
-            boolean done = simulatorThread.done;
-            if (done) SystemIO.resetFiles(); // close any files opened in MIPS progra
-            this.simulatorThread = null;
-            if (pe != null) {
-                throw pe;
-            }
-            return done;
-        }
-        return true;
     }
 
 
@@ -135,7 +141,6 @@ public class Simulator extends Observable {
      * This is used by both STOP and PAUSE features.
      */
     public void stopExecution(AbstractAction actor) {
-
         if (simulatorThread != null) {
             simulatorThread.setStop(actor);
             for (StopListener l : stopListeners) {
@@ -145,7 +150,7 @@ public class Simulator extends Observable {
         }
     }
 
-    /* This interface is required by the Asker class in MassagesPane
+    /* This interface is required by the Asker class in MessagesPane
      * to be notified about the fact that the user has requested to
      * stop the execution. When that happens, it must unblock the
      * simulator thread. */
@@ -173,13 +178,13 @@ public class Simulator extends Observable {
     private void notifyObserversOfExecutionStart(int maxSteps, int programCounter) {
         this.setChanged();
         this.notifyObservers(new SimulatorNotice(SimulatorNotice.SIMULATOR_START,
-                maxSteps, RunSpeedPanel.getInstance().getRunSpeed(), programCounter));
+                maxSteps, RunSpeedPanel.getInstance().getRunSpeed(), programCounter, 0));
     }
 
-    private void notifyObserversOfExecutionStop(int maxSteps, int programCounter) {
+    private void notifyObserversOfExecutionStop(int maxSteps, int programCounter, int reason) {
         this.setChanged();
         this.notifyObservers(new SimulatorNotice(SimulatorNotice.SIMULATOR_STOP,
-                maxSteps, RunSpeedPanel.getInstance().getRunSpeed(), programCounter));
+                maxSteps, RunSpeedPanel.getInstance().getRunSpeed(), programCounter, reason));
     }
 
 
@@ -275,7 +280,7 @@ public class Simulator extends Observable {
                 this.constructReturnReason = EXCEPTION;
                 this.done = true;
                 SystemIO.resetFiles(); // close any files opened in MIPS program
-                Simulator.getInstance().notifyObserversOfExecutionStop(maxSteps, pc);
+                Simulator.getInstance().notifyObserversOfExecutionStop(maxSteps, pc, constructReturnReason);
                 return true;
             }
             int steps = 0;
@@ -354,7 +359,7 @@ public class Simulator extends Observable {
                         }
                         this.done = true;
                         SystemIO.resetFiles(); // close any files opened in MIPS program
-                        Simulator.getInstance().notifyObserversOfExecutionStop(maxSteps, pc);
+                        Simulator.getInstance().notifyObserversOfExecutionStop(maxSteps, pc, constructReturnReason);
                         return true;
                     } catch (SimulationException se) {
                         // See if an exception handler is present.  Assume this is the case
@@ -374,7 +379,7 @@ public class Simulator extends Observable {
                             this.pe = se;
                             this.done = true;
                             SystemIO.resetFiles(); // close any files opened in MIPS program
-                            Simulator.getInstance().notifyObserversOfExecutionStop(maxSteps, pc);
+                            Simulator.getInstance().notifyObserversOfExecutionStop(maxSteps, pc, constructReturnReason);
                             return true;
                         }
                     }
@@ -385,7 +390,7 @@ public class Simulator extends Observable {
                 if (stop) {
                     this.constructReturnReason = PAUSE_OR_STOP;
                     this.done = false;
-                    Simulator.getInstance().notifyObserversOfExecutionStop(maxSteps, pc);
+                    Simulator.getInstance().notifyObserversOfExecutionStop(maxSteps, pc, constructReturnReason);
                     return false;
                 }
                 //	Return if we've reached a breakpoint.
@@ -393,7 +398,7 @@ public class Simulator extends Observable {
                         (Arrays.binarySearch(breakPoints, RegisterFile.getProgramCounter()) >= 0)) {
                     this.constructReturnReason = BREAKPOINT;
                     this.done = false;
-                    Simulator.getInstance().notifyObserversOfExecutionStop(maxSteps, pc);
+                    Simulator.getInstance().notifyObserversOfExecutionStop(maxSteps, pc, constructReturnReason);
                     return false;
                 }
                 // Check number of MIPS instructions executed.  Return if at limit (-1 is no limit).
@@ -402,7 +407,7 @@ public class Simulator extends Observable {
                     if (steps >= maxSteps) {
                         this.constructReturnReason = MAX_STEPS;
                         this.done = false;
-                        Simulator.getInstance().notifyObserversOfExecutionStop(maxSteps, pc);
+                        Simulator.getInstance().notifyObserversOfExecutionStop(maxSteps, pc, constructReturnReason);
                         return false;
                     }
                 }
@@ -441,7 +446,7 @@ public class Simulator extends Observable {
                     this.constructReturnReason = EXCEPTION;
                     this.done = true;
                     SystemIO.resetFiles(); // close any files opened in MIPS program
-                    Simulator.getInstance().notifyObserversOfExecutionStop(maxSteps, pc);
+                    Simulator.getInstance().notifyObserversOfExecutionStop(maxSteps, pc, constructReturnReason);
                     return true;
                 }
             }
@@ -452,7 +457,7 @@ public class Simulator extends Observable {
             this.constructReturnReason = CLIFF_TERMINATION;
             this.done = true;
             SystemIO.resetFiles(); // close any files opened in MIPS program
-            Simulator.getInstance().notifyObserversOfExecutionStop(maxSteps, pc);
+            Simulator.getInstance().notifyObserversOfExecutionStop(maxSteps, pc, constructReturnReason);
             return true; // true;  // execution completed
         }
 
@@ -469,7 +474,10 @@ public class Simulator extends Observable {
 
         public void finished() {
             // If running from the command-line, then there is no GUI to update.
-            if (Globals.getGui() == null) {
+            // Used to be Global.getGui(), but that fails in the standalone application case
+            // The standalone case doesn't have stop and an d pause options in the same way though.
+            // TODO: convert this method to using the observable interface if possible
+            if (starter == null) {
                 return;
             }
             String starterName = (String) starter.getValue(AbstractAction.NAME);

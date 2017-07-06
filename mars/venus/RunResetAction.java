@@ -69,7 +69,7 @@ public class RunResetAction extends GuiAction {
                     RunAssembleAction.getExtendedAssemblerEnabled(),
                     RunAssembleAction.getWarningsAreErrors());
         } catch (AssemblyException pe) {
-            // TODO: Make this error message better
+            // Should not be possible
             mainUI.getMessagesPane().postMarsMessage(
                     //pe.errors().generateErrorReport());
                     "Unable to reset.  Please close file then re-open and re-assemble.\n");

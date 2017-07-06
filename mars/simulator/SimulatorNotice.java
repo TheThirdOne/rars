@@ -40,6 +40,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 public class SimulatorNotice {
     private int action;
     private int maxSteps;
+    private int reason;
     private double runSpeed;
     private int programCounter;
     public static final int SIMULATOR_START = 0;
@@ -49,39 +50,32 @@ public class SimulatorNotice {
      * Constructor will be called only within this package, so assume
      * address and length are in valid ranges.
      */
-    public SimulatorNotice(int action, int maxSteps, double runSpeed, int programCounter) {
+    public SimulatorNotice(int action, int maxSteps, double runSpeed, int programCounter, int reason) {
         this.action = action;
         this.maxSteps = maxSteps;
         this.runSpeed = runSpeed;
         this.programCounter = programCounter;
+        this.reason = reason;
     }
 
-    /**
-     * Fetch the memory address that was accessed.
-     */
     public int getAction() {
         return this.action;
     }
 
-    /**
-     * Fetch the length in bytes of the access operation (4,2,1).
-     */
     public int getMaxSteps() {
         return this.maxSteps;
     }
 
-    /**
-     * Fetch the value of the access operation (the value read or written).
-     */
     public double getRunSpeed() {
         return this.runSpeed;
     }
 
-    /**
-     * Fetch the value of the access operation (the value read or written).
-     */
     public int getProgramCounter() {
         return this.programCounter;
+    }
+
+    public int getReason() {
+        return this.reason;
     }
 
     /**

@@ -64,12 +64,8 @@ public class RunStepAction extends GuiAction {
             mainUI.setStarted(true);
             mainUI.messagesPane.setSelectedComponent(mainUI.messagesPane.runTab);
             executePane.getTextSegmentWindow().setCodeHighlighting(true);
-            try {
-                Globals.program.simulateStepAtPC(this);
-            } catch (SimulationException ev) {
-                // Handled by doFinished in Simulator.java
-                // TODO: make simulateStepAtPC not throw an error which is only needed for command-line (I think)
-            }
+
+            Globals.program.startSimulation(null, 1, this);
         } else {
             // note: this should never occur since "Step" is only enabled after successful assembly.
             JOptionPane.showMessageDialog(mainUI, "The program must be assembled before it can be run.");

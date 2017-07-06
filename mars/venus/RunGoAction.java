@@ -75,13 +75,8 @@ public class RunGoAction extends GuiAction {
                 executePane.getTextSegmentWindow().unhighlightAllSteps();
                 //FileStatus.set(FileStatus.RUNNING);
                 mainUI.setMenuState(FileStatus.RUNNING);
-                try {
-                    int[] breakPoints = executePane.getTextSegmentWindow().getSortedBreakPointsArray();
-                    Globals.program.simulateFromPC(breakPoints, maxSteps, this);
-                } catch (SimulationException se) {
-                    // Handled by doFinished in Simulator.java
-                    // TODO: make simulateFromPC not throw an error which is only needed for command-line (I think)
-                }
+                int[] breakPoints = executePane.getTextSegmentWindow().getSortedBreakPointsArray();
+                Globals.program.startSimulation(breakPoints, maxSteps, this);
             } else {
                 // This should never occur because at termination the Go and Step buttons are disabled.
                 JOptionPane.showMessageDialog(mainUI, "reset " + mainUI.getReset() + " started " + mainUI.getStarted());//"You must reset before you can execute the program again.");

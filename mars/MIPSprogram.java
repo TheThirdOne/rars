@@ -331,64 +331,35 @@ public class MIPSprogram {
     }
 
 
-    /**
-     * Simulates execution of the MIPS program. Program must have already been assembled.
-     * Begins simulation at beginning of text segment and continues to completion.
-     *
-     * @param breakPoints int array of breakpoints (PC addresses).  Can be null.
-     * @return true if execution completed and false otherwise
-     * @throws SimulationException Will throw exception if errors occured while simulating.
-     **/
-
-    public boolean simulate(int[] breakPoints) throws SimulationException {
-        return this.simulateFromPC(breakPoints, -1, null);
-    }
-
 
     /**
-     * Simulates execution of the MIPS program. Program must have already been assembled.
-     * Begins simulation at beginning of text segment and continues to completion or
-     * until the specified maximum number of steps are simulated.
+     * Simulates execution of the MIPS program (in this thread). Program must have already been assembled.
+     * Begins simulation at current program counter address and continues until stopped,
+     * paused, maximum steps exceeded, or exception occurs.
      *
-     * @param maxSteps maximum number of steps to simulate.
+     * @param maxSteps the maximum maximum number of steps to simulate.
      * @return true if execution completed and false otherwise
      * @throws SimulationException Will throw exception if errors occured while simulating.
-     **/
-
+     */
     public boolean simulate(int maxSteps) throws SimulationException {
-        return this.simulateFromPC(null, maxSteps, null);
+        steppedExecution = false;
+        Simulator sim = Simulator.getInstance();
+        return sim.simulate(RegisterFile.getProgramCounter(), maxSteps, null);
     }
 
     /**
-     * Simulates execution of the MIPS program. Program must have already been assembled.
+     * Simulates execution of the MIPS program (in a new thread). Program must have already been assembled.
      * Begins simulation at current program counter address and continues until stopped,
      * paused, maximum steps exceeded, or exception occurs.
      *
      * @param breakPoints int array of breakpoints (PC addresses).  Can be null.
      * @param maxSteps    maximum number of instruction executions.  Default -1 means no maximum.
      * @param a           the GUI component responsible for this call (GO normally).  set to null if none.
-     * @return true if execution completed and false otherwise
-     * @throws SimulationException Will throw exception if errors occured while simulating.
      **/
-    public boolean simulateFromPC(int[] breakPoints, int maxSteps, AbstractAction a) throws SimulationException {
+    public void startSimulation(int[] breakPoints, int maxSteps, AbstractAction a) {
         steppedExecution = false;
         Simulator sim = Simulator.getInstance();
-        return sim.simulate(RegisterFile.getProgramCounter(), maxSteps, breakPoints, a);
-    }
-
-
-    /**
-     * Simulates execution of the MIPS program. Program must have already been assembled.
-     * Begins simulation at current program counter address and executes one step.
-     *
-     * @param a the GUI component responsible for this call (STEP normally). Set to null if none.
-     * @return true if execution completed and false otherwise
-     * @throws SimulationException Will throw exception if errors occured while simulating.
-     **/
-    public boolean simulateStepAtPC(AbstractAction a) throws SimulationException {
-        steppedExecution = true;
-        Simulator sim = Simulator.getInstance();
-        return sim.simulate(RegisterFile.getProgramCounter(), 1, null, a);
+        sim.startSimulation(RegisterFile.getProgramCounter(), maxSteps, breakPoints, a);
     }
 
     /**

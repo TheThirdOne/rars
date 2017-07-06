@@ -1,7 +1,12 @@
 package mars.tools;
 
-import mars.*;
+import mars.AssemblyException;
+import mars.Globals;
+import mars.MIPSprogram;
+import mars.Settings;
 import mars.mips.hardware.*;
+import mars.simulator.Simulator;
+import mars.simulator.SimulatorNotice;
 import mars.util.FilenameFinder;
 
 import javax.swing.*;
@@ -745,22 +750,24 @@ public abstract class AbstractMarsToolAndApplication extends JFrame implements M
 
             addAsObserver();
             observing = true;
-            String terminatingMessage = "Normal termination: ";
-            try {
-                operationStatusMessages.displayNonTerminatingMessage("Running " + fileToAssemble);
-                // TODO: why is this using non-threaded simulation
-                program.simulate(-1); // unlimited steps
-            } catch (NullPointerException npe) {
-                // This will occur if program execution is interrupted by Stop button.
-                // TODO: remove this, this is scary
-                terminatingMessage = "User interrupt: ";
-            } catch (SimulationException pe) {
-                terminatingMessage = "Runtime error: ";
-            } finally {
-                deleteAsObserver();
-                observing = false;
-                operationStatusMessages.displayTerminatingMessage(terminatingMessage + fileToAssemble);
-            }
+            operationStatusMessages.displayNonTerminatingMessage("Running " + fileToAssemble);
+            final Observer stopListener =
+                    new Observer() {
+                        public void update(Observable o, Object simulator) {
+                            SimulatorNotice notice = ((SimulatorNotice) simulator);
+                            if (notice.getAction() != SimulatorNotice.SIMULATOR_STOP) return;
+                            int reason = notice.getReason();
+                            deleteAsObserver();
+                            observing = false;
+                            String terminatingMessage = "Normal termination: ";
+                            if (reason == Simulator.EXCEPTION) terminatingMessage = "Runtime error: ";
+                            if (reason == Simulator.PAUSE_OR_STOP) terminatingMessage = "User interrupt: ";
+                            operationStatusMessages.displayTerminatingMessage(terminatingMessage + fileToAssemble);
+                            o.deleteObserver(this);
+                        }
+                    };
+            Simulator.getInstance().addObserver(stopListener);
+            program.startSimulation(null, -1, null); // unlimited steps
         }
     }
 
