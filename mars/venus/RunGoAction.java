@@ -162,7 +162,7 @@ public class RunGoAction extends GuiAction {
                 break;
             case Simulator.EXCEPTION:
                 mainUI.getMessagesPane().postMarsMessage(
-                        pe.errors().generateErrorReport());
+                        pe.error().generateReport());
                 mainUI.getMessagesPane().postMarsMessage(
                         "\n" + name + ": execution terminated with errors.\n\n");
                 break;

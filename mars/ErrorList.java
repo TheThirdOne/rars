@@ -1,6 +1,5 @@
 package mars;
 
-import java.io.File;
 import java.util.ArrayList;
 /*
 Copyright (c) 2003-2012,  Pete Sanderson and Kenneth Vollmar
@@ -190,19 +189,10 @@ public class ErrorList {
 
     // Produces either error or warning report.
     private String generateReport(boolean isWarning) {
-        StringBuffer report = new StringBuffer("");
-        String reportLine;
+        StringBuilder report = new StringBuilder("");
         for (ErrorMessage m : messages) {
             if ((isWarning && m.isWarning()) || (!isWarning && !m.isWarning())) {
-                reportLine = ((isWarning) ? WARNING_MESSAGE_PREFIX : ERROR_MESSAGE_PREFIX) + FILENAME_PREFIX;
-                if (m.getFilename().length() > 0)
-                    reportLine = reportLine + (new File(m.getFilename()).getPath()); //.getName());
-                if (m.getLine() > 0)
-                    reportLine = reportLine + LINE_PREFIX + m.getMacroExpansionHistory() + m.getLine();
-                if (m.getPosition() > 0)
-                    reportLine = reportLine + POSITION_PREFIX + m.getPosition();
-                reportLine = reportLine + MESSAGE_SEPARATOR + m.getMessage() + "\n";
-                report.append(reportLine);
+                report.append(m.generateReport());
             }
         }
         return report.toString();

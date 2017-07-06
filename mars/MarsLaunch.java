@@ -506,7 +506,7 @@ public class MarsLaunch {
             }
         } catch (SimulationException e) {
             Globals.exitCode = simulateErrorExitCode;
-            out.println(e.errors().generateErrorAndWarningReport());
+            out.println(e.error().generateReport());
             out.println("Simulation terminated due to errors.");
         }
         if (Globals.debug) {

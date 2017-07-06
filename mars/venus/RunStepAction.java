@@ -10,7 +10,7 @@ import mars.simulator.Simulator;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 
-	/*
+/*
 Copyright (c) 2003-2006,  Pete Sanderson and Kenneth Vollmar
 
 Developed by Pete Sanderson (psanderson@otterbein.edu)
@@ -105,7 +105,7 @@ public class RunStepAction extends GuiAction {
         if (pe != null) {
             RunGoAction.resetMaxSteps();
             mainUI.getMessagesPane().postMarsMessage(
-                    pe.errors().generateErrorReport());
+                    pe.error().generateReport());
             mainUI.getMessagesPane().postMarsMessage(
                     "\n" + name + ": execution terminated with errors.\n\n");
             mainUI.getRegistersPane().setSelectedComponent(executePane.getCoprocessor0Window());

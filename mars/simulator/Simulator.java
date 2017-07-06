@@ -265,9 +265,8 @@ public class Simulator extends Observable {
             try {
                 statement = Globals.memory.getStatement(RegisterFile.getProgramCounter());
             } catch (AddressErrorException e) {
-                ErrorList el = new ErrorList();
-                el.add(new ErrorMessage((MIPSprogram) null, 0, 0, "invalid program counter value: " + Binary.intToHexString(RegisterFile.getProgramCounter())));
-                this.pe = new SimulationException(el, e);
+                this.pe = new SimulationException(new ErrorMessage(null, 0, 0,
+                        "invalid program counter value: " + Binary.intToHexString(RegisterFile.getProgramCounter())), e);
                 // Next statement is a hack.  Previous statement sets EPC register to ProgramCounter-4
                 // because it assumes the bad address comes from an operand so the ProgramCounter has already been
                 // incremented.  In this case, bad address is the instruction fetch itself so Program Counter has
@@ -347,7 +346,7 @@ public class Simulator extends Observable {
                         }
                         ebreak = true;
                     } catch (ExitingException e) {
-                        if (pe.errors() == null) {
+                        if (pe.error() == null) {
                             this.constructReturnReason = NORMAL_TERMINATION;
                         } else {
                             this.constructReturnReason = EXCEPTION;
@@ -432,9 +431,8 @@ public class Simulator extends Observable {
                 try {
                     statement = Globals.memory.getStatement(RegisterFile.getProgramCounter());
                 } catch (AddressErrorException e) {
-                    ErrorList el = new ErrorList();
-                    el.add(new ErrorMessage((MIPSprogram) null, 0, 0, "invalid program counter value: " + Binary.intToHexString(RegisterFile.getProgramCounter())));
-                    this.pe = new SimulationException(el, e);
+                    this.pe = new SimulationException(new ErrorMessage(null, 0, 0,
+                            "invalid program counter value: " + Binary.intToHexString(RegisterFile.getProgramCounter())), e);
                     // Next statement is a hack.  Previous statement sets EPC register to ProgramCounter-4
                     // because it assumes the bad address comes from an operand so the ProgramCounter has already been
                     // incremented.  In this case, bad address is the instruction fetch itself so Program Counter has

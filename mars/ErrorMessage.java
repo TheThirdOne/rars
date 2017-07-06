@@ -1,5 +1,6 @@
 package mars;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -211,6 +212,17 @@ public class ErrorMessage {
         return this.isWarning;
     }
 
+    public String generateReport() {
+        String out = ((isWarning) ? ErrorList.WARNING_MESSAGE_PREFIX : ErrorList.ERROR_MESSAGE_PREFIX) + ErrorList.FILENAME_PREFIX;
+        if (getFilename().length() > 0)
+            out = out + (new File(getFilename()).getPath()); //.getName());
+        if (getLine() > 0)
+            out = out + ErrorList.LINE_PREFIX + getMacroExpansionHistory() + getLine();
+        if (getPosition() > 0)
+            out = out + ErrorList.POSITION_PREFIX + getPosition();
+        out = out + ErrorList.MESSAGE_SEPARATOR + getMessage() + "\n";
+        return out;
+    }
     /**
      * Returns string describing macro expansion.  Empty string if none.
      *
