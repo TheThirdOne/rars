@@ -359,7 +359,7 @@ public class MIPSprogram {
     public void startSimulation(int[] breakPoints, int maxSteps, AbstractAction a) {
         steppedExecution = false;
         Simulator sim = Simulator.getInstance();
-        sim.startSimulation(RegisterFile.getProgramCounter(), maxSteps, breakPoints, a);
+        sim.startSimulation(RegisterFile.getProgramCounter(), maxSteps, breakPoints);
     }
 
     /**

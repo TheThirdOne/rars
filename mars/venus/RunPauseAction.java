@@ -44,7 +44,7 @@ public class RunPauseAction extends GuiAction {
     }
 
     public void actionPerformed(ActionEvent e) {
-        Simulator.getInstance().stopExecution(this);
+        Simulator.getInstance().pauseExecution();
         // RunGoAction's "paused" method will do the cleanup.
     }
 

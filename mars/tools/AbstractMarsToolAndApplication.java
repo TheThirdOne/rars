@@ -402,7 +402,7 @@ public abstract class AbstractMarsToolAndApplication extends JFrame implements M
         stopButton.addActionListener(
                 new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
-                        mars.simulator.Simulator.getInstance().stopExecution(null);
+                        mars.simulator.Simulator.getInstance().stopExecution();
                     }
                 });
         stopButton.addKeyListener(new EnterKeyListener(stopButton));
@@ -756,12 +756,14 @@ public abstract class AbstractMarsToolAndApplication extends JFrame implements M
                         public void update(Observable o, Object simulator) {
                             SimulatorNotice notice = ((SimulatorNotice) simulator);
                             if (notice.getAction() != SimulatorNotice.SIMULATOR_STOP) return;
-                            int reason = notice.getReason();
                             deleteAsObserver();
                             observing = false;
                             String terminatingMessage = "Normal termination: ";
-                            if (reason == Simulator.EXCEPTION) terminatingMessage = "Runtime error: ";
-                            if (reason == Simulator.PAUSE_OR_STOP) terminatingMessage = "User interrupt: ";
+                            if (notice.getReason() == Simulator.Reason.EXCEPTION)
+                                terminatingMessage = "Runtime error: ";
+                            if (notice.getReason() == Simulator.Reason.STOP || notice.getReason() == Simulator.Reason.PAUSE) {
+                                terminatingMessage = "User interrupt: ";
+                            }
                             operationStatusMessages.displayTerminatingMessage(terminatingMessage + fileToAssemble);
                             o.deleteObserver(this);
                         }

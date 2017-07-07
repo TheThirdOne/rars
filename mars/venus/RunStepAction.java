@@ -6,9 +6,12 @@ import mars.SimulationException;
 import mars.mips.hardware.RegisterFile;
 import mars.simulator.ProgramArgumentList;
 import mars.simulator.Simulator;
+import mars.simulator.SimulatorNotice;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
+import java.util.Observable;
+import java.util.Observer;
 
 /*
 Copyright (c) 2003-2006,  Pete Sanderson and Kenneth Vollmar
@@ -65,6 +68,18 @@ public class RunStepAction extends GuiAction {
             mainUI.messagesPane.setSelectedComponent(mainUI.messagesPane.runTab);
             executePane.getTextSegmentWindow().setCodeHighlighting(true);
 
+            // Setup callback for after step finishes
+            final Observer stopListener =
+                    new Observer() {
+                        public void update(Observable o, Object simulator) {
+                            SimulatorNotice notice = ((SimulatorNotice) simulator);
+                            if (notice.getAction() != SimulatorNotice.SIMULATOR_STOP) return;
+                            stepped(notice.getDone(), notice.getReason(), notice.getException());
+                            o.deleteObserver(this);
+                        }
+                    };
+            Simulator.getInstance().addObserver(stopListener);
+
             Globals.program.startSimulation(null, 1, this);
         } else {
             // note: this should never occur since "Step" is only enabled after successful assembly.
@@ -74,7 +89,7 @@ public class RunStepAction extends GuiAction {
 
     // When step is completed, control returns here (from execution thread, indirectly)
     // to update the GUI.
-    public void stepped(boolean done, int reason, SimulationException pe) {
+    public void stepped(boolean done, Simulator.Reason reason, SimulationException pe) {
         executePane.getRegistersWindow().updateRegisters();
         executePane.getCoprocessor1Window().updateRegisters();
         executePane.getCoprocessor0Window().updateRegisters();
@@ -91,11 +106,11 @@ public class RunStepAction extends GuiAction {
         if (done && pe == null) {
             mainUI.getMessagesPane().postMarsMessage(
                     "\n" + name + ": execution " +
-                            ((reason == Simulator.CLIFF_TERMINATION) ? "terminated due to null instruction."
+                            ((reason == Simulator.Reason.CLIFF_TERMINATION) ? "terminated due to null instruction."
                                     : "completed successfully.") + "\n\n");
             mainUI.getMessagesPane().postRunMessage(
                     "\n-- program is finished running " +
-                            ((reason == Simulator.CLIFF_TERMINATION) ? "(dropped off bottom)" : "") + " --\n\n");
+                            ((reason == Simulator.Reason.CLIFF_TERMINATION) ? "(dropped off bottom)" : "") + " --\n\n");
             mainUI.getMessagesPane().selectRunMessageTab();
         }
         if (pe != null) {

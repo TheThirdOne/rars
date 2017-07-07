@@ -28,6 +28,8 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 (MIT license, http://www.opensource.org/licenses/mit-license.html)
  */
 
+import mars.SimulationException;
+
 /**
  * Object provided to Observers of the Simulator.
  * They are notified at important phases of the runtime simulator,
@@ -40,7 +42,9 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 public class SimulatorNotice {
     private int action;
     private int maxSteps;
-    private int reason;
+    private Simulator.Reason reason;
+    private boolean done;
+    private SimulationException exception;
     private double runSpeed;
     private int programCounter;
     public static final int SIMULATOR_START = 0;
@@ -50,12 +54,14 @@ public class SimulatorNotice {
      * Constructor will be called only within this package, so assume
      * address and length are in valid ranges.
      */
-    public SimulatorNotice(int action, int maxSteps, double runSpeed, int programCounter, int reason) {
+    public SimulatorNotice(int action, int maxSteps, double runSpeed, int programCounter, Simulator.Reason reason, SimulationException se, boolean done) {
         this.action = action;
         this.maxSteps = maxSteps;
         this.runSpeed = runSpeed;
         this.programCounter = programCounter;
         this.reason = reason;
+        this.exception = se;
+        this.done = done;
     }
 
     public int getAction() {
@@ -74,8 +80,16 @@ public class SimulatorNotice {
         return this.programCounter;
     }
 
-    public int getReason() {
+    public Simulator.Reason getReason() {
         return this.reason;
+    }
+
+    public SimulationException getException() {
+        return this.exception;
+    }
+
+    public boolean getDone() {
+        return this.done;
     }
 
     /**

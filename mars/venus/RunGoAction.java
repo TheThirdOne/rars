@@ -6,10 +6,13 @@ import mars.SimulationException;
 import mars.mips.hardware.RegisterFile;
 import mars.simulator.ProgramArgumentList;
 import mars.simulator.Simulator;
+import mars.simulator.SimulatorNotice;
 import mars.util.SystemIO;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
+import java.util.Observable;
+import java.util.Observer;
 
 	/*
 Copyright (c) 2003-2007,  Pete Sanderson and Kenneth Vollmar
@@ -75,6 +78,24 @@ public class RunGoAction extends GuiAction {
                 executePane.getTextSegmentWindow().unhighlightAllSteps();
                 //FileStatus.set(FileStatus.RUNNING);
                 mainUI.setMenuState(FileStatus.RUNNING);
+
+                // Setup cleanup procedures for the simulation
+                final Observer stopListener =
+                        new Observer() {
+                            public void update(Observable o, Object simulator) {
+                                SimulatorNotice notice = ((SimulatorNotice) simulator);
+                                if (notice.getAction() != SimulatorNotice.SIMULATOR_STOP) return;
+                                Simulator.Reason reason = notice.getReason();
+                                if (reason == Simulator.Reason.PAUSE || reason == Simulator.Reason.BREAKPOINT) {
+                                    paused(notice.getDone(), reason, notice.getException());
+                                } else {
+                                    stopped(notice.getException(), reason);
+                                }
+                                o.deleteObserver(this);
+                            }
+                        };
+                Simulator.getInstance().addObserver(stopListener);
+
                 int[] breakPoints = executePane.getTextSegmentWindow().getSortedBreakPointsArray();
                 Globals.program.startSimulation(breakPoints, maxSteps, this);
             } else {
@@ -94,13 +115,13 @@ public class RunGoAction extends GuiAction {
      * step by step.
      */
 
-    public void paused(boolean done, int pauseReason, SimulationException pe) {
+    public void paused(boolean done, Simulator.Reason pauseReason, SimulationException pe) {
         // I doubt this can happen (pause when execution finished), but if so treat it as stopped.
         if (done) {
-            stopped(pe, Simulator.NORMAL_TERMINATION);
+            stopped(pe, Simulator.Reason.NORMAL_TERMINATION);
             return;
         }
-        if (pauseReason == Simulator.BREAKPOINT) {
+        if (pauseReason == Simulator.Reason.BREAKPOINT) {
             mainUI.messagesPane.postMarsMessage(
                     name + ": execution paused at breakpoint: " + FileStatus.getFile().getName() + "\n\n");
         } else {
@@ -125,7 +146,7 @@ public class RunGoAction extends GuiAction {
      * terminated due to completion or exception.
      */
 
-    public void stopped(SimulationException pe, int reason) {
+    public void stopped(SimulationException pe, Simulator.Reason reason) {
         // show final register and data segment values.
         executePane.getRegistersWindow().updateRegisters();
         executePane.getCoprocessor1Window().updateRegisters();
@@ -141,38 +162,38 @@ public class RunGoAction extends GuiAction {
             executePane.getTextSegmentWindow().highlightStepAtAddress(RegisterFile.getProgramCounter() - 4);
         }
         switch (reason) {
-            case Simulator.NORMAL_TERMINATION:
+            case NORMAL_TERMINATION:
                 mainUI.getMessagesPane().postMarsMessage(
                         "\n" + name + ": execution completed successfully.\n\n");
                 mainUI.getMessagesPane().postRunMessage(
                         "\n-- program is finished running --\n\n");
                 mainUI.getMessagesPane().selectRunMessageTab();
                 break;
-            case Simulator.CLIFF_TERMINATION:
+            case CLIFF_TERMINATION:
                 mainUI.getMessagesPane().postMarsMessage(
                         "\n" + name + ": execution terminated by null instruction.\n\n");
                 mainUI.getMessagesPane().postRunMessage(
                         "\n-- program is finished running (dropped off bottom) --\n\n");
                 mainUI.getMessagesPane().selectRunMessageTab();
                 break;
-            case Simulator.EXCEPTION:
+            case EXCEPTION:
                 mainUI.getMessagesPane().postMarsMessage(
                         pe.error().generateReport());
                 mainUI.getMessagesPane().postMarsMessage(
                         "\n" + name + ": execution terminated with errors.\n\n");
                 break;
-            case Simulator.PAUSE_OR_STOP:
+            case STOP:
                 mainUI.getMessagesPane().postMarsMessage(
                         "\n" + name + ": execution terminated by user.\n\n");
                 mainUI.getMessagesPane().selectMarsMessageTab();
                 break;
-            case Simulator.MAX_STEPS:
+            case MAX_STEPS:
                 mainUI.getMessagesPane().postMarsMessage(
                         "\n" + name + ": execution step limit of " + maxSteps + " exceeded.\n\n");
                 mainUI.getMessagesPane().selectMarsMessageTab();
                 break;
-            case Simulator.BREAKPOINT: // should never get here
-                break;
+            default:
+                // should never get here, because the other two cases are covered by paused()
         }
         RunGoAction.resetMaxSteps();
         mainUI.setReset(false);
