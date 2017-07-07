@@ -96,7 +96,7 @@ public class Simulator extends Observable {
     }
 
     /**
-     * Simulate execution of given MIPS program.  It must have already been assembled.
+     * Simulate execution of given MIPS program (in this thread).  It must have already been assembled.
      *
      * @param pc          address of first instruction to simulate; this goes into program counter
      * @param maxSteps    maximum number of steps to perform before returning false (0 or less means no max)
@@ -107,8 +107,7 @@ public class Simulator extends Observable {
 
     public boolean simulate(int pc, int maxSteps, int[] breakPoints) throws SimulationException {
         simulatorThread = new SimThread(pc, maxSteps, breakPoints);
-        simulatorThread.start();
-        simulatorThread.get(); // this should emulate join()
+        simulatorThread.run(); // Just call run, this is a blocking method
         SimulationException pe = simulatorThread.pe;
         boolean done = simulatorThread.done;
         if (done) SystemIO.resetFiles(); // close any files opened in MIPS progra
@@ -120,7 +119,7 @@ public class Simulator extends Observable {
     }
 
     /**
-     * Simulate execution of given MIPS program.  It must have already been assembled.
+     * Start simulated execution of given MIPS program (in a new thread).  It must have already been assembled.
      *
      * @param pc          address of first instruction to simulate; this goes into program counter
      * @param maxSteps    maximum number of steps to perform before returning false (0 or less means no max)
@@ -129,7 +128,7 @@ public class Simulator extends Observable {
 
     public void startSimulation(int pc, int maxSteps, int[] breakPoints) {
         simulatorThread = new SimThread(pc, maxSteps, breakPoints);
-        simulatorThread.start();
+        new Thread(simulatorThread, "MIPS").start();
     }
 
 
@@ -177,7 +176,7 @@ public class Simulator extends Observable {
     }
 
     // The Simthread object will call this method when it enters and returns from
-    // its construct() method.  These signal start and stop, respectively, of
+    // its run() method.  These signal start and stop, respectively, of
     // simulation execution.  The observer can then adjust its own state depending
     // on the execution state.  Note that "stop" and "done" are not the same thing.
     // "stop" just means it is leaving execution state; this could be triggered
@@ -185,21 +184,19 @@ public class Simulator extends Observable {
     // instruction count limit, by breakpoint, or by end of simulation (truly done).
     private void notifyObserversOfExecution(SimulatorNotice notice) {
         this.setChanged();
+        // TODO: this is not completely threadsafe, if anything using Swing is observing
+        // This can be fixed by making a SwingObserver class that is thread-safe
         this.notifyObservers(notice);
     }
 
 
     /**
-     * SwingWorker subclass to perform the simulated execution in background thread.
-     * It is "interrupted" when main thread sets the "stop" variable to true.
-     * The variable is tested before the next MIPS instruction is simulated.  Thus
-     * interruption occurs in a tightly controlled fashion.
-     * <p>
-     * See SwingWorker.java for more details on its functionality and usage.  It is
-     * provided by Sun Microsystems for download and is not part of the Swing library.
+     * Perform the simulated execution. It is "interrupted" when main thread sets
+     * the "stop" variable to true. The variable is tested before the next MIPS
+     * instruction is simulated.  Thus interruption occurs in a tightly controlled fashion.
      */
 
-    class SimThread extends SwingWorker {
+    class SimThread implements Runnable {
         private int pc, maxSteps;
         private int[] breakPoints;
         private boolean done;
@@ -216,7 +213,6 @@ public class Simulator extends Observable {
          * @param breakPoints array of breakpoints (instruction addresses) specified by user
          */
         SimThread(int pc, int maxSteps, int[] breakPoints) {
-            super(Globals.getGui() != null);
             this.pc = pc;
             this.maxSteps = maxSteps;
             this.breakPoints = breakPoints;
@@ -251,14 +247,10 @@ public class Simulator extends Observable {
 
 
         /**
-         * This is comparable to the Runnable "run" method (it is called by
-         * SwingWorker's "run" method).  It simulates the program
-         * execution in the backgorund.
-         *
-         * @return boolean value true if execution done, false otherwise
+         * Implements Runnable
          */
 
-        public Object construct() {
+        public void run() {
             // The next two statements are necessary for GUI to be consistently updated
             // before the simulation gets underway.  Without them, this happens only intermittently,
             // with a consequence that some simulations are interruptable using PAUSE/STOP and others
@@ -287,7 +279,7 @@ public class Simulator extends Observable {
                 // not yet been incremented.  We'll set the EPC directly here.  DPS 8-July-2013
                 Coprocessor0.updateRegister("uepc", RegisterFile.getProgramCounter());
                 stopExecution(true, Reason.EXCEPTION);
-                return true;
+                return;
             }
             int steps = 0;
 
@@ -369,7 +361,7 @@ public class Simulator extends Observable {
                         }
                         // TODO: remove access to constructReturnReason
                         stopExecution(true, constructReturnReason);
-                        return true;
+                        return;
                     } catch (SimulationException se) {
                         // See if an exception handler is present.  Assume this is the case
                         // if and only if memory location Memory.exceptionHandlerAddress
@@ -386,7 +378,7 @@ public class Simulator extends Observable {
                         } else {
                             this.pe = se;
                             stopExecution(true, Reason.EXCEPTION);
-                            return true;
+                            return;
                         }
                     }
                 }// end synchronized block
@@ -395,20 +387,20 @@ public class Simulator extends Observable {
                 // Used to stop or pause a running MIPS program.  See stopSimulation() above.
                 if (stop) {
                     stopExecution(false, constructReturnReason);
-                    return false;
+                    return;
                 }
                 //	Return if we've reached a breakpoint.
                 if (ebreak || (breakPoints != null) &&
                         (Arrays.binarySearch(breakPoints, RegisterFile.getProgramCounter()) >= 0)) {
                     stopExecution(false, Reason.BREAKPOINT);
-                    return false;
+                    return;
                 }
                 // Check number of MIPS instructions executed.  Return if at limit (-1 is no limit).
                 if (maxSteps > 0) {
                     steps++;
                     if (steps >= maxSteps) {
                         stopExecution(false, Reason.MAX_STEPS);
-                        return false;
+                        return;
                     }
                 }
 
@@ -444,7 +436,7 @@ public class Simulator extends Observable {
                     // not yet been incremented.  We'll set the EPC directly here.  DPS 8-July-2013
                     Coprocessor0.updateRegister("uepc", RegisterFile.getProgramCounter());
                     stopExecution(true, Reason.EXCEPTION);
-                    return true;
+                    return;
                 }
             }
 
@@ -452,24 +444,8 @@ public class Simulator extends Observable {
             // counter "fell off the end" of the program.  NOTE: Assumes the
             // "while" loop contains no "break;" statements.
             stopExecution(true, Reason.CLIFF_TERMINATION);
-            return true; // true;  // execution completed
+            // execution completed
         }
-
-
-        /**
-         * This method is invoked by the SwingWorker when the "construct" method returns.
-         * It will update the GUI appropriately.  According to Sun's documentation, it
-         * is run in the main thread so should work OK with Swing components (which are
-         * not thread-safe).
-         * <p>
-         * Its action depends on what caused the return from construct() and what
-         * action led to the call of construct() in the first place.
-         */
-
-        public void finished() {
-            // the code that was in here has been moved into observers, it should work ok, but it is not strictly be thread-safe anymore
-        }
-
     }
 
     private class UpdateGUI implements Runnable {
