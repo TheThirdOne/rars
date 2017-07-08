@@ -3,7 +3,6 @@ package mars.simulator;
 import mars.*;
 import mars.mips.hardware.AddressErrorException;
 import mars.mips.hardware.Coprocessor0;
-import mars.mips.hardware.Memory;
 import mars.mips.hardware.RegisterFile;
 import mars.mips.instructions.BasicInstruction;
 import mars.util.Binary;
@@ -268,6 +267,7 @@ public class Simulator extends Observable {
 
             RegisterFile.initializeProgramCounter(pc);
             ProgramStatement statement;
+            // TODO: Proper error handling here
             try {
                 statement = Globals.memory.getStatement(RegisterFile.getProgramCounter());
             } catch (AddressErrorException e) {
@@ -328,6 +328,7 @@ public class Simulator extends Observable {
                 // registers is assured.  Not as critical for reading from those resources.
                 synchronized (Globals.memoryAndRegistersLock) {
                     try {
+                        // TODO: rework interrupts
                         if (Simulator.externalInterruptingDevice != NO_DEVICE) {
                             int deviceInterruptCode = externalInterruptingDevice;
                             Simulator.externalInterruptingDevice = NO_DEVICE;
@@ -335,9 +336,10 @@ public class Simulator extends Observable {
                         }
                         BasicInstruction instruction = (BasicInstruction) statement.getInstruction();
                         if (instruction == null) {
+                            // TODO: Proper error handling here
                             throw new SimulationException(statement,
                                     "undefined instruction (" + Binary.intToHexString(statement.getBinaryStatement()) + ")",
-                                    Exceptions.RESERVED_INSTRUCTION_EXCEPTION);
+                                    Exceptions.ILLEGAL_INSTRUCTION);
                         }
                         // THIS IS WHERE THE INSTRUCTION EXECUTION IS ACTUALLY SIMULATED!
                         instruction.simulate(statement);
@@ -368,14 +370,34 @@ public class Simulator extends Observable {
                         // (e.g. 0x80000180) contains an instruction.  If so, then set the
                         // program counter there and continue.  Otherwise terminate the
                         // MIPS program with appropriate error message.
+                        assert se.cause() != -1 : "Unhandlable exception not thrown through ExitingEception";
+                        assert se.cause() >= 0 : "Interrupts cannot be thrown from inside the simulation";
+                        // set the CSRs
+                        Coprocessor0.updateRegister("ucause", se.cause());
+                        Coprocessor0.updateRegister("uepc", pc);
+                        Coprocessor0.updateRegister("utval", se.value());
+
+                        // Get the interrupt handler if it exists
                         ProgramStatement exceptionHandler = null;
-                        try {
-                            exceptionHandler = Globals.memory.getStatement(Memory.exceptionHandlerAddress);
-                        } catch (AddressErrorException aee) {
-                        } // will not occur with this well-known address
+                        int utvec = Coprocessor0.getValue("utvec");
+
+                        // Mode can be ignored because we are only handling traps
+                        int base = utvec & 0xFFFFFFFC;
+
+                        if ((Coprocessor0.getValue("ustatus") & 0x1) == 0x1) { // test user-interrupt enable (UIE)
+                            try {
+                                exceptionHandler = Globals.memory.getStatement(base);
+                            } catch (AddressErrorException aee) {
+                                // Will occur if the error handler is not defined
+                            }
+                        }
+
                         if (exceptionHandler != null) {
-                            RegisterFile.setProgramCounter(Memory.exceptionHandlerAddress);
+                            Coprocessor0.orRegister("ustatus", 0x10); // Set UPIE
+                            Coprocessor0.clearRegister("ustatus", 0x1); // Clear UIE
+                            RegisterFile.setProgramCounter(base);
                         } else {
+                            // If we don't have an error handler or exceptions are disabled terminate the process
                             this.pe = se;
                             stopExecution(true, Reason.EXCEPTION);
                             return;
@@ -424,7 +446,7 @@ public class Simulator extends Observable {
 
 
                 // Get next instruction in preparation for next iteration.
-
+                // TODO: Proper error handling here
                 try {
                     statement = Globals.memory.getStatement(RegisterFile.getProgramCounter());
                 } catch (AddressErrorException e) {

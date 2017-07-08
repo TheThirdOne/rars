@@ -3,7 +3,6 @@ package mars;
 import mars.mips.hardware.AddressErrorException;
 import mars.mips.hardware.RegisterFile;
 import mars.mips.instructions.Instruction;
-import mars.simulator.Exceptions;
 import mars.util.Binary;
 
 /**
@@ -12,7 +11,7 @@ import mars.util.Binary;
  * if cause is -1, the exception is not-handlable is user code.
  */
 public class SimulationException extends Exception {
-    private int cause = -1, value;
+    private int cause = -1, value = 0;
     private ErrorMessage message = null;
 
     public SimulationException() {
@@ -20,7 +19,6 @@ public class SimulationException extends Exception {
 
     public SimulationException(ProgramStatement ps, String m, int cause) {
         this(ps, m);
-        Exceptions.setRegisters(cause);
         this.cause = cause;
     }
 
@@ -43,14 +41,12 @@ public class SimulationException extends Exception {
 
     public SimulationException(ProgramStatement ps, AddressErrorException aee) {
         this(ps, aee.getMessage());
-        Exceptions.setRegisters(aee.getType(), aee.getAddress());
         cause = aee.getType();
         value = aee.getAddress();
     }
 
     public SimulationException(ErrorMessage el, AddressErrorException aee) {
         message = el;
-        Exceptions.setRegisters(aee.getType(), aee.getAddress());
         cause = aee.getType();
         value = aee.getAddress();
     }
@@ -64,4 +60,14 @@ public class SimulationException extends Exception {
     public ErrorMessage error() {
         return message;
     }
+
+    public int cause() {
+        return cause;
+    }
+
+    public int value() {
+        return value;
+    }
+
+    ;
 }

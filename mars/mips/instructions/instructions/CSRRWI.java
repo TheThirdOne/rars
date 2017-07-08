@@ -40,6 +40,7 @@ public class CSRRWI extends BasicInstruction {
 
     public void simulate(ProgramStatement statement) {
         int[] operands = statement.getOperands();
+        // TODO: throw error if the csr does not exist
         int csr = Coprocessor0.getValue(operands[2]);
         Coprocessor0.updateRegister(operands[2], operands[1]);
         RegisterFile.updateRegister(operands[0], csr);

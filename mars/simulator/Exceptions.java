@@ -1,10 +1,5 @@
 package mars.simulator;
 
-import mars.mips.hardware.Coprocessor0;
-import mars.mips.hardware.RegisterFile;
-import mars.mips.instructions.Instruction;
-import mars.util.Binary;
-
 /*
 Copyright (c) 2003-2006,  Pete Sanderson and Kenneth Vollmar
 
@@ -56,46 +51,19 @@ public class Exceptions {
      */
     public static final int EXTERNAL_INTERRUPT_KEYBOARD = 0x00000040; // see comment above.
     public static final int EXTERNAL_INTERRUPT_DISPLAY = 0x00000080; // see comment above.
-    public static final int ADDRESS_EXCEPTION_LOAD = 4;
-    public static final int ADDRESS_EXCEPTION_STORE = 5;
-    public static final int SYSCALL_EXCEPTION = 8;
-    public static final int BREAKPOINT_EXCEPTION = 9;
-    public static final int RESERVED_INSTRUCTION_EXCEPTION = 10;
-    public static final int ARITHMETIC_OVERFLOW_EXCEPTION = 12;
-    public static final int TRAP_EXCEPTION = 13;
-    /* the following are from SPIM */
-    public static final int DIVIDE_BY_ZERO_EXCEPTION = 15;
-    public static final int FLOATING_POINT_OVERFLOW = 16;
-    public static final int FLOATING_POINT_UNDERFLOW = 17;
 
-    /**
-     * Given MIPS exception cause code, will place that code into
-     * coprocessor 0 CAUSE register ($13), set the EPC register to
-     * "current" program counter, and set Exception Level bit in STATUS register.
-     *
-     * @param cause The cause code (see Exceptions for a list)
-     */
-    public static void setRegisters(int cause) {
-        // Set CAUSE register bits 2 thru 6 to cause value.  The "& 0xFFFFFC83" will set bits 2-6 and 8-9 to 0 while
-        // keeping all the others.  Left-shift by 2 to put cause value into position then OR it in.  Bits 8-9 used to
-        // identify devices for External Interrupt (8=keyboard,9=display).
-        Coprocessor0.updateRegister("ucause", (Coprocessor0.getValue("ucause") & 0xFFFFFC83 | (cause << 2)));
-        // When exception occurred, PC had already been incremented so need to subtract 4 here.
-        Coprocessor0.updateRegister("uepc", RegisterFile.getProgramCounter() - Instruction.INSTRUCTION_LENGTH);
-        // Set EXL (Exception Level) bit, bit position 1, in STATUS register to 1.
-        Coprocessor0.updateRegister("ustatus", Binary.setBit(Coprocessor0.getValue("ustatus"), Coprocessor0.EXCEPTION_LEVEL));
-    }
+    // Interrupts
+    public static final int SOFTWARE_INTERRUPT = 0x80000000;
+    public static final int TIMER_INTERRUPT = 0x80000004;
+    public static final int EXTERNAL_INTERRUPT = 0x80000008;
 
-    /**
-     * Given MIPS exception cause code and bad address, place the bad address into UEPC
-     * register ($8) then call overloaded setRegisters with the cause code to do the rest.
-     *
-     * @param cause The cause code (see Exceptions for a list). Should be address exception.
-     * @param addr  The address that caused the exception.
-     */
-    public static void setRegisters(int cause, int addr) {
-        Coprocessor0.updateRegister("utval", addr);
-        setRegisters(cause);
-    }
-
+    // Traps
+    public static final int INSTRUCTION_ADDR_MISALIGNED = 0;
+    public static final int INSTRUCTION_ACCESS_FAULT = 1;
+    public static final int ILLEGAL_INSTRUCTION = 2;
+    public static final int LOAD_ADDRESS_MISALIGNED = 4;
+    public static final int LOAD_ACCESS_FAULT = 5;
+    public static final int STORE_ADDRESS_MISALIGNED = 4;
+    public static final int STORE_ACCESS_FAULT = 7;
+    public static final int ENVIRONMENT_CALL = 8;
 }  // Exceptions

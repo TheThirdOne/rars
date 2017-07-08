@@ -278,7 +278,7 @@ public class InstructionSet {
         }
         throw new SimulationException(statement,
                 "invalid or unimplemented syscall service: " +
-                        number + " ", Exceptions.SYSCALL_EXCEPTION);
+                        number + " ", Exceptions.ENVIRONMENT_CALL);
     }
 
    	/*

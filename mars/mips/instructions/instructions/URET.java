@@ -32,17 +32,20 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 (MIT license, http://www.opensource.org/licenses/mit-license.html)
  */
-public class CSRRS extends BasicInstruction {
-    public CSRRS() {
-        super("csrrs t0, t1, 0xFF", "Atomic Read/Set CSR: read from the CSR into t0 and logical or t1 into the CSR",
-                BasicInstructionFormat.I_FORMAT, "tttttttttttt sssss 010 fffff 1110011");
+public class URET extends BasicInstruction {
+    public URET() {
+        super("uret", "Return from handling an interrupt or exception (to uepc)",
+                BasicInstructionFormat.I_FORMAT, "000000000010 00000 000 00000 1110011");
     }
 
     public void simulate(ProgramStatement statement) {
-        int[] operands = statement.getOperands();
-        // TODO: throw error if the csr does not exist
-        int csr = Coprocessor0.getValue(operands[2]);
-        if (operands[1] != 0) Coprocessor0.orRegister(operands[2], RegisterFile.getValue(operands[1]));
-        RegisterFile.updateRegister(operands[0], csr);
+        boolean upie = (Coprocessor0.getValue("ustatus") & 0x10) == 0x10;
+        Coprocessor0.clearRegister("ustatus", 0x10); // Clear UPIE
+        if (upie) { // Set UIE to UPIE
+            Coprocessor0.orRegister("ustatus", 0x1);
+        } else {
+            Coprocessor0.clearRegister("ustatus", 0x1);
+        }
+        RegisterFile.setProgramCounter(Coprocessor0.getValue("uepc"));
     }
 }

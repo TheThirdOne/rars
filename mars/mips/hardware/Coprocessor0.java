@@ -48,9 +48,13 @@ public class Coprocessor0 {
     private static final RegisterBlock instance = new RegisterBlock('_', new Register[]{ // Prefix is not used
             new Register("ustatus", 0x000, DEFAULT_STATUS_VALUE),
             new Register("fcsr", 0x003, 0),
+            new Register("uie", 0x004, 0),
+            new Register("utvec", 0x005, 0),
+            new Register("uscratch", 0x040, 0),
             new Register("uepc", 0x041, 0),
             new Register("ucause", 0x042, 0),
-            new Register("utval", 0x043, 0)
+            new Register("utval", 0x043, 0),
+            new Register("uip", 0x044, 0)
     });
 
     /**
@@ -107,6 +111,15 @@ public class Coprocessor0 {
         updateRegister(num, instance.getValue(num) & ~val);
     }
 
+    /**
+     * Clears bits from a register according to a value
+     *
+     * @param name Name of register to change
+     * @param val  The value to clear by
+     **/
+    public static void clearRegister(String name, int val) {
+        updateRegister(name, instance.getValue(name) & ~val);
+    }
     /**
      * Returns the value of the register
      *
