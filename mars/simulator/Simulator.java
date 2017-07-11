@@ -188,7 +188,15 @@ public class Simulator extends Observable {
         this.notifyObservers(notice);
     }
 
+    public boolean registerExternalInterrupt(int value) {
+        if(simulatorThread == null)return false;
+        return simulatorThread.registerExternalInterrupt(value);
+    }
 
+    public boolean registerTimerInterrupt(int value) {
+        if(simulatorThread == null)return false;
+        return simulatorThread.registerTimerInterrupt(value);
+    }
     /**
      * Perform the simulated execution. It is "interrupted" when main thread sets
      * the "stop" variable to true. The variable is tested before the next MIPS
@@ -203,6 +211,16 @@ public class Simulator extends Observable {
         private volatile boolean stop = false;
         private Reason constructReturnReason;
 
+        // Status for the interrupt state
+        private volatile boolean pendingExternal = false;
+        private volatile int externalValue;
+        private volatile boolean pendingTimer = false;
+        private volatile int timerValue;
+        private boolean pendingTrap = false;
+        private SimulationException trapSE;
+        private int trapPC;
+
+        private boolean waiting;
 
         /**
          * SimThread constructor.  Receives all the information it needs to simulate execution.
@@ -244,6 +262,112 @@ public class Simulator extends Observable {
                     maxSteps, RunSpeedPanel.getInstance().getRunSpeed(), pc, reason, pe, done));
         }
 
+        private synchronized boolean registerExternalInterrupt(int value){
+            if(pendingExternal)return false;
+            externalValue = value;
+            pendingExternal = true;
+            notify();
+            return true;
+        }
+        private synchronized boolean registerTimerInterrupt(int value){
+            if(pendingTimer)return false;
+            timerValue = value;
+            pendingTimer = true;
+            notify();
+            return true;
+        }
+        private synchronized boolean registerSynchronousTrap(SimulationException se, int pc){
+            if(pendingTrap)return false;
+            trapSE = se;
+            trapPC = pc;
+            pendingTrap = true;
+            return true;
+        }
+
+        private boolean handleTrap(SimulationException se, int pc){
+            // See if an exception handler is present.  Assume this is the case
+            // if and only if memory location Memory.exceptionHandlerAddress
+            // (e.g. 0x80000180) contains an instruction.  If so, then set the
+            // program counter there and continue.  Otherwise terminate the
+            // MIPS program with appropriate error message.
+            assert se.cause() != -1 : "Unhandlable exception not thrown through ExitingEception";
+            assert se.cause() >= 0 : "Interrupts cannot be handled by the trap handler";
+            // set the CSRs
+            Coprocessor0.updateRegister("ucause", se.cause());
+            Coprocessor0.updateRegister("uepc", pc);
+            Coprocessor0.updateRegister("utval", se.value());
+
+            // Get the interrupt handler if it exists
+            int utvec = Coprocessor0.getValue("utvec");
+
+            // Mode can be ignored because we are only handling traps
+            int base = utvec & 0xFFFFFFFC;
+
+            ProgramStatement exceptionHandler = null;
+            if ((Coprocessor0.getValue("ustatus") & 0x1) != 0) { // test user-interrupt enable (UIE)
+                try {
+                    exceptionHandler = Globals.memory.getStatement(base);
+                } catch (AddressErrorException aee) {
+                    // Handled below
+                }
+            }
+
+            if (exceptionHandler != null) {
+                Coprocessor0.orRegister("ustatus", 0x10); // Set UPIE
+                Coprocessor0.clearRegister("ustatus", 0x1); // Clear UIE
+                RegisterFile.setProgramCounter(base);
+                return true;
+            } else {
+                // If we don't have an error handler or exceptions are disabled terminate the process
+                this.pe = se;
+                stopExecution(true, Reason.EXCEPTION);
+                return false;
+            }
+        }
+
+
+        private boolean handleInterrupt(int value, int cause, int pc){
+            // See if an exception handler is present.  Assume this is the case
+            // if and only if memory location Memory.exceptionHandlerAddress
+            // (e.g. 0x80000180) contains an instruction.  If so, then set the
+            // program counter there and continue.  Otherwise terminate the
+            // MIPS program with appropriate error message.
+            assert (cause & 0x10000000) != 0: "Traps cannot be handled by the interupt handler";
+            int code = cause & 0x7FFFFFFF;
+            // Don't handle cases where that interrupt isn't enabled
+            assert ((Coprocessor0.getValue("ustatus") & 0x1) == 0 && (Coprocessor0.getValue("uie") & (1 << code)) == 0) : "The interrupt handler must be enabled";
+            // set the CSRs
+            Coprocessor0.updateRegister("ucause", cause);
+            Coprocessor0.updateRegister("uepc", pc);
+            Coprocessor0.updateRegister("utval", value);
+
+            // Get the interrupt handler if it exists
+            int utvec = Coprocessor0.getValue("utvec");
+
+            // Handle vectored mode
+            int base = utvec & 0xFFFFFFFC, mode = utvec & 0x3;
+            if(mode == 2){
+                base += 4*code;
+            }
+
+            ProgramStatement exceptionHandler = null;
+            try {
+                exceptionHandler = Globals.memory.getStatement(base);
+            } catch (AddressErrorException aee) {
+                // handled below
+            }
+            if (exceptionHandler != null) {
+                Coprocessor0.orRegister("ustatus", 0x10); // Set UPIE
+                Coprocessor0.clearRegister("ustatus", 0x1); // Clear UIE
+                RegisterFile.setProgramCounter(base);
+                return true;
+            } else {
+                // If we don't have an error handler or exceptions are disabled terminate the process
+                this.pe = new SimulationException("Interrupt handler was not supplied, but interrupt enable was high");
+                stopExecution(true, Reason.EXCEPTION);
+                return false;
+            }
+        }
 
         /**
          * Implements Runnable
@@ -264,24 +388,6 @@ public class Simulator extends Observable {
             }
 
             startExecution();
-
-            RegisterFile.initializeProgramCounter(pc);
-            ProgramStatement statement;
-            // TODO: Proper error handling here
-            try {
-                statement = Globals.memory.getStatement(RegisterFile.getProgramCounter());
-            } catch (AddressErrorException e) {
-                this.pe = new SimulationException(new ErrorMessage(null, 0, 0,
-                        "invalid program counter value: " + Binary.intToHexString(RegisterFile.getProgramCounter())), e);
-                // Next statement is a hack.  Previous statement sets EPC register to ProgramCounter-4
-                // because it assumes the bad address comes from an operand so the ProgramCounter has already been
-                // incremented.  In this case, bad address is the instruction fetch itself so Program Counter has
-                // not yet been incremented.  We'll set the EPC directly here.  DPS 8-July-2013
-                Coprocessor0.updateRegister("uepc", RegisterFile.getProgramCounter());
-                stopExecution(true, Reason.EXCEPTION);
-                return;
-            }
-            int steps = 0;
 
             // *******************  PS addition 26 July 2006  **********************
             // A couple statements below were added for the purpose of assuring that when
@@ -313,27 +419,96 @@ public class Simulator extends Observable {
             // This is noticeable in stepped mode.
             // *********************************************************************
 
-            // The below line seems to not affect program execution
-            // this.pc is not used anywhere after above and setting this.pc = 0 shouldn't affect anything
-            // besides if the first statement is null (which should be an error anyways)
-            // int pc = 0; // added: 7/26/06 (explanation above)
-
+            RegisterFile.initializeProgramCounter(pc);
+            ProgramStatement statement = null;
+            int steps = 0;
             boolean ebreak = false;
-            while (statement != null) {
-                pc = RegisterFile.getProgramCounter(); // added: 7/26/06 (explanation above)
-                RegisterFile.incrementPC();
+
+            // Volatile variable initialized false but can be set true by the main thread.
+            // Used to stop or pause a running MIPS program.  See stopSimulation() above.
+            while(!stop){
                 // Perform the MIPS instruction in synchronized block.  If external threads agree
                 // to access MIPS memory and registers only through synchronized blocks on same
                 // lock variable, then full (albeit heavy-handed) protection of MIPS memory and
                 // registers is assured.  Not as critical for reading from those resources.
-                synchronized (Globals.memoryAndRegistersLock) {
-                    try {
-                        // TODO: rework interrupts
-                        if (Simulator.externalInterruptingDevice != NO_DEVICE) {
-                            int deviceInterruptCode = externalInterruptingDevice;
-                            Simulator.externalInterruptingDevice = NO_DEVICE;
-                            throw new SimulationException(statement, "External Interrupt", deviceInterruptCode);
+                if(waiting){
+                    synchronized (this) {
+                        if(!(pendingExternal || pendingTimer)){
+                            try {
+                                wait();
+                            } catch (InterruptedException ie) {
+                                // Don't bother catching an interruption
+                            }
+
                         }
+                    }
+                    waiting = false;
+                }
+                synchronized (Globals.memoryAndRegistersLock) {
+                    // Handle pending interupts and traps first
+                    int uip = Coprocessor0.getValue("uip"), uie = Coprocessor0.getValue("uie");
+                    boolean IE = (Coprocessor0.getValue("ustatus") & Coprocessor0.ENABLE_INTERRUPT) != 0;
+                    // make sure no interrupts sneak in while we are processing them
+                    pc = RegisterFile.getProgramCounter();
+                    synchronized (this) {
+                        if (IE && pendingExternal && (uie & Coprocessor0.EXTERNAL_INTERRUPT) != 0) {
+                            if (handleInterrupt(externalValue, Exceptions.EXTERNAL_INTERRUPT, pc)) {
+                                pendingExternal = false;
+                                uip &= ~0x100;
+                            } else {
+                                return; // if the interrupt can't be handled, but the interrupt enable bit is high, thats an error
+                            }
+                        } else if (IE && (uip & 0x1) != 0 && (uie & Coprocessor0.SOFTWARE_INTERRUPT) != 0) {
+                            if (handleInterrupt(0, Exceptions.SOFTWARE_INTERRUPT, pc)) {
+                                uip &= ~0x1;
+                            } else {
+                                return; // if the interrupt can't be handled, but the interrupt enable bit is high, thats an error
+                            }
+                        } else if (IE && pendingTimer && (uie & Coprocessor0.TIMER_INTERRUPT) != 0) {
+                            if (handleInterrupt(timerValue, Exceptions.TIMER_INTERRUPT, pc)) {
+                                pendingTimer = false;
+                                uip &= ~0x10;
+                            } else {
+                                return; // if the interrupt can't be handled, but the interrupt enable bit is high, thats an error
+                            }
+                        } else if (pendingTrap) { // if we have a pending trap and aren't handling an interrupt it must be handled
+                            if (handleTrap(trapSE, trapPC)) {
+                                pendingTrap = false;
+                            } else {
+                                return;
+                            }
+                        }
+                        uip |= (pendingExternal?Coprocessor0.EXTERNAL_INTERRUPT:0)|(pendingTimer?Coprocessor0.TIMER_INTERRUPT:0);
+                    }
+                    Coprocessor0.updateRegister("uip",uip);
+
+                    pc = RegisterFile.getProgramCounter();
+                    // Get instuction
+                    try {
+                        statement = Globals.memory.getStatement(pc);
+                    } catch (AddressErrorException e) {
+                        SimulationException tmp;
+                        if(e.getType() == Exceptions.LOAD_ACCESS_FAULT){
+                            tmp = new SimulationException("Instruction load access error",Exceptions.INSTRUCTION_ACCESS_FAULT);
+                        }else{
+                            tmp = new SimulationException("Instruction load alignment error",Exceptions.INSTRUCTION_ADDR_MISALIGNED);
+                        }
+                        if(!registerSynchronousTrap(tmp,pc)){
+                            this.pe = tmp;
+                            Coprocessor0.updateRegister("uepc", pc);
+                            stopExecution(true, Reason.EXCEPTION);
+                            return;
+                        }else{
+                            continue;
+                        }
+                    }
+                    if(statement == null){
+                        stopExecution(true, Reason.CLIFF_TERMINATION);
+                        return;
+                    }
+                    RegisterFile.incrementPC();
+
+                    try {
                         BasicInstruction instruction = (BasicInstruction) statement.getInstruction();
                         if (instruction == null) {
                             // TODO: Proper error handling here
@@ -354,6 +529,11 @@ public class Simulator extends Observable {
                             Globals.program.getBackStepper().addDoNothing(pc);
                         }
                         ebreak = true;
+                    }  catch (WaitException w){
+                        if (Globals.getSettings().getBackSteppingEnabled()) {
+                            Globals.program.getBackStepper().addDoNothing(pc);
+                        }
+                        waiting = true;
                     } catch (ExitingException e) {
                         if (pe.error() == null) {
                             this.constructReturnReason = Reason.NORMAL_TERMINATION;
@@ -365,39 +545,7 @@ public class Simulator extends Observable {
                         stopExecution(true, constructReturnReason);
                         return;
                     } catch (SimulationException se) {
-                        // See if an exception handler is present.  Assume this is the case
-                        // if and only if memory location Memory.exceptionHandlerAddress
-                        // (e.g. 0x80000180) contains an instruction.  If so, then set the
-                        // program counter there and continue.  Otherwise terminate the
-                        // MIPS program with appropriate error message.
-                        assert se.cause() != -1 : "Unhandlable exception not thrown through ExitingEception";
-                        assert se.cause() >= 0 : "Interrupts cannot be thrown from inside the simulation";
-                        // set the CSRs
-                        Coprocessor0.updateRegister("ucause", se.cause());
-                        Coprocessor0.updateRegister("uepc", pc);
-                        Coprocessor0.updateRegister("utval", se.value());
-
-                        // Get the interrupt handler if it exists
-                        ProgramStatement exceptionHandler = null;
-                        int utvec = Coprocessor0.getValue("utvec");
-
-                        // Mode can be ignored because we are only handling traps
-                        int base = utvec & 0xFFFFFFFC;
-
-                        if ((Coprocessor0.getValue("ustatus") & 0x1) == 0x1) { // test user-interrupt enable (UIE)
-                            try {
-                                exceptionHandler = Globals.memory.getStatement(base);
-                            } catch (AddressErrorException aee) {
-                                // Will occur if the error handler is not defined
-                            }
-                        }
-
-                        if (exceptionHandler != null) {
-                            Coprocessor0.orRegister("ustatus", 0x10); // Set UPIE
-                            Coprocessor0.clearRegister("ustatus", 0x1); // Clear UIE
-                            RegisterFile.setProgramCounter(base);
-                        } else {
-                            // If we don't have an error handler or exceptions are disabled terminate the process
+                        if(!registerSynchronousTrap(se,pc)){
                             this.pe = se;
                             stopExecution(true, Reason.EXCEPTION);
                             return;
@@ -405,12 +553,6 @@ public class Simulator extends Observable {
                     }
                 }// end synchronized block
 
-                // Volatile variable initialized false but can be set true by the main thread.
-                // Used to stop or pause a running MIPS program.  See stopSimulation() above.
-                if (stop) {
-                    stopExecution(false, constructReturnReason);
-                    return;
-                }
                 //	Return if we've reached a breakpoint.
                 if (ebreak || (breakPoints != null) &&
                         (Arrays.binarySearch(breakPoints, RegisterFile.getProgramCounter()) >= 0)) {
@@ -443,30 +585,8 @@ public class Simulator extends Observable {
                         }
                     }
                 }
-
-
-                // Get next instruction in preparation for next iteration.
-                // TODO: Proper error handling here
-                try {
-                    statement = Globals.memory.getStatement(RegisterFile.getProgramCounter());
-                } catch (AddressErrorException e) {
-                    this.pe = new SimulationException(new ErrorMessage(null, 0, 0,
-                            "invalid program counter value: " + Binary.intToHexString(RegisterFile.getProgramCounter())), e);
-                    // Next statement is a hack.  Previous statement sets EPC register to ProgramCounter-4
-                    // because it assumes the bad address comes from an operand so the ProgramCounter has already been
-                    // incremented.  In this case, bad address is the instruction fetch itself so Program Counter has
-                    // not yet been incremented.  We'll set the EPC directly here.  DPS 8-July-2013
-                    Coprocessor0.updateRegister("uepc", RegisterFile.getProgramCounter());
-                    stopExecution(true, Reason.EXCEPTION);
-                    return;
-                }
             }
-
-            // If we got here it was due to null statement, which means program
-            // counter "fell off the end" of the program.  NOTE: Assumes the
-            // "while" loop contains no "break;" statements.
-            stopExecution(true, Reason.CLIFF_TERMINATION);
-            // execution completed
+            stopExecution(false, constructReturnReason);
         }
     }
 

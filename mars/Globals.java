@@ -70,7 +70,7 @@ public class Globals {
     /**
      * Lock variable used at head of synchronized block to guard MIPS memory and registers
      **/
-    public static Object memoryAndRegistersLock = new Object();
+    public static final Object memoryAndRegistersLock = new Object();
     /**
      * Flag to determine whether or not to produce internal debugging information.
      **/

@@ -45,10 +45,12 @@ public class SimulationException extends Exception {
         value = aee.getAddress();
     }
 
-    public SimulationException(ErrorMessage el, AddressErrorException aee) {
-        message = el;
-        cause = aee.getType();
-        value = aee.getAddress();
+    public SimulationException(String m) {
+        message = new ErrorMessage(null,0,0,m);
+    }
+    public SimulationException(String m, int cause) {
+        message = new ErrorMessage(null,0,0,m);
+        this.cause = cause;
     }
 
     /**
@@ -68,6 +70,4 @@ public class SimulationException extends Exception {
     public int value() {
         return value;
     }
-
-    ;
 }

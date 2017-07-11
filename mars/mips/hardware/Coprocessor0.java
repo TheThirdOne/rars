@@ -40,13 +40,15 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  **/
 
 public class Coprocessor0 {
-    public static final int EXCEPTION_LEVEL = 1;  // bit position in STATUS register
-    // bits 8-15 (mask for interrupt levels) all set, bit 4 (user mode) set,
-    // bit 1 (exception level) not set, bit 0 (interrupt enable) set.
-    public static final int DEFAULT_STATUS_VALUE = 0x0000FF11;
+    public static final int EXTERNAL_INTERRUPT = 0x100;
+    public static final int TIMER_INTERRUPT = 0x10;
+    public static final int SOFTWARE_INTERRUPT = 0x1;
+
+
+    public static final int ENABLE_INTERRUPT = 0x1;
 
     private static final RegisterBlock instance = new RegisterBlock('_', new Register[]{ // Prefix is not used
-            new Register("ustatus", 0x000, DEFAULT_STATUS_VALUE),
+            new Register("ustatus", 0x000, 0),
             new Register("fcsr", 0x003, 0),
             new Register("uie", 0x004, 0),
             new Register("utvec", 0x005, 0),
