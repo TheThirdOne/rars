@@ -45,7 +45,7 @@ public class Coprocessor0 {
     public static final int SOFTWARE_INTERRUPT = 0x1;
 
 
-    public static final int ENABLE_INTERRUPT = 0x1;
+    public static final int INTERRUPT_ENABLE = 0x1;
 
     private static final RegisterBlock instance = new RegisterBlock('_', new Register[]{ // Prefix is not used
             new Register("ustatus", 0x000, 0),

@@ -5,7 +5,6 @@ import mars.mips.hardware.RegisterFile;
 import mars.simulator.BackStepper;
 import mars.simulator.Simulator;
 
-import javax.swing.*;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.ArrayList;
@@ -342,7 +341,6 @@ public class MIPSprogram {
      * @throws SimulationException Will throw exception if errors occured while simulating.
      */
     public boolean simulate(int maxSteps) throws SimulationException {
-        steppedExecution = false;
         Simulator sim = Simulator.getInstance();
         return sim.simulate(RegisterFile.getProgramCounter(), maxSteps, null);
     }
@@ -351,26 +349,12 @@ public class MIPSprogram {
      * Simulates execution of the MIPS program (in a new thread). Program must have already been assembled.
      * Begins simulation at current program counter address and continues until stopped,
      * paused, maximum steps exceeded, or exception occurs.
-     *
+     *  @param maxSteps    maximum number of instruction executions.  Default -1 means no maximum.
      * @param breakPoints int array of breakpoints (PC addresses).  Can be null.
-     * @param maxSteps    maximum number of instruction executions.  Default -1 means no maximum.
-     * @param a           the GUI component responsible for this call (GO normally).  set to null if none.
      **/
-    public void startSimulation(int[] breakPoints, int maxSteps, AbstractAction a) {
-        steppedExecution = false;
+    public void startSimulation(int maxSteps, int[] breakPoints) {
         Simulator sim = Simulator.getInstance();
         sim.startSimulation(RegisterFile.getProgramCounter(), maxSteps, breakPoints);
-    }
-
-    /**
-     * Will be true only while in process of simulating a program statement
-     * in step mode (e.g. returning to GUI after each step).  This is used to
-     * prevent spurious AccessNotices from being sent from Memory and Register
-     * to observers at other times (e.g. while updating the data and register
-     * displays, while assembling program's data segment, etc).
-     */
-    public boolean inSteppedExecution() {
-        return steppedExecution;
     }
 
     /**

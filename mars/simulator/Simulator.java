@@ -3,8 +3,10 @@ package mars.simulator;
 import mars.*;
 import mars.mips.hardware.AddressErrorException;
 import mars.mips.hardware.Coprocessor0;
+import mars.mips.hardware.InterruptController;
 import mars.mips.hardware.RegisterFile;
 import mars.mips.instructions.BasicInstruction;
+import mars.mips.instructions.Instruction;
 import mars.util.Binary;
 import mars.util.SystemIO;
 import mars.venus.RunSpeedPanel;
@@ -188,14 +190,9 @@ public class Simulator extends Observable {
         this.notifyObservers(notice);
     }
 
-    public boolean registerExternalInterrupt(int value) {
-        if(simulatorThread == null)return false;
-        return simulatorThread.registerExternalInterrupt(value);
-    }
-
-    public boolean registerTimerInterrupt(int value) {
-        if(simulatorThread == null)return false;
-        return simulatorThread.registerTimerInterrupt(value);
+    public void interrupt() {
+        if(simulatorThread == null)return;
+        simulatorThread.interrupt();
     }
     /**
      * Perform the simulated execution. It is "interrupted" when main thread sets
@@ -210,17 +207,6 @@ public class Simulator extends Observable {
         private SimulationException pe;
         private volatile boolean stop = false;
         private Reason constructReturnReason;
-
-        // Status for the interrupt state
-        private volatile boolean pendingExternal = false;
-        private volatile int externalValue;
-        private volatile boolean pendingTimer = false;
-        private volatile int timerValue;
-        private boolean pendingTrap = false;
-        private SimulationException trapSE;
-        private int trapPC;
-
-        private boolean waiting;
 
         /**
          * SimThread constructor.  Receives all the information it needs to simulate execution.
@@ -244,9 +230,10 @@ public class Simulator extends Observable {
          *
          * @param reason the Reason for stopping (PAUSE or STOP)
          */
-        public void setStop(Reason reason) {
+        public synchronized void setStop(Reason reason) {
             stop = true;
             constructReturnReason = reason;
+            notify();
         }
 
         private void startExecution() {
@@ -262,26 +249,8 @@ public class Simulator extends Observable {
                     maxSteps, RunSpeedPanel.getInstance().getRunSpeed(), pc, reason, pe, done));
         }
 
-        private synchronized boolean registerExternalInterrupt(int value){
-            if(pendingExternal)return false;
-            externalValue = value;
-            pendingExternal = true;
+        private synchronized void interrupt(){
             notify();
-            return true;
-        }
-        private synchronized boolean registerTimerInterrupt(int value){
-            if(pendingTimer)return false;
-            timerValue = value;
-            pendingTimer = true;
-            notify();
-            return true;
-        }
-        private synchronized boolean registerSynchronousTrap(SimulationException se, int pc){
-            if(pendingTrap)return false;
-            trapSE = se;
-            trapPC = pc;
-            pendingTrap = true;
-            return true;
         }
 
         private boolean handleTrap(SimulationException se, int pc){
@@ -358,7 +327,7 @@ public class Simulator extends Observable {
             }
             if (exceptionHandler != null) {
                 Coprocessor0.orRegister("ustatus", 0x10); // Set UPIE
-                Coprocessor0.clearRegister("ustatus", 0x1); // Clear UIE
+                Coprocessor0.clearRegister("ustatus", Coprocessor0.INTERRUPT_ENABLE);
                 RegisterFile.setProgramCounter(base);
                 return true;
             } else {
@@ -422,7 +391,7 @@ public class Simulator extends Observable {
             RegisterFile.initializeProgramCounter(pc);
             ProgramStatement statement = null;
             int steps = 0;
-            boolean ebreak = false;
+            boolean ebreak = false, waiting = false;
 
             // Volatile variable initialized false but can be set true by the main thread.
             // Used to stop or pause a running MIPS program.  See stopSimulation() above.
@@ -431,28 +400,20 @@ public class Simulator extends Observable {
                 // to access MIPS memory and registers only through synchronized blocks on same
                 // lock variable, then full (albeit heavy-handed) protection of MIPS memory and
                 // registers is assured.  Not as critical for reading from those resources.
-                if(waiting){
-                    synchronized (this) {
-                        if(!(pendingExternal || pendingTimer)){
-                            try {
-                                wait();
-                            } catch (InterruptedException ie) {
-                                // Don't bother catching an interruption
-                            }
-
-                        }
-                    }
-                    waiting = false;
-                }
+                // Check number of MIPS instructions executed.  Return if at limit (-1 is no limit).
                 synchronized (Globals.memoryAndRegistersLock) {
                     // Handle pending interupts and traps first
                     int uip = Coprocessor0.getValue("uip"), uie = Coprocessor0.getValue("uie");
-                    boolean IE = (Coprocessor0.getValue("ustatus") & Coprocessor0.ENABLE_INTERRUPT) != 0;
+                    boolean IE = (Coprocessor0.getValue("ustatus") & Coprocessor0.INTERRUPT_ENABLE) != 0;
                     // make sure no interrupts sneak in while we are processing them
                     pc = RegisterFile.getProgramCounter();
-                    synchronized (this) {
+                    synchronized (InterruptController.lock) {
+                        boolean pendingExternal = InterruptController.externalPending(),
+                                pendingTimer = InterruptController.timerPending(),
+                                pendingTrap = InterruptController.trapPending();
+                        // This is the explicit (in the spec) order that interrupts should be serviced
                         if (IE && pendingExternal && (uie & Coprocessor0.EXTERNAL_INTERRUPT) != 0) {
-                            if (handleInterrupt(externalValue, Exceptions.EXTERNAL_INTERRUPT, pc)) {
+                            if (handleInterrupt(InterruptController.claimExternal(), Exceptions.EXTERNAL_INTERRUPT, pc)) {
                                 pendingExternal = false;
                                 uip &= ~0x100;
                             } else {
@@ -465,15 +426,14 @@ public class Simulator extends Observable {
                                 return; // if the interrupt can't be handled, but the interrupt enable bit is high, thats an error
                             }
                         } else if (IE && pendingTimer && (uie & Coprocessor0.TIMER_INTERRUPT) != 0) {
-                            if (handleInterrupt(timerValue, Exceptions.TIMER_INTERRUPT, pc)) {
+                            if (handleInterrupt(InterruptController.claimTimer(), Exceptions.TIMER_INTERRUPT, pc)) {
                                 pendingTimer = false;
                                 uip &= ~0x10;
                             } else {
                                 return; // if the interrupt can't be handled, but the interrupt enable bit is high, thats an error
                             }
                         } else if (pendingTrap) { // if we have a pending trap and aren't handling an interrupt it must be handled
-                            if (handleTrap(trapSE, trapPC)) {
-                                pendingTrap = false;
+                            if (handleTrap(InterruptController.claimTrap(), pc - Instruction.INSTRUCTION_LENGTH)) { // account for that the PC has already been incremented
                             } else {
                                 return;
                             }
@@ -482,7 +442,17 @@ public class Simulator extends Observable {
                     }
                     Coprocessor0.updateRegister("uip",uip);
 
+                    // always handle interrupts and traps before quiting
+                    if (maxSteps > 0) {
+                        steps++;
+                        if (steps > maxSteps) {
+                            stopExecution(false, Reason.MAX_STEPS);
+                            return;
+                        }
+                    }
+
                     pc = RegisterFile.getProgramCounter();
+                    RegisterFile.incrementPC();
                     // Get instuction
                     try {
                         statement = Globals.memory.getStatement(pc);
@@ -493,7 +463,7 @@ public class Simulator extends Observable {
                         }else{
                             tmp = new SimulationException("Instruction load alignment error",Exceptions.INSTRUCTION_ADDR_MISALIGNED);
                         }
-                        if(!registerSynchronousTrap(tmp,pc)){
+                        if(!InterruptController.registerSynchronousTrap(tmp,pc)){
                             this.pe = tmp;
                             Coprocessor0.updateRegister("uepc", pc);
                             stopExecution(true, Reason.EXCEPTION);
@@ -506,7 +476,6 @@ public class Simulator extends Observable {
                         stopExecution(true, Reason.CLIFF_TERMINATION);
                         return;
                     }
-                    RegisterFile.incrementPC();
 
                     try {
                         BasicInstruction instruction = (BasicInstruction) statement.getInstruction();
@@ -545,7 +514,9 @@ public class Simulator extends Observable {
                         stopExecution(true, constructReturnReason);
                         return;
                     } catch (SimulationException se) {
-                        if(!registerSynchronousTrap(se,pc)){
+                        if(InterruptController.registerSynchronousTrap(se,pc)) {
+                            continue;
+                        }else{
                             this.pe = se;
                             stopExecution(true, Reason.EXCEPTION);
                             return;
@@ -559,13 +530,19 @@ public class Simulator extends Observable {
                     stopExecution(false, Reason.BREAKPOINT);
                     return;
                 }
-                // Check number of MIPS instructions executed.  Return if at limit (-1 is no limit).
-                if (maxSteps > 0) {
-                    steps++;
-                    if (steps >= maxSteps) {
-                        stopExecution(false, Reason.MAX_STEPS);
-                        return;
+
+                // Wait if WFI ran
+                if(waiting){
+                    if(!(InterruptController.externalPending() || InterruptController.timerPending())){
+                        synchronized (this) {
+                            try {
+                                wait();
+                            } catch (InterruptedException ie) {
+                                // Don't bother catching an interruption
+                            }
+                        }
                     }
+                    waiting = false;
                 }
 
                 // schedule GUI update only if: there is in fact a GUI! AND
@@ -580,6 +557,7 @@ public class Simulator extends Observable {
                     if (maxSteps != 1 &&
                             RunSpeedPanel.getInstance().getRunSpeed() < RunSpeedPanel.UNLIMITED_SPEED) {
                         try {
+                            // TODO: potentially use this.wait so it can be interrupted
                             Thread.sleep((int) (1000 / RunSpeedPanel.getInstance().getRunSpeed())); // make sure it's never zero!
                         } catch (InterruptedException e) {
                         }
@@ -603,5 +581,4 @@ public class Simulator extends Observable {
             Globals.getGui().getMainPane().getExecutePane().getTextSegmentWindow().highlightStepAtPC();
         }
     }
-
 }

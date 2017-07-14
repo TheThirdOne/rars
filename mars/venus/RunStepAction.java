@@ -80,7 +80,7 @@ public class RunStepAction extends GuiAction {
                     };
             Simulator.getInstance().addObserver(stopListener);
 
-            Globals.program.startSimulation(null, 1, this);
+            Globals.program.startSimulation(1, null);
         } else {
             // note: this should never occur since "Step" is only enabled after successful assembly.
             JOptionPane.showMessageDialog(mainUI, "The program must be assembled before it can be run.");

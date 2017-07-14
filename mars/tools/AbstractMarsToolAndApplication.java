@@ -769,7 +769,7 @@ public abstract class AbstractMarsToolAndApplication extends JFrame implements M
                         }
                     };
             Simulator.getInstance().addObserver(stopListener);
-            program.startSimulation(null, -1, null); // unlimited steps
+            program.startSimulation(-1, null); // unlimited steps
         }
     }
 

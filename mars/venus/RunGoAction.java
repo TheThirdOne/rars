@@ -97,7 +97,7 @@ public class RunGoAction extends GuiAction {
                 Simulator.getInstance().addObserver(stopListener);
 
                 int[] breakPoints = executePane.getTextSegmentWindow().getSortedBreakPointsArray();
-                Globals.program.startSimulation(breakPoints, maxSteps, this);
+                Globals.program.startSimulation(maxSteps, breakPoints);
             } else {
                 // This should never occur because at termination the Go and Step buttons are disabled.
                 JOptionPane.showMessageDialog(mainUI, "reset " + mainUI.getReset() + " started " + mainUI.getStarted());//"You must reset before you can execute the program again.");
