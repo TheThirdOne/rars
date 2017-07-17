@@ -1,10 +1,7 @@
 package mars.tools;
 
 import mars.Globals;
-import mars.mips.hardware.AddressErrorException;
-import mars.mips.hardware.Coprocessor0;
-import mars.mips.hardware.Memory;
-import mars.mips.hardware.MemoryAccessNotice;
+import mars.mips.hardware.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -88,9 +85,7 @@ public class DigitalLabSim extends AbstractMarsToolAndApplication {
                 CounterValue--;
             } else {
                 CounterValue = CounterValueMax;
-                if ((Coprocessor0.getValue("ustatus") & 2) == 0) {
-                    mars.simulator.Simulator.externalInterruptingDevice = /*Exceptions.*/EXTERNAL_INTERRUPT_TIMER;
-                }
+                InterruptController.registerTimerInterrupt(EXTERNAL_INTERRUPT_TIMER);
             }
     }
 
@@ -351,9 +346,10 @@ public class DigitalLabSim extends AbstractMarsToolAndApplication {
                 } else { // new button pressed
                     KeyBoardValueButtonClick = buttonValue;
                     button[KeyBoardValueButtonClick].setBackground(Color.GREEN);
-                    if (KeyboardInterruptOnOff && (Coprocessor0.getValue("ustatus") & 2) == 0) {
-                        mars.simulator.Simulator.externalInterruptingDevice = /*Exceptions.*/EXTERNAL_INTERRUPT_HEXA_KEYBOARD;
+                    if (KeyboardInterruptOnOff) {
+                        InterruptController.registerExternalInterrupt(EXTERNAL_INTERRUPT_HEXA_KEYBOARD);
                     }
+
                 }
             }
         }

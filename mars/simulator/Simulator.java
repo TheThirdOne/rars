@@ -55,12 +55,6 @@ public class Simulator extends Observable {
     private SimThread simulatorThread;
     private static Simulator simulator = null;  // Singleton object
     private static Runnable interactiveGUIUpdater = null;
-    // Others can set this true to indicate external interrupt.  Initially used
-    // to simulate keyboard and display interrupts.  The device is identified
-    // by the address of its MMIO control register.  keyboard 0xFFFF0000 and
-    // display 0xFFFF0008.  DPS 23 July 2008.
-    public static final int NO_DEVICE = 0;
-    public static volatile int externalInterruptingDevice = NO_DEVICE;
     /**
      * various reasons for simulate to end...
      */

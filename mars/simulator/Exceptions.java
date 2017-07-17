@@ -36,22 +36,6 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  **/
 
 public class Exceptions {
-    /**
-     * The exception number is stored in coprocessor 0 cause register ($13)
-     * Note: the codes for External Interrupts have been modified from MIPS
-     * specs in order to encode two pieces of information.  According
-     * to spec, there is one External Interrupt code, 0.  But then
-     * how to distinguish keyboard interrupt from display interrupt?
-     * The Cause register has Interupt Pending bits that can be set.
-     * Bit 8 represents keyboard, bit 9 represents display.  Those
-     * bits are included into this code, but shifted right two positions
-     * since the interrupt code will be shifted left two positions
-     * for inserting cause code into bit positions 2-6 in Cause register.
-     * DPS 23 July 2008.
-     */
-    public static final int EXTERNAL_INTERRUPT_KEYBOARD = 0x00000040; // see comment above.
-    public static final int EXTERNAL_INTERRUPT_DISPLAY = 0x00000080; // see comment above.
-
     // Interrupts
     public static final int SOFTWARE_INTERRUPT = 0x80000000;
     public static final int TIMER_INTERRUPT = 0x80000004;
