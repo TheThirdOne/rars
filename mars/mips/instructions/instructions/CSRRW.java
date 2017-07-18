@@ -1,10 +1,12 @@
 package mars.mips.instructions.instructions;
 
 import mars.ProgramStatement;
+import mars.SimulationException;
 import mars.mips.hardware.Coprocessor0;
 import mars.mips.hardware.RegisterFile;
 import mars.mips.instructions.BasicInstruction;
 import mars.mips.instructions.BasicInstructionFormat;
+import mars.simulator.Exceptions;
 
 /*
 Copyright (c) 2017,  Benjamin Landers
@@ -38,11 +40,14 @@ public class CSRRW extends BasicInstruction {
                 BasicInstructionFormat.I_FORMAT, "tttttttttttt sssss 001 fffff 1110011");
     }
 
-    public void simulate(ProgramStatement statement) {
+    public void simulate(ProgramStatement statement) throws SimulationException {
         int[] operands = statement.getOperands();
-        // TODO: throw error if the csr does not exist
-        int csr = Coprocessor0.getValue(operands[2]);
-        Coprocessor0.updateRegister(operands[2], RegisterFile.getValue(operands[1]));
-        RegisterFile.updateRegister(operands[0], csr);
+        try {
+            int csr = Coprocessor0.getValue(operands[2]);
+            Coprocessor0.updateRegister(operands[2], RegisterFile.getValue(operands[1]));
+            RegisterFile.updateRegister(operands[0], csr);
+        } catch (NullPointerException e) {
+            throw new SimulationException(statement, "Attempt to access unavailable CSR", Exceptions.ILLEGAL_INSTRUCTION);
+        }
     }
 }

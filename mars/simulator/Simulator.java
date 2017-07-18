@@ -498,7 +498,7 @@ public class Simulator extends Observable {
                         }
                         waiting = true;
                     } catch (ExitingException e) {
-                        if (pe.error() == null) {
+                        if (e.error() == null) {
                             this.constructReturnReason = Reason.NORMAL_TERMINATION;
                         } else {
                             this.constructReturnReason = Reason.EXCEPTION;

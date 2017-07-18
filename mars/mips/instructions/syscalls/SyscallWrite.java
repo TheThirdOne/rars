@@ -50,7 +50,7 @@ public class SyscallWrite extends AbstractSyscall {
     }
 
     public void simulate(ProgramStatement statement) throws ExitingException {
-        int byteAddress = RegisterFile.getValue("a2"); // source of characters to write to file
+        int byteAddress = RegisterFile.getValue("a1"); // source of characters to write to file
         byte b = 0;
         int reqLength = RegisterFile.getValue("a2"); // user-requested length
         int index = 0;
