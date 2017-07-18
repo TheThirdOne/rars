@@ -418,6 +418,7 @@ public class Memory extends Observable {
                 if (oldStatement != null) {
                     oldValue = oldStatement.getBinaryStatement();
                 }
+                // TODO: move decoding to just before the statement is executed (makes illegal instruction exceptions more accurate
                 setStatement(address, new ProgramStatement(value, address));
             } else {
                 throw new AddressErrorException(

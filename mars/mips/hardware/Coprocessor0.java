@@ -47,6 +47,8 @@ public class Coprocessor0 {
 
     public static final int INTERRUPT_ENABLE = 0x1;
 
+    // TODO: make readonly, auto updating special Register, and throw error on fail to access
+    // Useful for uip so it doesn't have to update constantly and ensureing that things like parts of ustatus are not witten illegally
     private static final RegisterBlock instance = new RegisterBlock('_', new Register[]{ // Prefix is not used
             new Register("ustatus", 0x000, 0),
             new Register("fcsr", 0x003, 0),

@@ -151,6 +151,7 @@ public class Settings extends Observable {
      */
     public static final int SELF_MODIFYING_CODE_ENABLED = 19;
 
+    // TODO: add option for turning off user trap handling and interrupts
     // NOTE: key sequence must match up with labels above which are used for array indexes!
     private static String[] booleanSettingsKeys = {"ExtendedAssembler", "BareMachine", "AssembleOnOpen", "AssembleAll",
             "LabelWindowVisibility", "DisplayAddressesInHex", "DisplayValuesInHex",

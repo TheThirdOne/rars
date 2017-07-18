@@ -225,6 +225,7 @@ public class Assembler {
                     // statement is a pseudo
                     // instruction, this method performs the necessary
                     // translation correctly.
+                    // TODO: consider making this recursive
                     ExtendedInstruction inst = (ExtendedInstruction) statement.getInstruction();
                     String basicAssembly = statement.getBasicAssemblyStatement();
                     int sourceLine = statement.getSourceLine();
