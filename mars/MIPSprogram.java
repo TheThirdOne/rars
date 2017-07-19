@@ -340,7 +340,7 @@ public class MIPSprogram {
      * @return true if execution completed and false otherwise
      * @throws SimulationException Will throw exception if errors occured while simulating.
      */
-    public boolean simulate(int maxSteps) throws SimulationException {
+    public Simulator.Reason simulate(int maxSteps) throws SimulationException {
         Simulator sim = Simulator.getInstance();
         return sim.simulate(RegisterFile.getProgramCounter(), maxSteps, null);
     }

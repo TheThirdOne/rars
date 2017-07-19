@@ -100,17 +100,18 @@ public class Simulator extends Observable {
      * @throws SimulationException Throws exception if run-time exception occurs.
      **/
 
-    public boolean simulate(int pc, int maxSteps, int[] breakPoints) throws SimulationException {
+    public Reason simulate(int pc, int maxSteps, int[] breakPoints) throws SimulationException {
         simulatorThread = new SimThread(pc, maxSteps, breakPoints);
         simulatorThread.run(); // Just call run, this is a blocking method
         SimulationException pe = simulatorThread.pe;
         boolean done = simulatorThread.done;
-        if (done) SystemIO.resetFiles(); // close any files opened in MIPS progra
+        Reason out = simulatorThread.constructReturnReason;
+        if (done) SystemIO.resetFiles(); // close any files opened in MIPS program
         this.simulatorThread = null;
         if (pe != null) {
             throw pe;
         }
-        return done;
+        return out;
     }
 
     /**

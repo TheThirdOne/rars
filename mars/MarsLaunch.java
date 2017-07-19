@@ -4,6 +4,7 @@ import mars.mips.dump.DumpFormat;
 import mars.mips.dump.DumpFormatLoader;
 import mars.mips.hardware.*;
 import mars.simulator.ProgramArgumentList;
+import mars.simulator.Simulator;
 import mars.util.Binary;
 import mars.util.FilenameFinder;
 import mars.util.MemoryDump;
@@ -161,17 +162,18 @@ public class MarsLaunch {
             maxSteps = -1;
             out = System.out;
             if (parseCommandArgs(args)) {
-                if (runCommand()) {
-                    displayMiscellaneousPostMortem();
-                    displayRegistersPostMortem();
-                    displayMemoryPostMortem();
-                }
+                runCommand();
                 dumpSegments();
             }
             System.exit(Globals.exitCode);
         }
     }
 
+    private void displayAllPostMortem() {
+        displayMiscellaneousPostMortem();
+        displayRegistersPostMortem();
+        displayMemoryPostMortem();
+    }
     /////////////////////////////////////////////////////////////
     // Perform any specified dump operations.  See "dump" option.
     //
@@ -439,9 +441,9 @@ public class MarsLaunch {
     // Carry out the mars command: assemble then optionally run
     // Returns false if no simulation (run) occurs, true otherwise.
 
-    private boolean runCommand() {
+    private void runCommand() {
         if (filenameList.size() == 0) {
-            return false;
+            return;
         }
 
         Globals.getSettings().setBooleanSettingNonPersistent(Settings.SELF_MODIFYING_CODE_ENABLED, selfModifyingCode);
@@ -487,32 +489,45 @@ public class MarsLaunch {
             Globals.exitCode = assembleErrorExitCode;
             out.println(e.errors().generateErrorAndWarningReport());
             out.println("Processing terminated due to errors.");
-            return false;
+            return;
         }
-        try {
+        if (simulate) {
             RegisterFile.initializeProgramCounter(startAtMain); // DPS 3/9/09
-            if (simulate) {
-                // store program args (if any) in MIPS memory
-                new ProgramArgumentList(programArgumentList).storeProgramArguments();
-                // establish observer if specified
-                establishObserver();
-                if (Globals.debug) {
-                    out.println("--------  SIMULATION BEGINS  -----------");
-                }
-                boolean done = code.simulate(maxSteps);
-                if (!done) {
-                    out.println("\nProgram terminated when maximum step limit " + maxSteps + " reached.");
-                }
+
+            // store program args (if any) in MIPS memory
+            new ProgramArgumentList(programArgumentList).storeProgramArguments();
+            // establish observer if specified
+            establishObserver();
+            if (Globals.debug) {
+                out.println("--------  SIMULATION BEGINS  -----------");
             }
-        } catch (SimulationException e) {
-            Globals.exitCode = simulateErrorExitCode;
-            out.println(e.error().generateReport());
-            out.println("Simulation terminated due to errors.");
+            try {
+                while (true) {
+                    Simulator.Reason done = code.simulate(maxSteps);
+                    if (done == Simulator.Reason.MAX_STEPS) {
+                        out.println("\nProgram terminated when maximum step limit " + maxSteps + " reached.");
+                        break;
+                    } else if (done == Simulator.Reason.CLIFF_TERMINATION) {
+                        out.println("\nProgram terminated by dropping off the bottom.");
+                        break;
+                    } else if (done == Simulator.Reason.NORMAL_TERMINATION) {
+                        out.println("\nProgram terminated by calling exit");
+                        break;
+                    }
+                    assert done == Simulator.Reason.BREAKPOINT : "Internal error: All cases other than breakpoints should be handled already";
+                    displayAllPostMortem(); // print registers if we hit a breakpoint, then continue
+                }
+
+            } catch (SimulationException e) {
+                Globals.exitCode = simulateErrorExitCode;
+                out.println(e.error().generateReport());
+                out.println("Simulation terminated due to errors.");
+            }
+            displayAllPostMortem();
         }
         if (Globals.debug) {
             out.println("\n--------  ALL PROCESSING COMPLETE  -----------");
         }
-        return simulate;
     }
 
 
@@ -588,17 +603,13 @@ public class MarsLaunch {
     // Displays requested register or registers
 
     private void displayRegistersPostMortem() {
-        int value;  // handy local to use throughout the next couple loops
-        String strValue;
         // Display requested register contents
-        out.println();
         for (String reg : registerDisplayList) {
             if (RegisterFile.getRegister(reg) != null) {
                 // integer register
                 if (verbose)
                     out.print(reg + "\t");
-                value = RegisterFile.getRegister(reg).getValue();
-                out.println(formatIntForDisplay(value));
+                out.println(formatIntForDisplay(RegisterFile.getRegister(reg).getValue()));
             } else {
                 // floating point register
                 float fvalue = Coprocessor1.getFloatFromRegister(reg);
