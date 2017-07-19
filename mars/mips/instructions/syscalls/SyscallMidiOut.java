@@ -35,10 +35,8 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 /**
  * Service to output simulated MIDI tone to sound card.  The call returns
- * immediately upon generating the tone.  By contrast, syscall 33
- * (MidiOutSync) does not return until tone duration has elapsed.<br>
- * <p>
- * Service Number: 31, Name: MidiOut<br>
+ * immediately upon generating the tone.  By contrast, MidiOutSync) does
+ * not return until tone duration has elapsed.
  * <p>
  * Performs syscall function to send MIDI output to sound card.  This requires
  * four arguments in registers a0 through a3.<br>
@@ -57,11 +55,11 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 public class SyscallMidiOut extends AbstractSyscall {
     // Endpoints of ranges for the three "byte" parameters.  The duration
     // parameter is limited at the high end only by the int range.
-    static final int rangeLowEnd = 0;
-    static final int rangeHighEnd = 127;
+    private static final int rangeLowEnd = 0;
+    private static final int rangeHighEnd = 127;
 
     public SyscallMidiOut() {
-        super(31, "MidiOut");
+        super("MidiOut");
     }
 
     public void simulate(ProgramStatement statement) {

@@ -35,16 +35,14 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 /**
  * Service to cause the MARS Java thread to sleep for (at least) the specified number of milliseconds.
- * This timing will not be precise as the Java implementation will add some overhead.<br>
- * <p>
- * Service Number: 32, Name: Sleep<br>
+ * This timing will not be precise as the Java implementation will add some overhead.
  * <p>
  * Input arguments: a0 is the length of time to sleep in milliseconds.
  */
 
 public class SyscallSleep extends AbstractSyscall {
     public SyscallSleep() {
-        super(32, "Sleep");
+        super("Sleep");
     }
 
     public void simulate(ProgramStatement statement) {

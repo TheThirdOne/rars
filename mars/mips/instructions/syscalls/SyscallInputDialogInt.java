@@ -36,9 +36,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 /**
- * Service to input data.<br>
- * <p>
- * Service Number: 51, Name: InputDialogInt <br>
+ * Service to input data.
  * <p>
  * Input arguments: a0 = address of null-terminated string that is the message to user<br>
  * Outputs:<br>
@@ -52,7 +50,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 public class SyscallInputDialogInt extends AbstractSyscall {
     public SyscallInputDialogInt() {
-        super(51, "InputDialogInt");
+        super("InputDialogInt");
     }
 
     public void simulate(ProgramStatement statement) throws ExitingException {

@@ -35,14 +35,12 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
 /**
- * Service to close file descriptor given in a0.<br>
- * <p>
- * Service Number: 16, Name: Close
+ * Service to close file descriptor given in a0.
  */
 
 public class SyscallClose extends AbstractSyscall {
     public SyscallClose() {
-        super(16, "Close");
+        super("Close");
     }
 
     public void simulate(ProgramStatement statement) {

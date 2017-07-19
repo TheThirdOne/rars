@@ -34,14 +34,12 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
 /**
- * Service to exit the MIPS program.<br>
- * <p>
- * Service Number: 10, Name: Exit
+ * Service to exit the MIPS program.
  */
 
 public class SyscallExit extends AbstractSyscall {
     public SyscallExit() {
-        super(10, "Exit");
+        super("Exit");
     }
 
     public void simulate(ProgramStatement statement) throws ExitingException {

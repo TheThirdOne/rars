@@ -39,24 +39,25 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 /**
  * Service to write to file descriptor given in a0.  a1 specifies buffer
- * and a2 specifies length.  Number of characters written is returned in a0, starting in MARS 3.7.<br>
- * <p>
- * Service Number: 15, Name: write
+ * and a2 specifies length.  Number of characters written is returned in a0.
  */
 
 public class SyscallWrite extends AbstractSyscall {
     public SyscallWrite() {
-        super(15, "Write");
+        super("Write");
     }
 
     public void simulate(ProgramStatement statement) throws ExitingException {
         int byteAddress = RegisterFile.getValue("a1"); // source of characters to write to file
-        byte b = 0;
         int reqLength = RegisterFile.getValue("a2"); // user-requested length
+        if (reqLength < 0) {
+            RegisterFile.updateRegister("a0", -1);
+            return;
+        }
         int index = 0;
         byte myBuffer[] = new byte[RegisterFile.getValue("a2") + 1]; // specified length plus null termination
         try {
-            b = (byte) Globals.memory.getByte(byteAddress);
+            byte b = (byte) Globals.memory.getByte(byteAddress);
             while (index < reqLength) // Stop at requested length. Null bytes are included.
             // while (index < reqLength && b != 0) // Stop at requested length OR null byte
             {
@@ -64,7 +65,6 @@ public class SyscallWrite extends AbstractSyscall {
                 byteAddress++;
                 b = (byte) Globals.memory.getByte(byteAddress);
             }
-
             myBuffer[index] = 0; // Add string termination
         } // end try
         catch (AddressErrorException e) {

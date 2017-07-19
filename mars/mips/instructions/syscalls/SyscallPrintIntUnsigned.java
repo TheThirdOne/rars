@@ -36,14 +36,12 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
 /**
- * Service to display integer stored in a0 on the console as unsigned decimal.<br>
- * <p>
- * Service Number: 36, Name: PrintIntUnsigned
+ * Service to display integer stored in a0 on the console as unsigned decimal.
  */
 
 public class SyscallPrintIntUnsigned extends AbstractSyscall {
     public SyscallPrintIntUnsigned() {
-        super(36, "PrintIntUnsigned");
+        super("PrintIntUnsigned");
     }
 
     public void simulate(ProgramStatement statement) {

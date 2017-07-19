@@ -42,7 +42,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 public class SyscallPrintChar extends AbstractSyscall {
     public SyscallPrintChar() {
-        super(11, "PrintChar");
+        super("PrintChar");
     }
 
     public void simulate(ProgramStatement statement) {

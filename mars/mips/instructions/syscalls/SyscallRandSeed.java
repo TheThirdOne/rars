@@ -36,9 +36,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
 /**
- * Service to set seed for the underlying Java pseudorandom number generator.<br>
- * <p>
- * Service Number: 40, Name: RandSeed<br>
+ * Service to set seed for the underlying Java pseudorandom number generator.
  * <p>
  * Input arguments:<br>
  * a0 = index of pseudorandom number generator <br>
@@ -48,7 +46,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 public class SyscallRandSeed extends AbstractSyscall {
     public SyscallRandSeed() {
-        super(40, "RandSeed");
+        super("RandSeed");
     }
 
     public void simulate(ProgramStatement statement) {

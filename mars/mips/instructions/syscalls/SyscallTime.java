@@ -35,15 +35,13 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
 /**
- * Performs syscall function to place current system time into $a0 (low order 32 bits)
- * and $a1 (high order 32 bits).<br>
- * <p>
- * Service Number: 30, Name: Time
+ * Performs syscall function to place current system time into a0 (low order 32 bits)
+ * and a1 (high order 32 bits).
  */
 
 public class SyscallTime extends AbstractSyscall {
     public SyscallTime() {
-        super(30, "Time");
+        super("Time");
     }
 
     public void simulate(ProgramStatement statement) {

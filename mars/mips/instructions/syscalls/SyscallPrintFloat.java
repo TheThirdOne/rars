@@ -35,14 +35,12 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
 /**
- * Service to display on the console float whose bits are stored in f12 <br>
- * <p>
- * Service Number: 11, Name: PrintFloat
+ * Service to display on the console float whose bits are stored in f12
  */
 
 public class SyscallPrintFloat extends AbstractSyscall {
     public SyscallPrintFloat() {
-        super(2, "PrintFloat");
+        super("PrintFloat");
     }
 
     public void simulate(ProgramStatement statement) {

@@ -36,14 +36,12 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
 /**
- * Service to display on the console the integer stored in a0, in binary format. <br>
- * <p>
- * Service Number: 35, Name: PrintIntBinary
+ * Service to display on the console the integer stored in a0, in binary format.
  */
 
 public class SyscallPrintIntBinary extends AbstractSyscall {
     public SyscallPrintIntBinary() {
-        super(35, "PrintIntBinary");
+        super("PrintIntBinary");
     }
 
     public void simulate(ProgramStatement statement) {

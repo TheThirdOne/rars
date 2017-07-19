@@ -36,14 +36,12 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
 /**
- * Service to allocate amount of heap memory specified in a0, putting address into a0.<br>
- * <p>
- * Service Number: 9, Name: Sbrk
+ * Service to allocate amount of heap memory specified in a0, putting address into a0.
  */
 
 public class SyscallSbrk extends AbstractSyscall {
     public SyscallSbrk() {
-        super(9, "Sbrk");
+        super("Sbrk");
     }
 
 

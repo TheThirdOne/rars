@@ -36,13 +36,9 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
 /**
- * Service to open file name specified by $a0. File descriptor returned in $v0.
- * (this was changed from $a0 in MARS 3.7 for SPIM compatibility.  The table
- * in COD erroneously shows $a0). <br>
+ * Service to open file name specified by a0. File descriptor returned in a0.
  * <p>
- * Service Number: 13, Name: Open<br>
- * <p>
- * Performs syscall function to open file name specified by $a0. File descriptor returned
+ * Performs syscall function to open file name specified by a0. File descriptor returned
  * in a0.  Only supported flags (a1) are read-only (0), write-only (1) and
  * write-append (9). write-only flag creates file if it does not exist, so it is technically
  * write-create.  write-append will start writing at end of existing file.
@@ -51,7 +47,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 public class SyscallOpen extends AbstractSyscall {
     public SyscallOpen() {
-        super(13, "Open");
+        super("Open");
     }
 
     public void simulate(ProgramStatement statement) throws ExitingException {

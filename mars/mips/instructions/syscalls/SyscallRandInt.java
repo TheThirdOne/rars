@@ -36,9 +36,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
 /**
- * System call to the random number generator.<br>
- * <p>
- * Service Number: 41, Name: RandInt <br>
+ * System call to the random number generator.
  * <p>
  * Input arguments: a0 = index of pseudorandom number generator <br>
  * Return: a0 = the next pseudorandom, uniformly distributed int value
@@ -46,7 +44,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 public class SyscallRandInt extends AbstractSyscall {
     public SyscallRandInt() {
-        super(41, "RandInt");
+        super("RandInt");
     }
 
     public void simulate(ProgramStatement statement) {

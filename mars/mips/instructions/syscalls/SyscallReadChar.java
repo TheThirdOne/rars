@@ -37,13 +37,11 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 /**
  * Service to read a character from input console into a0.
- * <p>
- * Service Number: 12, Name: ReadChar
  */
 
 public class SyscallReadChar extends AbstractSyscall {
     public SyscallReadChar() {
-        super(12, "ReadChar");
+        super("ReadChar");
     }
 
     public void simulate(ProgramStatement statement) throws ExitingException {

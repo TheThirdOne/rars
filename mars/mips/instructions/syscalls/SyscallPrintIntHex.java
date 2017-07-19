@@ -36,14 +36,12 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
 /**
- * Service to display on the console the integer stored in a0, in hexadecimal format. <br>
- * <p>
- * Service Number: 34, Name: PrintIntHex
+ * Service to display on the console the integer stored in a0, in hexadecimal format.
  */
 
 public class SyscallPrintIntHex extends AbstractSyscall {
     public SyscallPrintIntHex() {
-        super(34, "PrintIntHex");
+        super("PrintIntHex");
     }
 
     public void simulate(ProgramStatement statement) {

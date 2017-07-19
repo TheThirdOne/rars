@@ -36,9 +36,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 /**
- * Service to display a message to user.<br>
- * <p>
- * Service Number: 57, Name: MessageDialogFloat<br>
+ * Service to display a message to user.
  * <p>
  * Input arguments:<br>
  * a0 = address of null-terminated string that is the message to user   <br>
@@ -48,7 +46,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 public class SyscallMessageDialogFloat extends AbstractSyscall {
     public SyscallMessageDialogFloat() {
-        super(57, "MessageDialogFloat");
+        super("MessageDialogFloat");
     }
 
     public void simulate(ProgramStatement statement) throws ExitingException {

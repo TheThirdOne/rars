@@ -36,9 +36,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 /**
- * Service to display a message to user.<br>
- * <p>
- * Service Number: 50, Name: ComfirmDialog<br>
+ * Service to display a message to user.
  * <p>
  * Input arguments: a0 = address of null-terminated string that is the message to user<br>
  * Output: a0 contains value of user-chosen option<br>
@@ -49,7 +47,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 public class SyscallConfirmDialog extends AbstractSyscall {
     public SyscallConfirmDialog() {
-        super(50, "ConfirmDialog");
+        super("ConfirmDialog");
     }
 
     public void simulate(ProgramStatement statement) throws ExitingException {

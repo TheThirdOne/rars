@@ -36,9 +36,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
 /**
- * System call to the random number generator.<br>
- * <p>
- * Service Number: 43, Name: RandFloat <br>
+ * System call to the random number generator.
  * <p>
  * Input arguments: a0 = index of pseudorandom number generator <br>
  * Return: f0 = the next pseudorandom, uniformly distributed float value between 0.0 and 1.0
@@ -46,7 +44,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 public class SyscallRandFloat extends AbstractSyscall {
     public SyscallRandFloat() {
-        super(43, "RandFloat");
+        super("RandFloat");
     }
 
     public void simulate(ProgramStatement statement) {

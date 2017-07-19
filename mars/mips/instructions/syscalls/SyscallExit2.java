@@ -38,14 +38,12 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 /**
  * Service to exit the MIPS program with return value given in $a0.
  * If running in command mode, MARS will exit with that value.  If running under GUI,
- * return value is ignored.<br>
- * <p>
- * Service Number: 17, Name: Exit2
+ * return value is ignored.
  */
 
 public class SyscallExit2 extends AbstractSyscall {
     public SyscallExit2() {
-        super(17, "Exit2");
+        super("Exit2");
     }
 
     public void simulate(ProgramStatement statement) throws ExitingException {

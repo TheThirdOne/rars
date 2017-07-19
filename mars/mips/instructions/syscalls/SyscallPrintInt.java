@@ -35,14 +35,12 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
 /**
- * Service to display integer stored in a0 on the console.<br>
- * <p>
- * Service Number: 1, Name: PrintInt
+ * Service to display integer stored in a0 on the console.
  */
 
 public class SyscallPrintInt extends AbstractSyscall {
     public SyscallPrintInt() {
-        super(1, "PrintInt");
+        super("PrintInt");
     }
 
     public void simulate(ProgramStatement statement) {

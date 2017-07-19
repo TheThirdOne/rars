@@ -79,12 +79,10 @@ class SyscallLoader {
                     continue;
                 }
                 Syscall syscall = (Syscall) clas.newInstance();
-                if (findSyscall(syscall.getNumber()) == null) {
+                if (syscall.getNumber() == -1) {
                     syscallList.add(syscall);
                 } else {
-                    throw new Exception("Duplicate service number: " + syscall.getNumber() +
-                            " already registered to " +
-                            findSyscall(syscall.getNumber()).getName());
+                    throw new Exception("Syscalls must assign -1 for number");
                 }
             } catch (Exception e) {
                 System.out.println("Error instantiating Syscall from file " + file + ": " + e);
@@ -98,10 +96,27 @@ class SyscallLoader {
     // process them.  This will alter syscallList entry for affected names.
     private static ArrayList<Syscall> processSyscallNumberOverrides(ArrayList<Syscall> syscallList) {
         ArrayList<SyscallNumberOverride> overrides = new Globals().getSyscallOverrides();
+        if (syscallList.size() != overrides.size()) {
+            System.out.println("Error: the number of entries in the config file does not match the number of syscalls loaded");
+            System.exit(0);
+        }
         for (SyscallNumberOverride override : overrides) {
             boolean match = false;
             for (Syscall syscall : syscallList) {
+                if (syscall.getNumber() == override.getNumber()) {
+                    System.out.println("Duplicate service number: " + syscall.getNumber() + " already registered to " +
+                            findSyscall(syscall.getNumber()).getName());
+                    System.exit(0);
+                }
                 if (override.getName().equals(syscall.getName())) {
+                    if (syscall.getNumber() != -1) {
+                        System.out.println("Error: " + syscall.getName() + " was assigned a numebr twice in the config file");
+                        System.exit(0);
+                    }
+                    if (override.getNumber() < 0) {
+                        System.out.println("Error: " + override.getName() + " was assigned a negative number");
+                        System.exit(0);
+                    }
                     // we have a match to service name, assign new number
                     syscall.setNumber(override.getNumber());
                     match = true;

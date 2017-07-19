@@ -38,9 +38,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
 /**
- * Service to read console input string into buffer starting at address in a0 for a1-1 bytes.<br>
- * <p>
- * Service Number: 8, Name: ReadString
+ * Service to read console input string into buffer starting at address in a0 for a1-1 bytes.
  * <p>
  * Performs syscall function to read console input string into buffer starting at address in $a0.
  * Follows semantics of UNIX 'fgets'.  For specified length n,
@@ -50,7 +48,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 public class SyscallReadString extends AbstractSyscall {
     public SyscallReadString() {
-        super(8, "ReadString");
+        super("ReadString");
     }
 
     public void simulate(ProgramStatement statement) throws ExitingException {

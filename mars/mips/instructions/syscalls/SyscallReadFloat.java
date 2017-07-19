@@ -36,14 +36,12 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
 /**
- * Service to read the bits of input float into f0<br>
- * <p>
- * Service Number: 6, Name: ReadFloat
+ * Service to read the bits of input float into f0
  */
 
 public class SyscallReadFloat extends AbstractSyscall {
     public SyscallReadFloat() {
-        super(6, "ReadFloat");
+        super("ReadFloat");
     }
 
     public void simulate(ProgramStatement statement) throws ExitingException {

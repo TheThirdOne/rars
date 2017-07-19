@@ -37,9 +37,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
 /**
- * System call to the random number generator.<br>
- * <p>
- * Service Number: 42, Name: RandIntRange <br>
+ * System call to the random number generator.
  * <p>
  * Input arguments:<br>
  *     a0 = index of pseudorandom number generator <br>
@@ -49,7 +47,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 public class SyscallRandIntRange extends AbstractSyscall {
     public SyscallRandIntRange() {
-        super(42, "RandIntRange");
+        super("RandIntRange");
     }
 
     public void simulate(ProgramStatement statement) throws ExitingException {

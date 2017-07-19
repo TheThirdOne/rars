@@ -38,15 +38,13 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
 /**
- * Service to read from file descriptor given in $a0.  $a1 specifies buffer
- * and $a2 specifies length.  Number of characters read is returned in $v0. <br>
- * <p>
- * Service Number: 14, Name: Read
+ * Service to read from file descriptor given in a0.  a1 specifies buffer
+ * and a2 specifies length.  Number of characters read is returned in a0.
  */
 
 public class SyscallRead extends AbstractSyscall {
     public SyscallRead() {
-        super(14, "Read");
+        super("Read");
     }
 
     public void simulate(ProgramStatement statement) throws ExitingException {

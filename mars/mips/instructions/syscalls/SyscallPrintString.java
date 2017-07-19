@@ -35,14 +35,12 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
 /**
- * Service to display string stored starting at address in a0 onto the console.<br>
- * <p>
- * Service Number: 4, Name: PrintString
+ * Service to display string stored starting at address in a0 onto the console.
  */
 
 public class SyscallPrintString extends AbstractSyscall {
     public SyscallPrintString() {
-        super(4, "PrintString");
+        super("PrintString");
     }
 
     public void simulate(ProgramStatement statement) throws ExitingException {
