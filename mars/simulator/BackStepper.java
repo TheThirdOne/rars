@@ -41,21 +41,22 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 public class BackStepper {
-    // The types of "undo" actions.  Under 1.5, these would be enumerated type.
-    // These fit better in the BackStep class below but inner classes cannot have static members.
-    private static final int MEMORY_RESTORE_RAW_WORD = 0;
-    private static final int MEMORY_RESTORE_WORD = 1;
-    private static final int MEMORY_RESTORE_HALF = 2;
-    private static final int MEMORY_RESTORE_BYTE = 3;
-    private static final int REGISTER_RESTORE = 4;
-    private static final int PC_RESTORE = 5;
-    private static final int CONTROL_AND_STATUS_REGISTER_RESTORE = 6;
-    private static final int FLOATING_POINT_REGISTER_RESTORE = 7;
-    private static final int DO_NOTHING = 10;  // instruction does not write anything.
+    private enum Action {
+        MEMORY_RESTORE_RAW_WORD,
+        MEMORY_RESTORE_WORD,
+        MEMORY_RESTORE_HALF,
+        MEMORY_RESTORE_BYTE,
+        REGISTER_RESTORE,
+        PC_RESTORE,
+        CONTROL_AND_STATUS_REGISTER_RESTORE,
+        FLOATING_POINT_REGISTER_RESTORE,
+        DO_NOTHING
+    }
 
     // Flag to mark BackStep object as prepresenting specific situation: user manipulates
     // memory/register value via GUI after assembling program but before running it.
     private static final int NOT_PC_VALUE = -1;
+
 
     private boolean engaged;
     private final BackstepStack backSteps;
@@ -181,7 +182,7 @@ public class BackStepper {
      * @return the argument value
      */
     public int addMemoryRestoreRawWord(int address, int value) {
-        backSteps.push(MEMORY_RESTORE_RAW_WORD, pc(), address, value);
+        backSteps.push(Action.MEMORY_RESTORE_RAW_WORD, pc(), address, value);
         return value;
     }
 
@@ -194,7 +195,7 @@ public class BackStepper {
      * @return the argument value
      */
     public int addMemoryRestoreWord(int address, int value) {
-        backSteps.push(MEMORY_RESTORE_WORD, pc(), address, value);
+        backSteps.push(Action.MEMORY_RESTORE_WORD, pc(), address, value);
         return value;
     }
 
@@ -207,7 +208,7 @@ public class BackStepper {
      * @return the argument value
      */
     public int addMemoryRestoreHalf(int address, int value) {
-        backSteps.push(MEMORY_RESTORE_HALF, pc(), address, value);
+        backSteps.push(Action.MEMORY_RESTORE_HALF, pc(), address, value);
         return value;
     }
 
@@ -220,7 +221,7 @@ public class BackStepper {
      * @return the argument value
      */
     public int addMemoryRestoreByte(int address, int value) {
-        backSteps.push(MEMORY_RESTORE_BYTE, pc(), address, value);
+        backSteps.push(Action.MEMORY_RESTORE_BYTE, pc(), address, value);
         return value;
     }
 
@@ -233,7 +234,7 @@ public class BackStepper {
      * @return the argument value
      */
     public int addRegisterFileRestore(int register, int value) {
-        backSteps.push(REGISTER_RESTORE, pc(), register, value);
+        backSteps.push(Action.REGISTER_RESTORE, pc(), register, value);
         return value;
     }
 
@@ -249,7 +250,7 @@ public class BackStepper {
         value -= Instruction.INSTRUCTION_LENGTH;
         // Use "value" insead of "pc()" for second arg because RegisterFile.getProgramCounter()
         // returns branch target address at this point.
-        backSteps.push(PC_RESTORE, value, value);
+        backSteps.push(Action.PC_RESTORE, value, value);
         return value;
     }
 
@@ -262,7 +263,7 @@ public class BackStepper {
      * @return the argument value
      */
     public int addControlAndStatusRestore(int register, int value) {
-        backSteps.push(CONTROL_AND_STATUS_REGISTER_RESTORE, pc(), register, value);
+        backSteps.push(Action.CONTROL_AND_STATUS_REGISTER_RESTORE, pc(), register, value);
         return value;
     }
 
@@ -275,7 +276,7 @@ public class BackStepper {
      * @return the argument value
      */
     public int addFloatingPointRestore(int register, int value) {
-        backSteps.push(FLOATING_POINT_REGISTER_RESTORE, pc(), register, value);
+        backSteps.push(Action.FLOATING_POINT_REGISTER_RESTORE, pc(), register, value);
         return value;
     }
 
@@ -287,14 +288,14 @@ public class BackStepper {
      */
     public void addDoNothing(int pc) {
         if (backSteps.empty() || backSteps.peek().pc != pc) {
-            backSteps.push(DO_NOTHING, pc);
+            backSteps.push(Action.DO_NOTHING, pc);
         }
     }
 
 
     // Represents a "back step" (undo action) on the stack.
     private class BackStep {
-        private int action;  // what do do MEMORY_RESTORE_WORD, etc
+        private Action action;  // what do do MEMORY_RESTORE_WORD, etc
         private int pc;      // program counter value when original step occurred
         private ProgramStatement ps;   // statement whose action is being "undone" here
         private int param1;  // first parameter required by that action
@@ -303,7 +304,7 @@ public class BackStepper {
         // it is critical that BackStep object get its values by calling this method
         // rather than assigning to individual members, because of the technique used
         // to set its ps member (and possibly pc).
-        private void assign(int act, int programCounter, int parm1, int parm2) {
+        private void assign(Action act, int programCounter, int parm1, int parm2) {
             action = act;
             pc = programCounter;
             try {
@@ -367,7 +368,7 @@ public class BackStepper {
             return size == 0;
         }
 
-        private synchronized void push(int act, int programCounter, int parm1, int parm2) {
+        private synchronized void push(Action act, int programCounter, int parm1, int parm2) {
             if (size == 0) {
                 top = 0;
                 size++;
@@ -382,11 +383,11 @@ public class BackStepper {
             stack[top].assign(act, programCounter, parm1, parm2);
         }
 
-        private synchronized void push(int act, int programCounter, int parm1) {
+        private synchronized void push(Action act, int programCounter, int parm1) {
             push(act, programCounter, parm1, 0);
         }
 
-        private synchronized void push(int act, int programCounter) {
+        private synchronized void push(Action act, int programCounter) {
             push(act, programCounter, 0, 0);
         }
 
