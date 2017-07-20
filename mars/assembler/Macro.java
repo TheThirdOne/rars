@@ -3,7 +3,7 @@ package mars.assembler;
 import mars.ErrorList;
 import mars.ErrorMessage;
 import mars.RISCVprogram;
-import mars.riscv.hardware.Coprocessor1;
+import mars.riscv.hardware.FloatingPointRegisterFile;
 import mars.riscv.hardware.RegisterFile;
 
 import java.util.ArrayList;
@@ -222,11 +222,11 @@ public class Macro {
             // Bug fix: SPIM accepts parameter names that start with $ instead of %.  This can
             // lead to problems since register names also start with $.  This IF condition
             // should filter out register names.  Originally filtered those from regular set but not
-            // from Coprocessor0 or Coprocessor1 register sets.  Expanded the condition.
+            // from ControlAndStatusRegisterFile or FloatingPointRegisterFile register sets.  Expanded the condition.
             // DPS  7-July-2014.
             if (tokenValue.length() > 0 && tokenValue.charAt(0) == '$' &&
                     RegisterFile.getRegister(tokenValue) == null &&
-                    Coprocessor1.getRegister(tokenValue) == null)    // added 7-July-2014
+                    FloatingPointRegisterFile.getRegister(tokenValue) == null)    // added 7-July-2014
             {
                 return true;
             }

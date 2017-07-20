@@ -1,7 +1,7 @@
 package mars.riscv.instructions;
 
 import mars.ProgramStatement;
-import mars.riscv.hardware.Coprocessor1;
+import mars.riscv.hardware.FloatingPointRegisterFile;
 import mars.riscv.hardware.RegisterFile;
 import mars.riscv.BasicInstruction;
 import mars.riscv.BasicInstructionFormat;
@@ -41,7 +41,7 @@ public class FCVTSW extends BasicInstruction {
 
     public void simulate(ProgramStatement statement) {
         int[] operands = statement.getOperands();
-        Coprocessor1.setRegisterToFloat(operands[0], (float) RegisterFile.getValue(operands[1]));
+        FloatingPointRegisterFile.setRegisterToFloat(operands[0], (float) RegisterFile.getValue(operands[1]));
     }
 }
 

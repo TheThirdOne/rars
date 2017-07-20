@@ -33,13 +33,14 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 /**
- * Represents Coprocessor 0.  We will use only its interrupt/exception registers.
+ * Represents the implemented control and status registers. The main classes are fcsr (for floating point errors),
+ * timers, and interrupt handling.
  *
  * @author Pete Sanderson
  * @version August 2005
  **/
 
-public class Coprocessor0 {
+public class ControlAndStatusRegisterFile {
     public static final int EXTERNAL_INTERRUPT = 0x100;
     public static final int TIMER_INTERRUPT = 0x10;
     public static final int SOFTWARE_INTERRUPT = 0x1;
@@ -70,7 +71,7 @@ public class Coprocessor0 {
      **/
     public static int updateRegister(int num, int val) {
         return (Globals.getSettings().getBackSteppingEnabled())
-                ? Globals.program.getBackStepper().addCoprocessor0Restore(num, instance.updateRegister(num, val))
+                ? Globals.program.getBackStepper().addControlAndStatusRestore(num, instance.updateRegister(num, val))
                 : instance.updateRegister(num, val);
     }
 
@@ -158,11 +159,9 @@ public class Coprocessor0 {
 
 
     /**
-     * Coprocessor0 implements only selected registers, so the register number
-     * (8, 12, 13, 14) does not correspond to its position in the list of registers
-     * (0, 1, 2, 3).
+     * ControlAndStatusRegisterFile implements a wide range of register numbers that don't math the position in the underlying array
      *
-     * @param r A coprocessor0 Register
+     * @param r the CSR
      * @return the list position of given register, -1 if not found.
      **/
 

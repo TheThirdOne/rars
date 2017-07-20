@@ -219,10 +219,6 @@ public class HelpHelpAction extends GuiAction {
                         "</tr><tr>" +
                         "<td><tt>f0, f1, f3</tt></td><td><i>any</i> floating point register</td>" +
                         "</tr><tr>" +
-                        "<td><tt>$8</tt></td><td>any Coprocessor 0 register</td>" +
-                        "</tr><tr>" +
-                        "<td><tt>1</tt></td><td>condition flag (0 to 7)</td>" +
-                        "</tr><tr>" +
                         "<td><tt>10</tt></td><td>unsigned 5-bit integer (0 to 31)</td>" +
                         "</tr><tr>" +
                         "<td><tt>-100</tt></td><td>signed 16-bit integer (-32768 to 32767)</td>" +

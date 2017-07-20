@@ -1,6 +1,6 @@
 package mars.riscv.instructions;
 
-import mars.riscv.hardware.Coprocessor0;
+import mars.riscv.hardware.ControlAndStatusRegisterFile;
 
 /*
 Copyright (c) 2017,  Benjamin Landers
@@ -38,12 +38,12 @@ public class REM extends Arithmetic {
 
     public int compute(int value, int value2) {
         if (value2 == 0) {
-            Coprocessor0.orRegister("fcsr", 0x8); // Set Divide by Zero flag
+            ControlAndStatusRegisterFile.orRegister("fcsr", 0x8); // Set Divide by Zero flag
             return value;
         }
         // Overflow
         if (value == Integer.MIN_VALUE && value2 == -1) {
-            Coprocessor0.orRegister("fcsr", 0x4); // Set Overflow flag
+            ControlAndStatusRegisterFile.orRegister("fcsr", 0x4); // Set Overflow flag
             return 0;
         }
         return value % value2;

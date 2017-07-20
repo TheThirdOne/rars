@@ -360,8 +360,8 @@ public class SettingsHighlightingAction extends GuiAction {
         settings.setBooleanSetting(Settings.REGISTERS_HIGHLIGHTING, currentRegisterHighlightSetting);
         ExecutePane executePane = Globals.getGui().getMainPane().getExecutePane();
         executePane.getRegistersWindow().refresh();
-        executePane.getCoprocessor0Window().refresh();
-        executePane.getCoprocessor1Window().refresh();
+        executePane.getControlAndStatusWindow().refresh();
+        executePane.getFloatingPointWindow().refresh();
         // If a successful assembly has occured, the various panes will be populated with tables
         // and we want to apply the new settings.  If it has NOT occurred, there are no tables
         // in the Data and Text segment windows so we don't want to disturb them.

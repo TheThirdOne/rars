@@ -2,7 +2,7 @@ package mars.riscv.syscalls;
 
 import mars.ExitingException;
 import mars.ProgramStatement;
-import mars.riscv.hardware.Coprocessor1;
+import mars.riscv.hardware.FloatingPointRegisterFile;
 import mars.riscv.AbstractSyscall;
 import mars.util.SystemIO;
 
@@ -52,6 +52,6 @@ public class SyscallReadFloat extends AbstractSyscall {
             throw new ExitingException(statement,
                     "invalid float input (syscall " + this.getNumber() + ")");
         }
-        Coprocessor1.updateRegister(0, Float.floatToRawIntBits(floatValue));
+        FloatingPointRegisterFile.updateRegister(0, Float.floatToRawIntBits(floatValue));
     }
 }

@@ -33,7 +33,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 /**
- * Represents Coprocessor 1, the Floating Point Unit (FPU)
+ * Represents the Floating Point Unit (FPU)
  *
  * @author Pete Sanderson
  * @version July 2005
@@ -45,7 +45,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // a 32 bit float value into its equivalent 32-bit int representation, and
 // Float.intBitsToFloat() to bring it back.
 
-public class Coprocessor1 {
+public class FloatingPointRegisterFile {
     private static final RegisterBlock instance = new RegisterBlock('f', new Register[]{
             new Register("ft0", 0, 0), new Register("ft1", 1, 0),
             new Register("ft2", 2, 0), new Register("ft3", 3, 0),
@@ -110,7 +110,7 @@ public class Coprocessor1 {
 
     public static int updateRegister(int num, int val) {
         return (Globals.getSettings().getBackSteppingEnabled())
-                ? Globals.program.getBackStepper().addCoprocessor1Restore(num, instance.updateRegister(num, val))
+                ? Globals.program.getBackStepper().addFloatingPointRestore(num, instance.updateRegister(num, val))
                 : instance.updateRegister(num, val);
     }
 

@@ -1,7 +1,7 @@
 package mars.riscv.instructions;
 
 import mars.ProgramStatement;
-import mars.riscv.hardware.Coprocessor0;
+import mars.riscv.hardware.ControlAndStatusRegisterFile;
 import mars.riscv.hardware.RegisterFile;
 import mars.riscv.BasicInstruction;
 import mars.riscv.BasicInstructionFormat;
@@ -39,13 +39,13 @@ public class URET extends BasicInstruction {
     }
 
     public void simulate(ProgramStatement statement) {
-        boolean upie = (Coprocessor0.getValue("ustatus") & 0x10) == 0x10;
-        Coprocessor0.clearRegister("ustatus", 0x10); // Clear UPIE
+        boolean upie = (ControlAndStatusRegisterFile.getValue("ustatus") & 0x10) == 0x10;
+        ControlAndStatusRegisterFile.clearRegister("ustatus", 0x10); // Clear UPIE
         if (upie) { // Set UIE to UPIE
-            Coprocessor0.orRegister("ustatus", 0x1);
+            ControlAndStatusRegisterFile.orRegister("ustatus", 0x1);
         } else {
-            Coprocessor0.clearRegister("ustatus", 0x1);
+            ControlAndStatusRegisterFile.clearRegister("ustatus", 0x1);
         }
-        RegisterFile.setProgramCounter(Coprocessor0.getValue("uepc"));
+        RegisterFile.setProgramCounter(ControlAndStatusRegisterFile.getValue("uepc"));
     }
 }

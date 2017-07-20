@@ -1,6 +1,6 @@
 package mars.riscv.instructions;
 
-import mars.riscv.hardware.Coprocessor0;
+import mars.riscv.hardware.ControlAndStatusRegisterFile;
 
 /*
 Copyright (c) 2017,  Benjamin Landers
@@ -35,7 +35,7 @@ public class FDIVS extends Floating {
     }
 
     public float compute(float f1, float f2) {
-        if (f2 == 0.0f) Coprocessor0.orRegister("fcsr", 0x8); // Set Divide by zero flag
+        if (f2 == 0.0f) ControlAndStatusRegisterFile.orRegister("fcsr", 0x8); // Set Divide by zero flag
         return f1 / f2;
     }
 }

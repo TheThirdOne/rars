@@ -746,8 +746,8 @@ public abstract class AbstractMarsToolAndApplication extends JFrame implements M
             }
             // Moved these three register resets from before the try block to after it.  17-Dec-09 DPS.
             RegisterFile.resetRegisters();
-            Coprocessor1.resetRegisters();
-            Coprocessor0.resetRegisters();
+            FloatingPointRegisterFile.resetRegisters();
+            ControlAndStatusRegisterFile.resetRegisters();
 
             addAsObserver();
             observing = true;

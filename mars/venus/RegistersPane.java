@@ -38,9 +38,9 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  **/
 
 public class RegistersPane extends JTabbedPane {
-    RegistersWindow regsTab;
-    Coprocessor1Window cop1Tab;
-    Coprocessor0Window cop0Tab;
+    private RegistersWindow regsTab;
+    private FloatingPointWindow fpTab;
+    private ControlAndStatusWindow csrTab;
 
     private VenusUI mainUI;
 
@@ -48,22 +48,22 @@ public class RegistersPane extends JTabbedPane {
      * Constructor for the RegistersPane class.
      **/
 
-    public RegistersPane(VenusUI appFrame, RegistersWindow regs, Coprocessor1Window cop1,
-                         Coprocessor0Window cop0) {
+    public RegistersPane(VenusUI appFrame, RegistersWindow regs, FloatingPointWindow cop1,
+                         ControlAndStatusWindow cop0) {
         super();
         this.mainUI = appFrame;
         regsTab = regs;
-        cop1Tab = cop1;
-        cop0Tab = cop0;
+        fpTab = cop1;
+        csrTab = cop0;
         regsTab.setVisible(true);
-        cop1Tab.setVisible(true);
-        cop0Tab.setVisible(true);
+        fpTab.setVisible(true);
+        csrTab.setVisible(true);
         this.addTab("Registers", regsTab);
-        this.addTab("Coproc 1", cop1Tab);
-        this.addTab("Coproc 0", cop0Tab);
+        this.addTab("Floating Point", fpTab);
+        this.addTab("Control and Status", csrTab);
         this.setToolTipTextAt(0, "CPU registers");
-        this.setToolTipTextAt(1, "Coprocessor 1 (floating point unit) registers");
-        this.setToolTipTextAt(2, "selected Coprocessor 0 (exceptions and interrupts) registers");
+        this.setToolTipTextAt(1, "Floating point unit registers");
+        this.setToolTipTextAt(2, "Control and Status registers");
     }
 
     /**
@@ -76,20 +76,20 @@ public class RegistersPane extends JTabbedPane {
     }
 
     /**
-     * Return component containing coprocessor 1 (floating point) register set.
+     * Return component containing floating point register set.
      *
      * @return floating point register window
      */
-    public Coprocessor1Window getCoprocessor1Window() {
-        return cop1Tab;
+    public FloatingPointWindow getFloatingPointWindow() {
+        return fpTab;
     }
 
     /**
-     * Return component containing coprocessor 0 (exceptions) register set.
+     * Return component containing Control and Status register set.
      *
      * @return exceptions register window
      */
-    public Coprocessor0Window getCoprocessor0Window() {
-        return cop0Tab;
+    public ControlAndStatusWindow getControlAndStatusWindow() {
+        return csrTab;
     }
 }

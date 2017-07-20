@@ -1,7 +1,7 @@
 package mars.riscv.instructions;
 
 import mars.ProgramStatement;
-import mars.riscv.hardware.Coprocessor1;
+import mars.riscv.hardware.FloatingPointRegisterFile;
 import mars.riscv.hardware.RegisterFile;
 import mars.riscv.BasicInstruction;
 import mars.riscv.BasicInstructionFormat;
@@ -53,7 +53,7 @@ public class FCLASSS extends BasicInstruction {
      */
     public void simulate(ProgramStatement statement) {
         int[] operands = statement.getOperands();
-        float in = Coprocessor1.getFloatFromRegister(operands[1]);
+        float in = FloatingPointRegisterFile.getFloatFromRegister(operands[1]);
 
         if (Float.isNaN(in)) {
             RegisterFile.updateRegister(operands[0], 0x200);

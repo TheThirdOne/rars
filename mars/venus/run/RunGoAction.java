@@ -136,8 +136,8 @@ public class RunGoAction extends GuiAction {
         executePane.getTextSegmentWindow().setCodeHighlighting(true);
         executePane.getTextSegmentWindow().highlightStepAtPC();
         executePane.getRegistersWindow().updateRegisters();
-        executePane.getCoprocessor1Window().updateRegisters();
-        executePane.getCoprocessor0Window().updateRegisters();
+        executePane.getFloatingPointWindow().updateRegisters();
+        executePane.getControlAndStatusWindow().updateRegisters();
         executePane.getDataSegmentWindow().updateValues();
         FileStatus.set(FileStatus.RUNNABLE);
         mainUI.setReset(false);
@@ -153,14 +153,14 @@ public class RunGoAction extends GuiAction {
     public void stopped(SimulationException pe, Simulator.Reason reason) {
         // show final register and data segment values.
         executePane.getRegistersWindow().updateRegisters();
-        executePane.getCoprocessor1Window().updateRegisters();
-        executePane.getCoprocessor0Window().updateRegisters();
+        executePane.getFloatingPointWindow().updateRegisters();
+        executePane.getControlAndStatusWindow().updateRegisters();
         executePane.getDataSegmentWindow().updateValues();
         FileStatus.set(FileStatus.TERMINATED);
         SystemIO.resetFiles(); // close any files opened in MIPS program
-        // Bring coprocessor 0 to the front if terminated due to exception.
+        // Bring CSRs to the front if terminated due to exception.
         if (pe != null) {
-            mainUI.getRegistersPane().setSelectedComponent(executePane.getCoprocessor0Window());
+            mainUI.getRegistersPane().setSelectedComponent(executePane.getControlAndStatusWindow());
             executePane.getTextSegmentWindow().setCodeHighlighting(true);
             executePane.getTextSegmentWindow().unhighlightAllSteps();
             executePane.getTextSegmentWindow().highlightStepAtAddress(RegisterFile.getProgramCounter() - 4);

@@ -4,7 +4,7 @@ import mars.Globals;
 import mars.ProgramStatement;
 import mars.SimulationException;
 import mars.riscv.hardware.AddressErrorException;
-import mars.riscv.hardware.Coprocessor1;
+import mars.riscv.hardware.FloatingPointRegisterFile;
 import mars.riscv.hardware.RegisterFile;
 import mars.riscv.BasicInstruction;
 import mars.riscv.BasicInstructionFormat;
@@ -45,7 +45,7 @@ public class FLW extends BasicInstruction {
     public void simulate(ProgramStatement statement) throws SimulationException {
         int[] operands = statement.getOperands();
         try {
-            Coprocessor1.updateRegister(operands[0], Globals.memory.getWord(RegisterFile.getValue(operands[2]) + operands[1]));
+            FloatingPointRegisterFile.updateRegister(operands[0], Globals.memory.getWord(RegisterFile.getValue(operands[2]) + operands[1]));
         } catch (AddressErrorException e) {
             throw new SimulationException(statement, e);
         }

@@ -95,8 +95,8 @@ public class RunStepAction extends GuiAction {
     // to update the GUI.
     public void stepped(boolean done, Simulator.Reason reason, SimulationException pe) {
         executePane.getRegistersWindow().updateRegisters();
-        executePane.getCoprocessor1Window().updateRegisters();
-        executePane.getCoprocessor0Window().updateRegisters();
+        executePane.getFloatingPointWindow().updateRegisters();
+        executePane.getControlAndStatusWindow().updateRegisters();
         executePane.getDataSegmentWindow().updateValues();
         if (!done) {
             executePane.getTextSegmentWindow().highlightStepAtPC();
@@ -123,7 +123,7 @@ public class RunStepAction extends GuiAction {
                     pe.error().generateReport());
             mainUI.getMessagesPane().postMarsMessage(
                     "\n" + name + ": execution terminated with errors.\n\n");
-            mainUI.getRegistersPane().setSelectedComponent(executePane.getCoprocessor0Window());
+            mainUI.getRegistersPane().setSelectedComponent(executePane.getControlAndStatusWindow());
             FileStatus.set(FileStatus.TERMINATED); // should be redundant.
             executePane.getTextSegmentWindow().setCodeHighlighting(true);
             executePane.getTextSegmentWindow().unhighlightAllSteps();

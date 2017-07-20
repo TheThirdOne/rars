@@ -3,7 +3,7 @@ package mars.venus;
 import mars.Globals;
 import mars.Settings;
 import mars.riscv.hardware.AccessNotice;
-import mars.riscv.hardware.Coprocessor0;
+import mars.riscv.hardware.FloatingPointRegisterFile;
 import mars.riscv.hardware.Register;
 import mars.riscv.hardware.RegisterAccessNotice;
 import mars.simulator.Simulator;
@@ -50,12 +50,12 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 /**
- * Sets up a window to display registers in the UI.
+ * Sets up a window to display Flaoting Point registers in the Registers pane of the UI.
  *
- * @author Sanderson, Bumgarner
+ * @author Pete Sanderson 2005
  **/
 
-public class Coprocessor0Window extends JPanel implements Observer {
+public class FloatingPointWindow extends JPanel implements Observer {
     private static JTable table;
     private static Register[] registers;
     private Object[][] tableData;
@@ -64,28 +64,27 @@ public class Coprocessor0Window extends JPanel implements Observer {
     private ExecutePane executePane;
     private static final int NAME_COLUMN = 0;
     private static final int NUMBER_COLUMN = 1;
-    private static final int VALUE_COLUMN = 2;
+    private static final int FLOAT_COLUMN = 2;
     private static Settings settings;
 
     /**
      * Constructor which sets up a fresh window with a table that contains the register values.
      **/
 
-    public Coprocessor0Window() {
+    public FloatingPointWindow() {
         Simulator.getInstance().addObserver(this);
         settings = Globals.getSettings();
-        this.highlighting = false;
+        // Display registers in table contained in scroll pane.
+        this.setLayout(new BorderLayout()); // table display will occupy entire width if widened
         table = new MyTippedJTable(new RegTableModel(setupWindow()));
-        table.getColumnModel().getColumn(NAME_COLUMN).setPreferredWidth(50);
+        table.getColumnModel().getColumn(NAME_COLUMN).setPreferredWidth(25);
         table.getColumnModel().getColumn(NUMBER_COLUMN).setPreferredWidth(25);
-        table.getColumnModel().getColumn(VALUE_COLUMN).setPreferredWidth(60);
+        table.getColumnModel().getColumn(FLOAT_COLUMN).setPreferredWidth(60);
         // Display register values (String-ified) right-justified in mono font
         table.getColumnModel().getColumn(NAME_COLUMN).setCellRenderer(new RegisterCellRenderer(MonoRightCellRenderer.MONOSPACED_PLAIN_12POINT, SwingConstants.LEFT));
         table.getColumnModel().getColumn(NUMBER_COLUMN).setCellRenderer(new RegisterCellRenderer(MonoRightCellRenderer.MONOSPACED_PLAIN_12POINT, SwingConstants.RIGHT));
-        table.getColumnModel().getColumn(VALUE_COLUMN).setCellRenderer(new RegisterCellRenderer(MonoRightCellRenderer.MONOSPACED_PLAIN_12POINT, SwingConstants.RIGHT));
-        table.setPreferredScrollableViewportSize(new Dimension(200, 700));
-        this.setLayout(new BorderLayout());  // table display will occupy entire width if widened
-        this.add(new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED));
+        table.getColumnModel().getColumn(FLOAT_COLUMN).setCellRenderer(new RegisterCellRenderer(MonoRightCellRenderer.MONOSPACED_PLAIN_12POINT, SwingConstants.RIGHT));
+        this.add(new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER));
     }
 
     /**
@@ -95,23 +94,24 @@ public class Coprocessor0Window extends JPanel implements Observer {
      **/
 
     private Object[][] setupWindow() {
-        registers = Coprocessor0.getRegisters();
+        registers = FloatingPointRegisterFile.getRegisters();
+        this.highlighting = false;
         tableData = new Object[registers.length][3];
         for (int i = 0; i < registers.length; i++) {
             tableData[i][0] = registers[i].getName();
             tableData[i][1] = registers[i].getNumber();
-            tableData[i][2] = NumberDisplayBaseChooser.formatNumber(registers[i].getValue(),
-                    NumberDisplayBaseChooser.getBase(settings.getBooleanSetting(Settings.DISPLAY_VALUES_IN_HEX)));
+            tableData[i][2] = NumberDisplayBaseChooser.formatFloatNumber(registers[i].getValue(),
+                    NumberDisplayBaseChooser.getBase(settings.getBooleanSetting(Settings.DISPLAY_VALUES_IN_HEX)));//formatNumber(floatValue,NumberDisplayBaseChooser.getBase(settings.getDisplayValuesInHex()));
         }
         return tableData;
     }
 
     /**
-     * Reset and redisplay registers
+     * Reset and redisplay registers.
      */
     public void clearWindow() {
         this.clearHighlighting();
-        Coprocessor0.resetRegisters();
+        FloatingPointRegisterFile.resetRegisters();
         this.updateRegisters(Globals.getGui().getMainPane().getExecutePane().getValueDisplayBase());
     }
 
@@ -136,23 +136,36 @@ public class Coprocessor0Window extends JPanel implements Observer {
     }
 
     /**
-     * Update register display using current display base (10 or 16)
+     * Redisplay registers using current display number base (10 or 16)
      */
     public void updateRegisters() {
-        this.updateRegisters(Globals.getGui().getMainPane().getExecutePane().getValueDisplayBase());
+        updateRegisters(Globals.getGui().getMainPane().getExecutePane().getValueDisplayBase());
     }
 
     /**
-     * Update register display using specified display base
+     * Redisplay registers using specified display number base (10 or 16)
      *
      * @param base number base for display (10 or 16)
      */
     public void updateRegisters(int base) {
-        for (int i = 0; i < registers.length; i++) {
-            ((RegTableModel) table.getModel()).setDisplayAndModelValueAt(
-                    NumberDisplayBaseChooser.formatNumber(registers[i].getValue(), base), i, 2);
+        for (Register r : FloatingPointRegisterFile.getRegisters()) {
+            updateFloatRegisterValue(r.getNumber(), r.getValue(), base);
         }
     }
+
+    /**
+     * This method handles the updating of the GUI.  Does not affect actual register.
+     *
+     * @param number The number of the float register whose display to update.
+     * @param val    New value.
+     * @param base   the number base for display (e.g. 10, 16)
+     **/
+
+    public void updateFloatRegisterValue(int number, int val, int base) {
+        ((RegTableModel) table.getModel()).setDisplayAndModelValueAt(NumberDisplayBaseChooser.formatFloatNumber(val, base), number, FLOAT_COLUMN);
+
+    }
+
 
     /**
      * Required by Observer interface.  Called when notified by an Observable that we are registered with.
@@ -172,12 +185,12 @@ public class Coprocessor0Window extends JPanel implements Observer {
                 // Simulated MIPS execution starts.  Respond to memory changes if running in timed
                 // or stepped mode.
                 if (notice.getRunSpeed() != RunSpeedPanel.UNLIMITED_SPEED || notice.getMaxSteps() == 1) {
-                    Coprocessor0.addRegistersObserver(this);
+                    FloatingPointRegisterFile.addRegistersObserver(this);
                     this.highlighting = true;
                 }
             } else {
                 // Simulated MIPS execution stops.  Stop responding.
-                Coprocessor0.deleteRegistersObserver(this);
+                FloatingPointRegisterFile.deleteRegistersObserver(this);
             }
         } else if (obj instanceof RegisterAccessNotice) {
             // NOTE: each register is a separate Observable
@@ -200,15 +213,12 @@ public class Coprocessor0Window extends JPanel implements Observer {
      *
      * @param register Register object corresponding to row to be selected.
      */
-    private void highlightCellForRegister(Register register) {
-        int registerRow = Coprocessor0.getRegisterPosition(register);
-        if (registerRow < 0)
-            return; // not valid coprocessor0 register
-        this.highlightRow = registerRow;
+    void highlightCellForRegister(Register register) {
+        this.highlightRow = register.getNumber();
         table.tableChanged(new TableModelEvent(table.getModel()));
     }
 
-    /*
+    /**
     * Cell renderer for displaying register entries.  This does highlighting, so if you
     * don't want highlighting for a given column, don't use this.  Currently we highlight
     * all columns.
@@ -247,8 +257,11 @@ public class Coprocessor0Window extends JPanel implements Observer {
     }
 
 
+    /////////////////////////////////////////////////////////////////////////////
+    //  The table model.
+
     class RegTableModel extends AbstractTableModel {
-        final String[] columnNames = {"Name", "Number", "Value"};
+        final String[] columnNames = {"Name", "Number", "Float"};
         Object[][] data;
 
         public RegTableModel(Object[][] d) {
@@ -280,13 +293,12 @@ public class Coprocessor0Window extends JPanel implements Observer {
         }
 
         /*
-         * Don't need to implement this method unless your table's
-         * editable.  
+         * Float column are editable.
          */
         public boolean isCellEditable(int row, int col) {
             //Note that the data/cell address is constant,
             //no matter where the cell appears onscreen.
-            return col == VALUE_COLUMN;
+            return col == FLOAT_COLUMN;
         }
 
 
@@ -296,22 +308,35 @@ public class Coprocessor0Window extends JPanel implements Observer {
       	* value is valid, MIPS register is updated.
          */
         public void setValueAt(Object value, int row, int col) {
-            int val = 0;
+            int valueBase = Globals.getGui().getMainPane().getExecutePane().getValueDisplayBase();
+            float fVal;
+            String sVal = (String) value;
             try {
-                val = Binary.stringToInt((String) value);
+                if (col == FLOAT_COLUMN) {
+                    if (Binary.isHex(sVal)) {
+                        // Avoid using Float.intBitsToFloat() b/c it may not preserve NaN value.
+                        int iVal = Binary.stringToInt(sVal);
+                        //  Assures that if changed during MIPS program execution, the update will
+                        //  occur only between instructions.
+                        synchronized (Globals.memoryAndRegistersLock) {
+                            FloatingPointRegisterFile.updateRegister(row, iVal);
+                        }
+                        data[row][col] = NumberDisplayBaseChooser.formatFloatNumber(iVal, valueBase);
+
+                    } else {
+                        fVal = Float.parseFloat(sVal);
+                        //  Assures that if changed during MIPS program execution, the update will
+                        //  occur only between instructions.
+                        synchronized (Globals.memoryAndRegistersLock) {
+                            FloatingPointRegisterFile.setRegisterToFloat(row, fVal);
+                        }
+                        data[row][col] = NumberDisplayBaseChooser.formatNumber(fVal, valueBase);
+                    }
+                }
             } catch (NumberFormatException nfe) {
                 data[row][col] = "INVALID";
                 fireTableCellUpdated(row, col);
-                return;
             }
-            //  Assures that if changed during MIPS program execution, the update will
-            //  occur only between instructions.
-            synchronized (Globals.memoryAndRegistersLock) {
-                Coprocessor0.updateRegister(registers[row].getNumber(), val);
-            }
-            int valueBase = Globals.getGui().getMainPane().getExecutePane().getValueDisplayBase();
-            data[row][col] = NumberDisplayBaseChooser.formatNumber(val, valueBase);
-            fireTableCellUpdated(row, col);
         }
 
 
@@ -355,10 +380,38 @@ public class Coprocessor0Window extends JPanel implements Observer {
         }
 
         private String[] regToolTips = {
-            /* $8  */  "Memory address at which address exception occurred",  
-            /* $12 */  "Interrupt mask and enable bits",
-            /* $13 */  "Exception type and pending interrupt bits",
-            /* $14 */  "Address of instruction that caused exception"
+            /* ft0  */  "floating point temporary",
+            /* ft1  */  "floating point temporary",
+            /* ft2  */  "floating point temporary",
+            /* ft3  */  "floating point temporary",
+            /* ft4  */  "floating point temporary",
+            /* ft5  */  "floating point temporary",
+            /* ft6  */  "floating point temporary",
+            /* ft7  */  "floating point temporary",
+            /* fs0  */  "saved temporary (preserved across call)",
+            /* fs1  */  "saved temporary (preserved across call)",
+            /* fa0  */  "floating point argument / return value",
+            /* fa1  */  "floating point argument / return value",
+            /* fa2  */  "floating point argument",
+            /* fa3  */  "floating point argument",
+            /* fa4  */  "floating point argument",
+            /* fa5  */  "floating point argument",
+            /* fa6  */  "floating point argument",
+            /* fa7  */  "floating point argument",
+            /* fs2  */  "saved temporary (preserved across call)",
+            /* fs3  */  "saved temporary (preserved across call)",
+            /* fs4  */  "saved temporary (preserved across call)",
+            /* fs5  */  "saved temporary (preserved across call)",
+            /* fs6  */  "saved temporary (preserved across call)",
+            /* fs7  */  "saved temporary (preserved across call)",
+            /* fs8  */  "saved temporary (preserved across call)",
+            /* fs9  */  "saved temporary (preserved across call)",
+            /* fs10 */  "saved temporary (preserved across call)",
+            /* fs11 */  "saved temporary (preserved across call)",
+            /* ft8  */  "floating point temporary",
+            /* ft9  */  "floating point temporary",
+            /* ft10 */  "floating point temporary",
+            /* ft11 */  "floating point temporary"
         };
 
         //Implement table cell tool tips.
@@ -368,7 +421,7 @@ public class Coprocessor0Window extends JPanel implements Observer {
             int rowIndex = rowAtPoint(p);
             int colIndex = columnAtPoint(p);
             int realColumnIndex = convertColumnIndexToModel(colIndex);
-            if (realColumnIndex == NAME_COLUMN) { //Register name column
+            if (realColumnIndex == NAME_COLUMN) {
                 tip = regToolTips[rowIndex];
             /* You can customize each tip to encorporiate cell contents if you like:
                TableModel model = getModel();
@@ -385,8 +438,7 @@ public class Coprocessor0Window extends JPanel implements Observer {
 
         private String[] columnToolTips = {
             /* name */   "Each register has a tool tip describing its usage convention",
-            /* number */ "Register number.  In your program, precede it with $",
-            /* value */  "Current 32 bit value"
+            /* float */ "32-bit single precision IEEE 754 floating point register"
         };
 
         //Implement table header tool tips.

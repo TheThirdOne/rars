@@ -11,7 +11,6 @@ done if you aren't a developer pay this no mind.
 
 Transition MIPS->RISCV
   - Finish cleaning mips references from comments
-  - Rename Coprocessor0&1 to better names
   - Eliminate the .ktext section
   - Figure out a good name and logo
   - Fix some outdated documentation which became incorrect during conversion

@@ -1,8 +1,8 @@
 package mars.riscv.instructions;
 
 import mars.ProgramStatement;
-import mars.riscv.hardware.Coprocessor0;
-import mars.riscv.hardware.Coprocessor1;
+import mars.riscv.hardware.ControlAndStatusRegisterFile;
+import mars.riscv.hardware.FloatingPointRegisterFile;
 import mars.riscv.hardware.RegisterFile;
 import mars.riscv.BasicInstruction;
 import mars.riscv.BasicInstructionFormat;
@@ -42,9 +42,9 @@ public class FEQS extends BasicInstruction {
 
     public void simulate(ProgramStatement statement) {
         int[] operands = statement.getOperands();
-        float f1 = Coprocessor1.getFloatFromRegister(operands[1]), f2 = Coprocessor1.getFloatFromRegister(operands[2]);
+        float f1 = FloatingPointRegisterFile.getFloatFromRegister(operands[1]), f2 = FloatingPointRegisterFile.getFloatFromRegister(operands[2]);
         // Set invalid flag if either input is NaN (Technically this should only set if there is a "signalling" NaN)
-        if (Float.isNaN(f1) || Float.isNaN(f2)) Coprocessor0.orRegister("fcsr", 0x10);
+        if (Float.isNaN(f1) || Float.isNaN(f2)) ControlAndStatusRegisterFile.orRegister("fcsr", 0x10);
         boolean result = f1 == f2;
         RegisterFile.updateRegister(operands[0], result ? 1 : 0);
     }

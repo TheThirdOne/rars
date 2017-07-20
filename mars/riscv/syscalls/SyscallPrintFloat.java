@@ -1,7 +1,7 @@
 package mars.riscv.syscalls;
 
 import mars.ProgramStatement;
-import mars.riscv.hardware.Coprocessor1;
+import mars.riscv.hardware.FloatingPointRegisterFile;
 import mars.riscv.AbstractSyscall;
 import mars.util.SystemIO;
 
@@ -45,6 +45,6 @@ public class SyscallPrintFloat extends AbstractSyscall {
 
     public void simulate(ProgramStatement statement) {
         SystemIO.printString(Float.toString(Float.intBitsToFloat(
-                Coprocessor1.getValue(12))));
+                FloatingPointRegisterFile.getValue(12))));
     }
 }

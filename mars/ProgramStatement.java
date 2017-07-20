@@ -4,7 +4,7 @@ import mars.assembler.SymbolTable;
 import mars.assembler.Token;
 import mars.assembler.TokenList;
 import mars.assembler.TokenTypes;
-import mars.riscv.hardware.Coprocessor1;
+import mars.riscv.hardware.FloatingPointRegisterFile;
 import mars.riscv.hardware.RegisterFile;
 import mars.riscv.BasicInstruction;
 import mars.riscv.BasicInstructionFormat;
@@ -206,7 +206,7 @@ public class ProgramStatement implements Comparable<ProgramStatement> {
                 }
                 this.operands[this.numOperands++] = registerNumber;
             } else if (tokenType == TokenTypes.FP_REGISTER_NAME) {
-                registerNumber = Coprocessor1.getRegister(tokenValue).getNumber();
+                registerNumber = FloatingPointRegisterFile.getRegister(tokenValue).getNumber();
                 basicStatementElement = "f" + registerNumber;
                 basic += basicStatementElement;
                 basicStatementList.addString(basicStatementElement);

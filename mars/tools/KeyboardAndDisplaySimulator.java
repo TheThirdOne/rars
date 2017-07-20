@@ -466,7 +466,7 @@ public class KeyboardAndDisplaySimulator extends AbstractMarsToolAndApplication 
     /**
      * Overrides default method, to provide a Help button for this tool/app.
      */
-
+    // TODO: update documentation
     protected JComponent getHelpComponent() {
         final String helpContent =
                 "Keyboard And Display MMIO Simulator\n\n" +

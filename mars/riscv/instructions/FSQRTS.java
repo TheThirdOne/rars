@@ -1,7 +1,7 @@
 package mars.riscv.instructions;
 
 import mars.ProgramStatement;
-import mars.riscv.hardware.Coprocessor1;
+import mars.riscv.hardware.FloatingPointRegisterFile;
 import mars.riscv.BasicInstruction;
 import mars.riscv.BasicInstructionFormat;
 
@@ -40,7 +40,7 @@ public class FSQRTS extends BasicInstruction {
 
     public void simulate(ProgramStatement statement) {
         int[] operands = statement.getOperands();
-        float result = (float) Math.sqrt(Coprocessor1.getFloatFromRegister(operands[1]));
-        Coprocessor1.setRegisterToFloat(operands[0], result);
+        float result = (float) Math.sqrt(FloatingPointRegisterFile.getFloatFromRegister(operands[1]));
+        FloatingPointRegisterFile.setRegisterToFloat(operands[0], result);
     }
 }

@@ -42,8 +42,8 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 public class ExecutePane extends JDesktopPane {
     private RegistersWindow registerValues;
-    private Coprocessor1Window coprocessor1Values;
-    private Coprocessor0Window coprocessor0Values;
+    private FloatingPointWindow fpRegValues;
+    private ControlAndStatusWindow csrValues;
     private DataSegmentWindow dataSegment;
     private TextSegmentWindow textSegment;
     private LabelsWindow labelValues;
@@ -57,11 +57,11 @@ public class ExecutePane extends JDesktopPane {
      *
      * @param mainUI   the parent GUI
      * @param regs     window containing integer register set
-     * @param cop1Regs window containing Coprocessor 1 register set
-     * @param cop0Regs window containing Coprocessor 0 register set
+     * @param fpRegs window containing floating point register set
+     * @param csrRegs window containing the CSR set
      */
 
-    public ExecutePane(VenusUI mainUI, RegistersWindow regs, Coprocessor1Window cop1Regs, Coprocessor0Window cop0Regs) {
+    public ExecutePane(VenusUI mainUI, RegistersWindow regs, FloatingPointWindow fpRegs, ControlAndStatusWindow csrRegs) {
         this.mainUI = mainUI;
         // Although these are displayed in Data Segment, they apply to all three internal
         // windows within the Execute pane.  So they will be housed here.
@@ -73,8 +73,8 @@ public class ExecutePane extends JDesktopPane {
         valueDisplayBase.setToolTipText("If checked, displays all memory and register contents in hexadecimal.  Otherwise, decimal.");
         NumberDisplayBaseChooser[] choosers = {addressDisplayBase, valueDisplayBase};
         registerValues = regs;
-        coprocessor1Values = cop1Regs;
-        coprocessor0Values = cop0Regs;
+        fpRegValues = fpRegs;
+        csrValues = csrRegs;
         textSegment = new TextSegmentWindow();
         dataSegment = new DataSegmentWindow(choosers);
         labelValues = new LabelsWindow();
@@ -156,8 +156,8 @@ public class ExecutePane extends JDesktopPane {
         this.getTextSegmentWindow().clearWindow();
         this.getDataSegmentWindow().clearWindow();
         this.getRegistersWindow().clearWindow();
-        this.getCoprocessor1Window().clearWindow();
-        this.getCoprocessor0Window().clearWindow();
+        this.getFloatingPointWindow().clearWindow();
+        this.getControlAndStatusWindow().clearWindow();
         this.getLabelsWindow().clearWindow();
         // seems to be required, to display cleared Execute tab contents...
         if (mainUI.getMainPane().getSelectedComponent() == this) {
@@ -188,17 +188,17 @@ public class ExecutePane extends JDesktopPane {
     }
 
     /**
-     * Access the coprocessor1 values window.
+     * Access the floating point values window.
      */
-    public Coprocessor1Window getCoprocessor1Window() {
-        return coprocessor1Values;
+    public FloatingPointWindow getFloatingPointWindow() {
+        return fpRegValues;
     }
 
     /**
-     * Access the coprocessor0 values window.
+     * Access the Control and Status values window.
      */
-    public Coprocessor0Window getCoprocessor0Window() {
-        return coprocessor0Values;
+    public ControlAndStatusWindow getControlAndStatusWindow() {
+        return csrValues;
     }
 
     /**
@@ -250,8 +250,8 @@ public class ExecutePane extends JDesktopPane {
         if (chooser == valueDisplayBase) {
             // Have all internal windows update their value columns
             registerValues.updateRegisters();
-            coprocessor1Values.updateRegisters();
-            coprocessor0Values.updateRegisters();
+            fpRegValues.updateRegisters();
+            csrValues.updateRegisters();
             dataSegment.updateValues();
             textSegment.updateBasicStatements();
         } else { // addressDisplayBase

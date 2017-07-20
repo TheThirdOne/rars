@@ -2,7 +2,7 @@ package mars.tools;
 
 import mars.Globals;
 import mars.riscv.hardware.AccessNotice;
-import mars.riscv.hardware.Coprocessor1;
+import mars.riscv.hardware.FloatingPointRegisterFile;
 import mars.riscv.hardware.Register;
 import mars.util.Binary;
 
@@ -348,7 +348,7 @@ public class FloatRepresentation extends AbstractMarsToolAndApplication {
 
         // Means of selecting and deselecting an attached floating point register
 
-        fpRegisters = Coprocessor1.getRegisters();
+        fpRegisters = FloatingPointRegisterFile.getRegisters();
         String[] registerList = new String[fpRegisters.length + 1];
         registerList[0] = "None";
         for (int i = 0; i < fpRegisters.length; i++) {
@@ -401,7 +401,7 @@ public class FloatRepresentation extends AbstractMarsToolAndApplication {
             // but that code was not written for event-driven update (e.g. Observer) --
             // it was written to poll the registers for their values.  So we force it to do so.
             if (Globals.getGui() != null) {
-                Globals.getGui().getRegistersPane().getCoprocessor1Window().updateRegisters();
+                Globals.getGui().getRegistersPane().getFloatingPointWindow().updateRegisters();
             }
         }
     }

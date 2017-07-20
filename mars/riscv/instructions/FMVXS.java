@@ -1,7 +1,7 @@
 package mars.riscv.instructions;
 
 import mars.ProgramStatement;
-import mars.riscv.hardware.Coprocessor1;
+import mars.riscv.hardware.FloatingPointRegisterFile;
 import mars.riscv.hardware.RegisterFile;
 import mars.riscv.BasicInstruction;
 import mars.riscv.BasicInstructionFormat;
@@ -41,6 +41,6 @@ public class FMVXS extends BasicInstruction {
 
     public void simulate(ProgramStatement statement) {
         int[] operands = statement.getOperands();
-        RegisterFile.updateRegister(operands[0], Coprocessor1.getValue(operands[1]));
+        RegisterFile.updateRegister(operands[0], FloatingPointRegisterFile.getValue(operands[1]));
     }
 }

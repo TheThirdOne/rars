@@ -2,7 +2,7 @@ package mars.riscv.syscalls;
 
 import mars.ExitingException;
 import mars.ProgramStatement;
-import mars.riscv.hardware.Coprocessor1;
+import mars.riscv.hardware.FloatingPointRegisterFile;
 import mars.riscv.AbstractSyscall;
 
 import javax.swing.*;
@@ -54,7 +54,7 @@ public class SyscallMessageDialogFloat extends AbstractSyscall {
 
         // Display the dialog.
         JOptionPane.showMessageDialog(null,
-                message + Float.toString(Coprocessor1.getFloatFromRegister("f12")),
+                message + Float.toString(FloatingPointRegisterFile.getFloatFromRegister("f12")),
                 null,
                 JOptionPane.INFORMATION_MESSAGE);
     }

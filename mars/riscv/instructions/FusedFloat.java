@@ -1,8 +1,8 @@
 package mars.riscv.instructions;
 
 import mars.ProgramStatement;
-import mars.riscv.hardware.Coprocessor0;
-import mars.riscv.hardware.Coprocessor1;
+import mars.riscv.hardware.ControlAndStatusRegisterFile;
+import mars.riscv.hardware.FloatingPointRegisterFile;
 import mars.riscv.BasicInstruction;
 import mars.riscv.BasicInstructionFormat;
 
@@ -44,19 +44,19 @@ public abstract class FusedFloat extends BasicInstruction {
 
     public void simulate(ProgramStatement statement) {
         int[] operands = statement.getOperands();
-        float result = compute(Float.intBitsToFloat(Coprocessor1.getValue(operands[1])),
-                Float.intBitsToFloat(Coprocessor1.getValue(operands[2])),
-                Float.intBitsToFloat(Coprocessor1.getValue(operands[3])));
+        float result = compute(Float.intBitsToFloat(FloatingPointRegisterFile.getValue(operands[1])),
+                Float.intBitsToFloat(FloatingPointRegisterFile.getValue(operands[2])),
+                Float.intBitsToFloat(FloatingPointRegisterFile.getValue(operands[3])));
         if (Float.isNaN(result)) {
-            Coprocessor0.orRegister("fcsr", 0x10); // Set invalid flag
+            ControlAndStatusRegisterFile.orRegister("fcsr", 0x10); // Set invalid flag
         }
         if (Float.isInfinite(result)) {
-            Coprocessor0.orRegister("fcsr", 0x4); // Set Overflow flag
+            ControlAndStatusRegisterFile.orRegister("fcsr", 0x4); // Set Overflow flag
         }
         if (Floating.subnormal(result)) {
-            Coprocessor0.orRegister("fcsr", 0x2); // Set Underflow flag
+            ControlAndStatusRegisterFile.orRegister("fcsr", 0x2); // Set Underflow flag
         }
-        Coprocessor1.setRegisterToFloat(operands[0], result);
+        FloatingPointRegisterFile.setRegisterToFloat(operands[0], result);
     }
 
     /**

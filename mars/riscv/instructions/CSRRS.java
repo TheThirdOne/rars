@@ -2,7 +2,7 @@ package mars.riscv.instructions;
 
 import mars.ProgramStatement;
 import mars.SimulationException;
-import mars.riscv.hardware.Coprocessor0;
+import mars.riscv.hardware.ControlAndStatusRegisterFile;
 import mars.riscv.hardware.RegisterFile;
 import mars.riscv.BasicInstruction;
 import mars.riscv.BasicInstructionFormat;
@@ -43,8 +43,8 @@ public class CSRRS extends BasicInstruction {
     public void simulate(ProgramStatement statement) throws SimulationException {
         int[] operands = statement.getOperands();
         try {
-            int csr = Coprocessor0.getValue(operands[2]);
-            if (operands[1] != 0) Coprocessor0.orRegister(operands[2], RegisterFile.getValue(operands[1]));
+            int csr = ControlAndStatusRegisterFile.getValue(operands[2]);
+            if (operands[1] != 0) ControlAndStatusRegisterFile.orRegister(operands[2], RegisterFile.getValue(operands[1]));
             RegisterFile.updateRegister(operands[0], csr);
         } catch (NullPointerException e) {
             throw new SimulationException(statement, "Attempt to access unavailable CSR", Exceptions.ILLEGAL_INSTRUCTION);

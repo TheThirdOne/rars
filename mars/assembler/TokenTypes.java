@@ -1,7 +1,7 @@
 package mars.assembler;
 
 import mars.Globals;
-import mars.riscv.hardware.Coprocessor1;
+import mars.riscv.hardware.FloatingPointRegisterFile;
 import mars.riscv.hardware.Register;
 import mars.riscv.hardware.RegisterFile;
 import mars.util.Binary;
@@ -144,7 +144,7 @@ public final class TokenTypes {
 
         // See if it is a floating point register
 
-        reg = Coprocessor1.getRegister(value);
+        reg = FloatingPointRegisterFile.getRegister(value);
         if (reg != null)
             return TokenTypes.FP_REGISTER_NAME;
 

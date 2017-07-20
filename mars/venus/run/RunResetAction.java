@@ -2,8 +2,8 @@ package mars.venus.run;
 
 import mars.AssemblyException;
 import mars.Globals;
-import mars.riscv.hardware.Coprocessor0;
-import mars.riscv.hardware.Coprocessor1;
+import mars.riscv.hardware.ControlAndStatusRegisterFile;
+import mars.riscv.hardware.FloatingPointRegisterFile;
 import mars.riscv.hardware.Memory;
 import mars.riscv.hardware.RegisterFile;
 import mars.util.SystemIO;
@@ -80,15 +80,15 @@ public class RunResetAction extends GuiAction {
             return;
         }
         RegisterFile.resetRegisters();
-        Coprocessor1.resetRegisters();
-        Coprocessor0.resetRegisters();
+        FloatingPointRegisterFile.resetRegisters();
+        ControlAndStatusRegisterFile.resetRegisters();
 
         executePane.getRegistersWindow().clearHighlighting();
         executePane.getRegistersWindow().updateRegisters();
-        executePane.getCoprocessor1Window().clearHighlighting();
-        executePane.getCoprocessor1Window().updateRegisters();
-        executePane.getCoprocessor0Window().clearHighlighting();
-        executePane.getCoprocessor0Window().updateRegisters();
+        executePane.getFloatingPointWindow().clearHighlighting();
+        executePane.getFloatingPointWindow().updateRegisters();
+        executePane.getControlAndStatusWindow().clearHighlighting();
+        executePane.getControlAndStatusWindow().updateRegisters();
         executePane.getDataSegmentWindow().highlightCellForAddress(Memory.dataBaseAddress);
         executePane.getDataSegmentWindow().clearHighlighting();
         executePane.getTextSegmentWindow().resetModifiedSourceCode();

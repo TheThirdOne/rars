@@ -1,6 +1,6 @@
 package mars.riscv.instructions;
 
-import mars.riscv.hardware.Coprocessor0;
+import mars.riscv.hardware.ControlAndStatusRegisterFile;
 
 /*
 Copyright (c) 2017,  Benjamin Landers
@@ -39,7 +39,7 @@ public class DIVU extends Arithmetic {
     public int compute(int value, int value2) {
         // Signal illegal division with -1
         if (value2 == 0) {
-            Coprocessor0.orRegister("fcsr", 0x8); // Set Divide by Zero flag
+            ControlAndStatusRegisterFile.orRegister("fcsr", 0x8); // Set Divide by Zero flag
             return -1;
         }
         return Integer.divideUnsigned(value, value2);

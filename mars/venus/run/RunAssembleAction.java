@@ -1,8 +1,8 @@
 package mars.venus.run;
 
 import mars.*;
-import mars.riscv.hardware.Coprocessor0;
-import mars.riscv.hardware.Coprocessor1;
+import mars.riscv.hardware.ControlAndStatusRegisterFile;
+import mars.riscv.hardware.FloatingPointRegisterFile;
 import mars.riscv.hardware.Memory;
 import mars.riscv.hardware.RegisterFile;
 import mars.util.FilenameFinder;
@@ -112,8 +112,8 @@ public class RunAssembleAction extends GuiAction {
                 FileStatus.setAssembled(true);
                 FileStatus.set(FileStatus.RUNNABLE);
                 RegisterFile.resetRegisters();
-                Coprocessor1.resetRegisters();
-                Coprocessor0.resetRegisters();
+                FloatingPointRegisterFile.resetRegisters();
+                ControlAndStatusRegisterFile.resetRegisters();
                 executePane.getTextSegmentWindow().setupTable();
                 executePane.getDataSegmentWindow().setupTable();
                 executePane.getDataSegmentWindow().highlightCellForAddress(Memory.dataBaseAddress);
@@ -122,8 +122,8 @@ public class RunAssembleAction extends GuiAction {
                 executePane.getTextSegmentWindow().setCodeHighlighting(true);
                 executePane.getTextSegmentWindow().highlightStepAtPC();
                 registersPane.getRegistersWindow().clearWindow();
-                registersPane.getCoprocessor1Window().clearWindow();
-                registersPane.getCoprocessor0Window().clearWindow();
+                registersPane.getFloatingPointWindow().clearWindow();
+                registersPane.getControlAndStatusWindow().clearWindow();
                 mainUI.setReset(true);
                 mainUI.setStarted(false);
                 mainUI.getMainPane().setSelectedComponent(executePane);

@@ -1,7 +1,7 @@
 package mars.riscv.syscalls;
 
 import mars.ProgramStatement;
-import mars.riscv.hardware.Coprocessor1;
+import mars.riscv.hardware.FloatingPointRegisterFile;
 import mars.riscv.AbstractSyscall;
 
 import java.util.Random;
@@ -49,6 +49,6 @@ public class SyscallRandFloat extends AbstractSyscall {
 
     public void simulate(ProgramStatement statement) {
         Random stream = RandomStreams.get("a0");
-        Coprocessor1.setRegisterToFloat(0, stream.nextFloat());
+        FloatingPointRegisterFile.setRegisterToFloat(0, stream.nextFloat());
     }
 }

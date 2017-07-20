@@ -61,8 +61,8 @@ public class VenusUI extends JFrame {
     private MainPane mainPane;
     private RegistersPane registersPane;
     private RegistersWindow registersTab;
-    private Coprocessor1Window coprocessor1Tab;
-    private Coprocessor0Window coprocessor0Tab;
+    private FloatingPointWindow fpTab;
+    private ControlAndStatusWindow csrTab;
     private MessagesPane messagesPane;
     private JSplitPane splitter, horizonSplitter;
     JPanel north;
@@ -166,14 +166,14 @@ public class VenusUI extends JFrame {
         // not visible here.
 
         registersTab = new RegistersWindow();
-        coprocessor1Tab = new Coprocessor1Window();
-        coprocessor0Tab = new Coprocessor0Window();
-        registersPane = new RegistersPane(mainUI, registersTab, coprocessor1Tab, coprocessor0Tab);
+        fpTab = new FloatingPointWindow();
+        csrTab = new ControlAndStatusWindow();
+        registersPane = new RegistersPane(mainUI, registersTab, fpTab, csrTab);
         registersPane.setPreferredSize(registersPanePreferredSize);
 
         //Insets defaultTabInsets = (Insets)UIManager.get("TabbedPane.tabInsets");
         //UIManager.put("TabbedPane.tabInsets", new Insets(1, 1, 1, 1));
-        mainPane = new MainPane(mainUI, editor, registersTab, coprocessor1Tab, coprocessor0Tab);
+        mainPane = new MainPane(mainUI, editor, registersTab, fpTab, csrTab);
         //UIManager.put("TabbedPane.tabInsets", defaultTabInsets);
 
         mainPane.setPreferredSize(mainPanePreferredSize);

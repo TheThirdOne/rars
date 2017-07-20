@@ -1,7 +1,7 @@
 package mars.riscv.instructions;
 
 import mars.ProgramStatement;
-import mars.riscv.hardware.Coprocessor1;
+import mars.riscv.hardware.FloatingPointRegisterFile;
 import mars.riscv.BasicInstruction;
 import mars.riscv.BasicInstructionFormat;
 
@@ -40,8 +40,8 @@ public class FSGNJXS extends BasicInstruction {
 
     public void simulate(ProgramStatement statement) {
         int[] operands = statement.getOperands();
-        int f2 = Coprocessor1.getValue(operands[1]), f3 = Coprocessor1.getValue(operands[1]);
+        int f2 = FloatingPointRegisterFile.getValue(operands[1]), f3 = FloatingPointRegisterFile.getValue(operands[1]);
         int result = (f2 & 0x7FFFFFFF) | ((f2 ^ f3) & 0x80000000);
-        Coprocessor1.updateRegister(operands[0], result);
+        FloatingPointRegisterFile.updateRegister(operands[0], result);
     }
 }

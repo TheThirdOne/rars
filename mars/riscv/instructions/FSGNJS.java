@@ -1,7 +1,7 @@
 package mars.riscv.instructions;
 
 import mars.ProgramStatement;
-import mars.riscv.hardware.Coprocessor1;
+import mars.riscv.hardware.FloatingPointRegisterFile;
 import mars.riscv.BasicInstruction;
 import mars.riscv.BasicInstructionFormat;
 
@@ -40,7 +40,7 @@ public class FSGNJS extends BasicInstruction {
 
     public void simulate(ProgramStatement statement) {
         int[] operands = statement.getOperands();
-        int result = (Coprocessor1.getValue(operands[1]) & 0x7FFFFFFF) | (Coprocessor1.getValue(operands[1]) & 0x80000000);
-        Coprocessor1.updateRegister(operands[0], result);
+        int result = (FloatingPointRegisterFile.getValue(operands[1]) & 0x7FFFFFFF) | (FloatingPointRegisterFile.getValue(operands[1]) & 0x80000000);
+        FloatingPointRegisterFile.updateRegister(operands[0], result);
     }
 }

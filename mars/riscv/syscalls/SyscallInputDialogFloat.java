@@ -2,7 +2,7 @@ package mars.riscv.syscalls;
 
 import mars.ExitingException;
 import mars.ProgramStatement;
-import mars.riscv.hardware.Coprocessor1;
+import mars.riscv.hardware.FloatingPointRegisterFile;
 import mars.riscv.hardware.RegisterFile;
 import mars.riscv.AbstractSyscall;
 
@@ -65,7 +65,7 @@ public class SyscallInputDialogFloat extends AbstractSyscall {
         inputValue = JOptionPane.showInputDialog(message);
 
         try {
-            Coprocessor1.setRegisterToFloat(0, (float) 0.0);  // set f0 to zero
+            FloatingPointRegisterFile.setRegisterToFloat(0, (float) 0.0);  // set f0 to zero
             if (inputValue == null)  // Cancel was chosen
             {
                 RegisterFile.updateRegister("a1", -2);
@@ -79,7 +79,7 @@ public class SyscallInputDialogFloat extends AbstractSyscall {
                 //System.out.println("SyscallInputDialogFloat: floatValue is " + floatValue);
 
                 // Successful parse of valid input data
-                Coprocessor1.setRegisterToFloat(0, floatValue);  // set f0 to input data
+                FloatingPointRegisterFile.setRegisterToFloat(0, floatValue);  // set f0 to input data
                 RegisterFile.updateRegister("a1", 0);  // set to valid flag
 
             }

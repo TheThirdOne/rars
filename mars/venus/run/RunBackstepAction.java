@@ -1,8 +1,8 @@
 package mars.venus.run;
 
 import mars.Globals;
-import mars.riscv.hardware.Coprocessor0;
-import mars.riscv.hardware.Coprocessor1;
+import mars.riscv.hardware.ControlAndStatusRegisterFile;
+import mars.riscv.hardware.FloatingPointRegisterFile;
 import mars.riscv.hardware.Memory;
 import mars.riscv.hardware.RegisterFile;
 import mars.venus.ExecutePane;
@@ -73,14 +73,14 @@ public class RunBackstepAction extends GuiAction {
         if (Globals.getSettings().getBackSteppingEnabled()) {
             Memory.getInstance().addObserver(executePane.getDataSegmentWindow());
             RegisterFile.addRegistersObserver(executePane.getRegistersWindow());
-            Coprocessor0.addRegistersObserver(executePane.getCoprocessor0Window());
-            Coprocessor1.addRegistersObserver(executePane.getCoprocessor1Window());
+            ControlAndStatusRegisterFile.addRegistersObserver(executePane.getControlAndStatusWindow());
+            FloatingPointRegisterFile.addRegistersObserver(executePane.getFloatingPointWindow());
             Globals.program.getBackStepper().backStep();
             Memory.getInstance().deleteObserver(executePane.getDataSegmentWindow());
             RegisterFile.deleteRegistersObserver(executePane.getRegistersWindow());
             executePane.getRegistersWindow().updateRegisters();
-            executePane.getCoprocessor1Window().updateRegisters();
-            executePane.getCoprocessor0Window().updateRegisters();
+            executePane.getFloatingPointWindow().updateRegisters();
+            executePane.getControlAndStatusWindow().updateRegisters();
             executePane.getDataSegmentWindow().updateValues();
             executePane.getTextSegmentWindow().highlightStepAtPC(); // Argument aded 25 June 2007
             FileStatus.set(FileStatus.RUNNABLE);
@@ -95,7 +95,7 @@ public class RunBackstepAction extends GuiAction {
                                 pe.errors().generateErrorReport());
             mainUI.getMessagesPane().postMarsMessage(
                                 "\n"+name+": execution terminated with errors.\n\n");
-            mainUI.getRegistersPane().setSelectedComponent(executePane.getCoprocessor0Window());
+            mainUI.getRegistersPane().setSelectedComponent(executePane.getControlAndStatusWindow());
             FileStatus.set(FileStatus.TERMINATED); // should be redundant.
          					executePane.getTextSegmentWindow().setCodeHighlighting(true);
          	executePane.getTextSegmentWindow().unhighlightAllSteps();

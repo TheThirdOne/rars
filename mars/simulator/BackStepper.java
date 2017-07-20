@@ -49,10 +49,8 @@ public class BackStepper {
     private static final int MEMORY_RESTORE_BYTE = 3;
     private static final int REGISTER_RESTORE = 4;
     private static final int PC_RESTORE = 5;
-    private static final int COPROC0_REGISTER_RESTORE = 6;
-    private static final int COPROC1_REGISTER_RESTORE = 7;
-    private static final int COPROC1_CONDITION_CLEAR = 8;
-    private static final int COPROC1_CONDITION_SET = 9;
+    private static final int CONTROL_AND_STATUS_REGISTER_RESTORE = 6;
+    private static final int FLOATING_POINT_REGISTER_RESTORE = 7;
     private static final int DO_NOTHING = 10;  // instruction does not write anything.
 
     // Flag to mark BackStep object as prepresenting specific situation: user manipulates
@@ -257,52 +255,28 @@ public class BackStepper {
 
     /**
      * Add a new "back step" (the undo action) to the stack.  The action here
-     * is to restore a coprocessor 0 register value.
+     * is to restore a control and status register value.
      *
      * @param register The affected register number.
      * @param value    The "restore" value to be stored there.
      * @return the argument value
      */
-    public int addCoprocessor0Restore(int register, int value) {
-        backSteps.push(COPROC0_REGISTER_RESTORE, pc(), register, value);
+    public int addControlAndStatusRestore(int register, int value) {
+        backSteps.push(CONTROL_AND_STATUS_REGISTER_RESTORE, pc(), register, value);
         return value;
     }
 
     /**
      * Add a new "back step" (the undo action) to the stack.  The action here
-     * is to restore a coprocessor 1 register value.
+     * is to restore a floating point register value.
      *
      * @param register The affected register number.
      * @param value    The "restore" value to be stored there.
      * @return the argument value
      */
-    public int addCoprocessor1Restore(int register, int value) {
-        backSteps.push(COPROC1_REGISTER_RESTORE, pc(), register, value);
+    public int addFloatingPointRestore(int register, int value) {
+        backSteps.push(FLOATING_POINT_REGISTER_RESTORE, pc(), register, value);
         return value;
-    }
-
-    /**
-     * Add a new "back step" (the undo action) to the stack.  The action here
-     * is to set the given coprocessor 1 condition flag (to 1).
-     *
-     * @param flag The condition flag number.
-     * @return the argument value
-     */
-    public int addConditionFlagSet(int flag) {
-        backSteps.push(COPROC1_CONDITION_SET, pc(), flag);
-        return flag;
-    }
-
-    /**
-     * Add a new "back step" (the undo action) to the stack.  The action here
-     * is to clear the given coprocessor 1 condition flag (to 0).
-     *
-     * @param flag The condition flag number.
-     * @return the argument value
-     */
-    public int addConditionFlagClear(int flag) {
-        backSteps.push(COPROC1_CONDITION_CLEAR, pc(), flag);
-        return flag;
     }
 
     /**

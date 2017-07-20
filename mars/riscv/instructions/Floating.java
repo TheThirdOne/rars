@@ -1,8 +1,8 @@
 package mars.riscv.instructions;
 
 import mars.ProgramStatement;
-import mars.riscv.hardware.Coprocessor0;
-import mars.riscv.hardware.Coprocessor1;
+import mars.riscv.hardware.ControlAndStatusRegisterFile;
+import mars.riscv.hardware.FloatingPointRegisterFile;
 import mars.riscv.BasicInstruction;
 import mars.riscv.BasicInstructionFormat;
 
@@ -52,18 +52,18 @@ public abstract class Floating extends BasicInstruction {
 
     public void simulate(ProgramStatement statement) {
         int[] operands = statement.getOperands();
-        float result = compute(Coprocessor1.getFloatFromRegister(operands[1]),
-                Coprocessor1.getFloatFromRegister(operands[2]));
+        float result = compute(FloatingPointRegisterFile.getFloatFromRegister(operands[1]),
+                FloatingPointRegisterFile.getFloatFromRegister(operands[2]));
         if (Float.isNaN(result)) {
-            Coprocessor0.orRegister("fcsr", 0x10); // Set invalid flag
+            ControlAndStatusRegisterFile.orRegister("fcsr", 0x10); // Set invalid flag
         }
         if (Float.isInfinite(result)) {
-            Coprocessor0.orRegister("fcsr", 0x4); // Set Overflow flag
+            ControlAndStatusRegisterFile.orRegister("fcsr", 0x4); // Set Overflow flag
         }
         if (subnormal(result)) {
-            Coprocessor0.orRegister("fcsr", 0x2); // Set Underflow flag
+            ControlAndStatusRegisterFile.orRegister("fcsr", 0x2); // Set Underflow flag
         }
-        Coprocessor1.setRegisterToFloat(operands[0], result);
+        FloatingPointRegisterFile.setRegisterToFloat(operands[0], result);
     }
 
     public abstract float compute(float f1, float f2);

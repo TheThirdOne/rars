@@ -11,7 +11,7 @@ package mars.venus.editors.jeditsyntax.tokenmarker;
 
 import mars.Settings;
 import mars.assembler.Directives;
-import mars.riscv.hardware.Coprocessor1;
+import mars.riscv.hardware.FloatingPointRegisterFile;
 import mars.riscv.hardware.Register;
 import mars.riscv.hardware.RegisterFile;
 import mars.riscv.BasicInstruction;
@@ -460,8 +460,8 @@ public class RISCVTokenMarker extends TokenMarker {
                 cKeywords.add(r.getName(), Token.KEYWORD3);
                 cKeywords.add("x" + r.getNumber(), Token.KEYWORD3);  // also recognize x0, x1, x2, etc
             }
-            // add Coprocessor 1 (floating point) register file
-            for (Register r : Coprocessor1.getRegisters()){
+            // add floating point register file
+            for (Register r : FloatingPointRegisterFile.getRegisters()){
                 cKeywords.add(r.getName(), Token.KEYWORD3);
                 cKeywords.add("f"+r.getNumber(),Token.KEYWORD3);
             }

@@ -393,7 +393,7 @@ public class MarsLaunch {
 
             if (args[i].indexOf("x") == 0) {
                 if (RegisterFile.getRegister(args[i]) == null &&
-                        Coprocessor1.getRegister(args[i]) == null) {
+                        FloatingPointRegisterFile.getRegister(args[i]) == null) {
                     out.println("Invalid Register Name: " + args[i]);
                 } else {
                     registerDisplayList.add(args[i]);
@@ -402,7 +402,7 @@ public class MarsLaunch {
             }
             // check for register name w/o $.  added 14-July-2008 DPS
             if (RegisterFile.getRegister(args[i]) != null ||
-                    Coprocessor1.getRegister(args[i]) != null) {
+                    FloatingPointRegisterFile.getRegister(args[i]) != null) {
                 registerDisplayList.add(args[i]);
                 continue;
             }
@@ -612,8 +612,8 @@ public class MarsLaunch {
                 out.println(formatIntForDisplay(RegisterFile.getRegister(reg).getValue()));
             } else {
                 // floating point register
-                float fvalue = Coprocessor1.getFloatFromRegister(reg);
-                int ivalue = Coprocessor1.getValue(reg);
+                float fvalue = FloatingPointRegisterFile.getFloatFromRegister(reg);
+                int ivalue = FloatingPointRegisterFile.getValue(reg);
                 if (verbose) {
                     out.print(reg + "\t");
                 }
