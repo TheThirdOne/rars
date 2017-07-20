@@ -9,6 +9,7 @@ import mars.riscv.hardware.RegisterAccessNotice;
 import mars.simulator.Simulator;
 import mars.simulator.SimulatorNotice;
 import mars.util.Binary;
+import mars.venus.run.RunSpeedPanel;
 
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;

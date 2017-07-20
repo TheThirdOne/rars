@@ -1,8 +1,12 @@
-package mars.venus;
+package mars.venus.settings;
+
+import mars.Globals;
+import mars.Settings;
+import mars.venus.GuiAction;
+import mars.venus.VenusUI;
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableCellRenderer;
-import java.awt.*;
+import java.awt.event.ActionEvent;
 
 	/*
 Copyright (c) 2003-2006,  Pete Sanderson and Kenneth Vollmar
@@ -32,21 +36,21 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 (MIT license, http://www.opensource.org/licenses/mit-license.html)
  */
 
-/*
- * Use this to render Monospaced and right-aligned data in JTables.
- * I am using it to render integer addresses and values that are stored as
- * Strings containing either the decimal or hexidecimal version
- * of the integer value.
+/**
+ * Action class for the Settings menu item to control number base (10 or 16) of memory/register contents.
  */
-public class MonoRightCellRenderer extends DefaultTableCellRenderer {
-    public static final Font MONOSPACED_PLAIN_12POINT = new Font("Monospaced", Font.PLAIN, 12);
+public class SettingsValueDisplayBaseAction extends GuiAction {
 
-    public Component getTableCellRendererComponent(JTable table, Object value,
-                                                   boolean isSelected, boolean hasFocus, int row, int column) {
-        JLabel cell = (JLabel) super.getTableCellRendererComponent(table, value,
-                isSelected, hasFocus, row, column);
-        cell.setFont(MONOSPACED_PLAIN_12POINT);
-        cell.setHorizontalAlignment(SwingConstants.RIGHT);
-        return cell;
+
+    public SettingsValueDisplayBaseAction(String name, Icon icon, String descrip,
+                                          Integer mnemonic, KeyStroke accel, VenusUI gui) {
+        super(name, icon, descrip, mnemonic, accel, gui);
     }
+
+    public void actionPerformed(ActionEvent e) {
+        boolean isHex = ((JCheckBoxMenuItem) e.getSource()).isSelected();
+        Globals.getGui().getMainPane().getExecutePane().getValueDisplayBaseChooser().setSelected(isHex);
+        Globals.getSettings().setBooleanSetting(Settings.DISPLAY_VALUES_IN_HEX, isHex);
+    }
+
 }

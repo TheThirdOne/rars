@@ -9,7 +9,7 @@ import mars.riscv.BasicInstruction;
 import mars.riscv.Instruction;
 import mars.util.Binary;
 import mars.util.SystemIO;
-import mars.venus.RunSpeedPanel;
+import mars.venus.run.RunSpeedPanel;
 
 import javax.swing.*;
 import java.util.ArrayList;

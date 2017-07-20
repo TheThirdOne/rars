@@ -3,6 +3,9 @@ package mars.venus;
 import mars.Globals;
 import mars.Settings;
 import mars.riscv.dump.DumpFormatLoader;
+import mars.venus.file.*;
+import mars.venus.run.*;
+import mars.venus.settings.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -54,14 +57,14 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 public class VenusUI extends JFrame {
     VenusUI mainUI;
     public JMenuBar menu;
-    JToolBar toolbar;
-    MainPane mainPane;
-    RegistersPane registersPane;
-    RegistersWindow registersTab;
-    Coprocessor1Window coprocessor1Tab;
-    Coprocessor0Window coprocessor0Tab;
-    MessagesPane messagesPane;
-    JSplitPane splitter, horizonSplitter;
+    private JToolBar toolbar;
+    private MainPane mainPane;
+    private RegistersPane registersPane;
+    private RegistersWindow registersTab;
+    private Coprocessor1Window coprocessor1Tab;
+    private Coprocessor0Window coprocessor0Tab;
+    private MessagesPane messagesPane;
+    private JSplitPane splitter, horizonSplitter;
     JPanel north;
 
     private int frameState; // see windowActivated() and windowDeactivated()
@@ -736,7 +739,7 @@ public class VenusUI extends JFrame {
      * setMenuStateRunning: set upon Run->Go
      * setMenuStateTerminated: set upon completion of simulated execution
      */
-    void setMenuState(int status) {
+    public void setMenuState(int status) {
         menuState = status;
         switch (status) {
             case FileStatus.NO_FILE:

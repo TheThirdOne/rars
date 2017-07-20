@@ -6,6 +6,7 @@ import mars.assembler.Symbol;
 import mars.assembler.SymbolTable;
 import mars.riscv.hardware.Memory;
 import mars.util.Binary;
+import mars.venus.run.RunAssembleAction;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;

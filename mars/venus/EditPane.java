@@ -5,6 +5,7 @@ import mars.Settings;
 import mars.venus.editors.MARSTextEditingArea;
 import mars.venus.editors.generic.GenericTextArea;
 import mars.venus.editors.jeditsyntax.JEditBasedTextArea;
+import mars.venus.file.FileStatus;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -117,9 +118,9 @@ public class EditPane extends JPanel implements Observer {
                             setFileStatus(FileStatus.EDITED);
                         }
                         if (getFileStatus() == FileStatus.NEW_EDITED) {
-                            mainUI.editor.setTitle("", getFilename(), getFileStatus());
+                            mainUI.getEditor().setTitle("", getFilename(), getFileStatus());
                         } else {
-                            mainUI.editor.setTitle(getPathname(), getFilename(), getFileStatus());
+                            mainUI.getEditor().setTitle(getPathname(), getFilename(), getFileStatus());
                         }
 
                         FileStatus.setEdited(true);

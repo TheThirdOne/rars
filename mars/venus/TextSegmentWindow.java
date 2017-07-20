@@ -398,7 +398,7 @@ public class TextSegmentWindow extends JInternalFrame implements Observer {
      * Called by RunResetAction to restore display of any table rows that were
      * overwritten due to self-modifying code feature.
      */
-    void resetModifiedSourceCode() {
+    public void resetModifiedSourceCode() {
         if (executeMods != null && !executeMods.isEmpty()) {
             for (Enumeration<ModifiedCode> elements = executeMods.elements(); elements.hasMoreElements(); ) {
                 ModifiedCode mc = elements.nextElement();

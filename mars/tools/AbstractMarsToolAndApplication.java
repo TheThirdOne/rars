@@ -8,6 +8,7 @@ import mars.riscv.hardware.*;
 import mars.simulator.Simulator;
 import mars.simulator.SimulatorNotice;
 import mars.util.FilenameFinder;
+import mars.venus.run.RunSpeedPanel;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -379,7 +380,7 @@ public abstract class AbstractMarsToolAndApplication extends JFrame implements M
         operationStatusMessages.setFocusable(false);
         operationStatusMessages.setToolTipText("Display operation status messages");
 
-        mars.venus.RunSpeedPanel speed = mars.venus.RunSpeedPanel.getInstance();
+        RunSpeedPanel speed = RunSpeedPanel.getInstance();
 
         // Bottom row of controls consists of the three buttons defined here.
         assembleRunButton = new JButton("Assemble and Run");

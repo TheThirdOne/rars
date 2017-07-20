@@ -18,7 +18,7 @@ Transition MIPS->RISCV
 
 Code cleanliness
   - Take some time to figure out how to best organize the classes and make it so
-  - Clean up venus some more
+  - Clean up venus some more (a start was made, but there is more to do)
   - Add asserts to document hidden dependecies and validate assumptions; possibly?
   - Make a logger to unify System.out & printing to GUI console
 
