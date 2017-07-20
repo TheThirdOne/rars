@@ -179,7 +179,7 @@ public class Tokenizer {
      * @return An TokenList representing the tokenized instruction.  Each list member is a Token
      * that represents one language element.
      * @throws AssemblyException This occurs only if the instruction specification itself
-     *                             contains one or more lexical (i.e. token) errors.
+     *                           contains one or more lexical (i.e. token) errors.
      **/
 
     public TokenList tokenizeExampleInstruction(String example) throws AssemblyException {

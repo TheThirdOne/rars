@@ -33,9 +33,9 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 public class FSQRTS extends BasicInstruction {
-    public FSQRTS(){
-        super("fsqrt.s f1, f2","Floating SQuare RooT: Assigns f1 to the square root of f2",
-        BasicInstructionFormat.I_FORMAT, "0101100 00000 sssss " + Floating.ROUNDING_MODE + "fffff 1010011");
+    public FSQRTS() {
+        super("fsqrt.s f1, f2", "Floating SQuare RooT: Assigns f1 to the square root of f2",
+                BasicInstructionFormat.I_FORMAT, "0101100 00000 sssss " + Floating.ROUNDING_MODE + "fffff 1010011");
     }
 
     public void simulate(ProgramStatement statement) {

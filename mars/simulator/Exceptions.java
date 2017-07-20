@@ -29,6 +29,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 // TODO: move into SimulationException, it makes more sense there
+
 /**
  * Represents an error/interrupt that occurs during execution (simulation).
  *

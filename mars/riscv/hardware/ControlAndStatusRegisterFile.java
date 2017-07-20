@@ -125,6 +125,7 @@ public class ControlAndStatusRegisterFile {
     public static void clearRegister(String name, int val) {
         updateRegister(name, instance.getValue(name) & ~val);
     }
+
     /**
      * Returns the value of the register
      *

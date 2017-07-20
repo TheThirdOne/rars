@@ -62,10 +62,10 @@ public class ErrorMessage {
      * if there were, it will adjust filename and line number so message reflects original file and line number.
      *
      * @param sourceProgram RISCVprogram object of source file in which this error appears.
-     * @param line              Line number in source program being processed when error occurred.
-     * @param position          Position within line being processed when error occurred.  Normally is starting
-     *                          position of source token.
-     * @param message           String containing appropriate error message.
+     * @param line          Line number in source program being processed when error occurred.
+     * @param position      Position within line being processed when error occurred.  Normally is starting
+     *                      position of source token.
+     * @param message       String containing appropriate error message.
      **/
 
     public ErrorMessage(RISCVprogram sourceProgram, int line, int position, String message) {
@@ -77,12 +77,12 @@ public class ErrorMessage {
      * Constructor for ErrorMessage.  Assumes line number is calculated after any .include files expanded, and
      * if there were, it will adjust filename and line number so message reflects original file and line number.
      *
-     * @param isWarning         set to WARNING if message is a warning not error, else set to ERROR or omit.
-     * @param sourceProgram     RISCVprogram object of source file in which this error appears.
-     * @param line              Line number in source program being processed when error occurred.
-     * @param position          Position within line being processed when error occurred.  Normally is starting
-     *                          position of source token.
-     * @param message           String containing appropriate error message.
+     * @param isWarning     set to WARNING if message is a warning not error, else set to ERROR or omit.
+     * @param sourceProgram RISCVprogram object of source file in which this error appears.
+     * @param line          Line number in source program being processed when error occurred.
+     * @param position      Position within line being processed when error occurred.  Normally is starting
+     *                      position of source token.
+     * @param message       String containing appropriate error message.
      **/
 
     public ErrorMessage(boolean isWarning, RISCVprogram sourceProgram, int line, int position, String message) {
@@ -223,6 +223,7 @@ public class ErrorMessage {
         out = out + ErrorList.MESSAGE_SEPARATOR + getMessage() + "\n";
         return out;
     }
+
     /**
      * Returns string describing macro expansion.  Empty string if none.
      *

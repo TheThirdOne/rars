@@ -953,6 +953,7 @@ public class Memory extends Observable {
                     Exceptions.STORE_ADDRESS_MISALIGNED, address);
         }
     }
+
     /**
      * Utility to determine if given address is doubleword-aligned.
      *

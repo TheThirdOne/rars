@@ -47,9 +47,9 @@ public class SourceLine {
     /**
      * SourceLine constructor
      *
-     * @param source      The source code itself
-     * @param program The program (object representing source file) containing that line
-     * @param lineNumber  The line number within that program where source appears.
+     * @param source     The source code itself
+     * @param program    The program (object representing source file) containing that line
+     * @param lineNumber The line number within that program where source appears.
      */
     public SourceLine(String source, RISCVprogram program, int lineNumber) {
         this.source = source;

@@ -25,7 +25,7 @@ public class InterruptController {
     private static SimulationException trapSE;
     private static int trapPC;
 
-    public static void reset(){
+    public static void reset() {
         synchronized (lock) {
             externalPending = false;
             timerPending = false;
@@ -33,8 +33,8 @@ public class InterruptController {
         }
     }
 
-    public static boolean registerExternalInterrupt(int value){
-        synchronized(lock){
+    public static boolean registerExternalInterrupt(int value) {
+        synchronized (lock) {
             if (externalPending) return false;
             externalValue = value;
             externalPending = true;
@@ -42,18 +42,20 @@ public class InterruptController {
             return true;
         }
     }
-    public static boolean registerTimerInterrupt(int value){
-        synchronized(lock){
-            if(timerPending)return false;
+
+    public static boolean registerTimerInterrupt(int value) {
+        synchronized (lock) {
+            if (timerPending) return false;
             timerValue = value;
             timerPending = true;
             Simulator.getInstance().interrupt();
             return true;
         }
     }
-    public static boolean registerSynchronousTrap(SimulationException se, int pc){
-        synchronized(lock){
-            if(trapPending)return false;
+
+    public static boolean registerSynchronousTrap(SimulationException se, int pc) {
+        synchronized (lock) {
+            if (trapPending) return false;
             trapSE = se;
             trapPC = pc;
             trapPending = true;
@@ -61,38 +63,42 @@ public class InterruptController {
         }
     }
 
-    public static boolean externalPending(){
-        synchronized(lock){
+    public static boolean externalPending() {
+        synchronized (lock) {
             return externalPending;
         }
     }
-    public static boolean timerPending(){
-        synchronized(lock){
+
+    public static boolean timerPending() {
+        synchronized (lock) {
             return timerPending;
         }
     }
-    public static boolean trapPending(){
-        synchronized(lock){
+
+    public static boolean trapPending() {
+        synchronized (lock) {
             return trapPending;
         }
     }
 
-    public static int claimExternal(){
-        synchronized(lock){
+    public static int claimExternal() {
+        synchronized (lock) {
             assert externalPending : "Cannot claim, no external interrupt pending";
             externalPending = false;
             return externalValue;
         }
     }
-    public static int claimTimer(){
-        synchronized(lock){
+
+    public static int claimTimer() {
+        synchronized (lock) {
             assert timerPending : "Cannot claim, no timer interrupt pending";
             timerPending = false;
             return timerValue;
         }
     }
-    public static SimulationException claimTrap(){
-        synchronized(lock){
+
+    public static SimulationException claimTrap() {
+        synchronized (lock) {
             assert trapPending : "Cannot claim, no trap pending";
             assert trapPC == RegisterFile.getProgramCounter() - Instruction.INSTRUCTION_LENGTH : "trapPC doesn't match current pc";
             trapPending = false;

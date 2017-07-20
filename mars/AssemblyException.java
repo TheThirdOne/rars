@@ -35,9 +35,11 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 public class AssemblyException extends Exception {
     private ErrorList errs;
+
     public AssemblyException(ErrorList errs) {
         this.errs = errs;
     }
+
     /**
      * Produce the list of error messages.
      *

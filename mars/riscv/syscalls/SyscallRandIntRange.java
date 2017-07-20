@@ -40,8 +40,8 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * System call to the random number generator.
  * <p>
  * Input arguments:<br>
- *     a0 = index of pseudorandom number generator <br>
- *     a1 = upper bound for random number <br>
+ * a0 = index of pseudorandom number generator <br>
+ * a1 = upper bound for random number <br>
  * Return: a0 = the next pseudorandom, uniformly distributed int value between 0 and the value in a1
  */
 

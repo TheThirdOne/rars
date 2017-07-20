@@ -51,11 +51,11 @@ public class Token {
     /**
      * Constructor for Token class.
      *
-     * @param type              The token type that this token has. (e.g. REGISTER_NAME)
-     * @param value             The source value for this token (e.g. $t3)
+     * @param type          The token type that this token has. (e.g. REGISTER_NAME)
+     * @param value         The source value for this token (e.g. $t3)
      * @param sourceProgram The RISCVprogram object containing this token
-     * @param line              The line number in source program in which this token appears.
-     * @param start             The starting position in that line number of this token's source value.
+     * @param line          The line number in source program in which this token appears.
+     * @param start         The starting position in that line number of this token's source value.
      * @see TokenTypes
      **/
 

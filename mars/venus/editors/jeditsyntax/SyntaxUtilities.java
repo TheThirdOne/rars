@@ -141,14 +141,14 @@ public class SyntaxUtilities {
      * Paints the specified line onto the graphics context. Note that this
      * method munges the offset and count values of the segment.
      *
-     * @param line The line segment
-     * @param tokens The token list for the line
-     * @param styles The syntax style list
+     * @param line     The line segment
+     * @param tokens   The token list for the line
+     * @param styles   The syntax style list
      * @param expander The tab expander used to determine tab stops. May
-     * be null
-     * @param gfx The graphics context
-     * @param x The x co-ordinate
-     * @param y The y co-ordinate
+     *                 be null
+     * @param gfx      The graphics context
+     * @param x        The x co-ordinate
+     * @param y        The y co-ordinate
      * @return The x co-ordinate, plus the width of the painted string
      */
     public static int paintSyntaxLine(Segment line, Token tokens,

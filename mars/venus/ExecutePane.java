@@ -55,9 +55,9 @@ public class ExecutePane extends JDesktopPane {
     /**
      * initialize the Execute pane with major components
      *
-     * @param mainUI   the parent GUI
-     * @param regs     window containing integer register set
-     * @param fpRegs window containing floating point register set
+     * @param mainUI  the parent GUI
+     * @param regs    window containing integer register set
+     * @param fpRegs  window containing floating point register set
      * @param csrRegs window containing the CSR set
      */
 

@@ -295,7 +295,7 @@ public class RISCVprogram {
      * Assembles the RISCV source program. All files comprising the program must have
      * already been tokenized.  Assembler warnings are not considered errors.
      *
-     * @param programsToAssemble   ArrayList of RISCVprogram objects, each representing a tokenized source file.
+     * @param programsToAssemble       ArrayList of RISCVprogram objects, each representing a tokenized source file.
      * @param extendedAssemblerEnabled A boolean value - true means extended (pseudo) instructions
      *                                 are permitted in source code and false means they are to be flagged as errors.
      * @return ErrorList containing nothing or only warnings (otherwise would have thrown exception).
@@ -311,7 +311,7 @@ public class RISCVprogram {
      * Assembles the RISCV source program. All files comprising the program must have
      * already been tokenized.
      *
-     * @param programsToAssemble   ArrayList of RISCVprogram objects, each representing a tokenized source file.
+     * @param programsToAssemble       ArrayList of RISCVprogram objects, each representing a tokenized source file.
      * @param extendedAssemblerEnabled A boolean value - true means extended (pseudo) instructions
      *                                 are permitted in source code and false means they are to be flagged as errors
      * @param warningsAreErrors        A boolean value - true means assembler warnings will be considered errors and terminate
@@ -328,7 +328,6 @@ public class RISCVprogram {
         this.backStepper = new BackStepper();
         return asm.getErrorList();
     }
-
 
 
     /**
@@ -349,7 +348,8 @@ public class RISCVprogram {
      * Simulates execution of the program (in a new thread). Program must have already been assembled.
      * Begins simulation at current program counter address and continues until stopped,
      * paused, maximum steps exceeded, or exception occurs.
-     *  @param maxSteps    maximum number of instruction executions.  Default -1 means no maximum.
+     *
+     * @param maxSteps    maximum number of instruction executions.  Default -1 means no maximum.
      * @param breakPoints int array of breakpoints (PC addresses).  Can be null.
      **/
     public void startSimulation(int maxSteps, int[] breakPoints) {

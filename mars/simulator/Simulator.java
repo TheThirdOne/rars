@@ -55,6 +55,7 @@ public class Simulator extends Observable {
     private SimThread simulatorThread;
     private static Simulator simulator = null;  // Singleton object
     private static Runnable interactiveGUIUpdater = null;
+
     /**
      * various reasons for simulate to end...
      */
@@ -67,6 +68,7 @@ public class Simulator extends Observable {
         PAUSE,
         STOP
     }
+
     /**
      * Returns the Simulator object
      *
@@ -186,9 +188,10 @@ public class Simulator extends Observable {
     }
 
     public void interrupt() {
-        if(simulatorThread == null)return;
+        if (simulatorThread == null) return;
         simulatorThread.interrupt();
     }
+
     /**
      * Perform the simulated execution. It is "interrupted" when main thread sets
      * the "stop" variable to true. The variable is tested before the next MIPS
@@ -239,16 +242,16 @@ public class Simulator extends Observable {
         private void stopExecution(boolean done, Reason reason) {
             this.done = done;
             this.constructReturnReason = reason;
-            if(done)SystemIO.resetFiles(); // close any files opened in MIPS program
+            if (done) SystemIO.resetFiles(); // close any files opened in MIPS program
             Simulator.getInstance().notifyObserversOfExecution(new SimulatorNotice(SimulatorNotice.SIMULATOR_STOP,
                     maxSteps, RunSpeedPanel.getInstance().getRunSpeed(), pc, reason, pe, done));
         }
 
-        private synchronized void interrupt(){
+        private synchronized void interrupt() {
             notify();
         }
 
-        private boolean handleTrap(SimulationException se, int pc){
+        private boolean handleTrap(SimulationException se, int pc) {
             // See if an exception handler is present.  Assume this is the case
             // if and only if memory location Memory.exceptionHandlerAddress
             // (e.g. 0x80000180) contains an instruction.  If so, then set the
@@ -290,13 +293,13 @@ public class Simulator extends Observable {
         }
 
 
-        private boolean handleInterrupt(int value, int cause, int pc){
+        private boolean handleInterrupt(int value, int cause, int pc) {
             // See if an exception handler is present.  Assume this is the case
             // if and only if memory location Memory.exceptionHandlerAddress
             // (e.g. 0x80000180) contains an instruction.  If so, then set the
             // program counter there and continue.  Otherwise terminate the
             // MIPS program with appropriate error message.
-            assert (cause & 0x10000000) != 0: "Traps cannot be handled by the interupt handler";
+            assert (cause & 0x10000000) != 0 : "Traps cannot be handled by the interupt handler";
             int code = cause & 0x7FFFFFFF;
             // Don't handle cases where that interrupt isn't enabled
             assert ((ControlAndStatusRegisterFile.getValue("ustatus") & 0x1) == 0 && (ControlAndStatusRegisterFile.getValue("uie") & (1 << code)) == 0) : "The interrupt handler must be enabled";
@@ -310,8 +313,8 @@ public class Simulator extends Observable {
 
             // Handle vectored mode
             int base = utvec & 0xFFFFFFFC, mode = utvec & 0x3;
-            if(mode == 2){
-                base += 4*code;
+            if (mode == 2) {
+                base += 4 * code;
             }
 
             ProgramStatement exceptionHandler = null;
@@ -390,7 +393,7 @@ public class Simulator extends Observable {
 
             // Volatile variable initialized false but can be set true by the main thread.
             // Used to stop or pause a running MIPS program.  See stopSimulation() above.
-            while(!stop){
+            while (!stop) {
                 // Perform the MIPS instruction in synchronized block.  If external threads agree
                 // to access MIPS memory and registers only through synchronized blocks on same
                 // lock variable, then full (albeit heavy-handed) protection of MIPS memory and
@@ -433,9 +436,9 @@ public class Simulator extends Observable {
                                 return;
                             }
                         }
-                        uip |= (pendingExternal? ControlAndStatusRegisterFile.EXTERNAL_INTERRUPT:0)|(pendingTimer? ControlAndStatusRegisterFile.TIMER_INTERRUPT:0);
+                        uip |= (pendingExternal ? ControlAndStatusRegisterFile.EXTERNAL_INTERRUPT : 0) | (pendingTimer ? ControlAndStatusRegisterFile.TIMER_INTERRUPT : 0);
                     }
-                    ControlAndStatusRegisterFile.updateRegister("uip",uip);
+                    ControlAndStatusRegisterFile.updateRegister("uip", uip);
 
                     // always handle interrupts and traps before quiting
                     if (maxSteps > 0) {
@@ -453,21 +456,21 @@ public class Simulator extends Observable {
                         statement = Globals.memory.getStatement(pc);
                     } catch (AddressErrorException e) {
                         SimulationException tmp;
-                        if(e.getType() == Exceptions.LOAD_ACCESS_FAULT){
-                            tmp = new SimulationException("Instruction load access error",Exceptions.INSTRUCTION_ACCESS_FAULT);
-                        }else{
-                            tmp = new SimulationException("Instruction load alignment error",Exceptions.INSTRUCTION_ADDR_MISALIGNED);
+                        if (e.getType() == Exceptions.LOAD_ACCESS_FAULT) {
+                            tmp = new SimulationException("Instruction load access error", Exceptions.INSTRUCTION_ACCESS_FAULT);
+                        } else {
+                            tmp = new SimulationException("Instruction load alignment error", Exceptions.INSTRUCTION_ADDR_MISALIGNED);
                         }
-                        if(!InterruptController.registerSynchronousTrap(tmp,pc)){
+                        if (!InterruptController.registerSynchronousTrap(tmp, pc)) {
                             this.pe = tmp;
                             ControlAndStatusRegisterFile.updateRegister("uepc", pc);
                             stopExecution(true, Reason.EXCEPTION);
                             return;
-                        }else{
+                        } else {
                             continue;
                         }
                     }
-                    if(statement == null){
+                    if (statement == null) {
                         stopExecution(true, Reason.CLIFF_TERMINATION);
                         return;
                     }
@@ -493,7 +496,7 @@ public class Simulator extends Observable {
                             Globals.program.getBackStepper().addDoNothing(pc);
                         }
                         ebreak = true;
-                    }  catch (WaitException w){
+                    } catch (WaitException w) {
                         if (Globals.getSettings().getBackSteppingEnabled()) {
                             Globals.program.getBackStepper().addDoNothing(pc);
                         }
@@ -509,9 +512,9 @@ public class Simulator extends Observable {
                         stopExecution(true, constructReturnReason);
                         return;
                     } catch (SimulationException se) {
-                        if(InterruptController.registerSynchronousTrap(se,pc)) {
+                        if (InterruptController.registerSynchronousTrap(se, pc)) {
                             continue;
-                        }else{
+                        } else {
                             this.pe = se;
                             stopExecution(true, Reason.EXCEPTION);
                             return;
@@ -527,8 +530,8 @@ public class Simulator extends Observable {
                 }
 
                 // Wait if WFI ran
-                if(waiting){
-                    if(!(InterruptController.externalPending() || InterruptController.timerPending())){
+                if (waiting) {
+                    if (!(InterruptController.externalPending() || InterruptController.timerPending())) {
                         synchronized (this) {
                             try {
                                 wait();

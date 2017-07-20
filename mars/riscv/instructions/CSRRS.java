@@ -44,7 +44,8 @@ public class CSRRS extends BasicInstruction {
         int[] operands = statement.getOperands();
         try {
             int csr = ControlAndStatusRegisterFile.getValue(operands[2]);
-            if (operands[1] != 0) ControlAndStatusRegisterFile.orRegister(operands[2], RegisterFile.getValue(operands[1]));
+            if (operands[1] != 0)
+                ControlAndStatusRegisterFile.orRegister(operands[2], RegisterFile.getValue(operands[1]));
             RegisterFile.updateRegister(operands[0], csr);
         } catch (NullPointerException e) {
             throw new SimulationException(statement, "Attempt to access unavailable CSR", Exceptions.ILLEGAL_INSTRUCTION);

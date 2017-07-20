@@ -46,10 +46,11 @@ public class SimulationException extends Exception {
     }
 
     public SimulationException(String m) {
-        message = new ErrorMessage(null,0,0,m);
+        message = new ErrorMessage(null, 0, 0, m);
     }
+
     public SimulationException(String m, int cause) {
-        message = new ErrorMessage(null,0,0,m);
+        message = new ErrorMessage(null, 0, 0, m);
         this.cause = cause;
     }
 

@@ -71,7 +71,7 @@ public class ProgramStatement implements Comparable<ProgramStatement> {
      * Constructor for ProgramStatement when there are links back to all source and token
      * information.  These can be used by a debugger later on.
      *
-     * @param sourceProgram The RISCVprogram object that contains this statement
+     * @param sourceProgram     The RISCVprogram object that contains this statement
      * @param source            The corresponding RISCV source statement.
      * @param origTokenList     Complete list of Token objects (includes labels, comments, parentheses, etc)
      * @param strippedTokenList List of Token objects with all but operators and operands removed.
@@ -397,6 +397,7 @@ public class ProgramStatement implements Comparable<ProgramStatement> {
                 ((immediate & 1) << 10);     // move address[11] to the right place
         return (tmp << 20) >> 20; // sign-extend
     }
+
     /**
      * Crude attempt at building String representation of this complex structure.
      *

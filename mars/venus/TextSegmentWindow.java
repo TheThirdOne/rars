@@ -493,7 +493,7 @@ public class TextSegmentWindow extends JInternalFrame implements Observer {
      * Highlights the source code line whose address matches the given
      * text segment address.
      *
-     * @param address     Text segment address of instruction to be highlighted.
+     * @param address Text segment address of instruction to be highlighted.
      */
 
     public void highlightStepAtAddress(int address) {

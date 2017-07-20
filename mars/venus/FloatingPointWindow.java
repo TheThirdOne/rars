@@ -219,10 +219,10 @@ public class FloatingPointWindow extends JPanel implements Observer {
     }
 
     /**
-    * Cell renderer for displaying register entries.  This does highlighting, so if you
-    * don't want highlighting for a given column, don't use this.  Currently we highlight
-    * all columns.
-    */
+     * Cell renderer for displaying register entries.  This does highlighting, so if you
+     * don't want highlighting for a given column, don't use this.  Currently we highlight
+     * all columns.
+     */
     private class RegisterCellRenderer extends DefaultTableCellRenderer {
         private Font font;
         private int alignment;

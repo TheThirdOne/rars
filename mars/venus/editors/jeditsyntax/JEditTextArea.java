@@ -80,7 +80,6 @@ public class JEditTextArea extends JComponent {
     }
 
 
-
     private JScrollBar lineNumbersVertical;
 
     /**

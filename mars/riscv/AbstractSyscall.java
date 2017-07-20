@@ -49,7 +49,8 @@ public abstract class AbstractSyscall implements Syscall {
 
     /**
      * Constructor is provided so subclass may initialize instance variables.
-     * @param name   service name which may be used for reference independent of number
+     *
+     * @param name service name which may be used for reference independent of number
      */
     protected AbstractSyscall(String name) {
         serviceNumber = -1;

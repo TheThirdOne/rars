@@ -456,14 +456,14 @@ public class RISCVTokenMarker extends TokenMarker {
                 cKeywords.add(direct.getName(), Token.KEYWORD2);
             }
             // add integer register file
-            for (Register r: RegisterFile.getRegisters()) {
+            for (Register r : RegisterFile.getRegisters()) {
                 cKeywords.add(r.getName(), Token.KEYWORD3);
                 cKeywords.add("x" + r.getNumber(), Token.KEYWORD3);  // also recognize x0, x1, x2, etc
             }
             // add floating point register file
-            for (Register r : FloatingPointRegisterFile.getRegisters()){
+            for (Register r : FloatingPointRegisterFile.getRegisters()) {
                 cKeywords.add(r.getName(), Token.KEYWORD3);
-                cKeywords.add("f"+r.getNumber(),Token.KEYWORD3);
+                cKeywords.add("f" + r.getNumber(), Token.KEYWORD3);
             }
         }
         return cKeywords;
