@@ -316,7 +316,7 @@ public class Coprocessor1Window extends JPanel implements Observer {
                         // Avoid using Float.intBitsToFloat() b/c it may not preserve NaN value.
                         int iVal = Binary.stringToInt(sVal);
                         //  Assures that if changed during MIPS program execution, the update will
-                        //  occur only between MIPS instructions.
+                        //  occur only between instructions.
                         synchronized (Globals.memoryAndRegistersLock) {
                             Coprocessor1.updateRegister(row, iVal);
                         }
@@ -325,7 +325,7 @@ public class Coprocessor1Window extends JPanel implements Observer {
                     } else {
                         fVal = Float.parseFloat(sVal);
                         //  Assures that if changed during MIPS program execution, the update will
-                        //  occur only between MIPS instructions.
+                        //  occur only between instructions.
                         synchronized (Globals.memoryAndRegistersLock) {
                             Coprocessor1.setRegisterToFloat(row, fVal);
                         }

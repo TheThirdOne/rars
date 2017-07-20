@@ -79,7 +79,7 @@ public class HelpHelpAction extends GuiAction {
      */
     public void actionPerformed(ActionEvent e) {
         JTabbedPane tabbedPane = new JTabbedPane();
-        tabbedPane.addTab("MIPS", createMipsHelpInfoPanel());
+        tabbedPane.addTab("RISCV", createHelpInfoPanel());
         tabbedPane.addTab("MARS", createMarsHelpInfoPanel());
         tabbedPane.addTab("License", createCopyrightInfoPanel());
         tabbedPane.addTab("Bugs/Comments", createHTMLHelpPanel("BugReportingHelp.html"));
@@ -201,8 +201,8 @@ public class HelpHelpAction extends GuiAction {
 
 
     // Set up MIPS help tab.  Most contents are generated from instruction set info.
-    private JPanel createMipsHelpInfoPanel() {
-        JPanel mipsHelpInfo = new JPanel(new BorderLayout());
+    private JPanel createHelpInfoPanel() {
+        JPanel helpInfo = new JPanel(new BorderLayout());
         String helpRemarksColor = "CCFF99";
         // Introductory remarks go at the top as a label
         String helpRemarks =
@@ -266,12 +266,12 @@ public class HelpHelpAction extends GuiAction {
         helpRemarksLabel.setBackground(Color.decode("0x" + helpRemarksColor));
         JScrollPane operandsScrollPane = new JScrollPane(helpRemarksLabel, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
                 JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-        mipsHelpInfo.add(operandsScrollPane, BorderLayout.NORTH);
+        helpInfo.add(operandsScrollPane, BorderLayout.NORTH);
         // Below the label is a tabbed pane with categories of MIPS help
         JTabbedPane tabbedPane = new JTabbedPane();
-        tabbedPane.addTab("Basic Instructions", createMipsInstructionHelpPane(BasicInstruction.class));
-        tabbedPane.addTab("Extended (pseudo) Instructions", createMipsInstructionHelpPane(ExtendedInstruction.class));
-        tabbedPane.addTab("Directives", createMipsDirectivesHelpPane());
+        tabbedPane.addTab("Basic Instructions", createInstructionHelpPane(BasicInstruction.class));
+        tabbedPane.addTab("Extended (pseudo) Instructions", createInstructionHelpPane(ExtendedInstruction.class));
+        tabbedPane.addTab("Directives", createDirectivesHelpPane());
         tabbedPane.addTab("Syscalls", createHTMLHelpPanel("SyscallHelp.html"));
         tabbedPane.addTab("Exceptions", createHTMLHelpPanel("ExceptionsHelp.html"));
         tabbedPane.addTab("Macros", createHTMLHelpPanel("MacrosHelp.html"));
@@ -281,15 +281,15 @@ public class HelpHelpAction extends GuiAction {
         JSplitPane splitsville = new JSplitPane(JSplitPane.VERTICAL_SPLIT, operandsScrollPane, tabbedPane);
         splitsville.setOneTouchExpandable(true);
         splitsville.resetToPreferredSizes();
-        mipsHelpInfo.add(splitsville);
+        helpInfo.add(splitsville);
         //mipsHelpInfo.add(tabbedPane);
-        return mipsHelpInfo;
+        return helpInfo;
     }
 
     ///////////////  Methods to construct MIPS help tabs from internal MARS objects  //////////////
 
     /////////////////////////////////////////////////////////////////////////////
-    private JScrollPane createMipsDirectivesHelpPane() {
+    private JScrollPane createDirectivesHelpPane() {
         Vector<String> exampleList = new Vector<>();
         String blanks = "            ";  // 12 blanks
         for (Directives direct : Directives.getDirectiveList()) {
@@ -299,14 +299,14 @@ public class HelpHelpAction extends GuiAction {
         }
         Collections.sort(exampleList);
         JList<String> examples = new JList<>(exampleList);
-        JScrollPane mipsScrollPane = new JScrollPane(examples, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+        JScrollPane scrollPane = new JScrollPane(examples, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
                 JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         examples.setFont(new Font("Monospaced", Font.PLAIN, 12));
-        return mipsScrollPane;
+        return scrollPane;
     }
 
     ////////////////////////////////////////////////////////////////////////////
-    private JScrollPane createMipsInstructionHelpPane(Class<? extends Instruction> instructionClass) {
+    private JScrollPane createInstructionHelpPane(Class<? extends Instruction> instructionClass) {
         ArrayList<Instruction> instructionList = Globals.instructionSet.getInstructionList();
         Vector<String> exampleList = new Vector<>(instructionList.size());
         String blanks = "                        ";  // 24 blanks
@@ -319,11 +319,11 @@ public class HelpHelpAction extends GuiAction {
         }
         Collections.sort(exampleList);
         JList<String> examples = new JList<>(exampleList);
-        JScrollPane mipsScrollPane = new JScrollPane(examples, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+        JScrollPane scrollPane = new JScrollPane(examples, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
                 JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         examples.setFont(new Font("Monospaced", Font.PLAIN, 12));
         examples.setCellRenderer(new MyCellRenderer());
-        return mipsScrollPane;
+        return scrollPane;
     }
 
 

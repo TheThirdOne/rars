@@ -10,7 +10,7 @@ done if you aren't a developer pay this no mind.
 >  --Benjamin Landers
 
 Transition MIPS->RISCV
-  - Rename the mips folder to riscv
+  - Finish cleaning mips references from comments
   - Rename Coprocessor0&1 to better names
   - Eliminate the .ktext section
   - Figure out a good name and logo
@@ -20,6 +20,7 @@ Code cleanliness
   - Take some time to figure out how to best organize the classes and make it so
   - Clean up venus some more
   - Add asserts to document hidden dependecies and validate assumptions; possibly?
+  - Make a logger to unify System.out & printing to GUI console
 
 Robustness / following the spec
   - Floating point stuff

@@ -4,7 +4,7 @@ import mars.Globals;
 import mars.Settings;
 import mars.venus.editors.jeditsyntax.SyntaxStyle;
 import mars.venus.editors.jeditsyntax.SyntaxUtilities;
-import mars.venus.editors.jeditsyntax.tokenmarker.MIPSTokenMarker;
+import mars.venus.editors.jeditsyntax.tokenmarker.RISCVTokenMarker;
 
 import javax.swing.*;
 import javax.swing.border.BevelBorder;
@@ -375,8 +375,8 @@ public class SettingsEditorAction extends GuiAction {
             JPanel syntaxStylePanel = new JPanel();
             defaultStyles = SyntaxUtilities.getDefaultSyntaxStyles();
             initialStyles = SyntaxUtilities.getCurrentSyntaxStyles();
-            String[] labels = MIPSTokenMarker.getMIPSTokenLabels();
-            String[] sampleText = MIPSTokenMarker.getMIPSTokenExamples();
+            String[] labels = RISCVTokenMarker.getRISCVTokenLabels();
+            String[] sampleText = RISCVTokenMarker.getRISCVTokenExamples();
             syntaxStylesAction = false;
             int count = 0;
             // Count the number of actual styles specified

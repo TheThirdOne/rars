@@ -124,7 +124,7 @@ public class Simulator extends Observable {
 
     public void startSimulation(int pc, int maxSteps, int[] breakPoints) {
         simulatorThread = new SimThread(pc, maxSteps, breakPoints);
-        new Thread(simulatorThread, "MIPS").start();
+        new Thread(simulatorThread, "RISCV").start();
     }
 
 
@@ -395,7 +395,7 @@ public class Simulator extends Observable {
                 // to access MIPS memory and registers only through synchronized blocks on same
                 // lock variable, then full (albeit heavy-handed) protection of MIPS memory and
                 // registers is assured.  Not as critical for reading from those resources.
-                // Check number of MIPS instructions executed.  Return if at limit (-1 is no limit).
+                // Check number of instructions executed.  Return if at limit (-1 is no limit).
                 synchronized (Globals.memoryAndRegistersLock) {
                     // Handle pending interupts and traps first
                     int uip = Coprocessor0.getValue("uip"), uie = Coprocessor0.getValue("uie");

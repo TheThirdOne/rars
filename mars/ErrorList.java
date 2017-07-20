@@ -106,7 +106,7 @@ public class ErrorList {
             return;
         }
         if (errorCount == getErrorLimit()) {
-            messages.add(new ErrorMessage((MIPSprogram) null, mess.getLine(), mess.getPosition(), "Error Limit of " + getErrorLimit() + " exceeded."));
+            messages.add(new ErrorMessage((RISCVprogram) null, mess.getLine(), mess.getPosition(), "Error Limit of " + getErrorLimit() + " exceeded."));
             errorCount++; // subsequent errors will not be added; see if statement above
             return;
         }

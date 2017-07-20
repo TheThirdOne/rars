@@ -73,7 +73,7 @@ public class SymbolTable {
     public void addSymbol(Token token, int address, boolean b, ErrorList errors) {
         String label = token.getValue();
         if (getSymbol(label) != null) {
-            errors.add(new ErrorMessage(token.getSourceMIPSprogram(), token.getSourceLine(), token.getStartPos(), "label \"" + label + "\" already defined"));
+            errors.add(new ErrorMessage(token.getSourceProgram(), token.getSourceLine(), token.getStartPos(), "label \"" + label + "\" already defined"));
         } else {
             table.add(new Symbol(label, address, b));
             if (Globals.debug)

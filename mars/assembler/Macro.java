@@ -2,7 +2,7 @@ package mars.assembler;
 
 import mars.ErrorList;
 import mars.ErrorMessage;
-import mars.MIPSprogram;
+import mars.RISCVprogram;
 import mars.riscv.hardware.Coprocessor1;
 import mars.riscv.hardware.RegisterFile;
 
@@ -41,7 +41,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 public class Macro {
     private String name;
-    private MIPSprogram program;
+    private RISCVprogram program;
     private ArrayList<String> labels;
 
     /**
@@ -72,11 +72,11 @@ public class Macro {
         this.name = name;
     }
 
-    public MIPSprogram getProgram() {
+    public RISCVprogram getProgram() {
         return program;
     }
 
-    public void setProgram(MIPSprogram program) {
+    public void setProgram(RISCVprogram program) {
         this.program = program;
     }
 

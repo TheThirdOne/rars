@@ -730,7 +730,7 @@ public class TextSegmentWindow extends JInternalFrame implements Observer {
                 // the control of my software.
             }
             //  Assures that if changed during MIPS program execution, the update will
-            //  occur only between MIPS instructions.
+            //  occur only between instructions.
             synchronized (Globals.memoryAndRegistersLock) {
                 try {
                     Globals.memory.setRawWord(address, val);
@@ -950,7 +950,7 @@ public class TextSegmentWindow extends JInternalFrame implements Observer {
         private String[] columnToolTips = {
                /* break */   "If checked, will set an execution breakpoint. Click header to disable/enable breakpoints",
                /* address */ "Text segment address of binary instruction code",
-               /* code */    "32-bit binary MIPS instruction",
+               /* code */    "32-bit binary RISCV instruction",
                 /* basic */   "Basic assembler instruction",
                /* source */  "Source code line"
         };

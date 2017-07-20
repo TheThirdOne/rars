@@ -178,7 +178,7 @@ public class BitmapDisplay extends AbstractMarsToolAndApplication {
      * @param memory       the attached memory
      * @param accessNotice information provided by memory in MemoryAccessNotice object
      */
-    protected void processMIPSUpdate(Observable memory, AccessNotice accessNotice) {
+    protected void processRISCVUpdate(Observable memory, AccessNotice accessNotice) {
         if (accessNotice.getAccessType() == AccessNotice.WRITE) {
             updateColorForAddress((MemoryAccessNotice) accessNotice);
         }
@@ -247,8 +247,8 @@ public class BitmapDisplay extends AbstractMarsToolAndApplication {
                         "as a 24-bit RGB color value with the red component in bits 16-23,\n" +
                         "the green component in bits 8-15, and the blue component in bits 0-7.\n" +
                         "Each time a memory word within the display address space is written\n" +
-                        "by the MIPS program, its position in the display will be rendered\n" +
-                        "in the color that its value represents.\n" +
+                        "by the program, its position in the display will be rendered in the\n" +
+                        "color that its value represents.\n" +
                         "\n" +
                         "Version 1.0 is very basic and was constructed from the Memory\n" +
                         "Reference Visualization tool's code.  Feel free to improve it and\n" +

@@ -61,15 +61,15 @@ public class ErrorMessage {
      * Constructor for ErrorMessage.  Assumes line number is calculated after any .include files expanded, and
      * if there were, it will adjust filename and line number so message reflects original file and line number.
      *
-     * @param sourceMIPSprogram MIPSprogram object of source file in which this error appears.
+     * @param sourceProgram RISCVprogram object of source file in which this error appears.
      * @param line              Line number in source program being processed when error occurred.
      * @param position          Position within line being processed when error occurred.  Normally is starting
      *                          position of source token.
      * @param message           String containing appropriate error message.
      **/
 
-    public ErrorMessage(MIPSprogram sourceMIPSprogram, int line, int position, String message) {
-        this(ERROR, sourceMIPSprogram, line, position, message);
+    public ErrorMessage(RISCVprogram sourceProgram, int line, int position, String message) {
+        this(ERROR, sourceProgram, line, position, message);
     }
 
 
@@ -78,31 +78,31 @@ public class ErrorMessage {
      * if there were, it will adjust filename and line number so message reflects original file and line number.
      *
      * @param isWarning         set to WARNING if message is a warning not error, else set to ERROR or omit.
-     * @param sourceMIPSprogram MIPSprogram object of source file in which this error appears.
+     * @param sourceProgram     RISCVprogram object of source file in which this error appears.
      * @param line              Line number in source program being processed when error occurred.
      * @param position          Position within line being processed when error occurred.  Normally is starting
      *                          position of source token.
      * @param message           String containing appropriate error message.
      **/
 
-    public ErrorMessage(boolean isWarning, MIPSprogram sourceMIPSprogram, int line, int position, String message) {
+    public ErrorMessage(boolean isWarning, RISCVprogram sourceProgram, int line, int position, String message) {
         this.isWarning = isWarning;
-        if (sourceMIPSprogram == null) {
+        if (sourceProgram == null) {
             this.filename = "";
             this.line = line;
         } else {
-            if (sourceMIPSprogram.getSourceLineList() == null) {
-                this.filename = sourceMIPSprogram.getFilename();
+            if (sourceProgram.getSourceLineList() == null) {
+                this.filename = sourceProgram.getFilename();
                 this.line = line;
             } else {
-                mars.assembler.SourceLine sourceLine = sourceMIPSprogram.getSourceLineList().get(line - 1);
+                mars.assembler.SourceLine sourceLine = sourceProgram.getSourceLineList().get(line - 1);
                 this.filename = sourceLine.getFilename();
                 this.line = sourceLine.getLineNumber();
             }
         }
         this.position = position;
         this.message = message;
-        this.macroExpansionHistory = getExpansionHistory(sourceMIPSprogram);
+        this.macroExpansionHistory = getExpansionHistory(sourceProgram);
     }
 
     /**
@@ -114,8 +114,8 @@ public class ErrorMessage {
     // Added January 2013
     public ErrorMessage(ProgramStatement statement, String message) {
         this.isWarning = ERROR;
-        this.filename = (statement.getSourceMIPSprogram() == null)
-                ? "" : statement.getSourceMIPSprogram().getFilename();
+        this.filename = (statement.getSourceProgram() == null)
+                ? "" : statement.getSourceProgram().getFilename();
         this.position = 0;
         this.message = message;
         // Somewhere along the way we lose the macro history, but can
@@ -236,10 +236,10 @@ public class ErrorMessage {
     }
 
     // Added by Mohammad Sekavat Dec 2012
-    private static String getExpansionHistory(MIPSprogram sourceMIPSprogram) {
-        if (sourceMIPSprogram == null || sourceMIPSprogram.getLocalMacroPool() == null)
+    private static String getExpansionHistory(RISCVprogram sourceProgram) {
+        if (sourceProgram == null || sourceProgram.getLocalMacroPool() == null)
             return "";
-        return sourceMIPSprogram.getLocalMacroPool().getExpansionHistory();
+        return sourceProgram.getLocalMacroPool().getExpansionHistory();
     }
 
 }  // ErrorMessage

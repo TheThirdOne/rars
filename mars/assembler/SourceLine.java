@@ -1,6 +1,6 @@
 package mars.assembler;
 
-import mars.MIPSprogram;
+import mars.RISCVprogram;
 
 /*
 Copyright (c) 2003-2013,  Pete Sanderson and Kenneth Vollmar
@@ -41,21 +41,21 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 public class SourceLine {
     private String source;
     private String filename;
-    private MIPSprogram mipsProgram;
+    private RISCVprogram program;
     private int lineNumber;
 
     /**
      * SourceLine constructor
      *
      * @param source      The source code itself
-     * @param mipsProgram The program (object representing source file) containing that line
+     * @param program The program (object representing source file) containing that line
      * @param lineNumber  The line number within that program where source appears.
      */
-    public SourceLine(String source, MIPSprogram mipsProgram, int lineNumber) {
+    public SourceLine(String source, RISCVprogram program, int lineNumber) {
         this.source = source;
-        this.mipsProgram = mipsProgram;
-        if (mipsProgram != null)
-            this.filename = mipsProgram.getFilename();
+        this.program = program;
+        if (program != null)
+            this.filename = program.getFilename();
         this.lineNumber = lineNumber;
     }
 
@@ -89,12 +89,12 @@ public class SourceLine {
     }
 
     /**
-     * Retrieve MIPSprogram object containing source statement
+     * Retrieve RISCVprogram object containing source statement
      *
-     * @return program as MIPSprogram object
+     * @return program as RISCVprogram object
      */
 
-    public MIPSprogram getMIPSprogram() {
-        return mipsProgram;
+    public RISCVprogram getRISCVprogram() {
+        return program;
     }
 }

@@ -426,7 +426,7 @@ public class CacheSimulator extends AbstractMarsToolAndApplication {
      * @param memory       the attached memory
      * @param accessNotice information provided by memory in MemoryAccessNotice object
      */
-    protected void processMIPSUpdate(Observable memory, AccessNotice accessNotice) {
+    protected void processRISCVUpdate(Observable memory, AccessNotice accessNotice) {
         MemoryAccessNotice notice = (MemoryAccessNotice) accessNotice;
         memoryAccessCount++;
         CacheAccessResult cacheAccessResult = theCache.isItAHitThenReadOnMiss(notice.getAddress());

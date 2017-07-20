@@ -3,7 +3,7 @@ package mars.venus.editors.jeditsyntax;
 import mars.Globals;
 import mars.venus.EditPane;
 import mars.venus.editors.MARSTextEditingArea;
-import mars.venus.editors.jeditsyntax.tokenmarker.MIPSTokenMarker;
+import mars.venus.editors.jeditsyntax.tokenmarker.RISCVTokenMarker;
 
 import javax.swing.*;
 import javax.swing.event.CaretEvent;
@@ -61,7 +61,7 @@ public class JEditBasedTextArea extends JEditTextArea implements MARSTextEditing
                 };
         this.getDocument().addUndoableEditListener(undoableEditListener);
         this.setFont(Globals.getSettings().getEditorFont());
-        this.setTokenMarker(new MIPSTokenMarker());
+        this.setTokenMarker(new RISCVTokenMarker());
 
         addCaretListener(this);
     }

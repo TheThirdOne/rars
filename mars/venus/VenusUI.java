@@ -351,7 +351,7 @@ public class VenusUI extends JFrame {
                     mainUI);
             runResetAction = new RunResetAction("Reset",
                     new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "Reset22.png"))),
-                    "Reset MIPS memory and registers", KeyEvent.VK_R,
+                    "Reset memory and registers", KeyEvent.VK_R,
                     KeyStroke.getKeyStroke(KeyEvent.VK_F12, 0),
                     mainUI);
             runClearBreakpointsAction = new RunClearBreakpointsAction("Clear all breakpoints",
@@ -389,7 +389,7 @@ public class VenusUI extends JFrame {
                     mainUI);
             settingsExtendedAction = new SettingsExtendedAction("Permit extended (pseudo) instructions and formats",
                     null,
-                    "If set, MIPS extended (pseudo) instructions are formats are permitted.",
+                    "If set, extended (pseudo) instructions are formats are permitted.",
                     null, null,
                     mainUI);
             settingsAssembleOnOpenAction = new SettingsAssembleOnOpenAction("Assemble file upon opening",
@@ -412,14 +412,14 @@ public class VenusUI extends JFrame {
                     "If set, assembler will initialize Program Counter to text address globally labeled 'main', if defined.",
                     null, null,
                     mainUI);
-            settingsProgramArgumentsAction = new SettingsProgramArgumentsAction("Program arguments provided to MIPS program",
+            settingsProgramArgumentsAction = new SettingsProgramArgumentsAction("Program arguments provided to program",
                     null,
-                    "If set, program arguments for MIPS program can be entered in border of Text Segment window.",
+                    "If set, program arguments for the program can be entered in border of Text Segment window.",
                     null, null,
                     mainUI);
             settingsSelfModifyingCodeAction = new SettingsSelfModifyingCodeAction("Self-modifying code",
                     null,
-                    "If set, the MIPS program can write and branch to both text and data segments.",
+                    "If set, the program can write and branch to both text and data segments.",
                     null, null,
                     mainUI);
             settingsEditorAction = new SettingsEditorAction("Editor...",
@@ -439,7 +439,7 @@ public class VenusUI extends JFrame {
                     mainUI);
             settingsMemoryConfigurationAction = new SettingsMemoryConfigurationAction("Memory Configuration...",
                     null,
-                    "View and modify memory segment base addresses for simulated MIPS.",
+                    "View and modify memory segment base addresses for the simulated processor",
                     null, null,
                     mainUI);
             helpHelpAction = new HelpHelpAction("Help",

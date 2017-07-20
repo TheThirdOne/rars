@@ -304,7 +304,7 @@ public class Coprocessor0Window extends JPanel implements Observer {
                 return;
             }
             //  Assures that if changed during MIPS program execution, the update will
-            //  occur only between MIPS instructions.
+            //  occur only between instructions.
             synchronized (Globals.memoryAndRegistersLock) {
                 Coprocessor0.updateRegister(registers[row].getNumber(), val);
             }

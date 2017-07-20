@@ -51,7 +51,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 public class InstructionSet {
-    private static final String CLASS_PREFIX = "mars.riscv.instructions.instructions.";
+    private static final String CLASS_PREFIX = "mars.riscv.instructions.";
     private static final String INSTRUCTIONS_DIRECTORY_PATH = "mars/riscv/instructions";
     private static final String CLASS_EXTENSION = "class";
 
@@ -168,7 +168,7 @@ public class InstructionSet {
             in = new BufferedReader(new InputStreamReader(is));
         } catch (NullPointerException e) {
             System.out.println(
-                    "Error: MIPS pseudo-instruction file PseudoOps.txt not found.");
+                    "Error: Pseudo-instruction file PseudoOps.txt not found.");
             System.exit(0);
         }
         try {
@@ -212,11 +212,11 @@ public class InstructionSet {
             in.close();
         } catch (IOException ioe) {
             System.out.println(
-                    "Internal Error: MIPS pseudo-instructions could not be loaded.");
+                    "Internal Error: Pseudo-instructions could not be loaded.");
             System.exit(0);
         } catch (Exception ioe) {
             System.out.println(
-                    "Error: Invalid MIPS pseudo-instruction specification.");
+                    "Internal Error: Invalid pseudo-instruction specification.");
             System.exit(0);
         }
 

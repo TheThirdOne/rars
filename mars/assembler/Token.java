@@ -1,6 +1,6 @@
 package mars.assembler;
 
-import mars.MIPSprogram;
+import mars.RISCVprogram;
 
 /*
 Copyright (c) 2003-2008,  Pete Sanderson and Kenneth Vollmar
@@ -32,7 +32,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 /**
  * Represents one token in the input MIPS program.  Each Token carries, along with its
- * type and value, the position (line, column) in which its source appears in the MIPS program.
+ * type and value, the position (line, column) in which its source appears in the program.
  *
  * @author Pete Sanderson
  * @version August 2003
@@ -42,10 +42,10 @@ public class Token {
 
     private TokenTypes type;
     private String value;
-    private MIPSprogram sourceMIPSprogram;
+    private RISCVprogram sourceProgram;
     private int sourceLine, sourcePos;
     // original program and line will differ from the above if token was defined in an included file
-    private MIPSprogram originalMIPSprogram;
+    private RISCVprogram originalProgram;
     private int originalSourceLine;
 
     /**
@@ -53,19 +53,19 @@ public class Token {
      *
      * @param type              The token type that this token has. (e.g. REGISTER_NAME)
      * @param value             The source value for this token (e.g. $t3)
-     * @param sourceMIPSprogram The MIPSprogram object containing this token
+     * @param sourceProgram The RISCVprogram object containing this token
      * @param line              The line number in source program in which this token appears.
      * @param start             The starting position in that line number of this token's source value.
      * @see TokenTypes
      **/
 
-    public Token(TokenTypes type, String value, MIPSprogram sourceMIPSprogram, int line, int start) {
+    public Token(TokenTypes type, String value, RISCVprogram sourceProgram, int line, int start) {
         this.type = type;
         this.value = value;
-        this.sourceMIPSprogram = sourceMIPSprogram;
+        this.sourceProgram = sourceProgram;
         this.sourceLine = line;
         this.sourcePos = start;
-        this.originalMIPSprogram = sourceMIPSprogram;
+        this.originalProgram = sourceProgram;
         this.originalSourceLine = line;
     }
 
@@ -79,18 +79,18 @@ public class Token {
      * @param origProgram    MIPS program containing this token.
      * @param origSourceLine Line within that program of this token.
      **/
-    public void setOriginal(MIPSprogram origProgram, int origSourceLine) {
-        this.originalMIPSprogram = origProgram;
+    public void setOriginal(RISCVprogram origProgram, int origSourceLine) {
+        this.originalProgram = origProgram;
         this.originalSourceLine = origSourceLine;
     }
 
     /**
      * Produces original program containing this token.
      *
-     * @return MIPSprogram of origin for this token.
+     * @return RISCVprogram of origin for this token.
      **/
-    public MIPSprogram getOriginalProgram() {
-        return this.originalMIPSprogram;
+    public RISCVprogram getOriginalProgram() {
+        return this.originalProgram;
     }
 
     /**
@@ -145,13 +145,13 @@ public class Token {
     }
 
     /**
-     * Produces MIPSprogram object associated with this token.
+     * Produces RISCVprogram object associated with this token.
      *
-     * @return MIPSprogram object associated with this token.
+     * @return RISCVprogram object associated with this token.
      **/
 
-    public MIPSprogram getSourceMIPSprogram() {
-        return sourceMIPSprogram;
+    public RISCVprogram getSourceProgram() {
+        return sourceProgram;
     }
 
     /**

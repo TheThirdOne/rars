@@ -25,27 +25,28 @@ import java.util.HashMap;
 import java.util.TreeSet;
 
 /**
- * MIPS token marker.
+ * RISCV token marker.
  *
  * @author Pete Sanderson (2010) and Slava Pestov (1999)
  */
-public class MIPSTokenMarker extends TokenMarker {
-    public MIPSTokenMarker() {
+public class RISCVTokenMarker extends TokenMarker {
+    // TODO: simplify, I think this can be simplified dramatically
+    public RISCVTokenMarker() {
         this(getKeywords());
     }
 
-    public MIPSTokenMarker(KeywordMap keywords) {
+    public RISCVTokenMarker(KeywordMap keywords) {
         this.keywords = keywords;
     }
 
-    public static String[] getMIPSTokenLabels() {
+    public static String[] getRISCVTokenLabels() {
         if (tokenLabels == null) {
             tokenLabels = new String[Token.ID_COUNT];
             tokenLabels[Token.COMMENT1] = "Comment";
             tokenLabels[Token.LITERAL1] = "String literal";
             tokenLabels[Token.LITERAL2] = "Character literal";
             tokenLabels[Token.LABEL] = "Label";
-            tokenLabels[Token.KEYWORD1] = "MIPS instruction";
+            tokenLabels[Token.KEYWORD1] = "Instruction";
             tokenLabels[Token.KEYWORD2] = "Assembler directive";
             tokenLabels[Token.KEYWORD3] = "Register";
             tokenLabels[Token.INVALID] = "In-progress, invalid";
@@ -54,7 +55,7 @@ public class MIPSTokenMarker extends TokenMarker {
         return tokenLabels;
     }
 
-    public static String[] getMIPSTokenExamples() {
+    public static String[] getRISCVTokenExamples() {
         if (tokenExamples == null) {
             tokenExamples = new String[Token.ID_COUNT];
             tokenExamples[Token.COMMENT1] = "# Load";

@@ -2,7 +2,7 @@ package mars.venus;
 
 import mars.AssemblyException;
 import mars.Globals;
-import mars.MIPSprogram;
+import mars.RISCVprogram;
 import mars.Settings;
 import mars.riscv.hardware.RegisterFile;
 import mars.util.FilenameFinder;
@@ -612,7 +612,7 @@ public class EditTabbedPane extends JTabbedPane {
             FileStatus.setFile(theFile);
             FileStatus.set(FileStatus.OPENING);// DPS 9-Aug-2011
             if (theFile.canRead()) {
-                Globals.program = new MIPSprogram();
+                Globals.program = new RISCVprogram();
                 try {
                     Globals.program.readSource(currentFilePath);
                 } catch (AssemblyException pe) {

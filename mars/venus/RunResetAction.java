@@ -65,7 +65,7 @@ public class RunResetAction extends GuiAction {
         // I am choosing the second approach although it will slow down the reset
         // operation.  The first approach requires additional Memory class methods.
         try {
-            Globals.program.assemble(RunAssembleAction.getMIPSprogramsToAssemble(),
+            Globals.program.assemble(RunAssembleAction.getProgramsToAssemble(),
                     RunAssembleAction.getExtendedAssemblerEnabled(),
                     RunAssembleAction.getWarningsAreErrors());
         } catch (AssemblyException pe) {

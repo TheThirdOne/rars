@@ -76,7 +76,7 @@ public class MarsLaunch {
      * are <tt>Binary</tt>, <tt>HexText</tt>, <tt>BinaryText</tt>.<br>
      * h  -- display help.  Use by itself and with no filename</br>
      * hex  -- display memory or register contents in hexadecimal (default)<br>
-     * ic  -- display count of MIPS basic instructions 'executed'");
+     * ic  -- display count of basic instructions 'executed'");
      * mc  -- set memory configuration.  Option has 1 argument, e.g.<br>
      * <tt>mc &lt;config$gt;</tt>, where &lt;config$gt; is <tt>Default</tt><br>
      * for the MARS default 32-bit address space, <tt>CompactDataAtZero</tt> for<br>
@@ -102,7 +102,7 @@ public class MarsLaunch {
      * pa  -- Program Arguments follow in a space-separated list.  This<br>
      * option must be placed AFTER ALL FILE NAMES, because everything<br>
      * that follows it is interpreted as a program argument to be<br>
-     * made available to the MIPS program at runtime.<br>
+     * made available to the program at runtime.<br>
      **/
 
 
@@ -124,12 +124,12 @@ public class MarsLaunch {
     private ArrayList<String> registerDisplayList;
     private ArrayList<String> memoryDisplayList;
     private ArrayList<String> filenameList;
-    private MIPSprogram code;
+    private RISCVprogram code;
     private int maxSteps;
     private int instructionCount;
     private PrintStream out; // stream for display of command line output
     private ArrayList<String[]> dumpTriples = null; // each element holds 3 arguments for dump option
-    private ArrayList<String> programArgumentList; // optional program args for MIPS program (becomes argc, argv)
+    private ArrayList<String> programArgumentList; // optional program args for program (becomes argc, argv)
     private int assembleErrorExitCode;  // MARS command exit code to return if assemble error occurs
     private int simulateErrorExitCode;// MARS command exit code to return if simulation error occurs
 
@@ -158,7 +158,7 @@ public class MarsLaunch {
             filenameList = new ArrayList<>();
             MemoryConfigurations.setCurrentConfiguration(MemoryConfigurations.getDefaultConfiguration());
             // do NOT use Globals.program for command line MARS -- it triggers 'backstep' log.
-            code = new MIPSprogram();
+            code = new RISCVprogram();
             maxSteps = -1;
             out = System.out;
             if (parseCommandArgs(args)) {
@@ -270,7 +270,7 @@ public class MarsLaunch {
         }
         for (int i = 0; i < args.length; i++) {
             // We have seen "pa" switch, so all remaining args are program args
-            // that will become "argc" and "argv" for the MIPS program.
+            // that will become "argc" and "argv" for the program.
             if (inProgramArgumentList) {
                 if (programArgumentList == null) {
                     programArgumentList = new ArrayList<>();
@@ -475,13 +475,13 @@ public class MarsLaunch {
             if (Globals.debug) {
                 out.println("--------  TOKENIZING BEGINS  -----------");
             }
-            ArrayList<MIPSprogram> MIPSprogramsToAssemble =
+            ArrayList<RISCVprogram> programsToAssemble =
                     code.prepareFilesForAssembly(filesToAssemble, mainFile.getAbsolutePath(), null);
             if (Globals.debug) {
                 out.println("--------  ASSEMBLY BEGINS  -----------");
             }
             // Added logic to check for warnings and print if any. DPS 11/28/06
-            ErrorList warnings = code.assemble(MIPSprogramsToAssemble, pseudo, warningsAreErrors);
+            ErrorList warnings = code.assemble(programsToAssemble, pseudo, warningsAreErrors);
             if (warnings != null && warnings.warningsOccurred()) {
                 out.println(warnings.generateWarningReport());
             }
@@ -494,7 +494,7 @@ public class MarsLaunch {
         if (simulate) {
             RegisterFile.initializeProgramCounter(startAtMain); // DPS 3/9/09
 
-            // store program args (if any) in MIPS memory
+            // store program args (if any) in memory
             new ProgramArgumentList(programArgumentList).storeProgramArguments();
             // establish observer if specified
             establishObserver();
@@ -568,7 +568,7 @@ public class MarsLaunch {
                         public void update(Observable o, Object obj) {
                             if (obj instanceof AccessNotice) {
                                 AccessNotice notice = (AccessNotice) obj;
-                                if (!notice.accessIsFromMIPS())
+                                if (!notice.accessIsFromRISCV())
                                     return;
                                 if (notice.getAccessType() != AccessNotice.READ)
                                     return;
@@ -758,7 +758,7 @@ public class MarsLaunch {
         out.println("            <format> = " + formats);
         out.println("      h  -- display this help.  Use by itself with no filename.");
         out.println("    hex  -- display memory or register contents in hexadecimal (default)");
-        out.println("     ic  -- display count of MIPS basic instructions 'executed'");
+        out.println("     ic  -- display count of basic instructions 'executed'");
         out.println("     mc <config>  -- set memory configuration.  Argument <config> is");
         out.println("            case-sensitive and possible values are: Default for the default");
         out.println("            32-bit address space, CompactDataAtZero for a 32KB memory with");
@@ -784,7 +784,7 @@ public class MarsLaunch {
         out.println("     pa  -- Program Arguments follow in a space-separated list.  This");
         out.println("            option must be placed AFTER ALL FILE NAMES, because everything");
         out.println("            that follows it is interpreted as a program argument to be");
-        out.println("            made available to the MIPS program at runtime.");
+        out.println("            made available to the program at runtime.");
         out.println("If more than one filename is listed, the first is assumed to be the main");
         out.println("unless the global statement label 'main' is defined in one of the files.");
         out.println("Exception handler not automatically assembled.  Add it to the file list.");

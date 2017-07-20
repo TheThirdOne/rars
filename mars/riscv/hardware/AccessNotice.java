@@ -94,9 +94,10 @@ public abstract class AccessNotice {
      * @return true if this access originated from executing MIPS program, false otherwise
      */
     // Thread to execute the MIPS program is instantiated in SwingWorker.java.
-    // There it is given the name "MIPS" to replace the default "Thread-x".
-    public boolean accessIsFromMIPS() {
-        return thread.getName().startsWith("MIPS");
+    // There it is given the name "RISCV" to replace the default "Thread-x".
+    // TODO: there should be a better way than this
+    public boolean accessIsFromRISCV() {
+        return thread.getName().startsWith("RISCV");
     }
 
 }

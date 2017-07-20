@@ -1,6 +1,6 @@
 package mars.assembler;
 
-import mars.MIPSprogram;
+import mars.RISCVprogram;
 
 import java.util.ArrayList;
 
@@ -31,13 +31,13 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 /**
  * Stores information of macros defined by now. <br>
- * Will be used in first pass of assembling MIPS source code. When reached
+ * Will be used in first pass of assembling RISCV source code. When reached
  * <code>.macro</code> directive, parser calls
  * {@link MacroPool#beginMacro(Token)} and skips source code lines until
  * reaches <code>.end_macro</code> directive. then calls
  * {@link MacroPool#commitMacro(Token)} and the macro information stored in a
  * {@link Macro} instance will be added to {@link #macroList}. <br>
- * Each {@link MIPSprogram} will have one {@link MacroPool}<br>
+ * Each {@link RISCVprogram} will have one {@link MacroPool}<br>
  * NOTE: Forward referencing macros (macro expansion before its definition in
  * source code) and Nested macro definition (defining a macro inside other macro
  * definition) are not supported.
@@ -45,7 +45,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * @author M.H.Sekhavat sekhavat17@gmail.com
  */
 public class MacroPool {
-    private MIPSprogram program;
+    private RISCVprogram program;
     /**
      * List of macros defined by now
      */
@@ -65,10 +65,10 @@ public class MacroPool {
     /**
      * Create an empty MacroPool for given program
      *
-     * @param mipsProgram associated MIPS program
+     * @param program associated program
      */
-    public MacroPool(MIPSprogram mipsProgram) {
-        this.program = mipsProgram;
+    public MacroPool(RISCVprogram program) {
+        this.program = program;
         macroList = new ArrayList<>();
         callStack = new ArrayList<>();
         callStackOrigLines = new ArrayList<>();

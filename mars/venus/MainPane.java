@@ -80,7 +80,7 @@ public class MainPane extends JTabbedPane {
 
         this.addTab(executeTabTitle, executeTabIcon, executeTab);
 
-        this.setToolTipTextAt(0, "Text editor for composing MIPS programs.");
+        this.setToolTipTextAt(0, "Text editor for composing RISCV programs.");
         this.setToolTipTextAt(1, "View and control assembly language program execution.  Enabled upon successful assemble.");
       
       	/* Listener has one specific purpose: when Execute tab is selected for the 

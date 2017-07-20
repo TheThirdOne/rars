@@ -247,7 +247,7 @@ public class KeyboardAndDisplaySimulator extends AbstractMarsToolAndApplication 
      * @param memory       the attached memory
      * @param accessNotice information provided by memory in MemoryAccessNotice object
      */
-    protected void processMIPSUpdate(Observable memory, AccessNotice accessNotice) {
+    protected void processRISCVUpdate(Observable memory, AccessNotice accessNotice) {
         MemoryAccessNotice notice = (MemoryAccessNotice) accessNotice;
         // If MIPS program has just read (loaded) the receiver (keyboard) data register,
         // then clear the Ready bit to indicate there is no longer a keystroke available.
@@ -475,33 +475,33 @@ public class KeyboardAndDisplaySimulator extends AbstractMarsToolAndApplication 
                         "For the latter, simply write a driver to instantiate a mars.tools.KeyboardAndDisplaySimulator object " +
                         "and invoke its go() method.\n" +
                         "\n" +
-                        "While the tool is connected to MIPS, each keystroke in the text area causes the corresponding ASCII " +
+                        "While the tool is connected to the program, each keystroke in the text area causes the corresponding ASCII " +
                         "code to be placed in the Receiver Data register (low-order byte of memory word " + Binary.intToHexString(RECEIVER_DATA) + "), and the " +
                         "Ready bit to be set to 1 in the Receiver Control register (low-order bit of " + Binary.intToHexString(RECEIVER_CONTROL) + ").  The Ready " +
-                        "bit is automatically reset to 0 when the MIPS program reads the Receiver Data using an 'lw' instruction.\n" +
+                        "bit is automatically reset to 0 when the program reads the Receiver Data using an 'lw' instruction.\n" +
                         "\n" +
                         "A program may write to the display area by detecting the Ready bit set (1) in the Transmitter Control " +
                         "register (low-order bit of memory word " + Binary.intToHexString(TRANSMITTER_CONTROL) + "), then storing the ASCII code of the character to be " +
                         "displayed in the Transmitter Data register (low-order byte of " + Binary.intToHexString(TRANSMITTER_DATA) + ") using a 'sw' instruction.  This " +
                         "triggers the simulated display to clear the Ready bit to 0, delay awhile to simulate processing the data, " +
-                        "then set the Ready bit back to 1.  The delay is based on a count of executed MIPS instructions.\n" +
+                        "then set the Ready bit back to 1.  The delay is based on a count of executed instructions.\n" +
                         "\n" +
-                        "In a polled approach to I/O, a MIPS program idles in a loop, testing the device's Ready bit on each " +
+                        "In a polled approach to I/O, a program idles in a loop, testing the device's Ready bit on each " +
                         "iteration until it is set to 1 before proceeding.  This tool also supports an interrupt-driven approach " +
                         "which requires the program to provide an interrupt handler but allows it to perform useful processing " +
                         "instead of idly looping.  When the device is ready, it signals an interrupt and the MARS simuator will " +
                         "transfer control to the interrupt handler.  Note: in MARS, the interrupt handler has to co-exist with the " +
                         "exception handler in kernel memory, both having the same entry address.  Interrupt-driven I/O is enabled " +
-                        "when the MIPS program sets the Interrupt-Enable bit in the device's control register.  Details below.\n" +
+                        "when the program sets the Interrupt-Enable bit in the device's control register.  Details below.\n" +
                         "\n" +
                         "Upon setting the Receiver Controller's Ready bit to 1, its Interrupt-Enable bit (bit position 1) is tested. " +
-                        "If 1, then an External Interrupt will be generated.  Before executing the next MIPS instruction, the runtime " +
+                        "If 1, then an External Interrupt will be generated.  Before executing the next instruction, the runtime " +
                         "simulator will detect the interrupt, place the interrupt code (0) into bits 2-6 of Coprocessor 0's Cause " +
                         "register ($13), set bit 8 to 1 to identify the source as keyboard, place the program counter value (address " +
                         "of the NEXT instruction to be executed) into its EPC register ($14), and check to see if an interrupt/trap " +
                         "handler is present (looks for instruction code at address 0x80000180).  If so, the program counter is set to " +
                         "that address.  If not, program execution is terminated with a message to the Run I/O tab.  The Interrupt-Enable " +
-                        "bit is 0 by default and has to be set by the MIPS program if interrupt-driven input is desired.  Interrupt-driven " +
+                        "bit is 0 by default and has to be set by the program if interrupt-driven input is desired.  Interrupt-driven " +
                         "input permits the program to perform useful tasks instead of idling in a loop polling the Receiver Ready bit!  " +
                         "Very event-oriented.  The Ready bit is supposed to be read-only but in MARS it is not.\n" +
                         "\n" +
@@ -513,11 +513,11 @@ public class KeyboardAndDisplaySimulator extends AbstractMarsToolAndApplication 
                         "The Ready bit is supposed to be read-only but in MARS it is not.\n" +
                         "\n" +
                         "IMPORTANT NOTE: The Transmitter Controller Ready bit is set to its initial value of 1 only when you click the tool's " +
-                        "'Connect to MIPS' button ('Assemble and Run' in the stand-alone version) or the tool's Reset button!  If you run a " +
-                        "MIPS program and reset it in MARS, the controller's Ready bit is cleared to 0!  Configure the Data Segment Window to " +
+                        "'Connect to Program' button ('Assemble and Run' in the stand-alone version) or the tool's Reset button!  If you run a " +
+                        "program and reset it in MARS, the controller's Ready bit is cleared to 0!  Configure the Data Segment Window to " +
                         "display the MMIO address range so you can directly observe values stored in the MMIO addresses given above.\n" +
                         "\n" +
-                        "COOL NEW FEATURE (MARS 4.5, AUGUST 2014): Clear the display window from MIPS program\n" +
+                        "COOL NEW FEATURE (MARS 4.5, AUGUST 2014): Clear the display window from the program\n" +
                         "\n" +
                         "When ASCII 12 (form feed) is stored in the Transmitter Data register, the tool's Display window will be cleared " +
                         "following the specified transmission delay.\n" +
@@ -842,7 +842,7 @@ public class KeyboardAndDisplaySimulator extends AbstractMarsToolAndApplication 
             sliderLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
             this.add(sliderLabel, BorderLayout.NORTH);
             this.add(delayLengthSlider, BorderLayout.CENTER);
-            this.setToolTipText("Parameter for simulated delay length (MIPS instruction execution count)");
+            this.setToolTipText("Parameter for simulated delay length (instruction execution count)");
         }
 
         // returns current delay length setting, in instructions.

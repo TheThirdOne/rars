@@ -96,12 +96,12 @@ public class IntroToTools extends AbstractMarsToolAndApplication {
                         "or Application." +
                         "\n\n" +
                         "A MARS Tool is a program listed in the MARS Tools menu.  It is launched " +
-                        "when you select its menu item and typically interacts with executing MIPS " +
+                        "when you select its menu item and typically interacts with executing " +
                         "programs to do something exciting and informative or at least interesting." +
                         "\n\n" +
                         "A MARS Application is a stand-alone program for similarly interacting with " +
-                        "executing MIPS programs.  It uses MARS' MIPS assembler and " +
-                        "runtime simulator in the background to control MIPS execution." +
+                        "executing programs.  It uses MARS' RISCV assembler and " +
+                        "runtime simulator in the background to control execution." +
                         "\n\n" +
                         "The basic requirements for building a MARS Tool are:" +
                         "\n" +
@@ -146,7 +146,7 @@ public class IntroToTools extends AbstractMarsToolAndApplication {
                         "AbstractMarsToolAndApplication subclass.  If you run it as an application, you " +
                         "will notice the set of controls at the bottom of the window differ from those " +
                         "you get when running it from MARS' Tools menu.  It includes additional controls " +
-                        "to load and control the execution of pre-existing MIPS programs." +
+                        "to load and control the execution of pre-existing programs." +
                         "\n\n" +
                         "See the mars.tools.AbstractMarsToolAndApplication API or the source code of " +
                         "existing tool/apps for further information." +

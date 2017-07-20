@@ -368,21 +368,21 @@ public class FloatRepresentation extends AbstractMarsToolAndApplication {
                         if (selectedIndex == 0) {
                             attachedRegister = null;
                             updateDisplays(new FlavorsOfFloat());
-                            instructions.setText("The program is not attached to any MIPS floating point registers.");
+                            instructions.setText("The program is not attached to any floating point registers.");
                         } else {
                             attachedRegister = fpRegisters[selectedIndex - 1];
                             updateDisplays(new FlavorsOfFloat().buildOneFromInt(attachedRegister.getValue()));
                             if (isObserving()) {
                                 addAsObserver();
                             }
-                            instructions.setText("The program and register " + attachedRegister.getName() + " will respond to each other when MIPS program connected or running.");
+                            instructions.setText("The program and register " + attachedRegister.getName() + " will respond to each other when the program is connected or running.");
                         }
                     }
                 });
 
         JPanel registerPanel = new JPanel(new BorderLayout(5, 5));
         JPanel registerAndLabel = new JPanel();
-        registerAndLabel.add(new JLabel("MIPS floating point Register of interest: "));
+        registerAndLabel.add(new JLabel("Floating point Register of interest: "));
         registerAndLabel.add(registerSelect);
         registerPanel.add(registerAndLabel, BorderLayout.WEST);
         registerPanel.add(new JLabel(" "), BorderLayout.NORTH); // just for padding

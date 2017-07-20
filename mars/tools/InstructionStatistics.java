@@ -289,9 +289,9 @@ public class InstructionStatistics extends AbstractMarsToolAndApplication {
      * @param resource the observed resource
      * @param notice   signals the type of access (memory, register etc.)
      */
-    protected void processMIPSUpdate(Observable resource, AccessNotice notice) {
+    protected void processRISCVUpdate(Observable resource, AccessNotice notice) {
 
-        if (!notice.accessIsFromMIPS())
+        if (!notice.accessIsFromRISCV())
             return;
 
         // check for a read access in the text segment

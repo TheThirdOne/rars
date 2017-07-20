@@ -276,9 +276,9 @@ public class BHTSimulator extends AbstractMarsToolAndApplication implements Acti
      * @param resource the observed resource
      * @param notice   signals the type of access (memory, register etc.)
      */
-    protected void processMIPSUpdate(Observable resource, AccessNotice notice) {
+    protected void processRISCVUpdate(Observable resource, AccessNotice notice) {
 
-        if (!notice.accessIsFromMIPS()) return;
+        if (!notice.accessIsFromRISCV()) return;
 
 
         if (notice.getAccessType() == AccessNotice.READ && notice instanceof MemoryAccessNotice) {

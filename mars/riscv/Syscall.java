@@ -63,8 +63,8 @@ public interface Syscall {
     void setNumber(int num);
 
     /**
-     * Return the assigned service number.  This is the number the MIPS programmer
-     * must store into $v0 before issuing the SYSCALL instruction.
+     * Return the assigned service number.  This is the number the programmer
+     * must store into a0 before issuing the ECALL instruction.
      *
      * @return assigned service number
      */
@@ -72,7 +72,7 @@ public interface Syscall {
 
     /**
      * Performs syscall function.  It will be invoked when the service is invoked
-     * at simulation time.  Service is identified by value stored in $v0.
+     * at simulation time.  Service is identified by value stored in a0.
      *
      * @param statement ProgramStatement for this syscall statement.
      */

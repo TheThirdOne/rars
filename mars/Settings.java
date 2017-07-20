@@ -66,7 +66,7 @@ public class Settings extends Observable {
     // BOOLEAN SETTINGS...  
     /**
      * Flag to determine whether or not program being assembled is limited to
-     * basic MIPS instructions and formats.
+     * basic instructions and formats.
      */
     public static final int EXTENDED_ASSEMBLER_ENABLED = 0;
     /**

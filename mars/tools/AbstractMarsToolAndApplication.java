@@ -2,7 +2,7 @@ package mars.tools;
 
 import mars.AssemblyException;
 import mars.Globals;
-import mars.MIPSprogram;
+import mars.RISCVprogram;
 import mars.Settings;
 import mars.riscv.hardware.*;
 import mars.simulator.Simulator;
@@ -268,7 +268,7 @@ public abstract class AbstractMarsToolAndApplication extends JFrame implements M
         tc.setTitleJustification(TitledBorder.CENTER);
         buttonArea.setBorder(tc);
         connectButton = new ConnectButton();
-        connectButton.setToolTipText("Control whether tool will respond to running MIPS program");
+        connectButton.setToolTipText("Control whether tool will respond to running program");
         connectButton.addActionListener(
                 new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
@@ -391,7 +391,7 @@ public abstract class AbstractMarsToolAndApplication extends JFrame implements M
                         assembleRunButton.setEnabled(false);
                         openFileButton.setEnabled(false);
                         stopButton.setEnabled(true);
-                        new Thread(new CreateAssembleRunMIPSprogram()).start();
+                        new Thread(new CreateAssembleRunProgram()).start();
                     }
                 });
         assembleRunButton.addKeyListener(new EnterKeyListener(assembleRunButton));
@@ -470,14 +470,14 @@ public abstract class AbstractMarsToolAndApplication extends JFrame implements M
      * notices originating from the MARS GUI or from direct user editing of memory or register
      * displays.  Only notices arising from MIPS program access are allowed in.
      * It then calls two methods to be overridden by the subclass (since they do
-     * nothing by default): processMIPSUpdate() then updateDisplay().
+     * nothing by default): processRISCVUpdate() then updateDisplay().
      *
      * @param resource     the attached MIPS resource
      * @param accessNotice AccessNotice information provided by the resource
      */
     public void update(Observable resource, Object accessNotice) {
-        if (((AccessNotice) accessNotice).accessIsFromMIPS()) {
-            processMIPSUpdate(resource, (AccessNotice) accessNotice);
+        if (((AccessNotice) accessNotice).accessIsFromRISCV()) {
+            processRISCVUpdate(resource, (AccessNotice) accessNotice);
             updateDisplay();
         }
     }
@@ -488,7 +488,7 @@ public abstract class AbstractMarsToolAndApplication extends JFrame implements M
      * By default it does nothing. After this method is complete, the updateDisplay() method will be
      * invoked automatically.
      */
-    protected void processMIPSUpdate(Observable resource, AccessNotice notice) {
+    protected void processRISCVUpdate(Observable resource, AccessNotice notice) {
     }
 
     /**
@@ -529,7 +529,7 @@ public abstract class AbstractMarsToolAndApplication extends JFrame implements M
      */
 
     protected void addAsObserver(int lowEnd, int highEnd) {
-        String errorMessage = "Error connecting to MIPS memory";
+        String errorMessage = "Error connecting to memory";
         try {
             Globals.memory.addObserver(thisMarsApp, lowEnd, highEnd);
         } catch (AddressErrorException aee) {
@@ -643,8 +643,8 @@ public abstract class AbstractMarsToolAndApplication extends JFrame implements M
     // Little class for this dual-purpose button.  It is used only by the MarsTool
     // (not by the stand-alone app).
     protected class ConnectButton extends JButton {
-        private static final String connectText = "Connect to MIPS";
-        private static final String disconnectText = "Disconnect from MIPS";
+        private static final String connectText = "Connect to Program";
+        private static final String disconnectText = "Disconnect from Program";
 
         public ConnectButton() {
             super();
@@ -701,7 +701,7 @@ public abstract class AbstractMarsToolAndApplication extends JFrame implements M
 
     /////////////////////////////////////////////////////////////////////////////////
     // called when the Assemble and Run button is pressed.  Used only by stand-alone app.
-    private class CreateAssembleRunMIPSprogram implements Runnable {
+    private class CreateAssembleRunProgram implements Runnable {
         public void run() {
             //String noSupportForExceptionHandler = null;  // no auto-loaded exception handlers.
             // boolean extendedAssemblerEnabled = true;     // In this context, no reason to constrain.
@@ -716,7 +716,7 @@ public abstract class AbstractMarsToolAndApplication extends JFrame implements M
 
             Thread.currentThread().setPriority(Thread.NORM_PRIORITY - 1);
             Thread.yield();
-            MIPSprogram program = new MIPSprogram();
+            RISCVprogram program = new RISCVprogram();
             mars.Globals.program = program; // Shouldn't have to do this...
             String fileToAssemble = mostRecentlyOpenedFile.getPath();
             ArrayList<String> filesToAssemble;
@@ -727,7 +727,7 @@ public abstract class AbstractMarsToolAndApplication extends JFrame implements M
                 filesToAssemble = new ArrayList<>();
                 filesToAssemble.add(fileToAssemble);
             }
-            ArrayList<MIPSprogram> programsToAssemble;
+            ArrayList<RISCVprogram> programsToAssemble;
             try {
                 operationStatusMessages.displayNonTerminatingMessage("Assembling " + fileToAssemble);
                 programsToAssemble = program.prepareFilesForAssembly(filesToAssemble, fileToAssemble, exceptionHandler);

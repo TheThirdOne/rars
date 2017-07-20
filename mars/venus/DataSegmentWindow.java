@@ -955,7 +955,7 @@ public class DataSegmentWindow extends JInternalFrame implements Observer {
                 // the control of my software.
             }
             //  Assures that if changed during MIPS program execution, the update will
-            //  occur only between MIPS instructions.
+            //  occur only between instructions.
             synchronized (Globals.memoryAndRegistersLock) {
                 try {
                     Globals.memory.setRawWord(address, val);
@@ -1039,7 +1039,7 @@ public class DataSegmentWindow extends JInternalFrame implements Observer {
         }
 
         private String[] columnToolTips = {
-               /* address  */ "Base MIPS memory address for this row of the table.",
+               /* address  */ "Base memory address for this row of the table.",
                /* value +0 */ "32-bit value stored at base address for its row.",
                 /* value +n */ "32-bit value stored ",
                 /* value +n */ " bytes beyond base address for its row."

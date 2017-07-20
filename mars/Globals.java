@@ -52,23 +52,23 @@ public class Globals {
     private static String syscallPropertiesFile = "Syscall";
 
     /**
-     * The set of implemented MIPS instructions.
+     * The set of implemented instructions.
      **/
     public static InstructionSet instructionSet;
     /**
      * the program currently being worked with.  Used by GUI only, not command line.
      **/
-    public static MIPSprogram program;
+    public static RISCVprogram program;
     /**
      * Symbol table for file currently being assembled.
      **/
     public static SymbolTable symbolTable;
     /**
-     * Simulated MIPS memory component.
+     * Simulated memory component.
      **/
     public static Memory memory;
     /**
-     * Lock variable used at head of synchronized block to guard MIPS memory and registers
+     * Lock variable used at head of synchronized block to guard memory and registers
      **/
     public static final Object memoryAndRegistersLock = new Object();
     /**
@@ -101,7 +101,7 @@ public class Globals {
      */
     public static final String version = "4.5";
     /**
-     * List of accepted file extensions for MIPS assembly source files.
+     * List of accepted file extensions for RISCV assembly source files.
      */
     public static final ArrayList<String> fileExtensions = getFileExtensions();
     /**

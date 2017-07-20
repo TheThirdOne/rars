@@ -52,7 +52,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
 public class ProgramStatement implements Comparable<ProgramStatement> {
-    private MIPSprogram sourceMIPSprogram;
+    private RISCVprogram sourceProgram;
     private String source, basicAssemblyStatement, machineStatement;
     private TokenList originalTokenList, strippedTokenList;
     private BasicStatementList basicStatementList;
@@ -71,17 +71,17 @@ public class ProgramStatement implements Comparable<ProgramStatement> {
      * Constructor for ProgramStatement when there are links back to all source and token
      * information.  These can be used by a debugger later on.
      *
-     * @param sourceMIPSprogram The MIPSprogram object that contains this statement
-     * @param source            The corresponding MIPS source statement.
+     * @param sourceProgram The RISCVprogram object that contains this statement
+     * @param source            The corresponding RISCV source statement.
      * @param origTokenList     Complete list of Token objects (includes labels, comments, parentheses, etc)
      * @param strippedTokenList List of Token objects with all but operators and operands removed.
      * @param inst              The Instruction object for this statement's operator.
      * @param textAddress       The Text Segment address in memory where the binary machine code for this statement
      *                          is stored.
      **/
-    public ProgramStatement(MIPSprogram sourceMIPSprogram, String source, TokenList origTokenList, TokenList strippedTokenList,
+    public ProgramStatement(RISCVprogram sourceProgram, String source, TokenList origTokenList, TokenList strippedTokenList,
                             Instruction inst, int textAddress, int sourceLine) {
-        this.sourceMIPSprogram = sourceMIPSprogram;
+        this.sourceProgram = sourceProgram;
         this.source = source;
         this.originalTokenList = origTokenList;
         this.strippedTokenList = strippedTokenList;
@@ -112,7 +112,7 @@ public class ProgramStatement implements Comparable<ProgramStatement> {
      *                        is stored.
      **/
     public ProgramStatement(int binaryStatement, int textAddress) {
-        this.sourceMIPSprogram = null;
+        this.sourceProgram = null;
         this.binaryStatement = binaryStatement;
         this.textAddress = textAddress;
         this.originalTokenList = this.strippedTokenList = null;
@@ -190,7 +190,7 @@ public class ProgramStatement implements Comparable<ProgramStatement> {
                     registerNumber = RegisterFile.getRegister(tokenValue).getNumber();
                 } catch (Exception e) {
                     // should never happen; should be caught before now...
-                    errors.add(new ErrorMessage(this.sourceMIPSprogram, token.getSourceLine(), token.getStartPos(), "invalid register name"));
+                    errors.add(new ErrorMessage(this.sourceProgram, token.getSourceLine(), token.getStartPos(), "invalid register name"));
                     return;
                 }
                 this.operands[this.numOperands++] = registerNumber;
@@ -201,7 +201,7 @@ public class ProgramStatement implements Comparable<ProgramStatement> {
                 basicStatementList.addString(basicStatementElement);
                 if (registerNumber < 0) {
                     // should never happen; should be caught before now...
-                    errors.add(new ErrorMessage(this.sourceMIPSprogram, token.getSourceLine(), token.getStartPos(), "invalid register name"));
+                    errors.add(new ErrorMessage(this.sourceProgram, token.getSourceLine(), token.getStartPos(), "invalid register name"));
                     return;
                 }
                 this.operands[this.numOperands++] = registerNumber;
@@ -212,14 +212,14 @@ public class ProgramStatement implements Comparable<ProgramStatement> {
                 basicStatementList.addString(basicStatementElement);
                 if (registerNumber < 0) {
                     // should never happen; should be caught before now...
-                    errors.add(new ErrorMessage(this.sourceMIPSprogram, token.getSourceLine(), token.getStartPos(), "invalid FPU register name"));
+                    errors.add(new ErrorMessage(this.sourceProgram, token.getSourceLine(), token.getStartPos(), "invalid FPU register name"));
                     return;
                 }
                 this.operands[this.numOperands++] = registerNumber;
             } else if (tokenType == TokenTypes.IDENTIFIER) {
-                int address = this.sourceMIPSprogram.getLocalSymbolTable().getAddressLocalOrGlobal(tokenValue);
+                int address = this.sourceProgram.getLocalSymbolTable().getAddressLocalOrGlobal(tokenValue);
                 if (address == SymbolTable.NOT_FOUND) { // symbol used without being defined
-                    errors.add(new ErrorMessage(this.sourceMIPSprogram, token.getSourceLine(), token.getStartPos(),
+                    errors.add(new ErrorMessage(this.sourceProgram, token.getSourceLine(), token.getStartPos(),
                             "Symbol \"" + tokenValue + "\" not found in symbol table."));
                     return;
                 }
@@ -233,7 +233,7 @@ public class ProgramStatement implements Comparable<ProgramStatement> {
                         if (address >= (1 << 19) || address < -(1 << 19)) {
                             // attempt to jump beyond 21-bit byte (20-bit word) address range.
                             // SPIM flags as warning, I'll flag as error b/c MARS text segment not long enough for it to be OK.
-                            errors.add(new ErrorMessage(this.sourceMIPSprogram, this.sourceLine, 0,
+                            errors.add(new ErrorMessage(this.sourceProgram, this.sourceLine, 0,
                                     "Jump target word address beyond 20-bit range"));
                             return;
                         }
@@ -241,7 +241,7 @@ public class ProgramStatement implements Comparable<ProgramStatement> {
                     } else if (format == BasicInstructionFormat.U_JUMP_FORMAT) {
                         address = (address - this.textAddress) >> 1;
                         if (address >= (1 << 11) || address < -(1 << 11)) {
-                            errors.add(new ErrorMessage(this.sourceMIPSprogram, this.sourceLine, 0,
+                            errors.add(new ErrorMessage(this.sourceProgram, this.sourceLine, 0,
                                     "Jump target word address beyond 12-bit range"));
                             return;
                         }
@@ -340,7 +340,7 @@ public class ProgramStatement implements Comparable<ProgramStatement> {
             // This means the pseudo-instruction expansion generated another
             // pseudo-instruction (expansion must be to all basic instructions).
             // This is an error on the part of the pseudo-instruction author.
-            errors.add(new ErrorMessage(this.sourceMIPSprogram, this.sourceLine, 0,
+            errors.add(new ErrorMessage(this.sourceProgram, this.sourceLine, 0,
                     "INTERNAL ERROR: pseudo-instruction expansion contained a pseudo-instruction"));
             return;
         }
@@ -462,10 +462,10 @@ public class ProgramStatement implements Comparable<ProgramStatement> {
 
 
     /**
-     * associates MIPS source statement.  Used by assembler when generating basic
+     * associates RISCV source statement.  Used by assembler when generating basic
      * statements during macro expansion of extended statement.
      *
-     * @param src a MIPS source statement.
+     * @param src a RISCV source statement.
      **/
 
     public void setSource(String src) {
@@ -474,12 +474,12 @@ public class ProgramStatement implements Comparable<ProgramStatement> {
 
 
     /**
-     * Produces MIPSprogram object representing the source file containing this statement.
+     * Produces RISCVprogram object representing the source file containing this statement.
      *
-     * @return The MIPSprogram object.  May be null...
+     * @return The RISCVprogram object.  May be null...
      **/
-    public MIPSprogram getSourceMIPSprogram() {
-        return sourceMIPSprogram;
+    public RISCVprogram getSourceProgram() {
+        return sourceProgram;
     }
 
     /**
@@ -488,14 +488,14 @@ public class ProgramStatement implements Comparable<ProgramStatement> {
      * @return The file name.
      **/
     public String getSourceFile() {
-        return (sourceMIPSprogram == null) ? "" : sourceMIPSprogram.getFilename();
+        return (sourceProgram == null) ? "" : sourceProgram.getFilename();
     }
 
 
     /**
-     * Produces MIPS source statement.
+     * Produces RISCV source statement.
      *
-     * @return The MIPS source statement.
+     * @return The RISCV source statement.
      **/
 
     public String getSource() {
@@ -503,9 +503,9 @@ public class ProgramStatement implements Comparable<ProgramStatement> {
     }
 
     /**
-     * Produces line number of MIPS source statement.
+     * Produces line number of RISCV source statement.
      *
-     * @return The MIPS source statement line number.
+     * @return The RISCV source statement line number.
      **/
 
     public int getSourceLine() {
@@ -513,7 +513,7 @@ public class ProgramStatement implements Comparable<ProgramStatement> {
     }
 
     /**
-     * Produces Basic Assembly statement for this MIPS source statement.
+     * Produces Basic Assembly statement for this RISCV source statement.
      * All numeric values are in decimal.
      *
      * @return The Basic Assembly statement.
@@ -524,7 +524,7 @@ public class ProgramStatement implements Comparable<ProgramStatement> {
     }
 
     /**
-     * Produces printable Basic Assembly statement for this MIPS source
+     * Produces printable Basic Assembly statement for this RISCV source
      * statement.  This is generated dynamically and any addresses and
      * values will be rendered in hex or decimal depending on the current
      * setting.
@@ -661,7 +661,7 @@ public class ProgramStatement implements Comparable<ProgramStatement> {
         // should NEVER occur
         // if it does, then one of the BasicInstructions is malformed
         if (length == 0) {
-            errors.add(new ErrorMessage(this.sourceMIPSprogram, this.sourceLine, 0,
+            errors.add(new ErrorMessage(this.sourceProgram, this.sourceLine, 0,
                     "INTERNAL ERROR: mismatch in number of operands in statement vs mask"));
             return;
         }

@@ -173,7 +173,7 @@ public class MessagesPane extends JTabbedPane {
         this.addTab("Mars Messages", assembleTab);
         this.addTab("Run I/O", runTab);
         this.setToolTipTextAt(0, "Messages produced by Run menu. Click on assemble error message to select erroneous line");
-        this.setToolTipTextAt(1, "Simulated MIPS console input and output");
+        this.setToolTipTextAt(1, "Simulated console input and output");
     }
 
     // Center given button in a box, centered vertically and 6 pixels on left and right
@@ -355,7 +355,7 @@ public class MessagesPane extends JTabbedPane {
         String input;
         JOptionPane pane = new JOptionPane(prompt, JOptionPane.QUESTION_MESSAGE, JOptionPane.DEFAULT_OPTION);
         pane.setWantsInput(true);
-        JDialog dialog = pane.createDialog(Globals.getGui(), "MIPS Keyboard Input");
+        JDialog dialog = pane.createDialog(Globals.getGui(), "Keyboard Input");
         dialog.setVisible(true);
         input = (String) pane.getInputValue();
         this.postRunMessage(Globals.userInputAlert + input + "\n");

@@ -68,7 +68,7 @@ public class SettingsMemoryConfigurationAction extends GuiAction {
      * editor settings.
      */
     public void actionPerformed(ActionEvent e) {
-        configDialog = new MemoryConfigurationDialog(Globals.getGui(), "MIPS Memory Configuration", true);
+        configDialog = new MemoryConfigurationDialog(Globals.getGui(), "Memory Configuration", true);
         configDialog.setVisible(true);
     }
 

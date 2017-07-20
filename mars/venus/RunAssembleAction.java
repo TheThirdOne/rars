@@ -47,7 +47,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 public class RunAssembleAction extends GuiAction {
 
-    private static ArrayList<MIPSprogram> MIPSprogramsToAssemble;
+    private static ArrayList<RISCVprogram> programsToAssemble;
     private static boolean extendedAssemblerEnabled;
     private static boolean warningsAreErrors;
     // Threshold for adding filename to printed message of files being assembled.
@@ -59,8 +59,8 @@ public class RunAssembleAction extends GuiAction {
     }
 
     // These are both used by RunResetAction to re-assemble under identical conditions.
-    static ArrayList<MIPSprogram> getMIPSprogramsToAssemble() {
-        return MIPSprogramsToAssemble;
+    static ArrayList<RISCVprogram> getProgramsToAssemble() {
+        return programsToAssemble;
     }
 
     static boolean getExtendedAssemblerEnabled() {
@@ -83,7 +83,7 @@ public class RunAssembleAction extends GuiAction {
                 mainUI.editor.save();
             }
             try {
-                Globals.program = new MIPSprogram();
+                Globals.program = new RISCVprogram();
                 ArrayList<String> filesToAssemble;
                 if (Globals.getSettings().getBooleanSetting(Settings.ASSEMBLE_ALL_ENABLED)) {// setting calls for multiple file assembly
                     filesToAssemble = FilenameFinder.getFilenameList(
@@ -98,10 +98,10 @@ public class RunAssembleAction extends GuiAction {
                         Globals.getSettings().getExceptionHandler().length() > 0) {
                     exceptionHandler = Globals.getSettings().getExceptionHandler();
                 }
-                MIPSprogramsToAssemble = Globals.program.prepareFilesForAssembly(filesToAssemble, FileStatus.getFile().getPath(), exceptionHandler);
-                mainUI.messagesPane.postMarsMessage(buildFileNameList(name + ": assembling ", MIPSprogramsToAssemble));
+                programsToAssemble = Globals.program.prepareFilesForAssembly(filesToAssemble, FileStatus.getFile().getPath(), exceptionHandler);
+                mainUI.messagesPane.postMarsMessage(buildFileNameList(name + ": assembling ", programsToAssemble));
                 // added logic to receive any warnings and output them.... DPS 11/28/06
-                ErrorList warnings = Globals.program.assemble(MIPSprogramsToAssemble, extendedAssemblerEnabled,
+                ErrorList warnings = Globals.program.assemble(programsToAssemble, extendedAssemblerEnabled,
                         warningsAreErrors);
                 if (warnings.warningsOccurred()) {
                     mainUI.messagesPane.postMarsMessage(warnings.generateWarningReport());
@@ -163,7 +163,7 @@ public class RunAssembleAction extends GuiAction {
 
     // Handy little utility for building comma-separated list of filenames
     // while not letting line length get out of hand.
-    private String buildFileNameList(String preamble, ArrayList<MIPSprogram> programList) {
+    private String buildFileNameList(String preamble, ArrayList<RISCVprogram> programList) {
         String result = preamble;
         int lineLength = result.length();
         for (int i = 0; i < programList.size(); i++) {

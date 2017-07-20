@@ -78,8 +78,8 @@ public abstract class AbstractSyscall implements Syscall {
     }
 
     /**
-     * Return the assigned service number.  This is the number the MIPS programmer
-     * must store into a7 before issuing the SYSCALL instruction.
+     * Return the assigned service number.  This is the number the programmer
+     * must store into a7 before issuing the ECALL instruction.
      *
      * @return assigned service number
      */

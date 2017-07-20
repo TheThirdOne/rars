@@ -209,7 +209,7 @@ public class MemoryReferenceVisualization extends AbstractMarsToolAndApplication
      * @param memory       the attached memory
      * @param accessNotice information provided by memory in MemoryAccessNotice object
      */
-    protected void processMIPSUpdate(Observable memory, AccessNotice accessNotice) {
+    protected void processRISCVUpdate(Observable memory, AccessNotice accessNotice) {
         incrementReferenceCountForAddress(((MemoryAccessNotice) accessNotice).getAddress());
         updateDisplay();
     }
@@ -267,16 +267,16 @@ public class MemoryReferenceVisualization extends AbstractMarsToolAndApplication
     protected JComponent getHelpComponent() {
         final String helpContent =
                 "Use this program to visualize dynamic memory reference\n" +
-                        "patterns in MIPS assembly programs.  It may be run either\n" +
+                        "patterns in RISCV assembly programs.  It may be run either\n" +
                         "from MARS' Tools menu or as a stand-alone application.  For\n" +
                         "the latter, simply write a small driver to instantiate a\n" +
                         "MemoryReferenceVisualization object and invoke its go() method.\n" +
                         "\n" +
                         "You can easily learn to use this small program by playing with\n" +
-                        "it!  For the best animation, set the MIPS program to run in\n" +
+                        "it!  For the best animation, set the program to run in\n" +
                         "timed mode using the Run Speed slider.  Each rectangular unit\n" +
                         "on the display represents one or more memory words (default 1)\n" +
-                        "and each time a memory word is accessed by the MIPS program,\n" +
+                        "and each time a memory word is accessed by the program,\n" +
                         "its reference count is incremented then rendered in the color\n" +
                         "assigned to the count value.  You can change the count-color\n" +
                         "assignments using the count slider and color patch.  Select a\n" +
