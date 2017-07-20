@@ -134,7 +134,7 @@ public class TextSegmentWindow extends JInternalFrame implements Observer {
             ProgramStatement statement = sourceStatementList.get(i);
             intAddresses[i] = statement.getAddress();
             addressRows.put(intAddresses[i], i);
-            data[i][BREAK_COLUMN] = Boolean.FALSE;
+            data[i][BREAK_COLUMN] = false;
             data[i][ADDRESS_COLUMN] = NumberDisplayBaseChooser.formatUnsignedInteger(statement.getAddress(), addressBase);
             data[i][CODE_COLUMN] = NumberDisplayBaseChooser.formatNumber(statement.getBinaryStatement(), 16);
             data[i][BASIC_COLUMN] = statement.getPrintableBasicAssemblyStatement();
@@ -191,12 +191,12 @@ public class TextSegmentWindow extends JInternalFrame implements Observer {
         tableScroller = new JScrollPane(table, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
                 ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
         contentPane.add(tableScroller);
-        if (Globals.getSettings().getBooleanSetting(Settings.PROGRAM_ARGUMENTS)) {
+        if (Globals.getSettings().getBooleanSetting(Settings.Bool.PROGRAM_ARGUMENTS)) {
             addProgramArgumentsPanel();
         }
 
         deleteAsTextSegmentObserver();
-        if (Globals.getSettings().getBooleanSetting(Settings.SELF_MODIFYING_CODE_ENABLED)) {
+        if (Globals.getSettings().getBooleanSetting(Settings.Bool.SELF_MODIFYING_CODE_ENABLED)) {
             addAsTextSegmentObserver();
         }
     }
@@ -313,13 +313,13 @@ public class TextSegmentWindow extends JInternalFrame implements Observer {
                 // Seems reasonable for text segment display to be accurate in cases where existing code is overwritten
                 // even when running at unlimited speed.  DPS 10-July-2013
                 deleteAsTextSegmentObserver();
-                if (Globals.getSettings().getBooleanSetting(Settings.SELF_MODIFYING_CODE_ENABLED)) { // && (notice.getRunSpeed() != RunSpeedPanel.UNLIMITED_SPEED || notice.getMaxSteps()==1)) {
+                if (Globals.getSettings().getBooleanSetting(Settings.Bool.SELF_MODIFYING_CODE_ENABLED)) { // && (notice.getRunSpeed() != RunSpeedPanel.UNLIMITED_SPEED || notice.getMaxSteps()==1)) {
                     addAsTextSegmentObserver();
                 }
             }
         } else if (observable == Globals.getSettings()) {
             deleteAsTextSegmentObserver();
-            if (Globals.getSettings().getBooleanSetting(Settings.SELF_MODIFYING_CODE_ENABLED)) {
+            if (Globals.getSettings().getBooleanSetting(Settings.Bool.SELF_MODIFYING_CODE_ENABLED)) {
                 addAsTextSegmentObserver();
             }
         } else if (obj instanceof MemoryAccessNotice) {
@@ -464,7 +464,7 @@ public class TextSegmentWindow extends JInternalFrame implements Observer {
         for (int i = 0; i < tableModel.getRowCount(); i++) {
             if ((Boolean) data[i][BREAK_COLUMN]) {
                 // must use this method to assure display updated and listener notified
-                tableModel.setValueAt(Boolean.FALSE, i, BREAK_COLUMN);
+                tableModel.setValueAt(false, i, BREAK_COLUMN);
             }
         }
         // Handles an obscure situation: if you click to set some breakpoints then "immediately" clear them
@@ -696,7 +696,7 @@ public class TextSegmentWindow extends JInternalFrame implements Observer {
             //Note that the data/cell address is constant,
             //no matter where the cell appears onscreen.
             return col == BREAK_COLUMN || (col == CODE_COLUMN &&
-                    Globals.getSettings().getBooleanSetting(Settings.SELF_MODIFYING_CODE_ENABLED));
+                    Globals.getSettings().getBooleanSetting(Settings.Bool.SELF_MODIFYING_CODE_ENABLED));
         }
 
         /**

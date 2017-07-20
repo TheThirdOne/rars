@@ -574,31 +574,31 @@ public class VenusUI extends JFrame {
         run.add(runToggleBreakpoints);
 
         settingsLabel = new JCheckBoxMenuItem(settingsLabelAction);
-        settingsLabel.setSelected(Globals.getSettings().getBooleanSetting(Settings.LABEL_WINDOW_VISIBILITY));
+        settingsLabel.setSelected(Globals.getSettings().getBooleanSetting(Settings.Bool.LABEL_WINDOW_VISIBILITY));
         settingsPopupInput = new JCheckBoxMenuItem(settingsPopupInputAction);
-        settingsPopupInput.setSelected(Globals.getSettings().getBooleanSetting(Settings.POPUP_SYSCALL_INPUT));
+        settingsPopupInput.setSelected(Globals.getSettings().getBooleanSetting(Settings.Bool.POPUP_SYSCALL_INPUT));
         settingsValueDisplayBase = new JCheckBoxMenuItem(settingsValueDisplayBaseAction);
-        settingsValueDisplayBase.setSelected(Globals.getSettings().getBooleanSetting(Settings.DISPLAY_VALUES_IN_HEX));//mainPane.getExecutePane().getValueDisplayBaseChooser().isSelected());
+        settingsValueDisplayBase.setSelected(Globals.getSettings().getBooleanSetting(Settings.Bool.DISPLAY_VALUES_IN_HEX));//mainPane.getExecutePane().getValueDisplayBaseChooser().isSelected());
         // Tell the corresponding JCheckBox in the Execute Pane about me -- it has already been created.
         mainPane.getExecutePane().getValueDisplayBaseChooser().setSettingsMenuItem(settingsValueDisplayBase);
         settingsAddressDisplayBase = new JCheckBoxMenuItem(settingsAddressDisplayBaseAction);
-        settingsAddressDisplayBase.setSelected(Globals.getSettings().getBooleanSetting(Settings.DISPLAY_ADDRESSES_IN_HEX));//mainPane.getExecutePane().getValueDisplayBaseChooser().isSelected());
+        settingsAddressDisplayBase.setSelected(Globals.getSettings().getBooleanSetting(Settings.Bool.DISPLAY_ADDRESSES_IN_HEX));//mainPane.getExecutePane().getValueDisplayBaseChooser().isSelected());
         // Tell the corresponding JCheckBox in the Execute Pane about me -- it has already been created.
         mainPane.getExecutePane().getAddressDisplayBaseChooser().setSettingsMenuItem(settingsAddressDisplayBase);
         settingsExtended = new JCheckBoxMenuItem(settingsExtendedAction);
-        settingsExtended.setSelected(Globals.getSettings().getBooleanSetting(Settings.EXTENDED_ASSEMBLER_ENABLED));
+        settingsExtended.setSelected(Globals.getSettings().getBooleanSetting(Settings.Bool.EXTENDED_ASSEMBLER_ENABLED));
         settingsSelfModifyingCode = new JCheckBoxMenuItem(settingsSelfModifyingCodeAction);
-        settingsSelfModifyingCode.setSelected(Globals.getSettings().getBooleanSetting(Settings.SELF_MODIFYING_CODE_ENABLED));
+        settingsSelfModifyingCode.setSelected(Globals.getSettings().getBooleanSetting(Settings.Bool.SELF_MODIFYING_CODE_ENABLED));
         settingsAssembleOnOpen = new JCheckBoxMenuItem(settingsAssembleOnOpenAction);
-        settingsAssembleOnOpen.setSelected(Globals.getSettings().getBooleanSetting(Settings.ASSEMBLE_ON_OPEN_ENABLED));
+        settingsAssembleOnOpen.setSelected(Globals.getSettings().getBooleanSetting(Settings.Bool.ASSEMBLE_ON_OPEN));
         settingsAssembleAll = new JCheckBoxMenuItem(settingsAssembleAllAction);
-        settingsAssembleAll.setSelected(Globals.getSettings().getBooleanSetting(Settings.ASSEMBLE_ALL_ENABLED));
+        settingsAssembleAll.setSelected(Globals.getSettings().getBooleanSetting(Settings.Bool.ASSEMBLE_ALL));
         settingsWarningsAreErrors = new JCheckBoxMenuItem(settingsWarningsAreErrorsAction);
-        settingsWarningsAreErrors.setSelected(Globals.getSettings().getBooleanSetting(Settings.WARNINGS_ARE_ERRORS));
+        settingsWarningsAreErrors.setSelected(Globals.getSettings().getBooleanSetting(Settings.Bool.WARNINGS_ARE_ERRORS));
         settingsStartAtMain = new JCheckBoxMenuItem(settingsStartAtMainAction);
-        settingsStartAtMain.setSelected(Globals.getSettings().getBooleanSetting(Settings.START_AT_MAIN));
+        settingsStartAtMain.setSelected(Globals.getSettings().getBooleanSetting(Settings.Bool.START_AT_MAIN));
         settingsProgramArguments = new JCheckBoxMenuItem(settingsProgramArgumentsAction);
-        settingsProgramArguments.setSelected(Globals.getSettings().getBooleanSetting(Settings.PROGRAM_ARGUMENTS));
+        settingsProgramArguments.setSelected(Globals.getSettings().getBooleanSetting(Settings.Bool.PROGRAM_ARGUMENTS));
         settingsEditor = new JMenuItem(settingsEditorAction);
         settingsHighlighting = new JMenuItem(settingsHighlightingAction);
         settingsExceptionHandler = new JMenuItem(settingsExceptionHandlerAction);
@@ -833,7 +833,7 @@ public class VenusUI extends JFrame {
         runAssembleAction.setEnabled(true);
         // If assemble-all, allow previous Run menu settings to remain.
         // Otherwise, clear them out.  DPS 9-Aug-2011
-        if (!Globals.getSettings().getBooleanSetting(mars.Settings.ASSEMBLE_ALL_ENABLED)) {
+        if (!Globals.getSettings().getBooleanSetting(Settings.Bool.ASSEMBLE_ALL)) {
             runGoAction.setEnabled(false);
             runStepAction.setEnabled(false);
             runBackstepAction.setEnabled(false);

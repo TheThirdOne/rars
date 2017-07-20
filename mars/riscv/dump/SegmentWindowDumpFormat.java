@@ -87,11 +87,11 @@ public class SegmentWindowDumpFormat extends AbstractDumpFormat {
 
         PrintStream out = new PrintStream(new FileOutputStream(file));
 
-        boolean hexAddresses = Globals.getSettings().getBooleanSetting(Settings.DISPLAY_ADDRESSES_IN_HEX);
+        boolean hexAddresses = Globals.getSettings().getBooleanSetting(Settings.Bool.DISPLAY_ADDRESSES_IN_HEX);
 
         // If address in data segment, print in same format as Data Segment Window
         if (Memory.inDataSegment(firstAddress)) {
-            boolean hexValues = Globals.getSettings().getBooleanSetting(Settings.DISPLAY_VALUES_IN_HEX);
+            boolean hexValues = Globals.getSettings().getBooleanSetting(Settings.Bool.DISPLAY_VALUES_IN_HEX);
             int offset = 0;
             String string = "";
             try {

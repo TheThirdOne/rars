@@ -709,7 +709,7 @@ public abstract class AbstractMarsToolAndApplication extends JFrame implements M
             // boolean warningsAreErrors = false;           // Ditto.
 
             String exceptionHandler = null;
-            if (Globals.getSettings().getBooleanSetting(Settings.EXCEPTION_HANDLER_ENABLED) &&
+            if (Globals.getSettings().getBooleanSetting(Settings.Bool.EXCEPTION_HANDLER_ENABLED) &&
                     Globals.getSettings().getExceptionHandler() != null &&
                     Globals.getSettings().getExceptionHandler().length() > 0) {
                 exceptionHandler = Globals.getSettings().getExceptionHandler();
@@ -738,8 +738,8 @@ public abstract class AbstractMarsToolAndApplication extends JFrame implements M
             }
 
             try {
-                program.assemble(programsToAssemble, Globals.getSettings().getBooleanSetting(Settings.EXTENDED_ASSEMBLER_ENABLED),
-                        Globals.getSettings().getBooleanSetting(Settings.WARNINGS_ARE_ERRORS));
+                program.assemble(programsToAssemble, Globals.getSettings().getBooleanSetting(Settings.Bool.EXTENDED_ASSEMBLER_ENABLED),
+                        Globals.getSettings().getBooleanSetting(Settings.Bool.WARNINGS_ARE_ERRORS));
             } catch (AssemblyException pe) {
                 operationStatusMessages.displayTerminatingMessage("Assembly Error: " + fileToAssemble);
                 return;

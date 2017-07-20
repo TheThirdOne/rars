@@ -74,8 +74,8 @@ public class RunAssembleAction extends GuiAction {
         MessagesPane messagesPane = mainUI.getMessagesPane();
         ExecutePane executePane = mainUI.getMainPane().getExecutePane();
         RegistersPane registersPane = mainUI.getRegistersPane();
-        extendedAssemblerEnabled = Globals.getSettings().getBooleanSetting(Settings.EXTENDED_ASSEMBLER_ENABLED);
-        warningsAreErrors = Globals.getSettings().getBooleanSetting(Settings.WARNINGS_ARE_ERRORS);
+        extendedAssemblerEnabled = Globals.getSettings().getBooleanSetting(Settings.Bool.EXTENDED_ASSEMBLER_ENABLED);
+        warningsAreErrors = Globals.getSettings().getBooleanSetting(Settings.Bool.WARNINGS_ARE_ERRORS);
         if (FileStatus.getFile() != null) {
             if (FileStatus.get() == FileStatus.EDITED) {
                 mainUI.getEditor().save();
@@ -83,7 +83,7 @@ public class RunAssembleAction extends GuiAction {
             try {
                 Globals.program = new RISCVprogram();
                 ArrayList<String> filesToAssemble;
-                if (Globals.getSettings().getBooleanSetting(Settings.ASSEMBLE_ALL_ENABLED)) {// setting calls for multiple file assembly
+                if (Globals.getSettings().getBooleanSetting(Settings.Bool.ASSEMBLE_ALL)) {// setting calls for multiple file assembly
                     filesToAssemble = FilenameFinder.getFilenameList(
                             new File(FileStatus.getName()).getParent(), Globals.fileExtensions);
                 } else {
@@ -91,7 +91,7 @@ public class RunAssembleAction extends GuiAction {
                     filesToAssemble.add(FileStatus.getName());
                 }
                 String exceptionHandler = null;
-                if (Globals.getSettings().getBooleanSetting(Settings.EXCEPTION_HANDLER_ENABLED) &&
+                if (Globals.getSettings().getBooleanSetting(Settings.Bool.EXCEPTION_HANDLER_ENABLED) &&
                         Globals.getSettings().getExceptionHandler() != null &&
                         Globals.getSettings().getExceptionHandler().length() > 0) {
                     exceptionHandler = Globals.getSettings().getExceptionHandler();

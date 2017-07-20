@@ -446,7 +446,7 @@ public class MarsLaunch {
             return;
         }
 
-        Globals.getSettings().setBooleanSettingNonPersistent(Settings.SELF_MODIFYING_CODE_ENABLED, selfModifyingCode);
+        Globals.getSettings().setBooleanSettingNonPersistent(Settings.Bool.SELF_MODIFYING_CODE_ENABLED, selfModifyingCode);
         File mainFile = new File(filenameList.get(0)).getAbsoluteFile();// First file is "main" file
         ArrayList<String> filesToAssemble;
         if (assembleProject) {

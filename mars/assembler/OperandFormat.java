@@ -122,14 +122,7 @@ public class OperandFormat {
 
             if ((specType == TokenTypes.REGISTER_NAME || specType == TokenTypes.REGISTER_NUMBER) &&
                     candType == TokenTypes.REGISTER_NAME) {
-                if (Globals.getSettings().getBooleanSetting(Settings.BARE_MACHINE_ENABLED)) {
-                    // On 10-Aug-2010, I noticed this cannot happen since the IDE provides no access
-                    // to this setting, whose default value is false.
-                    generateMessage(candToken, "Use register number instead of name.  See Settings.", errors);
-                    return false;
-                } else {
                     continue;
-                }
             }
             if (specType == TokenTypes.REGISTER_NAME &&
                     candType == TokenTypes.REGISTER_NUMBER)

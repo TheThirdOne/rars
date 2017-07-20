@@ -50,7 +50,7 @@ public class SettingsLabelAction extends GuiAction {
     public void actionPerformed(ActionEvent e) {
         boolean visibility = ((JCheckBoxMenuItem) e.getSource()).isSelected();
         Globals.getGui().getMainPane().getExecutePane().setLabelWindowVisibility(visibility);
-        Globals.getSettings().setBooleanSetting(Settings.LABEL_WINDOW_VISIBILITY, visibility);
+        Globals.getSettings().setBooleanSetting(Settings.Bool.LABEL_WINDOW_VISIBILITY, visibility);
     }
 
 }

@@ -50,7 +50,7 @@ public class SettingsValueDisplayBaseAction extends GuiAction {
     public void actionPerformed(ActionEvent e) {
         boolean isHex = ((JCheckBoxMenuItem) e.getSource()).isSelected();
         Globals.getGui().getMainPane().getExecutePane().getValueDisplayBaseChooser().setSelected(isHex);
-        Globals.getSettings().setBooleanSetting(Settings.DISPLAY_VALUES_IN_HEX, isHex);
+        Globals.getSettings().setBooleanSetting(Settings.Bool.DISPLAY_VALUES_IN_HEX, isHex);
     }
 
 }

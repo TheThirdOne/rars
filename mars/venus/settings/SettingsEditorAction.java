@@ -128,7 +128,7 @@ public class SettingsEditorAction extends GuiAction {
 
         public EditorFontDialog(Frame owner, String title, boolean modality, Font font) {
             super(owner, title, modality, font);
-            if (Globals.getSettings().getBooleanSetting(Settings.GENERIC_TEXT_EDITOR)) {
+            if (Globals.getSettings().getBooleanSetting(Settings.Bool.GENERIC_TEXT_EDITOR)) {
                 syntaxStylePanel.setVisible(false);
                 otherSettingsPanel.setVisible(false);
             }
@@ -188,7 +188,7 @@ public class SettingsEditorAction extends GuiAction {
                             reset();
                         }
                     });
-            initialGenericTextEditor = Globals.getSettings().getBooleanSetting(Settings.GENERIC_TEXT_EDITOR);
+            initialGenericTextEditor = Globals.getSettings().getBooleanSetting(Settings.Bool.GENERIC_TEXT_EDITOR);
             genericEditorCheck = new JCheckBox("Use Generic Editor", initialGenericTextEditor);
             genericEditorCheck.setToolTipText(GENERIC_TOOL_TIP_TEXT);
             genericEditorCheck.addItemListener(
@@ -221,9 +221,9 @@ public class SettingsEditorAction extends GuiAction {
         // User has clicked "Apply" or "Apply and Close" button.  Required method, is
         // abstract in superclass.
         protected void apply(Font font) {
-            Globals.getSettings().setBooleanSetting(Settings.GENERIC_TEXT_EDITOR, genericEditorCheck.isSelected());
-            Globals.getSettings().setBooleanSetting(Settings.EDITOR_CURRENT_LINE_HIGHLIGHTING, lineHighlightCheck.isSelected());
-            Globals.getSettings().setBooleanSetting(Settings.AUTO_INDENT, autoIndentCheck.isSelected());
+            Globals.getSettings().setBooleanSetting(Settings.Bool.GENERIC_TEXT_EDITOR, genericEditorCheck.isSelected());
+            Globals.getSettings().setBooleanSetting(Settings.Bool.EDITOR_CURRENT_LINE_HIGHLIGHTING, lineHighlightCheck.isSelected());
+            Globals.getSettings().setBooleanSetting(Settings.Bool.AUTO_INDENT, autoIndentCheck.isSelected());
             Globals.getSettings().setCaretBlinkRate((Integer) blinkRateSpinSelector.getValue());
             Globals.getSettings().setEditorTabSize(tabSizeSelector.getValue());
             if (syntaxStylesAction) {
@@ -238,9 +238,9 @@ public class SettingsEditorAction extends GuiAction {
             for (int i = 0; i < popupGuidanceOptions.length; i++) {
                 if (popupGuidanceOptions[i].isSelected()) {
                     if (i == 0) {
-                        Globals.getSettings().setBooleanSetting(Settings.POPUP_INSTRUCTION_GUIDANCE, false);
+                        Globals.getSettings().setBooleanSetting(Settings.Bool.POPUP_INSTRUCTION_GUIDANCE, false);
                     } else {
-                        Globals.getSettings().setBooleanSetting(Settings.POPUP_INSTRUCTION_GUIDANCE, true);
+                        Globals.getSettings().setBooleanSetting(Settings.Bool.POPUP_INSTRUCTION_GUIDANCE, true);
                         Globals.getSettings().setEditorPopupPrefixLength(i);
                     }
                     break;
@@ -296,13 +296,13 @@ public class SettingsEditorAction extends GuiAction {
                     });
 
             // highlighting of current line
-            initialLineHighlighting = Globals.getSettings().getBooleanSetting(Settings.EDITOR_CURRENT_LINE_HIGHLIGHTING);
+            initialLineHighlighting = Globals.getSettings().getBooleanSetting(Settings.Bool.EDITOR_CURRENT_LINE_HIGHLIGHTING);
             lineHighlightCheck = new JCheckBox("Highlight the line currently being edited");
             lineHighlightCheck.setSelected(initialLineHighlighting);
             lineHighlightCheck.setToolTipText(CURRENT_LINE_HIGHLIGHT_TOOL_TIP_TEXT);
 
             // auto-indent
-            initialAutoIndent = Globals.getSettings().getBooleanSetting(Settings.AUTO_INDENT);
+            initialAutoIndent = Globals.getSettings().getBooleanSetting(Settings.Bool.AUTO_INDENT);
             autoIndentCheck = new JCheckBox("Auto-Indent");
             autoIndentCheck.setSelected(initialAutoIndent);
             autoIndentCheck.setToolTipText(AUTO_INDENT_TOOL_TIP_TEXT);
@@ -358,7 +358,7 @@ public class SettingsEditorAction extends GuiAction {
                 popupGuidanceOptions[i].setToolTipText(POPUP_GUIDANCE_TOOL_TIP_TEXT[i]);
                 popupGuidanceButtons.add(popupGuidanceOptions[i]);
             }
-            initialPopupGuidance = Globals.getSettings().getBooleanSetting(Settings.POPUP_INSTRUCTION_GUIDANCE)
+            initialPopupGuidance = Globals.getSettings().getBooleanSetting(Settings.Bool.POPUP_INSTRUCTION_GUIDANCE)
                     ? Globals.getSettings().getEditorPopupPrefixLength()
                     : 0;
             popupGuidanceOptions[initialPopupGuidance].setSelected(true);

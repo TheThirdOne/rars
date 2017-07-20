@@ -101,7 +101,7 @@ public class FloatingPointWindow extends JPanel implements Observer {
             tableData[i][0] = registers[i].getName();
             tableData[i][1] = registers[i].getNumber();
             tableData[i][2] = NumberDisplayBaseChooser.formatFloatNumber(registers[i].getValue(),
-                    NumberDisplayBaseChooser.getBase(settings.getBooleanSetting(Settings.DISPLAY_VALUES_IN_HEX)));//formatNumber(floatValue,NumberDisplayBaseChooser.getBase(settings.getDisplayValuesInHex()));
+                    NumberDisplayBaseChooser.getBase(settings.getBooleanSetting(Settings.Bool.DISPLAY_VALUES_IN_HEX)));//formatNumber(floatValue,NumberDisplayBaseChooser.getBase(settings.getDisplayValuesInHex()));
         }
         return tableData;
     }
@@ -239,7 +239,7 @@ public class FloatingPointWindow extends JPanel implements Observer {
                     isSelected, hasFocus, row, column);
             cell.setFont(font);
             cell.setHorizontalAlignment(alignment);
-            if (settings.getBooleanSetting(Settings.REGISTERS_HIGHLIGHTING) && highlighting && row == highlightRow) {
+            if (settings.getBooleanSetting(Settings.Bool.REGISTERS_HIGHLIGHTING) && highlighting && row == highlightRow) {
                 cell.setBackground(settings.getColorSettingByPosition(Settings.REGISTER_HIGHLIGHT_BACKGROUND));
                 cell.setForeground(settings.getColorSettingByPosition(Settings.REGISTER_HIGHLIGHT_FOREGROUND));
                 cell.setFont(settings.getFontByPosition(Settings.REGISTER_HIGHLIGHT_FONT));

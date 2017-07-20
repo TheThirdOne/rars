@@ -2011,7 +2011,7 @@ public class JEditTextArea extends JComponent {
      * @return String containing auto-indent characters to be inserted into text
      */
     public String getAutoIndent() {
-        return (Globals.getSettings().getBooleanSetting(Settings.AUTO_INDENT)) ? getLeadingWhiteSpace() : "";
+        return (Globals.getSettings().getBooleanSetting(Settings.Bool.AUTO_INDENT)) ? getLeadingWhiteSpace() : "";
     }
 
     /**
@@ -2042,7 +2042,7 @@ public class JEditTextArea extends JComponent {
     // Compose and display syntax-sensitive help. Typically invoked upon typing a key.
     // Results in popup menu.  Is not used for creating tool tips.
     private void applySyntaxSensitiveHelp() {
-        if (!mars.Globals.getSettings().getBooleanSetting(mars.Settings.POPUP_INSTRUCTION_GUIDANCE)) {
+        if (!Globals.getSettings().getBooleanSetting(Settings.Bool.POPUP_INSTRUCTION_GUIDANCE)) {
             return;
         }
         int line = getCaretLine();

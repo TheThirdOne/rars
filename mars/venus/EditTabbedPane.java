@@ -80,7 +80,7 @@ public class EditTabbedPane extends JTabbedPane {
                         if (editPane != null) {
                             // New IF statement to permit free traversal of edit panes w/o invalidating
                             // assembly if assemble-all is selected.  DPS 9-Aug-2011
-                            if (Globals.getSettings().getBooleanSetting(mars.Settings.ASSEMBLE_ALL_ENABLED)) {
+                            if (Globals.getSettings().getBooleanSetting(Settings.Bool.ASSEMBLE_ALL)) {
                                 EditTabbedPane.this.updateTitles(editPane);
                             } else {
                                 EditTabbedPane.this.updateTitlesAndMenuState(editPane);
@@ -565,7 +565,7 @@ public class EditTabbedPane extends JTabbedPane {
             // Set default to previous file opened, if any.  This is useful in conjunction
             // with option to assemble file automatically upon opening.  File likely to have
             // been edited externally (e.g. by Mipster).
-            if (Globals.getSettings().getBooleanSetting(Settings.ASSEMBLE_ON_OPEN_ENABLED) && mostRecentlyOpenedFile != null) {
+            if (Globals.getSettings().getBooleanSetting(Settings.Bool.ASSEMBLE_ON_OPEN) && mostRecentlyOpenedFile != null) {
                 fileChooser.setSelectedFile(mostRecentlyOpenedFile);
             }
 
@@ -579,7 +579,7 @@ public class EditTabbedPane extends JTabbedPane {
 
                 // possibly send this file right through to the assembler by firing Run->Assemble's
                 // actionPerformed() method.
-                if (theFile.canRead() && Globals.getSettings().getBooleanSetting(Settings.ASSEMBLE_ON_OPEN_ENABLED)) {
+                if (theFile.canRead() && Globals.getSettings().getBooleanSetting(Settings.Bool.ASSEMBLE_ON_OPEN)) {
                     mainUI.getRunAssembleAction().actionPerformed(null);
                 }
             }
@@ -647,7 +647,7 @@ public class EditTabbedPane extends JTabbedPane {
 
                 // If assemble-all, then allow opening of any file w/o invalidating assembly.
                 // DPS 9-Aug-2011
-                if (Globals.getSettings().getBooleanSetting(mars.Settings.ASSEMBLE_ALL_ENABLED)) {
+                if (Globals.getSettings().getBooleanSetting(Settings.Bool.ASSEMBLE_ALL)) {
                     updateTitles(editPane);
                 } else {// this was the original code...
                     updateTitlesAndMenuState(editPane);

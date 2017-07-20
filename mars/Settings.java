@@ -6,6 +6,7 @@ import mars.venus.editors.jeditsyntax.SyntaxStyle;
 import mars.venus.editors.jeditsyntax.SyntaxUtilities;
 
 import java.awt.*;
+import java.util.HashMap;
 import java.util.Observable;
 import java.util.StringTokenizer;
 import java.util.prefs.BackingStoreException;
@@ -63,114 +64,111 @@ public class Settings extends Observable {
     /////////////////////////////  PROPERTY ARRAY INDEXES /////////////////////////////
     // Because MARS is programmed to Java 1.4, we cannot use an enumerated type.
 
-    // BOOLEAN SETTINGS...  
-    /**
-     * Flag to determine whether or not program being assembled is limited to
-     * basic instructions and formats.
-     */
-    public static final int EXTENDED_ASSEMBLER_ENABLED = 0;
-    /**
-     * Flag to determine whether or not program being assembled is limited to
-     * using register numbers instead of names. NOTE: Its default value is
-     * false and the IDE provides no means to change it!
-     */
-    public static final int BARE_MACHINE_ENABLED = 1;
-    /**
-     * Flag to determine whether or not a file is immediately and automatically assembled
-     * upon opening. Handy when using externa editor like mipster.
-     */
-    public static final int ASSEMBLE_ON_OPEN_ENABLED = 2;
-    /**
-     * Flag to determine whether only the current editor source file (enabled false) or
-     * all files in its directory (enabled true) will be assembled when assembly is selected.
-     */
-    public static final int ASSEMBLE_ALL_ENABLED = 3;
-    /**
-     * Default visibilty of label window (symbol table).  Default only, dynamic status
-     * maintained by ExecutePane
-     */
-    public static final int LABEL_WINDOW_VISIBILITY = 4;
-    /**
-     * Default setting for displaying addresses and values in hexidecimal in the Execute
-     * pane.
-     */
-    public static final int DISPLAY_ADDRESSES_IN_HEX = 5;
-    public static final int DISPLAY_VALUES_IN_HEX = 6;
-    /**
-     * Flag to determine whether the currently selected exception handler source file will
-     * be included in each assembly operation.
-     */
-    public static final int EXCEPTION_HANDLER_ENABLED = 7;
-    /**
-     * Flag to determine whether or not the editor will display line numbers.
-     */
-    public static final int EDITOR_LINE_NUMBERS_DISPLAYED = 8;
-    /**
-     * Flag to determine whether or not assembler warnings are considered errors.
-     */
-    public static final int WARNINGS_ARE_ERRORS = 9;
-    /**
-     * Flag to determine whether or not to display and use program arguments
-     */
-    public static final int PROGRAM_ARGUMENTS = 10;
-    /**
-     * Flag to control whether or not highlighting is applied to data segment window
-     */
-    public static final int DATA_SEGMENT_HIGHLIGHTING = 11;
-    /**
-     * Flag to control whether or not highlighting is applied to register windows
-     */
-    public static final int REGISTERS_HIGHLIGHTING = 12;
-    /**
-     * Flag to control whether or not assembler automatically initializes program counter to 'main's address
-     */
-    public static final int START_AT_MAIN = 13;
-    /**
-     * Flag to control whether or not editor will highlight the line currently being edited
-     */
-    public static final int EDITOR_CURRENT_LINE_HIGHLIGHTING = 14;
-    /**
-     * Flag to control whether or not editor will provide popup instruction guidance while typing
-     */
-    public static final int POPUP_INSTRUCTION_GUIDANCE = 15;
-    /**
-     * Flag to control whether or not simulator will use popup dialog for input syscalls
-     */
-    public static final int POPUP_SYSCALL_INPUT = 16;
-    /**
-     * Flag to control whether or not to use generic text editor instead of language-aware styled editor
-     */
-    public static final int GENERIC_TEXT_EDITOR = 17;
-    /**
-     * Flag to control whether or not language-aware editor will use auto-indent feature
-     */
-    public static final int AUTO_INDENT = 18;
-    /**
-     * Flag to determine whether a program can write binary code to the text or data segment and
-     * execute that code.
-     */
-    public static final int SELF_MODIFYING_CODE_ENABLED = 19;
+    // BOOLEAN SETTINGS...
 
-    // TODO: add option for turning off user trap handling and interrupts
-    // NOTE: key sequence must match up with labels above which are used for array indexes!
-    private static String[] booleanSettingsKeys = {"ExtendedAssembler", "BareMachine", "AssembleOnOpen", "AssembleAll",
-            "LabelWindowVisibility", "DisplayAddressesInHex", "DisplayValuesInHex",
-            "LoadExceptionHandler", "EditorLineNumbersDisplayed",
-            "WarningsAreErrors", "ProgramArguments", "DataSegmentHighlighting",
-            "RegistersHighlighting", "StartAtMain", "EditorCurrentLineHighlighting",
-            "PopupInstructionGuidance", "PopupSyscallInput", "GenericTextEditor",
-            "AutoIndent", "SelfModifyingCode"};
+    public enum Bool {
+        /**
+         * Flag to determine whether or not program being assembled is limited to
+         * basic instructions and formats.
+         */
+        EXTENDED_ASSEMBLER_ENABLED("ExtendedAssembler", true),
+        /**
+         * Flag to determine whether or not a file is immediately and automatically assembled
+         * upon opening. Handy when using externa editor like mipster.
+         */
+        ASSEMBLE_ON_OPEN("AssembleOnOpen", false),
+        /**
+         * Flag to determine whether only the current editor source file (enabled false) or
+         * all files in its directory (enabled false) will be assembled when assembly is selected.
+         */
+        ASSEMBLE_ALL("AssembleAll", false),
+        /**
+         * Default visibilty of label window (symbol table).  Default only, dynamic status
+         * maintained by ExecutePane
+         */
+        LABEL_WINDOW_VISIBILITY("LabelWindowVisibility", false),
+        /**
+         * Default setting for displaying addresses and values in hexidecimal in the Execute
+         * pane.
+         */
+        DISPLAY_ADDRESSES_IN_HEX("DisplayAddressesInHex", true),
+        DISPLAY_VALUES_IN_HEX("DisplayValuesInHex", true),
+        /**
+         * Flag to determine whether the currently selected exception handler source file will
+         * be included in each assembly operation.
+         */
+        EXCEPTION_HANDLER_ENABLED("LoadExceptionHandler", false),
+        /**
+         * Flag to determine whether or not the editor will display line numbers.
+         */
+        EDITOR_LINE_NUMBERS_DISPLAYED("EditorLineNumbersDisplayed", true),
+        /**
+         * Flag to determine whether or not assembler warnings are considered errors.
+         */
+        WARNINGS_ARE_ERRORS("WarningsAreErrors", false),
+        /**
+         * Flag to determine whether or not to display and use program arguments
+         */
+        PROGRAM_ARGUMENTS("ProgramArguments", false),
+        /**
+         * Flag to control whether or not highlighting is applied to data segment window
+         */
+        DATA_SEGMENT_HIGHLIGHTING("DataSegmentHighlighting", true),
+        /**
+         * Flag to control whether or not highlighting is applied to register windows
+         */
+        REGISTERS_HIGHLIGHTING("RegistersHighlighting", true),
+        /**
+         * Flag to control whether or not assembler automatically initializes program counter to 'main's address
+         */
+        START_AT_MAIN("StartAtMain", false),
+        /**
+         * Flag to control whether or not editor will highlight the line currently being edited
+         */
+        EDITOR_CURRENT_LINE_HIGHLIGHTING("EditorCurrentLineHighlighting", true),
+        /**
+         * Flag to control whether or not editor will provide popup instruction guidance while typing
+         */
+        POPUP_INSTRUCTION_GUIDANCE("PopupInstructionGuidance", true),
+        /**
+         * Flag to control whether or not simulator will use popup dialog for input syscalls
+         */
+        POPUP_SYSCALL_INPUT("PopupSyscallInput", false),
+        /**
+         * Flag to control whether or not to use generic text editor instead of language-aware styled editor
+         */
+        GENERIC_TEXT_EDITOR("GenericTextEditor", false),
+        /**
+         * Flag to control whether or not language-aware editor will use auto-indent feature
+         */
+        AUTO_INDENT("AutoIndent", true),
+        /**
+         * Flag to determine whether a program can write binary code to the text or data segment and
+         * execute that code.
+         */
+        SELF_MODIFYING_CODE_ENABLED("SelfModifyingCode", false);
 
-    /**
-     * Last resort default values for boolean settings; will use only  if neither
-     * the Preferences nor the properties file work. If you wish to change them,
-     * do so before instantiating the Settings object.
-     * Values are matched to keys by list position.
-     */
-    public static boolean[] defaultBooleanSettingsValues = { // match the above list by position
-            true, false, false, false, false, true, true, false,
-            true, false, false, true, true, false, true, true, false, false, true, false};
+        // TODO: add option for turning off user trap handling and interrupts
+        String name;
+        boolean value;
 
+        Bool(String n, boolean v) {
+            name = n;
+            value = v;
+        }
+
+        boolean getValue() {
+            return value;
+        }
+
+        void resetDefault(boolean v) {
+            value = v;
+        }
+
+        String getName() {
+            return name;
+        }
+    }
     // STRING SETTINGS.  Each array position has associated name.
     /**
      * Current specified exception handler file (a MIPS assembly source file)
@@ -343,7 +341,7 @@ public class Settings extends Observable {
             "0x00e0e0e0", "0", "0x00ffffff", "0", "0x00ffff99", "0", "0x0033ff00", "0", "0x0099ccff", "0", "0x0099cc55", "0"};
 
 
-    private boolean[] booleanSettingsValues;
+    private HashMap<Bool, Boolean> booleanSettingsValues;
     private String[] stringSettingsValues;
     private String[] fontFamilySettingsValues;
     private String[] fontStyleSettingsValues;
@@ -371,7 +369,7 @@ public class Settings extends Observable {
      */
 
     public Settings(boolean gui) {
-        booleanSettingsValues = new boolean[booleanSettingsKeys.length];
+        booleanSettingsValues = new HashMap<>();
         stringSettingsValues = new String[stringSettingsKeys.length];
         fontFamilySettingsValues = new String[fontFamilySettingsKeys.length];
         fontStyleSettingsValues = new String[fontStyleSettingsKeys.length];
@@ -522,13 +520,13 @@ public class Settings extends Observable {
     /**
      * Fetch value of a boolean setting given its identifier.
      *
-     * @param id int containing the setting's identifier (constants listed above)
+     * @param setting the setting to fetch the value of
      * @return corresponding boolean setting.
      * @throws IllegalArgumentException if identifier is invalid.
      */
-    public boolean getBooleanSetting(int id) {
-        if (id >= 0 && id < booleanSettingsValues.length) {
-            return booleanSettingsValues[id];
+    public boolean getBooleanSetting(Bool setting) {
+        if (booleanSettingsValues.containsKey(setting)) {
+            return booleanSettingsValues.get(setting);
         } else {
             throw new IllegalArgumentException("Invalid boolean setting ID");
         }
@@ -730,13 +728,13 @@ public class Settings extends Observable {
     /**
      * Set value of a boolean setting given its id and the value.
      *
-     * @param id    int containing the setting's identifier (constants listed above)
+     * @param setting setting to set the value of
      * @param value boolean value to store
      * @throws IllegalArgumentException if identifier is not valid.
      */
-    public void setBooleanSetting(int id, boolean value) {
-        if (id >= 0 && id < booleanSettingsValues.length) {
-            internalSetBooleanSetting(id, value);
+    public void setBooleanSetting(Bool setting, boolean value) {
+        if (booleanSettingsValues.containsKey(setting)) {
+            internalSetBooleanSetting(setting, value);
         } else {
             throw new IllegalArgumentException("Invalid boolean setting ID");
         }
@@ -746,12 +744,12 @@ public class Settings extends Observable {
      * Temporarily establish boolean setting.  This setting will NOT be written to persisent
      * store!  Currently this is used only when running MARS from the command line
      *
-     * @param id    setting identifier.  These are defined for this class as static final int.
+     * @param setting the setting to set the value of
      * @param value True to enable the setting, false otherwise.
      */
-    public void setBooleanSettingNonPersistent(int id, boolean value) {
-        if (id >= 0 && id < booleanSettingsValues.length) {
-            booleanSettingsValues[id] = value;
+    public void setBooleanSettingNonPersistent(Bool setting, boolean value) {
+        if (booleanSettingsValues.containsKey(setting)) {
+            booleanSettingsValues.put(setting, value);
         } else {
             throw new IllegalArgumentException("Invalid boolean setting ID");
         }
@@ -913,8 +911,8 @@ public class Settings extends Observable {
 
     // Default values.  Will be replaced if available from property file or Preferences object.
     private void applyDefaultSettings() {
-        for (int i = 0; i < booleanSettingsValues.length; i++) {
-            booleanSettingsValues[i] = defaultBooleanSettingsValues[i];
+        for (Bool setting : Bool.values()) {
+            booleanSettingsValues.put(setting, setting.getValue());
         }
         for (int i = 0; i < stringSettingsValues.length; i++) {
             stringSettingsValues[i] = defaultStringSettingsValues[i];
@@ -931,10 +929,10 @@ public class Settings extends Observable {
     }
 
     // Used by all the boolean setting "setter" methods.
-    private void internalSetBooleanSetting(int settingIndex, boolean value) {
-        if (value != booleanSettingsValues[settingIndex]) {
-            booleanSettingsValues[settingIndex] = value;
-            saveBooleanSetting(settingIndex);
+    private void internalSetBooleanSetting(Bool setting, boolean value) {
+        if (value != booleanSettingsValues.get(setting)) {
+            booleanSettingsValues.put(setting, value);
+            saveBooleanSetting(setting);
             setChanged();
             notifyObservers();
         }
@@ -979,21 +977,6 @@ public class Settings extends Observable {
     }
 
 
-    // Maybe someday I'll convert the whole shebang to use Maps.  In the meantime, we use
-    // linear search of array.  Not a huge deal as settings are little-used.
-    // Returns index or -1 if not found.
-    private int getIndexOfKey(String key, String[] array) {
-        int index = -1;
-        for (int i = 0; i < array.length; i++) {
-            if (array[i].equals(key)) {
-                index = i;
-                break;
-            }
-        }
-        return index;
-    }
-
-
     // Establish the settings from the given properties file.  Return true if it worked,
     // false if it didn't.  Note the properties file exists only to provide default values
     // in case the Preferences fail or have not been recorded yet.
@@ -1011,10 +994,12 @@ public class Settings extends Observable {
     private boolean readSettingsFromPropertiesFile(String filename) {
         String settingValue;
         try {
-            for (int i = 0; i < booleanSettingsKeys.length; i++) {
-                settingValue = Globals.getPropertyEntry(filename, booleanSettingsKeys[i]);
+            for (Bool setting : Bool.values()) {
+                settingValue = Globals.getPropertyEntry(filename, setting.getName());
                 if (settingValue != null) {
-                    booleanSettingsValues[i] = defaultBooleanSettingsValues[i] = Boolean.valueOf(settingValue);
+                    boolean value = Boolean.valueOf(settingValue);
+                    setting.resetDefault(value);
+                    booleanSettingsValues.put(setting, value);
                 }
             }
             for (int i = 0; i < stringSettingsKeys.length; i++) {
@@ -1052,8 +1037,8 @@ public class Settings extends Observable {
     // PRECONDITION: Values arrays have already been initialized to default values from
     // Settings.properties file or default value arrays above!
     private void getSettingsFromPreferences() {
-        for (int i = 0; i < booleanSettingsKeys.length; i++) {
-            booleanSettingsValues[i] = preferences.getBoolean(booleanSettingsKeys[i], booleanSettingsValues[i]);
+        for (Bool setting : booleanSettingsValues.keySet()) {
+            booleanSettingsValues.put(setting, preferences.getBoolean(setting.getName(), booleanSettingsValues.get(setting)));
         }
         for (int i = 0; i < stringSettingsKeys.length; i++) {
             stringSettingsValues[i] = preferences.get(stringSettingsKeys[i], stringSettingsValues[i]);
@@ -1071,9 +1056,9 @@ public class Settings extends Observable {
 
 
     // Save the key-value pair in the Properties object and assure it is written to persisent storage.
-    private void saveBooleanSetting(int index) {
+    private void saveBooleanSetting(Bool setting) {
         try {
-            preferences.putBoolean(booleanSettingsKeys[index], booleanSettingsValues[index]);
+            preferences.putBoolean(setting.getName(), setting.getValue());
             preferences.flush();
         } catch (SecurityException se) {
             // cannot write to persistent storage for security reasons

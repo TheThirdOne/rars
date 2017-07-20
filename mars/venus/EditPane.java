@@ -86,7 +86,7 @@ public class EditPane extends JPanel implements Observer {
         this.fileStatus = new FileStatus();
         lineNumbers = new JLabel();
 
-        if (Globals.getSettings().getBooleanSetting(Settings.GENERIC_TEXT_EDITOR)) {
+        if (Globals.getSettings().getBooleanSetting(Settings.Bool.GENERIC_TEXT_EDITOR)) {
             this.sourceCode = new GenericTextArea(this, lineNumbers);
         } else {
             this.sourceCode = new JEditBasedTextArea(this, lineNumbers);
@@ -154,7 +154,7 @@ public class EditPane extends JPanel implements Observer {
         showLineNumbers.setToolTipText("If checked, will display line number for each line of text.");
         showLineNumbers.setEnabled(false);
         // Show line numbers by default.
-        showLineNumbers.setSelected(Globals.getSettings().getBooleanSetting(Settings.EDITOR_LINE_NUMBERS_DISPLAYED));
+        showLineNumbers.setSelected(Globals.getSettings().getBooleanSetting(Settings.Bool.EDITOR_LINE_NUMBERS_DISPLAYED));
 
         this.setSourceCode("", false);
 
@@ -175,7 +175,7 @@ public class EditPane extends JPanel implements Observer {
                             lineNumbers.setVisible(false);
                         }
                         sourceCode.revalidate(); // added 16 Jan 2012 to assure label redrawn.
-                        Globals.getSettings().setBooleanSetting(Settings.EDITOR_LINE_NUMBERS_DISPLAYED, showLineNumbers.isSelected());
+                        Globals.getSettings().setBooleanSetting(Settings.Bool.EDITOR_LINE_NUMBERS_DISPLAYED, showLineNumbers.isSelected());
                         // needed because caret disappears when checkbox clicked
                         sourceCode.setCaretVisible(true);
                         sourceCode.requestFocusInWindow();
@@ -614,7 +614,7 @@ public class EditPane extends JPanel implements Observer {
      */
     public void update(Observable fontChanger, Object arg) {
         sourceCode.setFont(Globals.getSettings().getEditorFont());
-        sourceCode.setLineHighlightEnabled(Globals.getSettings().getBooleanSetting(Settings.EDITOR_CURRENT_LINE_HIGHLIGHTING));
+        sourceCode.setLineHighlightEnabled(Globals.getSettings().getBooleanSetting(Settings.Bool.EDITOR_CURRENT_LINE_HIGHLIGHTING));
         sourceCode.setCaretBlinkRate(Globals.getSettings().getCaretBlinkRate());
         sourceCode.setTabSize(Globals.getSettings().getEditorTabSize());
         sourceCode.updateSyntaxStyles();

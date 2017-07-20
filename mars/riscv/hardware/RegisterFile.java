@@ -228,7 +228,7 @@ public class RegisterFile {
 
     public static void resetRegisters() {
         instance.resetRegisters();
-        initializeProgramCounter(Globals.getSettings().getBooleanSetting(Settings.START_AT_MAIN));// replaces "programCounter.resetValue()", DPS 3/3/09
+        initializeProgramCounter(Globals.getSettings().getBooleanSetting(Settings.Bool.START_AT_MAIN));// replaces "programCounter.resetValue()", DPS 3/3/09
     }
 
     /**

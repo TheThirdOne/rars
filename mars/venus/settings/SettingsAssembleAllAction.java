@@ -49,7 +49,7 @@ public class SettingsAssembleAllAction extends GuiAction {
     }
 
     public void actionPerformed(ActionEvent e) {
-        Globals.getSettings().setBooleanSetting(Settings.ASSEMBLE_ALL_ENABLED,
+        Globals.getSettings().setBooleanSetting(Settings.Bool.ASSEMBLE_ALL,
                 ((JCheckBoxMenuItem) e.getSource()).isSelected());
     }
 

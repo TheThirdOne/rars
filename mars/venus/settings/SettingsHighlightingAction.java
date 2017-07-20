@@ -343,8 +343,8 @@ public class SettingsHighlightingAction extends GuiAction {
             foregroundButtons[i].setEnabled(!usingDefaults);
             fontButtons[i].setEnabled(!usingDefaults);
         }
-        currentDataHighlightSetting = initialDataHighlightSetting = settings.getBooleanSetting(Settings.DATA_SEGMENT_HIGHLIGHTING);
-        currentRegisterHighlightSetting = initialRegisterHighlightSetting = settings.getBooleanSetting(Settings.REGISTERS_HIGHLIGHTING);
+        currentDataHighlightSetting = initialDataHighlightSetting = settings.getBooleanSetting(Settings.Bool.DATA_SEGMENT_HIGHLIGHTING);
+        currentRegisterHighlightSetting = initialRegisterHighlightSetting = settings.getBooleanSetting(Settings.Bool.REGISTERS_HIGHLIGHTING);
     }
 
 
@@ -356,8 +356,8 @@ public class SettingsHighlightingAction extends GuiAction {
             settings.setColorSettingByPosition(foregroundSettingPositions[i], foregroundButtons[i].getBackground());
             settings.setFontByPosition(fontSettingPositions[i], samples[i].getFont());//fontButtons[i].getFont());			
         }
-        settings.setBooleanSetting(Settings.DATA_SEGMENT_HIGHLIGHTING, currentDataHighlightSetting);
-        settings.setBooleanSetting(Settings.REGISTERS_HIGHLIGHTING, currentRegisterHighlightSetting);
+        settings.setBooleanSetting(Settings.Bool.DATA_SEGMENT_HIGHLIGHTING, currentDataHighlightSetting);
+        settings.setBooleanSetting(Settings.Bool.REGISTERS_HIGHLIGHTING, currentRegisterHighlightSetting);
         ExecutePane executePane = Globals.getGui().getMainPane().getExecutePane();
         executePane.getRegistersWindow().refresh();
         executePane.getControlAndStatusWindow().refresh();

@@ -140,7 +140,7 @@ public class RunStepAction extends GuiAction {
     private void processProgramArgumentsIfAny() {
         String programArguments = executePane.getTextSegmentWindow().getProgramArguments();
         if (programArguments == null || programArguments.length() == 0 ||
-                !Globals.getSettings().getBooleanSetting(Settings.PROGRAM_ARGUMENTS)) {
+                !Globals.getSettings().getBooleanSetting(Settings.Bool.PROGRAM_ARGUMENTS)) {
             return;
         }
         new ProgramArgumentList(programArguments).storeProgramArguments();
