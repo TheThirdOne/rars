@@ -748,6 +748,7 @@ public abstract class AbstractMarsToolAndApplication extends JFrame implements M
             RegisterFile.resetRegisters();
             FloatingPointRegisterFile.resetRegisters();
             ControlAndStatusRegisterFile.resetRegisters();
+            InterruptController.reset();
 
             addAsObserver();
             observing = true;

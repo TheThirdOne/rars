@@ -1,10 +1,7 @@
 package mars.venus.run;
 
 import mars.*;
-import mars.riscv.hardware.ControlAndStatusRegisterFile;
-import mars.riscv.hardware.FloatingPointRegisterFile;
-import mars.riscv.hardware.Memory;
-import mars.riscv.hardware.RegisterFile;
+import mars.riscv.hardware.*;
 import mars.util.FilenameFinder;
 import mars.util.SystemIO;
 import mars.venus.*;
@@ -111,9 +108,12 @@ public class RunAssembleAction extends GuiAction {
                         name + ": operation completed successfully.\n\n");
                 FileStatus.setAssembled(true);
                 FileStatus.set(FileStatus.RUNNABLE);
+
                 RegisterFile.resetRegisters();
                 FloatingPointRegisterFile.resetRegisters();
                 ControlAndStatusRegisterFile.resetRegisters();
+                InterruptController.reset();
+
                 executePane.getTextSegmentWindow().setupTable();
                 executePane.getDataSegmentWindow().setupTable();
                 executePane.getDataSegmentWindow().highlightCellForAddress(Memory.dataBaseAddress);

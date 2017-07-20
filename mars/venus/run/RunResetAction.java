@@ -2,10 +2,7 @@ package mars.venus.run;
 
 import mars.AssemblyException;
 import mars.Globals;
-import mars.riscv.hardware.ControlAndStatusRegisterFile;
-import mars.riscv.hardware.FloatingPointRegisterFile;
-import mars.riscv.hardware.Memory;
-import mars.riscv.hardware.RegisterFile;
+import mars.riscv.hardware.*;
 import mars.util.SystemIO;
 import mars.venus.ExecutePane;
 import mars.venus.file.FileStatus;
@@ -79,9 +76,11 @@ public class RunResetAction extends GuiAction {
                     "Unable to reset.  Please close file then re-open and re-assemble.\n");
             return;
         }
+
         RegisterFile.resetRegisters();
         FloatingPointRegisterFile.resetRegisters();
         ControlAndStatusRegisterFile.resetRegisters();
+        InterruptController.reset();
 
         executePane.getRegistersWindow().clearHighlighting();
         executePane.getRegistersWindow().updateRegisters();
