@@ -1,7 +1,7 @@
 package mars.tools;
 
 import mars.Globals;
-import mars.mips.hardware.*;
+import mars.riscv.hardware.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -131,7 +131,7 @@ public class DigitalLabSim extends AbstractMarsToolAndApplication {
                         "Hexadecimal keyboard\n" +
                         " Byte value at address 0xFFFF0012 : command row number of hexadecimal keyboard (bit 0 to 3) and enable keyboard interrupt (bit 7) \n" +
                         " Byte value at address 0xFFFF0014 : receive row and column of the key pressed, 0 if not key pressed \n" +
-                        " The mips program have to scan, one by one, each row (send 1,2,4,8...)" +
+                        " The riscv program has to scan, one by one, each row (send 1,2,4,8...)" +
                         " and then observe if a key is pressed (that mean byte value at adresse 0xFFFF0014 is different from zero). " +
                         " This byte value is composed of row number (4 left bits) and column number (4 right bits)" +
                         " Here you'll find the code for each key : 0x11,0x21,0x41,0x81,0x12,0x22,0x42,0x82,0x14,0x24,0x44,0x84,0x18,0x28,0x48,0x88. \n" +

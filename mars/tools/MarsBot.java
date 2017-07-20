@@ -1,9 +1,9 @@
 package mars.tools;
 
 import mars.Globals;
-import mars.mips.hardware.AccessNotice;
-import mars.mips.hardware.AddressErrorException;
-import mars.mips.hardware.MemoryAccessNotice;
+import mars.riscv.hardware.AccessNotice;
+import mars.riscv.hardware.AddressErrorException;
+import mars.riscv.hardware.MemoryAccessNotice;
 
 import javax.swing.*;
 import java.awt.*;

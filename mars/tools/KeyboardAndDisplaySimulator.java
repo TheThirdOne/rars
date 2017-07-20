@@ -1,8 +1,7 @@
 package mars.tools;
 
 import mars.Globals;
-import mars.mips.hardware.*;
-import mars.simulator.Exceptions;
+import mars.riscv.hardware.*;
 import mars.util.Binary;
 import mars.venus.AbstractFontSettingDialog;
 

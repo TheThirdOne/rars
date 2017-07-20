@@ -1,6 +1,6 @@
 package mars;
 
-import mars.mips.hardware.AddressErrorException;
+import mars.riscv.hardware.AddressErrorException;
 
 /**
  * Exceptions that cannot be handled and must result in the ending of the simulation

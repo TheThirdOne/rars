@@ -1,9 +1,9 @@
 package mars.assembler;
 
 import mars.Globals;
-import mars.mips.hardware.Coprocessor1;
-import mars.mips.hardware.Register;
-import mars.mips.hardware.RegisterFile;
+import mars.riscv.hardware.Coprocessor1;
+import mars.riscv.hardware.Register;
+import mars.riscv.hardware.RegisterFile;
 import mars.util.Binary;
 
 	/*

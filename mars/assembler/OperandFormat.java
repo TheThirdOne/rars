@@ -4,7 +4,7 @@ import mars.ErrorList;
 import mars.ErrorMessage;
 import mars.Globals;
 import mars.Settings;
-import mars.mips.instructions.Instruction;
+import mars.riscv.Instruction;
 
 import java.util.ArrayList;
 

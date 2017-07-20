@@ -4,7 +4,7 @@ import mars.AssemblyException;
 import mars.Globals;
 import mars.MIPSprogram;
 import mars.Settings;
-import mars.mips.hardware.RegisterFile;
+import mars.riscv.hardware.RegisterFile;
 import mars.util.FilenameFinder;
 
 import javax.swing.*;

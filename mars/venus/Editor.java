@@ -147,7 +147,7 @@ public class Editor {
      */
     public String getNextDefaultFilename() {
         newUsageCount++;
-        return "mips" + newUsageCount + ".asm";
+        return "riscv" + newUsageCount + ".asm";
     }
 
 

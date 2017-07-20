@@ -11,11 +11,11 @@ package mars.venus.editors.jeditsyntax.tokenmarker;
 
 import mars.Settings;
 import mars.assembler.Directives;
-import mars.mips.hardware.Coprocessor1;
-import mars.mips.hardware.Register;
-import mars.mips.hardware.RegisterFile;
-import mars.mips.instructions.BasicInstruction;
-import mars.mips.instructions.Instruction;
+import mars.riscv.hardware.Coprocessor1;
+import mars.riscv.hardware.Register;
+import mars.riscv.hardware.RegisterFile;
+import mars.riscv.BasicInstruction;
+import mars.riscv.Instruction;
 import mars.venus.editors.jeditsyntax.KeywordMap;
 import mars.venus.editors.jeditsyntax.PopupHelpItem;
 

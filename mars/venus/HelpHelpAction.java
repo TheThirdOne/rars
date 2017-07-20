@@ -2,9 +2,9 @@ package mars.venus;
 
 import mars.Globals;
 import mars.assembler.Directives;
-import mars.mips.instructions.BasicInstruction;
-import mars.mips.instructions.ExtendedInstruction;
-import mars.mips.instructions.Instruction;
+import mars.riscv.BasicInstruction;
+import mars.riscv.ExtendedInstruction;
+import mars.riscv.Instruction;
 
 import javax.swing.*;
 import javax.swing.event.HyperlinkEvent;

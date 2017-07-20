@@ -3,8 +3,8 @@ package mars.assembler;
 import mars.ErrorList;
 import mars.ErrorMessage;
 import mars.MIPSprogram;
-import mars.mips.hardware.Coprocessor1;
-import mars.mips.hardware.RegisterFile;
+import mars.riscv.hardware.Coprocessor1;
+import mars.riscv.hardware.RegisterFile;
 
 import java.util.ArrayList;
 import java.util.Collections;

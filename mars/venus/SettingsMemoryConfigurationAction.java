@@ -1,8 +1,8 @@
 package mars.venus;
 
 import mars.Globals;
-import mars.mips.hardware.MemoryConfiguration;
-import mars.mips.hardware.MemoryConfigurations;
+import mars.riscv.hardware.MemoryConfiguration;
+import mars.riscv.hardware.MemoryConfigurations;
 import mars.simulator.Simulator;
 import mars.util.Binary;
 

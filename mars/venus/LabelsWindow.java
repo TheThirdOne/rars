@@ -4,7 +4,7 @@ import mars.Globals;
 import mars.MIPSprogram;
 import mars.assembler.Symbol;
 import mars.assembler.SymbolTable;
-import mars.mips.hardware.Memory;
+import mars.riscv.hardware.Memory;
 import mars.util.Binary;
 
 import javax.swing.*;

@@ -28,8 +28,8 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 package mars.tools;
 
 import mars.ProgramStatement;
-import mars.mips.hardware.*;
-import mars.mips.instructions.Branch;
+import mars.riscv.hardware.*;
+import mars.riscv.instructions.Branch;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;

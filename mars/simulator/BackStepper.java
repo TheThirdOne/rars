@@ -2,8 +2,8 @@ package mars.simulator;
 
 import mars.Globals;
 import mars.ProgramStatement;
-import mars.mips.hardware.RegisterFile;
-import mars.mips.instructions.Instruction;
+import mars.riscv.hardware.RegisterFile;
+import mars.riscv.Instruction;
 
 /*
 Copyright (c) 2003-2006,  Pete Sanderson and Kenneth Vollmar

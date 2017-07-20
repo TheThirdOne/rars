@@ -1,8 +1,8 @@
 package mars;
 
-import mars.mips.dump.DumpFormat;
-import mars.mips.dump.DumpFormatLoader;
-import mars.mips.hardware.*;
+import mars.riscv.dump.DumpFormat;
+import mars.riscv.dump.DumpFormatLoader;
+import mars.riscv.hardware.*;
 import mars.simulator.ProgramArgumentList;
 import mars.simulator.Simulator;
 import mars.util.Binary;

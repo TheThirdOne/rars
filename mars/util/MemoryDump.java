@@ -1,8 +1,8 @@
 package mars.util;
 
 import mars.Globals;
-import mars.mips.hardware.AddressErrorException;
-import mars.mips.hardware.Memory;
+import mars.riscv.hardware.AddressErrorException;
+import mars.riscv.hardware.Memory;
 
 	/*
 Copyright (c) 2003-2009,  Pete Sanderson and Kenneth Vollmar

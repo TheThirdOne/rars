@@ -2,7 +2,7 @@ package mars.venus;
 
 import mars.Globals;
 import mars.Settings;
-import mars.mips.dump.DumpFormatLoader;
+import mars.riscv.dump.DumpFormatLoader;
 
 import javax.swing.*;
 import java.awt.*;

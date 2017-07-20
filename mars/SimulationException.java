@@ -1,8 +1,8 @@
 package mars;
 
-import mars.mips.hardware.AddressErrorException;
-import mars.mips.hardware.RegisterFile;
-import mars.mips.instructions.Instruction;
+import mars.riscv.hardware.AddressErrorException;
+import mars.riscv.hardware.RegisterFile;
+import mars.riscv.Instruction;
 import mars.util.Binary;
 
 /**

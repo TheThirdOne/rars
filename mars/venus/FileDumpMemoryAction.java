@@ -1,10 +1,10 @@
 package mars.venus;
 
 import mars.Globals;
-import mars.mips.dump.DumpFormat;
-import mars.mips.dump.DumpFormatLoader;
-import mars.mips.hardware.AddressErrorException;
-import mars.mips.hardware.Memory;
+import mars.riscv.dump.DumpFormat;
+import mars.riscv.dump.DumpFormatLoader;
+import mars.riscv.hardware.AddressErrorException;
+import mars.riscv.hardware.Memory;
 import mars.util.Binary;
 import mars.util.MemoryDump;
 

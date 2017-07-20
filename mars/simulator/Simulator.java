@@ -1,12 +1,12 @@
 package mars.simulator;
 
 import mars.*;
-import mars.mips.hardware.AddressErrorException;
-import mars.mips.hardware.Coprocessor0;
-import mars.mips.hardware.InterruptController;
-import mars.mips.hardware.RegisterFile;
-import mars.mips.instructions.BasicInstruction;
-import mars.mips.instructions.Instruction;
+import mars.riscv.hardware.AddressErrorException;
+import mars.riscv.hardware.Coprocessor0;
+import mars.riscv.hardware.InterruptController;
+import mars.riscv.hardware.RegisterFile;
+import mars.riscv.BasicInstruction;
+import mars.riscv.Instruction;
 import mars.util.Binary;
 import mars.util.SystemIO;
 import mars.venus.RunSpeedPanel;

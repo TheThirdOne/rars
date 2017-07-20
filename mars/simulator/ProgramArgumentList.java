@@ -1,9 +1,9 @@
 package mars.simulator;
 
 import mars.Globals;
-import mars.mips.hardware.AddressErrorException;
-import mars.mips.hardware.Memory;
-import mars.mips.hardware.RegisterFile;
+import mars.riscv.hardware.AddressErrorException;
+import mars.riscv.hardware.Memory;
+import mars.riscv.hardware.RegisterFile;
 
 import java.util.ArrayList;
 import java.util.StringTokenizer;

@@ -1,9 +1,9 @@
 package mars;
 
 import mars.assembler.SymbolTable;
-import mars.mips.hardware.Memory;
-import mars.mips.instructions.InstructionSet;
-import mars.mips.instructions.syscalls.SyscallNumberOverride;
+import mars.riscv.hardware.Memory;
+import mars.riscv.InstructionSet;
+import mars.riscv.SyscallNumberOverride;
 import mars.util.PropertiesFile;
 import mars.venus.VenusUI;
 

@@ -3,7 +3,7 @@ package mars.venus;
 import mars.Globals;
 import mars.Settings;
 import mars.SimulationException;
-import mars.mips.hardware.RegisterFile;
+import mars.riscv.hardware.RegisterFile;
 import mars.simulator.ProgramArgumentList;
 import mars.simulator.Simulator;
 import mars.simulator.SimulatorNotice;

@@ -2,10 +2,10 @@ package mars.venus;
 
 import mars.Globals;
 import mars.Settings;
-import mars.mips.hardware.AccessNotice;
-import mars.mips.hardware.Coprocessor0;
-import mars.mips.hardware.Register;
-import mars.mips.hardware.RegisterAccessNotice;
+import mars.riscv.hardware.AccessNotice;
+import mars.riscv.hardware.Coprocessor0;
+import mars.riscv.hardware.Register;
+import mars.riscv.hardware.RegisterAccessNotice;
 import mars.simulator.Simulator;
 import mars.simulator.SimulatorNotice;
 import mars.util.Binary;

@@ -1,7 +1,7 @@
 package mars;
 
 import mars.assembler.*;
-import mars.mips.hardware.RegisterFile;
+import mars.riscv.hardware.RegisterFile;
 import mars.simulator.BackStepper;
 import mars.simulator.Simulator;
 

@@ -2,7 +2,7 @@ package mars.venus;
 
 import mars.Globals;
 import mars.Settings;
-import mars.mips.hardware.*;
+import mars.riscv.hardware.*;
 import mars.simulator.Simulator;
 import mars.simulator.SimulatorNotice;
 import mars.util.Binary;

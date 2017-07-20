@@ -1,9 +1,9 @@
 package mars.tools;
 
 import mars.Globals;
-import mars.mips.hardware.AccessNotice;
-import mars.mips.hardware.Coprocessor1;
-import mars.mips.hardware.Register;
+import mars.riscv.hardware.AccessNotice;
+import mars.riscv.hardware.Coprocessor1;
+import mars.riscv.hardware.Register;
 import mars.util.Binary;
 
 import javax.swing.*;
