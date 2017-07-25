@@ -401,8 +401,8 @@ public class Simulator extends Observable {
                 // Check number of instructions executed.  Return if at limit (-1 is no limit).
                 synchronized (Globals.memoryAndRegistersLock) {
                     // Handle pending interupts and traps first
-                    int uip = ControlAndStatusRegisterFile.getValue("uip"), uie = ControlAndStatusRegisterFile.getValue("uie");
-                    boolean IE = (ControlAndStatusRegisterFile.getValue("ustatus") & ControlAndStatusRegisterFile.INTERRUPT_ENABLE) != 0;
+                    int uip = ControlAndStatusRegisterFile.getValueNoNotify("uip"), uie = ControlAndStatusRegisterFile.getValueNoNotify("uie");
+                    boolean IE = (ControlAndStatusRegisterFile.getValueNoNotify("ustatus") & ControlAndStatusRegisterFile.INTERRUPT_ENABLE) != 0;
                     // make sure no interrupts sneak in while we are processing them
                     pc = RegisterFile.getProgramCounter();
                     synchronized (InterruptController.lock) {
@@ -438,7 +438,9 @@ public class Simulator extends Observable {
                         }
                         uip |= (pendingExternal ? ControlAndStatusRegisterFile.EXTERNAL_INTERRUPT : 0) | (pendingTimer ? ControlAndStatusRegisterFile.TIMER_INTERRUPT : 0);
                     }
-                    ControlAndStatusRegisterFile.updateRegister("uip", uip);
+                    if (uip != ControlAndStatusRegisterFile.getValueNoNotify("uip")) {
+                        ControlAndStatusRegisterFile.updateRegister("uip", uip);
+                    }
 
                     // always handle interrupts and traps before quiting
                     if (maxSteps > 0) {

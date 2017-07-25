@@ -149,6 +149,17 @@ public class ControlAndStatusRegisterFile {
     }
 
     /**
+     * Returns the value of the register without notifying observers
+     *
+     * @param name The register's name
+     * @return The value of the given register.  0 for non-implemented registers
+     **/
+
+    public static int getValueNoNotify(String name) {
+        return instance.getRegister(name).getValueNoNotify();
+    }
+
+    /**
      * For returning the set of registers.
      *
      * @return The set of registers.
