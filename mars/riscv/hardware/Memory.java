@@ -94,14 +94,6 @@ public class Memory extends Observable {
      **/
     public static int kernelBaseAddress = MemoryConfigurations.getDefaultKernelBaseAddress(); //0x80000000;
     /**
-     * base address for kernel text segment: 0x80000000
-     **/
-    public static int kernelTextBaseAddress = MemoryConfigurations.getDefaultKernelTextBaseAddress(); //0x80000000;
-    /**
-     * base address for kernel data segment: 0x90000000
-     **/
-    public static int kernelDataBaseAddress = MemoryConfigurations.getDefaultKernelDataBaseAddress(); //0x90000000;
-    /**
      * starting address for memory mapped I/O: 0xffff0000 (-65536)
      **/
     public static int memoryMapBaseAddress = MemoryConfigurations.getDefaultMemoryMapBaseAddress(); //0xffff0000;
@@ -173,7 +165,6 @@ public class Memory extends Observable {
     private static final int BLOCK_LENGTH_WORDS = 1024;  // allocated blocksize 1024 ints == 4K bytes
     private static final int BLOCK_TABLE_LENGTH = 1024; // Each entry of table points to a block.
     private int[][] dataBlockTable;
-    private int[][] kernelDataBlockTable;
 
     // The stack is modeled similarly to the data segment.  It cannot share the same
     // data structure because the stack base address is very large.  To store it in the
@@ -214,7 +205,6 @@ public class Memory extends Observable {
     private static final int TEXT_BLOCK_LENGTH_WORDS = 1024;  // allocated blocksize 1024 ints == 4K bytes
     private static final int TEXT_BLOCK_TABLE_LENGTH = 1024; // Each entry of table points to a block.
     private ProgramStatement[][] textBlockTable;
-    private ProgramStatement[][] kernelTextBlockTable;
 
     // Set "top" address boundary to go with each "base" address.  This determines permissable
     // address range for user program.  Currently limit is 4MB, or 1024 * 1024 * 4 bytes based
@@ -223,10 +213,6 @@ public class Memory extends Observable {
     public static int dataSegmentLimitAddress = dataSegmentBaseAddress +
             BLOCK_LENGTH_WORDS * BLOCK_TABLE_LENGTH * WORD_LENGTH_BYTES;
     public static int textLimitAddress = textBaseAddress +
-            TEXT_BLOCK_LENGTH_WORDS * TEXT_BLOCK_TABLE_LENGTH * WORD_LENGTH_BYTES;
-    public static int kernelDataSegmentLimitAddress = kernelDataBaseAddress +
-            BLOCK_LENGTH_WORDS * BLOCK_TABLE_LENGTH * WORD_LENGTH_BYTES;
-    public static int kernelTextLimitAddress = kernelTextBaseAddress +
             TEXT_BLOCK_LENGTH_WORDS * TEXT_BLOCK_TABLE_LENGTH * WORD_LENGTH_BYTES;
     public static int stackLimitAddress = stackBaseAddress -
             BLOCK_LENGTH_WORDS * BLOCK_TABLE_LENGTH * WORD_LENGTH_BYTES;
@@ -281,8 +267,6 @@ public class Memory extends Observable {
         stackBaseAddress = MemoryConfigurations.getCurrentConfiguration().getStackBaseAddress(); //0x7ffffffc;
         userHighAddress = MemoryConfigurations.getCurrentConfiguration().getUserHighAddress(); //0x7fffffff;
         kernelBaseAddress = MemoryConfigurations.getCurrentConfiguration().getKernelBaseAddress(); //0x80000000;
-        kernelTextBaseAddress = MemoryConfigurations.getCurrentConfiguration().getKernelTextBaseAddress(); //0x80000000;
-        kernelDataBaseAddress = MemoryConfigurations.getCurrentConfiguration().getKernelDataBaseAddress(); //0x90000000;
         memoryMapBaseAddress = MemoryConfigurations.getCurrentConfiguration().getMemoryMapBaseAddress(); //0xffff0000;
         kernelHighAddress = MemoryConfigurations.getCurrentConfiguration().getKernelHighAddress(); //0xffffffff;
         dataSegmentLimitAddress = Math.min(MemoryConfigurations.getCurrentConfiguration().getDataSegmentLimitAddress(),
@@ -291,25 +275,12 @@ public class Memory extends Observable {
         textLimitAddress = Math.min(MemoryConfigurations.getCurrentConfiguration().getTextLimitAddress(),
                 textBaseAddress +
                         TEXT_BLOCK_LENGTH_WORDS * TEXT_BLOCK_TABLE_LENGTH * WORD_LENGTH_BYTES);
-        kernelDataSegmentLimitAddress = Math.min(MemoryConfigurations.getCurrentConfiguration().getKernelDataSegmentLimitAddress(),
-                kernelDataBaseAddress +
-                        BLOCK_LENGTH_WORDS * BLOCK_TABLE_LENGTH * WORD_LENGTH_BYTES);
-        kernelTextLimitAddress = Math.min(MemoryConfigurations.getCurrentConfiguration().getKernelTextLimitAddress(),
-                kernelTextBaseAddress +
-                        TEXT_BLOCK_LENGTH_WORDS * TEXT_BLOCK_TABLE_LENGTH * WORD_LENGTH_BYTES);
         stackLimitAddress = Math.max(MemoryConfigurations.getCurrentConfiguration().getStackLimitAddress(),
                 stackBaseAddress -
                         BLOCK_LENGTH_WORDS * BLOCK_TABLE_LENGTH * WORD_LENGTH_BYTES);
         memoryMapLimitAddress = Math.min(MemoryConfigurations.getCurrentConfiguration().getMemoryMapLimitAddress(),
                 memoryMapBaseAddress +
                         BLOCK_LENGTH_WORDS * MMIO_TABLE_LENGTH * WORD_LENGTH_BYTES);
-      /*	System.out.println("dataSegmentLimitAddress "+Binary.intToHexString(dataSegmentLimitAddress));
-          System.out.println("textLimitAddress "+Binary.intToHexString(textLimitAddress));
-      	System.out.println("kernelDataSegmentLimitAddress "+Binary.intToHexString(kernelDataSegmentLimitAddress));
-      	System.out.println("kernelTextLimitAddress "+Binary.intToHexString(kernelTextLimitAddress));
-      	System.out.println("stackLimitAddress "+Binary.intToHexString(stackLimitAddress));
-      	System.out.println("memoryMapLimitAddress "+Binary.intToHexString(memoryMapLimitAddress));
-      */
     }
 
 
@@ -328,8 +299,6 @@ public class Memory extends Observable {
         heapAddress = heapBaseAddress;
         textBlockTable = new ProgramStatement[TEXT_BLOCK_TABLE_LENGTH][];
         dataBlockTable = new int[BLOCK_TABLE_LENGTH][]; // array of null int[] references
-        kernelTextBlockTable = new ProgramStatement[TEXT_BLOCK_TABLE_LENGTH][];
-        kernelDataBlockTable = new int[BLOCK_TABLE_LENGTH][];
         stackBlockTable = new int[BLOCK_TABLE_LENGTH][];
         memoryMapBlockTable = new int[MMIO_TABLE_LENGTH][];
         System.gc(); // call garbage collector on any Table memory just deallocated.
@@ -429,15 +398,6 @@ public class Memory extends Observable {
             // memory mapped I/O.
             relativeByteAddress = address - memoryMapBaseAddress;
             oldValue = storeBytesInTable(memoryMapBlockTable, relativeByteAddress, length, value);
-        } else if (inKernelDataSegment(address)) {
-            // in kernel data segment.  Will write one byte at a time, w/o regard to boundaries.
-            relativeByteAddress = address - kernelDataBaseAddress; // relative to data segment start, in bytes
-            oldValue = storeBytesInTable(kernelDataBlockTable, relativeByteAddress, length, value);
-        } else if (inKernelTextSegment(address)) {
-            // DEVELOPER: PLEASE USE setStatement() TO WRITE TO KERNEL TEXT SEGMENT...
-            throw new AddressErrorException(
-                    "DEVELOPER: You must use setStatement() to write to kernel text segment!",
-                    Exceptions.STORE_ACCESS_FAULT, address);
         } else {
             // falls outside Mars addressing range
             throw new AddressErrorException("address out of range ",
@@ -489,15 +449,6 @@ public class Memory extends Observable {
             // memory mapped I/O.
             relative = (address - memoryMapBaseAddress) >> 2; // convert byte address to word
             oldValue = storeWordInTable(memoryMapBlockTable, relative, value);
-        } else if (inKernelDataSegment(address)) {
-            // in data segment
-            relative = (address - kernelDataBaseAddress) >> 2; // convert byte address to words
-            oldValue = storeWordInTable(kernelDataBlockTable, relative, value);
-        } else if (inKernelTextSegment(address)) {
-            // DEVELOPER: PLEASE USE setStatement() TO WRITE TO KERNEL TEXT SEGMENT...
-            throw new AddressErrorException(
-                    "DEVELOPER: You must use setStatement() to write to kernel text segment!",
-                    Exceptions.STORE_ACCESS_FAULT, address);
         } else {
             // falls outside Mars addressing range
             throw new AddressErrorException("store address out of range ",
@@ -600,17 +551,13 @@ public class Memory extends Observable {
 
     public void setStatement(int address, ProgramStatement statement) throws AddressErrorException {
         checkStoreWordAligned(address);
-        if (!(inTextSegment(address) || inKernelTextSegment(address))) {
+        if (!inTextSegment(address)) {
             throw new AddressErrorException(
                     "Store address to text segment out of range",
                     Exceptions.STORE_ACCESS_FAULT, address);
         }
         if (Globals.debug) System.out.println("memory[" + address + "] set to " + statement.getBinaryStatement());
-        if (inTextSegment(address)) {
-            storeProgramStatement(address, statement, textBaseAddress, textBlockTable);
-        } else {
-            storeProgramStatement(address, statement, kernelTextBaseAddress, kernelTextBlockTable);
-        }
+        storeProgramStatement(address, statement, textBaseAddress, textBlockTable);
     }
 
 
@@ -659,15 +606,6 @@ public class Memory extends Observable {
                         "Cannot read directly from text segment!",
                         Exceptions.LOAD_ACCESS_FAULT, address);
             }
-        } else if (inKernelDataSegment(address)) {
-            // in kernel data segment.  Will read one byte at a time, w/o regard to boundaries.
-            relativeByteAddress = address - kernelDataBaseAddress; // relative to data segment start, in bytes
-            value = fetchBytesFromTable(kernelDataBlockTable, relativeByteAddress, length);
-        } else if (inKernelTextSegment(address)) {
-            // DEVELOPER: PLEASE USE getStatement() TO READ FROM KERNEL TEXT SEGMENT...
-            throw new AddressErrorException(
-                    "DEVELOPER: You must use getStatement() to read from kernel text segment!",
-                    Exceptions.LOAD_ACCESS_FAULT, address);
         } else {
             // falls outside Mars addressing range
             throw new AddressErrorException("address out of range ",
@@ -722,15 +660,6 @@ public class Memory extends Observable {
                         "Cannot read directly from text segment!",
                         Exceptions.LOAD_ACCESS_FAULT, address);
             }
-        } else if (inKernelDataSegment(address)) {
-            // in kernel data segment
-            relative = (address - kernelDataBaseAddress) >> 2; // convert byte address to words
-            value = fetchWordFromTable(kernelDataBlockTable, relative);
-        } else if (inKernelTextSegment(address)) {
-            // DEVELOPER: PLEASE USE getStatement() TO READ FROM KERNEL TEXT SEGMENT...
-            throw new AddressErrorException(
-                    "DEVELOPER: You must use getStatement() to read from kernel text segment!",
-                    Exceptions.LOAD_ACCESS_FAULT, address);
         } else {
             // falls outside Mars addressing range
             throw new AddressErrorException("address out of range ",
@@ -774,16 +703,12 @@ public class Memory extends Observable {
             // in stack. Similar to data, except relative address computed "backward"
             relative = (stackBaseAddress - address) >> 2; // convert byte address to words
             value = fetchWordOrNullFromTable(stackBlockTable, relative);
-        } else if (inTextSegment(address) || inKernelTextSegment(address)) {
+        } else if (inTextSegment(address)) {
             try {
                 value = (getStatementNoNotify(address) == null) ? null : getStatementNoNotify(address).getBinaryStatement();
             } catch (AddressErrorException aee) {
                 value = null;
             }
-        } else if (inKernelDataSegment(address)) {
-            // in kernel data segment
-            relative = (address - kernelDataBaseAddress) >> 2; // convert byte address to words
-            value = fetchWordOrNullFromTable(kernelDataBlockTable, relative);
         } else {
             // falls outside Mars addressing range
             throw new AddressErrorException("address out of range ", Exceptions.LOAD_ACCESS_FAULT, address);
@@ -912,15 +837,13 @@ public class Memory extends Observable {
     private ProgramStatement getStatement(int address, boolean notify) throws AddressErrorException {
         checkLoadWordAligned(address);
         if (!Globals.getSettings().getBooleanSetting(Settings.Bool.SELF_MODIFYING_CODE_ENABLED)
-                && !(inTextSegment(address) || inKernelTextSegment(address))) {
+                && !inTextSegment(address)) {
             throw new AddressErrorException(
                     "fetch address for text segment out of range ",
                     Exceptions.LOAD_ACCESS_FAULT, address);
         }
         if (inTextSegment(address))
             return readProgramStatement(address, textBaseAddress, textBlockTable, notify);
-        else if (inKernelTextSegment(address))
-            return readProgramStatement(address, kernelTextBaseAddress, kernelTextBlockTable, notify);
         else
             return new ProgramStatement(get(address, WORD_LENGTH_BYTES), address);
     }
@@ -980,18 +903,6 @@ public class Memory extends Observable {
     }
 
     /**
-     * Handy little utility to find out if given address is in MARS kernel
-     * text segment (starts at Memory.kernelTextBaseAddress).
-     *
-     * @param address integer memory address
-     * @return true if that address is within MARS-defined kernel text segment,
-     * false otherwise.
-     */
-    public static boolean inKernelTextSegment(int address) {
-        return address >= kernelTextBaseAddress && address < kernelTextLimitAddress;
-    }
-
-    /**
      * Handy little utility to find out if given address is in MARS data
      * segment (starts at Memory.dataSegmentBaseAddress).
      * Note that MARS does not implement the entire MIPS data segment space,
@@ -1004,19 +915,6 @@ public class Memory extends Observable {
     public static boolean inDataSegment(int address) {
         return address >= dataSegmentBaseAddress && address < dataSegmentLimitAddress;
     }
-
-    /**
-     * Handy little utility to find out if given address is in MARS kernel data
-     * segment (starts at Memory.kernelDataSegmentBaseAddress).
-     *
-     * @param address integer memory address
-     * @return true if that address is within MARS-defined kernel data segment,
-     * false otherwise.
-     */
-    public static boolean inKernelDataSegment(int address) {
-        return address >= kernelDataBaseAddress && address < kernelDataSegmentLimitAddress;
-    }
-
 
     /**
      * Handy little utility to find out if given address is in the Memory Map area
@@ -1393,11 +1291,16 @@ public class Memory extends Observable {
     }
 
 
-    ///////////////////////////////////////////////////////////////////////
-    // Read a program statement from the given address.  Address has already been verified
-    // as valid.  It may be either in user or kernel text segment, as specified by arguments.
-    // Returns associated ProgramStatement or null if none.
-    // Last parameter controls whether or not observers will be notified.
+    /**
+     * Read a program statement from the given address.  Address has already been verified
+     * as valid.
+     *
+     * @param address     the address to read from
+     * @param baseAddress the base address for the section being read from (.text)
+     * @param blockTable  the internal table of program statements
+     * @param notify      whether or not it notifies observers
+     * @return associated ProgramStatement or null if none.
+     */
     private ProgramStatement readProgramStatement(int address, int baseAddress, ProgramStatement[][] blockTable, boolean notify) {
         int relative = (address - baseAddress) >> 2; // convert byte address to words
         int block = relative / TEXT_BLOCK_LENGTH_WORDS;

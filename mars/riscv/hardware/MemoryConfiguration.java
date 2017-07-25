@@ -41,6 +41,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
 public class MemoryConfiguration {
+    // TODO: move away from a multi-array approach to array of ranges approach
     // Identifier is used for saving setting; name is used for display
     private String configurationIdentifier, configurationName;
     private String[] configurationItemNames;
@@ -110,48 +111,28 @@ public class MemoryConfiguration {
         return configurationItemValues[9];
     }
 
-    public int getKernelTextBaseAddress() {
+    public int getMemoryMapBaseAddress() {
         return configurationItemValues[10];
     }
 
-    public int getExceptionHandlerAddress() {
+    public int getKernelHighAddress() {
         return configurationItemValues[11];
     }
 
-    public int getKernelDataBaseAddress() {
+    public int getDataSegmentLimitAddress() {
         return configurationItemValues[12];
     }
 
-    public int getMemoryMapBaseAddress() {
+    public int getTextLimitAddress() {
         return configurationItemValues[13];
     }
 
-    public int getKernelHighAddress() {
+    public int getStackLimitAddress() {
         return configurationItemValues[14];
     }
 
-    public int getDataSegmentLimitAddress() {
-        return configurationItemValues[15];
-    }
-
-    public int getTextLimitAddress() {
-        return configurationItemValues[16];
-    }
-
-    public int getKernelDataSegmentLimitAddress() {
-        return configurationItemValues[17];
-    }
-
-    public int getKernelTextLimitAddress() {
-        return configurationItemValues[18];
-    }
-
-    public int getStackLimitAddress() {
-        return configurationItemValues[19];
-    }
-
     public int getMemoryMapLimitAddress() {
-        return configurationItemValues[20];
+        return configurationItemValues[15];
     }
 
 }

@@ -277,7 +277,7 @@ public class LabelsWindow extends JInternalFrame {
                 // Cannot happen because table contains only strings.
             }
             // Scroll to this address, either in Text Segment display or Data Segment display
-            if (Memory.inTextSegment(address) || Memory.inKernelTextSegment(address)) {
+            if (Memory.inTextSegment(address)) {
                 Globals.getGui().getMainPane().getExecutePane().getTextSegmentWindow().selectStepAtAddress(address);
             } else {
                 Globals.getGui().getMainPane().getExecutePane().getDataSegmentWindow().selectCellForAddress(address);

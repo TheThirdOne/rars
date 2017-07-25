@@ -55,8 +55,6 @@ public final class Directives {
     public static final Directives DOUBLE = new Directives(".double", "Store the listed value(s) as double precision floating point");
     public static final Directives FLOAT = new Directives(".float", "Store the listed value(s) as single precision floating point");
     public static final Directives EXTERN = new Directives(".extern", "Declare the listed label and byte length to be a global data field");
-    public static final Directives KDATA = new Directives(".kdata", "Subsequent items stored in Kernel Data segment at next available address");
-    public static final Directives KTEXT = new Directives(".ktext", "Subsequent items (instructions) stored in Kernel Text segment at next available address");
     public static final Directives GLOBL = new Directives(".globl", "Declare the listed label(s) as global to enable referencing from other files");
     public static final Directives SET = new Directives(".set", "Set assembler variables.  Currently ignored but included for SPIM compatability");
     /*  EQV added by DPS 11 July 2012 */

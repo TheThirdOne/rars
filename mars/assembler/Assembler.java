@@ -59,8 +59,8 @@ public class Assembler {
     private Directives dataDirective;
     private RISCVprogram fileCurrentlyBeingAssembled;
     private TokenList globalDeclarationList;
-    private UserKernelAddressSpace textAddress;
-    private UserKernelAddressSpace dataAddress;
+    private AddressSpace textAddress;
+    private AddressSpace dataAddress;
     private DataSegmentForwardReferences currentFileDataSegmentForwardReferences,
             accumulatedDataSegmentForwardReferences;
 
@@ -97,10 +97,8 @@ public class Assembler {
 
         if (tokenizedProgramFiles == null || tokenizedProgramFiles.size() == 0)
             return null;
-        textAddress = new UserKernelAddressSpace(Memory.textBaseAddress,
-                Memory.kernelTextBaseAddress);
-        dataAddress = new UserKernelAddressSpace(Memory.dataBaseAddress,
-                Memory.kernelDataBaseAddress);
+        textAddress = new AddressSpace(Memory.textBaseAddress);
+        dataAddress = new AddressSpace(Memory.dataBaseAddress);
         externAddress = Memory.externBaseAddress;
         currentFileDataSegmentForwardReferences = new DataSegmentForwardReferences();
         accumulatedDataSegmentForwardReferences = new DataSegmentForwardReferences();
@@ -647,18 +645,14 @@ public class Assembler {
         } else if (inMacroSegment) {
             // should not parse lines even directives in macro segment
             return;
-        } else if (direct == Directives.DATA || direct == Directives.KDATA) {
+        } else if (direct == Directives.DATA) {
             this.inDataSegment = true;
             this.autoAlign = true;
-            this.dataAddress.setAddressSpace((direct == Directives.DATA) ? this.dataAddress.USER
-                    : this.dataAddress.KERNEL);
             if (tokens.size() > 1 && TokenTypes.isIntegerTokenType(tokens.get(1).getType())) {
                 this.dataAddress.set(Binary.stringToInt(tokens.get(1).getValue())); // KENV 1/6/05
             }
-        } else if (direct == Directives.TEXT || direct == Directives.KTEXT) {
+        } else if (direct == Directives.TEXT) {
             this.inDataSegment = false;
-            this.textAddress.setAddressSpace((direct == Directives.TEXT) ? this.textAddress.USER
-                    : this.textAddress.KERNEL);
             if (tokens.size() > 1 && TokenTypes.isIntegerTokenType(tokens.get(1).getType())) {
                 this.textAddress.set(Binary.stringToInt(tokens.get(1).getValue())); // KENV 1/6/05
             }
@@ -1205,41 +1199,25 @@ public class Assembler {
         }
     }
 
-    // ///////////////////////////////////////////////////////////////////////////////////
-    // Private class to simultaneously track addresses in both user and kernel
-    // address spaces.
-    // Instantiate one for data segment and one for text segment.
-    private class UserKernelAddressSpace {
-        int[] address;
-        int currentAddressSpace;
-        private final int USER = 0, KERNEL = 1;
+    // Private wrapper around an int; used to be more complicated
+    // TODO: evaluate if it makes sense to keep this
+    private class AddressSpace {
+        int address;
 
-        // Initially use user address space, not kernel.
-        private UserKernelAddressSpace(int userBase, int kernelBase) {
-            address = new int[2];
-            address[USER] = userBase;
-            address[KERNEL] = kernelBase;
-            currentAddressSpace = USER;
+        private AddressSpace(int userBase) {
+            address = userBase;
         }
 
         private int get() {
-            return address[currentAddressSpace];
+            return address;
         }
 
         private void set(int value) {
-            address[currentAddressSpace] = value;
+            address = value;
         }
 
         private void increment(int increment) {
-            address[currentAddressSpace] += increment;
-        }
-
-        private void setAddressSpace(int addressSpace) {
-            if (addressSpace == USER || addressSpace == KERNEL) {
-                currentAddressSpace = addressSpace;
-            } else {
-                throw new IllegalArgumentException();
-            }
+            address += increment;
         }
     }
 

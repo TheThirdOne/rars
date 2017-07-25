@@ -680,7 +680,7 @@ public class MarsLaunch {
                 }
                 try {
                     // Allow display of binary text segment (machine code) DPS 14-July-2008
-                    if (Memory.inTextSegment(addr) || Memory.inKernelTextSegment(addr)) {
+                    if (Memory.inTextSegment(addr)) {
                         Integer iValue = Globals.memory.getRawWordOrNull(addr);
                         value = (iValue == null) ? 0 : iValue;
                     } else {

@@ -207,7 +207,6 @@ public class KeyboardAndDisplaySimulator extends AbstractMarsToolAndApplication 
         // this too.  This simulates the time required for the display unit to process the
         // TRANSMITTER_DATA.
         addAsObserver(Memory.textBaseAddress, Memory.textLimitAddress);
-        addAsObserver(Memory.kernelTextBaseAddress, Memory.kernelTextLimitAddress);
     }
 
 
@@ -275,8 +274,7 @@ public class KeyboardAndDisplaySimulator extends AbstractMarsToolAndApplication 
         // can write another character to the transmitter data register.  If the Interrupt-Enabled
         // bit had been set by the MIPS program, generate an interrupt!
         if (this.countingInstructions &&
-                notice.getAccessType() == AccessNotice.READ &&
-                (Memory.inTextSegment(notice.getAddress()) || Memory.inKernelTextSegment(notice.getAddress()))) {
+                notice.getAccessType() == AccessNotice.READ && Memory.inTextSegment(notice.getAddress())) {
             this.instructionCount++;
             if (this.instructionCount >= this.transmitDelayInstructionCountLimit) {
                 if (displayAfterDelay) displayCharacter(intWithCharacterToDisplay);
