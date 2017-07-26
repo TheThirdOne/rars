@@ -2,7 +2,7 @@
 .globl  main
 .data
 template:
-	.string "% bottles of beer of the wall. % bottles of beer. Take one down pass it around. % bottles of beer on the wall\n"
+	.string "%d bottles of beer of the wall. %d bottles of beer. Take one down pass it around. %d bottles of beer on the wall\n"
 
 .text
 main:
