@@ -20,15 +20,7 @@ main:
 	la a1, error 
 not_error:
 
-	# Compute the length of the string
-	jal strlen
-	ebreak
-
-	# Write (64) the recieved CWD to stdout (1)
-	mv a2, a0 # the length strlen computed
-        li a0, 1
-        li a7, 64
-        ecall
+	jal printStr
        	
        	# Store a newline in the buffer to print
        	la a1, buf

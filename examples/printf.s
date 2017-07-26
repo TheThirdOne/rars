@@ -54,9 +54,15 @@ outputArg:
 	beq t0, t1,  outputNum
 	li t1, 0x78 # 'x'
 	beq t0, t1, outputHex
+	li t1, 0x73 # 's'
+	beq t0, t1, outputStr
 	# Exit if the character following if not d or x
 	mv t0, s0
 	j done
+outputStr:
+	mv a0, s1
+	call printStr
+	j noOutput
 outputHex:
 	mv a0, s1
 	call printHex
@@ -64,6 +70,8 @@ outputHex:
 outputNum:
         mv a0, s1
         call printDec
+
+
 noOutput:
 	# Shift arguments down 
 	mv s1, s2
