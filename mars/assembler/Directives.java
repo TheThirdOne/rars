@@ -47,7 +47,8 @@ public final class Directives {
     public static final Directives TEXT = new Directives(".text", "Subsequent items (instructions) stored in Text segment at next available address");
     public static final Directives WORD = new Directives(".word", "Store the listed value(s) as 32 bit words on word boundary");
     public static final Directives ASCII = new Directives(".ascii", "Store the string in the Data segment but do not add null terminator");
-    public static final Directives ASCIIZ = new Directives(".asciiz", "Store the string in the Data segment and add null terminator");
+    public static final Directives ASCIZ = new Directives(".asciz", "Store the string in the Data segment and add null terminator");
+    public static final Directives STRING = new Directives(".string", "Alias for .asciz");
     public static final Directives BYTE = new Directives(".byte", "Store the listed value(s) as 8 bit bytes");
     public static final Directives ALIGN = new Directives(".align", "Align next data item on specified byte boundary (0=byte, 1=half, 2=word, 3=double)");
     public static final Directives HALF = new Directives(".half", "Store the listed value(s) as 16 bit halfwords on halfword boundary");
@@ -58,7 +59,6 @@ public final class Directives {
     public static final Directives KDATA = new Directives(".kdata", "Subsequent items stored in Kernel Data segment at next available address");
     public static final Directives KTEXT = new Directives(".ktext", "Subsequent items (instructions) stored in Kernel Text segment at next available address");
     public static final Directives GLOBL = new Directives(".globl", "Declare the listed label(s) as global to enable referencing from other files");
-    public static final Directives SET = new Directives(".set", "Set assembler variables.  Currently ignored but included for SPIM compatability");
     /*  EQV added by DPS 11 July 2012 */
     public static final Directives EQV = new Directives(".eqv", "Substitute second operand for first. First operand is symbol, second operand is expression (like #define)");
     /* MACRO and END_MACRO added by Mohammad Sekhavat Oct 2012 */

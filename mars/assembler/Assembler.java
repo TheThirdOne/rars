@@ -670,7 +670,7 @@ public class Assembler {
                 // 11/20/06, added text segment prohibition
                 storeNumeric(tokens, direct, errors);
             }
-        } else if (direct == Directives.ASCII || direct == Directives.ASCIIZ) {
+        } else if (direct == Directives.ASCII || direct == Directives.ASCIZ || direct == Directives.STRING) {
             this.dataDirective = direct;
             if (passesDataSegmentCheck(token)) {
                 storeStrings(tokens, direct, errors);
@@ -699,6 +699,8 @@ public class Assembler {
                 }
             }
         } else if (direct == Directives.SPACE) {
+            // TODO: add a fill type option
+            // .space 90, 1 should fill memory with 90 bytes with the values 1
             if (passesDataSegmentCheck(token)) {
                 if (tokens.size() != 2) {
                     errors.add(new ErrorMessage(token.getSourceProgram(),
@@ -737,10 +739,6 @@ public class Assembler {
                         Symbol.DATA_SYMBOL, errors);
                 this.externAddress += size;
             }
-        } else if (direct == Directives.SET) {
-            errors.add(new ErrorMessage(ErrorMessage.WARNING, token.getSourceProgram(), token
-                    .getSourceLine(), token.getStartPos(),
-                    "MARS currently ignores the .set directive."));
         } else if (direct == Directives.GLOBL) {
             if (tokens.size() < 2) {
                 errors.add(new ErrorMessage(token.getSourceProgram(), token.getSourceLine(),
@@ -806,7 +804,7 @@ public class Assembler {
             if (tokens.size() > 0) {
                 storeNumeric(tokens, direct, errors);
             }
-        } else if (direct == Directives.ASCII || direct == Directives.ASCIIZ) {
+        } else if (direct == Directives.ASCII || direct == Directives.ASCIZ || direct == Directives.STRING) {
             if (passesDataSegmentCheck(tokens.get(0))) {
                 storeStrings(tokens, direct, errors);
             }
@@ -1051,7 +1049,7 @@ public class Assembler {
     } // storeRealNumber
 
     // //////////////////////////////////////////////////////////////////////////////////
-    // Use directive argument to distinguish between ASCII and ASCIIZ. The
+    // Use directive argument to distinguish between ASCII and ASCIZ. The
     // latter stores a terminating null byte. Can handle a list of one or more
     // strings on a single line.
     private void storeStrings(TokenList tokens, Directives direct, ErrorList errors) {
@@ -1119,7 +1117,7 @@ public class Assembler {
                     }
                     this.dataAddress.increment(DataTypes.CHAR_SIZE);
                 }
-                if (direct == Directives.ASCIIZ) {
+                if (direct == Directives.ASCIZ || direct == Directives.STRING) {
                     try {
                         Globals.memory.set(this.dataAddress.get(), 0, DataTypes.CHAR_SIZE);
                     } catch (AddressErrorException e) {

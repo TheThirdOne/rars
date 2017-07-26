@@ -1,7 +1,7 @@
 .globl main
 .data 
 errMsg:
-.asciiz "You must include at least one argument\n"
+.asciz "You must include at least one argument\n"
 buf:
 .space 512
 
