@@ -78,10 +78,14 @@ public class Settings extends Observable {
          */
         ASSEMBLE_ON_OPEN("AssembleOnOpen", false),
         /**
-         * Flag to determine whether only the current editor source file (enabled false) or
-         * all files in its directory (enabled false) will be assembled when assembly is selected.
+         *  Flag to determine whether all files open currently source file will be assembled when assembly is selected.
+         */
+        ASSEMBLE_OPEN("AssembleOpen", false),
+        /**
+         * Flag to determine whether files in the directory of the current source file will be assembled when assembly is selected.
          */
         ASSEMBLE_ALL("AssembleAll", false),
+
         /**
          * Default visibilty of label window (symbol table).  Default only, dynamic status
          * maintained by ExecutePane

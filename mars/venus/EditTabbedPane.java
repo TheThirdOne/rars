@@ -440,7 +440,15 @@ public class EditTabbedPane extends JTabbedPane {
         return result;
     }
 
-
+    // TODO: this is too much of a hack, there needs to be a better way
+    public String[] getOpenFilePaths() {
+        int tabCount = getTabCount();
+        String[] tabs = new String[tabCount];
+        for (int i = 0; i < tabCount; i++) {
+            tabs[i] = ((EditPane) getComponentAt(i)).getPathname();
+        }
+        return tabs;
+    }
     /**
      * Remove the pane and update menu status
      */

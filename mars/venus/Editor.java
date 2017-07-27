@@ -73,6 +73,11 @@ public class Editor {
         currentSaveDirectory = defaultSaveDirectory;
     }
 
+    // TODO: this doesn't really fit here, it doesn't interact with the GUI
+    public String[] getOpenFilePaths() {
+        return editTabbedPane.getOpenFilePaths();
+    }
+
     /**
      * Set associated EditTabbedPane.  This is container for any/all open files.
      *

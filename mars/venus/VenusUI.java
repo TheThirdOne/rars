@@ -78,8 +78,8 @@ public class VenusUI extends JFrame {
     private JMenuItem editUndo, editRedo, editCut, editCopy, editPaste, editFindReplace, editSelectAll;
     private JMenuItem runGo, runStep, runBackstep, runReset, runAssemble, runStop, runPause, runClearBreakpoints, runToggleBreakpoints;
     private JCheckBoxMenuItem settingsLabel, settingsPopupInput, settingsValueDisplayBase, settingsAddressDisplayBase,
-            settingsExtended, settingsAssembleOnOpen, settingsAssembleAll, settingsWarningsAreErrors, settingsStartAtMain,
-            settingsProgramArguments, settingsSelfModifyingCode;
+            settingsExtended, settingsAssembleOnOpen, settingsAssembleAll, settingsAssembleOpen, settingsWarningsAreErrors,
+            settingsStartAtMain, settingsProgramArguments, settingsSelfModifyingCode;
     private JMenuItem settingsExceptionHandler, settingsEditor, settingsHighlighting, settingsMemoryConfiguration;
     private JMenuItem helpHelp, helpAbout;
 
@@ -101,7 +101,7 @@ public class VenusUI extends JFrame {
     private Action runAssembleAction, runGoAction, runStepAction, runBackstepAction, runResetAction,
             runStopAction, runPauseAction, runClearBreakpointsAction, runToggleBreakpointsAction;
     private Action settingsLabelAction, settingsPopupInputAction, settingsValueDisplayBaseAction, settingsAddressDisplayBaseAction,
-            settingsExtendedAction, settingsAssembleOnOpenAction, settingsAssembleAllAction,
+            settingsExtendedAction, settingsAssembleOnOpenAction, settingsAssembleOpenAction, settingsAssembleAllAction,
             settingsWarningsAreErrorsAction, settingsStartAtMainAction, settingsProgramArgumentsAction,
             settingsExceptionHandlerAction, settingsEditorAction,
             settingsHighlightingAction, settingsMemoryConfigurationAction, settingsSelfModifyingCodeAction;
@@ -400,6 +400,9 @@ public class VenusUI extends JFrame {
             settingsAssembleAllAction = new SettingsAction("Assemble all files in directory",
                     "If set, all files in current directory will be assembled when Assemble operation is selected.",
                     mainUI, Settings.Bool.ASSEMBLE_ALL);
+            settingsAssembleOpenAction = new SettingsAction("Assemble all files currently open",
+                    "If set, all files currently open for editing will be assembled when Assemble operation is selected.",
+                    mainUI, Settings.Bool.ASSEMBLE_OPEN);
             settingsWarningsAreErrorsAction = new SettingsAction("Assembler warnings are considered errors",
                     "If set, assembler warnings will be interpreted as errors and prevent successful assembly.",
                     mainUI, Settings.Bool.WARNINGS_ARE_ERRORS);
@@ -590,6 +593,8 @@ public class VenusUI extends JFrame {
         settingsAssembleOnOpen.setSelected(Globals.getSettings().getBooleanSetting(Settings.Bool.ASSEMBLE_ON_OPEN));
         settingsAssembleAll = new JCheckBoxMenuItem(settingsAssembleAllAction);
         settingsAssembleAll.setSelected(Globals.getSettings().getBooleanSetting(Settings.Bool.ASSEMBLE_ALL));
+        settingsAssembleOpen = new JCheckBoxMenuItem(settingsAssembleOpenAction);
+        settingsAssembleOpen.setSelected(Globals.getSettings().getBooleanSetting(Settings.Bool.ASSEMBLE_OPEN));
         settingsWarningsAreErrors = new JCheckBoxMenuItem(settingsWarningsAreErrorsAction);
         settingsWarningsAreErrors.setSelected(Globals.getSettings().getBooleanSetting(Settings.Bool.WARNINGS_ARE_ERRORS));
         settingsStartAtMain = new JCheckBoxMenuItem(settingsStartAtMainAction);
@@ -609,6 +614,7 @@ public class VenusUI extends JFrame {
         settings.addSeparator();
         settings.add(settingsAssembleOnOpen);
         settings.add(settingsAssembleAll);
+        settings.add(settingsAssembleOpen);
         settings.add(settingsWarningsAreErrors);
         settings.add(settingsStartAtMain);
         settings.addSeparator();
