@@ -9,10 +9,7 @@ import mars.venus.settings.*;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 import java.net.URL;
 
 /*
@@ -369,62 +366,61 @@ public class VenusUI extends JFrame {
                     KeyEvent.VK_T,
                     KeyStroke.getKeyStroke(KeyEvent.VK_T, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),
                     mainUI);
-            settingsLabelAction = new SettingsLabelAction("Show Labels Window (symbol table)",
-                    null,
+            settingsLabelAction = new SettingsAction("Show Labels Window (symbol table)",
                     "Toggle visibility of Labels window (symbol table) in the Execute tab",
-                    null, null,
-                    mainUI);
-            settingsPopupInputAction = new SettingsPopupInputAction("Popup dialog for input syscalls (5,6,7,8,12)",
-                    null,
+                    mainUI, Settings.Bool.LABEL_WINDOW_VISIBILITY) {
+                public void handler(boolean visibility) {
+                    Globals.getGui().getMainPane().getExecutePane().setLabelWindowVisibility(visibility);
+                }
+            };
+            settingsPopupInputAction = new SettingsAction("Popup dialog for input syscalls (5,6,7,8,12)",
                     "If set, use popup dialog for input syscalls (5,6,7,8,12) instead of cursor in Run I/O window",
-                    null, null,
-                    mainUI);
+                    mainUI, Settings.Bool.POPUP_SYSCALL_INPUT);
 
-            settingsValueDisplayBaseAction = new SettingsValueDisplayBaseAction("Values displayed in hexadecimal",
-                    null,
+            settingsValueDisplayBaseAction = new SettingsAction("Values displayed in hexadecimal",
                     "Toggle between hexadecimal and decimal display of memory/register values",
-                    null, null,
-                    mainUI);
-            settingsAddressDisplayBaseAction = new SettingsAddressDisplayBaseAction("Addresses displayed in hexadecimal",
-                    null,
+                    mainUI, Settings.Bool.DISPLAY_VALUES_IN_HEX) {
+                public void handler(boolean isHex) {
+                    Globals.getGui().getMainPane().getExecutePane().getValueDisplayBaseChooser().setSelected(isHex);
+                }
+            };
+            settingsAddressDisplayBaseAction = new SettingsAction("Addresses displayed in hexadecimal",
                     "Toggle between hexadecimal and decimal display of memory addresses",
-                    null, null,
-                    mainUI);
-            settingsExtendedAction = new SettingsExtendedAction("Permit extended (pseudo) instructions and formats",
-                    null,
+                    mainUI, Settings.Bool.DISPLAY_ADDRESSES_IN_HEX) {
+                public void handler(boolean isHex) {
+                    Globals.getGui().getMainPane().getExecutePane().getAddressDisplayBaseChooser().setSelected(isHex);
+                }
+            };
+            settingsExtendedAction = new SettingsAction("Permit extended (pseudo) instructions and formats",
                     "If set, extended (pseudo) instructions are formats are permitted.",
-                    null, null,
-                    mainUI);
-            settingsAssembleOnOpenAction = new SettingsAssembleOnOpenAction("Assemble file upon opening",
-                    null,
+                    mainUI, Settings.Bool.EXTENDED_ASSEMBLER_ENABLED);
+            settingsAssembleOnOpenAction = new SettingsAction("Assemble file upon opening",
                     "If set, a file will be automatically assembled as soon as it is opened.  File Open dialog will show most recently opened file.",
-                    null, null,
-                    mainUI);
-            settingsAssembleAllAction = new SettingsAssembleAllAction("Assemble all files in directory",
-                    null,
+                    mainUI, Settings.Bool.ASSEMBLE_ON_OPEN);
+            settingsAssembleAllAction = new SettingsAction("Assemble all files in directory",
                     "If set, all files in current directory will be assembled when Assemble operation is selected.",
-                    null, null,
-                    mainUI);
-            settingsWarningsAreErrorsAction = new SettingsWarningsAreErrorsAction("Assembler warnings are considered errors",
-                    null,
+                    mainUI, Settings.Bool.ASSEMBLE_ALL);
+            settingsWarningsAreErrorsAction = new SettingsAction("Assembler warnings are considered errors",
                     "If set, assembler warnings will be interpreted as errors and prevent successful assembly.",
-                    null, null,
-                    mainUI);
-            settingsStartAtMainAction = new SettingsStartAtMainAction("Initialize Program Counter to global 'main' if defined",
-                    null,
+                    mainUI, Settings.Bool.WARNINGS_ARE_ERRORS);
+            settingsStartAtMainAction = new SettingsAction("Initialize Program Counter to global 'main' if defined",
                     "If set, assembler will initialize Program Counter to text address globally labeled 'main', if defined.",
-                    null, null,
-                    mainUI);
-            settingsProgramArgumentsAction = new SettingsProgramArgumentsAction("Program arguments provided to program",
-                    null,
+                    mainUI, Settings.Bool.START_AT_MAIN);
+            settingsProgramArgumentsAction = new SettingsAction("Program arguments provided to program",
                     "If set, program arguments for the program can be entered in border of Text Segment window.",
-                    null, null,
-                    mainUI);
-            settingsSelfModifyingCodeAction = new SettingsSelfModifyingCodeAction("Self-modifying code",
-                    null,
+                    mainUI, Settings.Bool.PROGRAM_ARGUMENTS) {
+                public void handler(boolean selected) {
+                    if (selected) {
+                        Globals.getGui().getMainPane().getExecutePane().getTextSegmentWindow().addProgramArgumentsPanel();
+                    } else {
+                        Globals.getGui().getMainPane().getExecutePane().getTextSegmentWindow().removeProgramArgumentsPanel();
+                    }
+                }
+            };
+            settingsSelfModifyingCodeAction = new SettingsAction("Self-modifying code",
                     "If set, the program can write and branch to both text and data segments.",
-                    null, null,
-                    mainUI);
+                    mainUI, Settings.Bool.SELF_MODIFYING_CODE_ENABLED);
+
             settingsEditorAction = new SettingsEditorAction("Editor...",
                     null,
                     "View and modify text editor settings.",
@@ -445,6 +441,7 @@ public class VenusUI extends JFrame {
                     "View and modify memory segment base addresses for the simulated processor",
                     null, null,
                     mainUI);
+
             helpHelpAction = new HelpHelpAction("Help",
                     new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "Help22.png"))),
                     "Help", KeyEvent.VK_H,
