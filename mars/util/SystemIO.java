@@ -4,6 +4,7 @@ import mars.Globals;
 import mars.Settings;
 
 import java.io.*;
+import java.nio.channels.FileChannel;
 
 	/*
 Copyright (c) 2003-2013,  Pete Sanderson and Kenneth Vollmar
@@ -64,6 +65,10 @@ public class SystemIO {
     private static final int O_CREAT = 0x00000200; // 512
     private static final int O_TRUNC = 0x00000400; // 1024
     private static final int O_EXCL = 0x00000800; // 2048
+
+    private static final int SEEK_SET = 0;
+    private static final int SEEK_CUR = 1;
+    private static final int SEEK_END = 2;
 
     // standard I/O channels
     private static final int STDIN = 0;
@@ -351,6 +356,53 @@ public class SystemIO {
 
     } // end readFromFile
 
+
+    /**
+     * Read bytes from file.
+     *
+     * @param fd     file descriptor
+     * @param offset where in the file to seek to
+     * @param base   the point to reference 0 for start of file, 1 for current position, 2 for end of the file
+     * @return -1 on error
+     */
+    public static int seek(int fd, int offset, int base) {
+        // TODO: use base
+        if (!FileIOData.fdInUse(fd, 0)) // Check the existence of the "read" fd
+        {
+            fileErrorString = "File descriptor " + fd + " is not open for reading";
+            return -1;
+        }
+        if (fd < 0 || fd >= SYSCALL_MAXFILES) return -1;
+        Object stream = FileIOData.getStreamInUse(fd);
+        if (stream == null) return -1;
+        FileChannel channel;
+        try {
+            if (stream instanceof FileInputStream) {
+                channel = ((FileInputStream) stream).getChannel();
+            } else if (stream instanceof FileOutputStream) {
+                channel = ((FileOutputStream) stream).getChannel();
+            } else {
+                return -1;
+            }
+
+            if (base == SEEK_SET) {
+                offset += 0;
+            } else if (base == SEEK_CUR) {
+                offset += channel.position();
+            } else if (base == SEEK_END) {
+                offset += channel.size();
+            } else {
+                return -1;
+            }
+            if (offset < 0) {
+                return -1;
+            }
+            channel.position(offset);
+            return offset;
+        } catch (IOException io) {
+            return -1;
+        }
+    }
 
     /**
      * Open a file for either reading or writing. Note that read/write flag is NOT
