@@ -389,7 +389,11 @@ public class MarsLaunch {
                 countInstructions = true;
                 continue;
             }
-
+            
+            if (new File(args[i]).exists()) {  // is it a file name?
+                filenameList.add(args[i]);
+                continue;
+            }
 
             if (args[i].indexOf("x") == 0) {
                 if (RegisterFile.getRegister(args[i]) == null &&
@@ -404,10 +408,6 @@ public class MarsLaunch {
             if (RegisterFile.getRegister(args[i]) != null ||
                     FloatingPointRegisterFile.getRegister(args[i]) != null) {
                 registerDisplayList.add(args[i]);
-                continue;
-            }
-            if (new File(args[i]).exists()) {  // is it a file name?
-                filenameList.add(args[i]);
                 continue;
             }
             // Check for stand-alone integer, which is the max execution steps option
