@@ -1,7 +1,7 @@
 #!/bin/bash
 RUN="java -jar -ea ./out/artifacts/mars/mars.jar" 
 ERRORS=""
-for f in ./test/*.s
+for f in ./test/*.s ./test/riscv-tests/*.s
 do	
 	$RUN $f > /dev/null
 	if [ $? -eq 42 ]
