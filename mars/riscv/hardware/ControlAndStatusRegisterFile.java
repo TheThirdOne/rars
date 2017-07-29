@@ -37,6 +37,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * timers, and interrupt handling.
  *
  * @author Pete Sanderson
+ * @author Benjamin Landers
  * @version August 2005
  **/
 
@@ -47,20 +48,27 @@ public class ControlAndStatusRegisterFile {
 
 
     public static final int INTERRUPT_ENABLE = 0x1;
+    
+    private static final RegisterBlock instance;
 
-    // TODO: make readonly, auto updating special Register, and throw error on fail to access
-    // Useful for uip so it doesn't have to update constantly and ensureing that things like parts of ustatus are not witten illegally
-    private static final RegisterBlock instance = new RegisterBlock('_', new Register[]{ // Prefix is not used
-            new Register("ustatus", 0x000, 0),
-            new Register("fcsr", 0x003, 0),
-            new Register("uie", 0x004, 0),
-            new Register("utvec", 0x005, 0),
-            new Register("uscratch", 0x040, 0),
-            new Register("uepc", 0x041, 0),
-            new Register("ucause", 0x042, 0),
-            new Register("utval", 0x043, 0),
-            new Register("uip", 0x044, 0)
-    });
+    static {
+        Register[] tmp = {
+                new Register("ustatus", 0x000, 0),
+                null, // fflags
+                null, // frm
+                new Register("fcsr", 0x003, 0),
+                new Register("uie", 0x004, 0),
+                new Register("utvec", 0x005, 0),
+                new Register("uscratch", 0x040, 0),
+                new Register("uepc", 0x041, 0),
+                new Register("ucause", 0x042, 0),
+                new Register("utval", 0x043, 0),
+                new Register("uip", 0x044, 0)
+        };
+        tmp[1] = new LinkedRegister("fflags", 0x001, tmp[3], 0x1F);
+        tmp[2] = new LinkedRegister("frm", 0x002, tmp[3], 0xE0);
+        instance = new RegisterBlock('_', tmp); // prefix not used
+    }
 
     /**
      * This method updates the register value
