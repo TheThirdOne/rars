@@ -36,16 +36,16 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 public class CSRRS extends BasicInstruction {
     public CSRRS() {
-        super("csrrs t0, t1, 0xFF", "Atomic Read/Set CSR: read from the CSR into t0 and logical or t1 into the CSR",
+        super("csrrs t0, 0xFF, t1", "Atomic Read/Set CSR: read from the CSR into t0 and logical or t1 into the CSR",
                 BasicInstructionFormat.I_FORMAT, "tttttttttttt sssss 010 fffff 1110011");
     }
 
     public void simulate(ProgramStatement statement) throws SimulationException {
         int[] operands = statement.getOperands();
         try {
-            int csr = ControlAndStatusRegisterFile.getValue(operands[2]);
-            if (operands[1] != 0)
-                ControlAndStatusRegisterFile.orRegister(operands[2], RegisterFile.getValue(operands[1]));
+            int csr = ControlAndStatusRegisterFile.getValue(operands[1]);
+            if (operands[2] != 0)
+                ControlAndStatusRegisterFile.orRegister(operands[1], RegisterFile.getValue(operands[2]));
             RegisterFile.updateRegister(operands[0], csr);
         } catch (NullPointerException e) {
             throw new SimulationException(statement, "Attempt to access unavailable CSR", Exceptions.ILLEGAL_INSTRUCTION);

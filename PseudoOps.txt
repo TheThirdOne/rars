@@ -167,3 +167,31 @@ fsw f1,(t2)     ;fsw RG1,0(RG3)  #Store Word Coprocessor 1 : Store 32-bit value 
 fsw f1,-100     ;fsw RG1, VL2(x0);#Store Word Coprocessor 1 : Store 32-bit value from f1 to effective memory word address
 fsw f1,100000,t3;lui RG3, VH2    ;fsw RG1, VL2(RG3) ;#Store Word Coprocessor 1 : Store 32-bit value from f1 to effective memory word address using t3 as a temporary
 fsw f1,label, t3;auipc RG3, PCH2 ;fsw RG1, PCL2(RG3);#Store Word Coprocessor 1 : Store 32-bit value from f1 to effective memory word address using t3 as a temporary
+
+
+#######################  CSR pseudo-ops #####################
+
+csrr t1, 100 ;csrrs RG1, RG2, x0 ;#Read control and status register
+csrw t1, 100 ;csrrw x0, RG2, RG1 ;#Write control and status register
+csrs t1, 100 ;csrrs x0, RG2, RG1 ;#Set bits in control and status register
+csrc t1, 100 ;csrrc x0, RG2, RG1 ;#Clear bits in control and status register
+
+csrwi 100, 100 ;csrrwi x0, RG1, RG2 ;#Write control and status register
+csrsi 100, 100 ;csrrsi x0, RG1, RG2 ;#Set bits in control and status register
+csrci 100, 100 ;csrrci x0, RG1, RG2 ;#Clear bits in control and status register
+
+frcsr t1     ; csrrs RG1, 0x003, x0  ;#Read FP control/status register
+fscsr t1, t2 ; csrrw RG1, 0x003, RG2 ;#Swap FP control/status register
+fscsr t1     ; csrrs  x0, 0x003, RG1 ;#Write FP control/status register
+
+frrm t1      ; csrrs RG1, 0x003, x0  ;#Read FP rounding mode
+fsrm t1, t2  ; csrrw RG1, 0x003, RG2 ;#Swap FP rounding mode
+fsrm t1      ; csrrs  x0, 0x003, RG1 ;#Write FP rounding mode
+fsrmi t1, 100 ; csrrwi RG1, 0x003, RG2 ;#Swap FP rounding mode, immediate
+fsrmi 100     ; csrrsi  x0, 0x003, RG1 ;#Write FP rounding mode, immediate
+
+frflags t1      ; csrrs RG1, 0x003, x0  ;#Read FP exception flags
+fsflags t1, t2  ; csrrw RG1, 0x003, RG2 ;#Swap FP exception flags
+fsflags t1      ; csrrs  x0, 0x003, RG1 ;#Write FP exception flags
+fsflagsi t1, 100 ; csrrwi RG1, 0x003, RG2 ;#Swap FP exception flags, immediate
+fsflagsi 100     ; csrrsi  x0, 0x003, RG1 ;#Write FP exception flags, immediate

@@ -36,15 +36,15 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 public class CSRRWI extends BasicInstruction {
     public CSRRWI() {
-        super("csrrwi t0, 10, 0xFF", "Atomic Read/Write CSR Immediate: read from the CSR into t0 and write a constant into the CSR",
+        super("csrrwi t0, 0xFF, 10", "Atomic Read/Write CSR Immediate: read from the CSR into t0 and write a constant into the CSR",
                 BasicInstructionFormat.I_FORMAT, "tttttttttttt sssss 101 fffff 1110011");
     }
 
     public void simulate(ProgramStatement statement) throws SimulationException {
         int[] operands = statement.getOperands();
         try {
-            int csr = ControlAndStatusRegisterFile.getValue(operands[2]);
-            ControlAndStatusRegisterFile.updateRegister(operands[2], operands[1]);
+            int csr = ControlAndStatusRegisterFile.getValue(operands[1]);
+            ControlAndStatusRegisterFile.updateRegister(operands[1], operands[2]);
             RegisterFile.updateRegister(operands[0], csr);
         } catch (NullPointerException e) {
             throw new SimulationException(statement, "Attempt to access unavailable CSR", Exceptions.ILLEGAL_INSTRUCTION);

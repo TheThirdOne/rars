@@ -2,8 +2,8 @@
 .text
 main:
  	la t0,handler
- 	csrrw zero, t0, 5 # set utvec
- 	csrrsi zero, 1, 0 # set interrupt enable
+ 	csrrw zero, 5, t0 # set utvec
+ 	csrrsi zero, 0, 1 # set interrupt enable
  	lw zero, 0        # trigger trap
 failure:
 	li a0, 0
@@ -16,6 +16,6 @@ success:
 handler:
  	# move epc to success and return
 	la t0, success 	
-	csrrw zero, t0, 65	
+	csrrw zero, 65, t0
 	uret
 	
