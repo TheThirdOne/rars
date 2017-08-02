@@ -335,8 +335,15 @@ public class Tokenizer {
                             this.processCandidateToken(token, program, lineNum, theLine, tokenPos, tokenStartPos, result);
                             tokenPos = 0;
                         }
+
                         tokenStartPos = linePos + 1;
                         token[tokenPos++] = c;
+                        if (line.length > linePos + 3 && line[linePos + 1] == 'I' && line[linePos + 2] == 'n' && line[linePos + 3] == 'f') {
+                            result.add(new Token(TokenTypes.REAL_NUMBER, "-Inf", program, lineNum, tokenStartPos));
+                            linePos += 3;
+                            tokenPos = 0;
+                            break;
+                        }
                         if (!((result.isEmpty() || result.get(result.size() - 1).getType() != TokenTypes.IDENTIFIER) &&
                                 (line.length >= linePos + 2 && Character.isDigit(line[linePos + 1])))) {
                             // treat it as binary.....

@@ -212,6 +212,8 @@ public final class TokenTypes {
 
         // See if it is a real (fixed or floating point) number.  Note that parseDouble()
         // accepts integer values but if it were an integer literal we wouldn't get this far.
+        if (value.equals("Inf"))
+            return TokenTypes.REAL_NUMBER;
         try {
             Double.parseDouble(value);
             return TokenTypes.REAL_NUMBER;

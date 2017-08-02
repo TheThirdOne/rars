@@ -33,6 +33,6 @@ public class FNMSUBS extends FusedFloat {
     }
 
     public float compute(float r1, float r2, float r3) {
-        return r1 * r2 - r3;
+        return -(r1 * r2 - r3);
     }
 }

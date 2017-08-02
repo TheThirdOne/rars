@@ -838,8 +838,7 @@ public class Assembler {
     private void storeNumeric(TokenList tokens, Directives directive, ErrorList errors) {
         Token token = tokens.get(0);
         // A double-check; should have already been caught...removed ".word" exemption 11/20/06
-        if (!passesDataSegmentCheck(token))
-            return;
+        assert passesDataSegmentCheck(token);
         // Correctly handles case where this is a "directive continuation" line.
         int tokenStart = 0;
         if (token.getType() == TokenTypes.DIRECTIVE)
@@ -1008,8 +1007,13 @@ public class Assembler {
         int lengthInBytes = DataTypes.getLengthInBytes(directive);
         double value;
 
-        if (TokenTypes.isIntegerTokenType(token.getType())
+        if (token.getValue().equals("Inf")) {
+            value = Float.POSITIVE_INFINITY;
+        } else if (token.getValue().equals("-Inf")) {
+            value = Float.NEGATIVE_INFINITY;
+        } else if (TokenTypes.isIntegerTokenType(token.getType())
                 || TokenTypes.isFloatingTokenType(token.getType())) {
+
             try {
                 value = Double.parseDouble(token.getValue());
             } catch (NumberFormatException nfe) {
