@@ -44,7 +44,8 @@ public class FEQS extends BasicInstruction {
         int[] operands = statement.getOperands();
         float f1 = FloatingPointRegisterFile.getFloatFromRegister(operands[1]), f2 = FloatingPointRegisterFile.getFloatFromRegister(operands[2]);
         // Set invalid flag if either input is NaN (Technically this should only set if there is a "signalling" NaN)
-        if (Float.isNaN(f1) || Float.isNaN(f2)) ControlAndStatusRegisterFile.orRegister("fcsr", 0x10);
+        if (Floating.signallingNaN(f1) || Floating.signallingNaN(f2))
+            ControlAndStatusRegisterFile.orRegister("fcsr", 0x10);
         boolean result = f1 == f2;
         RegisterFile.updateRegister(operands[0], result ? 1 : 0);
     }

@@ -82,7 +82,7 @@
  fsflags a1, x0
  li a2, 0x10
  bne a0, a3, fail
- # TODO: invalid falg bne a1, a2, fail
+ bne a1, a2, fail
  
   test_8: li gp, 8
  la a0, test_8_data 
@@ -138,7 +138,7 @@ test_6_data: .float 10000
 test_7_data: .float -1.0
  .float 0.0
  .float 0.0
- .word 0xFFC00000 # Was 0x7fc00000, our canonical NaN is different from spike's
+ .word 0x7FC00000
                                     
 test_8_data: .float 171.0
  .float 0.0

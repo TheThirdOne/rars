@@ -56,6 +56,9 @@ public abstract class Floating extends BasicInstruction {
                 FloatingPointRegisterFile.getFloatFromRegister(operands[2]));
         if (Float.isNaN(result)) {
             ControlAndStatusRegisterFile.orRegister("fcsr", 0x10); // Set invalid flag
+            if (!Floating.signallingNaN(result)) {
+                result = Float.NaN;
+            }
         }
         if (Float.isInfinite(result)) {
             ControlAndStatusRegisterFile.orRegister("fcsr", 0x4); // Set Overflow flag
@@ -71,6 +74,10 @@ public abstract class Floating extends BasicInstruction {
     public static boolean subnormal(float f) {
         int bits = Float.floatToRawIntBits(f);
         return (bits & 0x7F800000) == 0 && (bits & 0x007FFFFF) > 0; // Exponent is minimum and the faction is non-zero
+    }
+
+    public static boolean signallingNaN(float f) {
+        return Float.isNaN(f) && (Float.floatToRawIntBits(f) & 0x00400000) == 0;
     }
 
 }

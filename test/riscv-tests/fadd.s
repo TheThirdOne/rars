@@ -203,5 +203,5 @@
  test_11_data: .float Inf
  .float Inf
  .float 0.0
- .word 0xffc00000 # Was 0x7fc00000, our canonical NaN is different from spike's
+ .word 0x7fc00000
  

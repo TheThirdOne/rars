@@ -56,9 +56,9 @@ public class FCLASSS extends BasicInstruction {
         float in = FloatingPointRegisterFile.getFloatFromRegister(operands[1]);
 
         if (Float.isNaN(in)) {
-            RegisterFile.updateRegister(operands[0], 0x200);
+            RegisterFile.updateRegister(operands[0], Floating.signallingNaN(in) ? 0x100 : 0x200);
         } else {
-            boolean negative = in < 0.0f;
+            boolean negative = Float.floatToRawIntBits(in) >>> 31 == 1;
             if (Float.isInfinite(in)) {
                 RegisterFile.updateRegister(operands[0], negative ? 0x001 : 0x080);
             } else if (in == 0.0f) {
@@ -68,7 +68,6 @@ public class FCLASSS extends BasicInstruction {
             } else {
                 RegisterFile.updateRegister(operands[0], negative ? 0x002 : 0x040);
             }
-            RegisterFile.updateRegister(operands[0], 0x100);
         }
     }
 }

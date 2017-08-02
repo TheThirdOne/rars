@@ -91,7 +91,7 @@
  fsflags a1, x0
  li a2, 0x00
  bne a0, a3, fail
- # TODO: set invalid flag correctly bne a1, a2, fail
+ bne a1, a2, fail
  
   test_9: li gp, 9
  la a0, test_9_data 
@@ -103,7 +103,7 @@
  fsflags a1, x0
  li a2, 0x00
  bne a0, a3, fail
-  # TODO: set invalid flag correctly bne a1, a2, fail
+ bne a1, a2, fail
  
   test_10: li gp, 10
  la a0, test_10_data 
