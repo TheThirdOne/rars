@@ -11,6 +11,21 @@ import mars.util.Binary;
  * if cause is -1, the exception is not-handlable is user code.
  */
 public class SimulationException extends Exception {
+
+    // Interrupts
+    public static final int SOFTWARE_INTERRUPT = 0x80000000;
+    public static final int TIMER_INTERRUPT = 0x80000004;
+    public static final int EXTERNAL_INTERRUPT = 0x80000008;
+    // Traps
+    public static final int INSTRUCTION_ADDR_MISALIGNED = 0;
+    public static final int INSTRUCTION_ACCESS_FAULT = 1;
+    public static final int ILLEGAL_INSTRUCTION = 2;
+    public static final int LOAD_ADDRESS_MISALIGNED = 4;
+    public static final int LOAD_ACCESS_FAULT = 5;
+    public static final int STORE_ADDRESS_MISALIGNED = 4;
+    public static final int STORE_ACCESS_FAULT = 7;
+    public static final int ENVIRONMENT_CALL = 8;
+
     private int cause = -1, value = 0;
     private ErrorMessage message = null;
 

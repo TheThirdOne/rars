@@ -6,7 +6,6 @@ import mars.riscv.hardware.ControlAndStatusRegisterFile;
 import mars.riscv.hardware.RegisterFile;
 import mars.riscv.BasicInstruction;
 import mars.riscv.BasicInstructionFormat;
-import mars.simulator.Exceptions;
 
 /*
 Copyright (c) 2017,  Benjamin Landers
@@ -47,7 +46,7 @@ public class CSRRWI extends BasicInstruction {
             ControlAndStatusRegisterFile.updateRegister(operands[1], operands[2]);
             RegisterFile.updateRegister(operands[0], csr);
         } catch (NullPointerException e) {
-            throw new SimulationException(statement, "Attempt to access unavailable CSR", Exceptions.ILLEGAL_INSTRUCTION);
+            throw new SimulationException(statement, "Attempt to access unavailable CSR", SimulationException.ILLEGAL_INSTRUCTION);
         }
     }
 }

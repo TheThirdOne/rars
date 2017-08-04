@@ -411,20 +411,20 @@ public class Simulator extends Observable {
                                 pendingTrap = InterruptController.trapPending();
                         // This is the explicit (in the spec) order that interrupts should be serviced
                         if (IE && pendingExternal && (uie & ControlAndStatusRegisterFile.EXTERNAL_INTERRUPT) != 0) {
-                            if (handleInterrupt(InterruptController.claimExternal(), Exceptions.EXTERNAL_INTERRUPT, pc)) {
+                            if (handleInterrupt(InterruptController.claimExternal(), SimulationException.EXTERNAL_INTERRUPT, pc)) {
                                 pendingExternal = false;
                                 uip &= ~0x100;
                             } else {
                                 return; // if the interrupt can't be handled, but the interrupt enable bit is high, thats an error
                             }
                         } else if (IE && (uip & 0x1) != 0 && (uie & ControlAndStatusRegisterFile.SOFTWARE_INTERRUPT) != 0) {
-                            if (handleInterrupt(0, Exceptions.SOFTWARE_INTERRUPT, pc)) {
+                            if (handleInterrupt(0, SimulationException.SOFTWARE_INTERRUPT, pc)) {
                                 uip &= ~0x1;
                             } else {
                                 return; // if the interrupt can't be handled, but the interrupt enable bit is high, thats an error
                             }
                         } else if (IE && pendingTimer && (uie & ControlAndStatusRegisterFile.TIMER_INTERRUPT) != 0) {
-                            if (handleInterrupt(InterruptController.claimTimer(), Exceptions.TIMER_INTERRUPT, pc)) {
+                            if (handleInterrupt(InterruptController.claimTimer(), SimulationException.TIMER_INTERRUPT, pc)) {
                                 pendingTimer = false;
                                 uip &= ~0x10;
                             } else {
@@ -458,10 +458,10 @@ public class Simulator extends Observable {
                         statement = Globals.memory.getStatement(pc);
                     } catch (AddressErrorException e) {
                         SimulationException tmp;
-                        if (e.getType() == Exceptions.LOAD_ACCESS_FAULT) {
-                            tmp = new SimulationException("Instruction load access error", Exceptions.INSTRUCTION_ACCESS_FAULT);
+                        if (e.getType() == SimulationException.LOAD_ACCESS_FAULT) {
+                            tmp = new SimulationException("Instruction load access error", SimulationException.INSTRUCTION_ACCESS_FAULT);
                         } else {
-                            tmp = new SimulationException("Instruction load alignment error", Exceptions.INSTRUCTION_ADDR_MISALIGNED);
+                            tmp = new SimulationException("Instruction load alignment error", SimulationException.INSTRUCTION_ADDR_MISALIGNED);
                         }
                         if (!InterruptController.registerSynchronousTrap(tmp, pc)) {
                             this.pe = tmp;
@@ -483,7 +483,7 @@ public class Simulator extends Observable {
                             // TODO: Proper error handling here
                             throw new SimulationException(statement,
                                     "undefined instruction (" + Binary.intToHexString(statement.getBinaryStatement()) + ")",
-                                    Exceptions.ILLEGAL_INSTRUCTION);
+                                    SimulationException.ILLEGAL_INSTRUCTION);
                         }
                         // THIS IS WHERE THE INSTRUCTION EXECUTION IS ACTUALLY SIMULATED!
                         instruction.simulate(statement);

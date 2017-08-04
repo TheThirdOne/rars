@@ -3,7 +3,6 @@ package mars.riscv;
 import mars.ProgramStatement;
 import mars.SimulationException;
 import mars.riscv.hardware.RegisterFile;
-import mars.simulator.Exceptions;
 import mars.util.FilenameFinder;
 
 import java.io.BufferedReader;
@@ -281,7 +280,7 @@ public class InstructionSet {
         }
         throw new SimulationException(statement,
                 "invalid or unimplemented syscall service: " +
-                        number + " ", Exceptions.ENVIRONMENT_CALL);
+                        number + " ", SimulationException.ENVIRONMENT_CALL);
     }
 
    	/*
