@@ -54,8 +54,7 @@ public class JEditBasedTextArea extends JEditTextArea implements MARSTextEditing
                             compoundEdit.addEdit(e.getEdit());
                         } else {
                             undoManager.addEdit(e.getEdit());
-                            editPane.updateUndoState();
-                            editPane.updateRedoState();
+                            editPane.updateUndoAndRedoState();
                         }
                     }
                 };
@@ -332,8 +331,7 @@ public class JEditBasedTextArea extends JEditTextArea implements MARSTextEditing
         sourceCode.replaceSelection(replace);
         compoundEdit.end();
         undoManager.addEdit(compoundEdit);
-        editPane.updateUndoState();
-        editPane.updateRedoState();
+        editPane.updateUndoAndRedoState();
         isCompoundEdit = false;
         sourceCode.setCaretPosition(nextPosn + replace.length());
         if (doFindText(find, caseSensitive) == TEXT_NOT_FOUND) {
@@ -386,8 +384,7 @@ public class JEditBasedTextArea extends JEditTextArea implements MARSTextEditing
         if (compoundEdit != null) {
             compoundEdit.end();
             undoManager.addEdit(compoundEdit);
-            editPane.updateUndoState();
-            editPane.updateRedoState();
+            editPane.updateUndoAndRedoState();
         }
         return replaceCount;
     }

@@ -1,10 +1,14 @@
-package mars.venus;
+package mars.venus.edit;
+
+import mars.venus.EditPane;
+import mars.venus.GuiAction;
+import mars.venus.VenusUI;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 
 	/*
-Copyright (c) 2003-2010,  Pete Sanderson and Kenneth Vollmar
+Copyright (c) 2003-2006,  Pete Sanderson and Kenneth Vollmar
 
 Developed by Pete Sanderson (psanderson@otterbein.edu)
 and Kenneth Vollmar (kenvollmar@missouristate.edu)
@@ -32,16 +36,32 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 /**
- * Action  for the Edit -> Copy menu item
+ * Action  for the Edit -> Undo menu item
  */
-public class EditSelectAllAction extends GuiAction {
+public class EditUndoAction extends GuiAction {
 
-    public EditSelectAllAction(String name, Icon icon, String descrip,
-                               Integer mnemonic, KeyStroke accel, VenusUI gui) {
+    public EditUndoAction(String name, Icon icon, String descrip,
+                          Integer mnemonic, KeyStroke accel, VenusUI gui) {
         super(name, icon, descrip, mnemonic, accel, gui);
+        setEnabled(false);
     }
 
+    /**
+     * Adapted from TextComponentDemo.java in the
+     * Java Tutorial "Text Component Features"
+     */
     public void actionPerformed(ActionEvent e) {
-        mainUI.getMainPane().getEditPane().selectAllText();
+        EditPane editPane = mainUI.getMainPane().getEditPane();
+        if (editPane != null) {
+            editPane.undo();
+            updateUndoState();
+            mainUI.updateUndoAndRedoState();
+        }
+    }
+
+    public void updateUndoState() {
+        EditPane editPane = mainUI.getMainPane().getEditPane();
+        setEnabled(editPane != null && editPane.getUndoManager().canUndo());
+        //new Throwable("update undo state: "+(editPane != null && editPane.getUndoManager().canUndo())).printStackTrace();
     }
 }

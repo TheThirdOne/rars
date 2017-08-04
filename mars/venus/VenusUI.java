@@ -3,6 +3,7 @@ package mars.venus;
 import mars.Globals;
 import mars.Settings;
 import mars.riscv.dump.DumpFormatLoader;
+import mars.venus.edit.*;
 import mars.venus.file.*;
 import mars.venus.run.*;
 import mars.venus.settings.*;
@@ -95,8 +96,8 @@ public class VenusUI extends JFrame {
 
     private Action fileNewAction, fileOpenAction, fileCloseAction, fileCloseAllAction, fileSaveAction;
     private Action fileSaveAsAction, fileSaveAllAction, fileDumpMemoryAction, filePrintAction, fileExitAction;
-    EditUndoAction editUndoAction;
-    EditRedoAction editRedoAction;
+    private EditUndoAction editUndoAction;
+    private EditRedoAction editRedoAction;
     private Action editCutAction, editCopyAction, editPasteAction, editFindReplaceAction, editSelectAllAction;
     private Action runAssembleAction, runGoAction, runStepAction, runBackstepAction, runResetAction,
             runStopAction, runPauseAction, runClearBreakpointsAction, runToggleBreakpointsAction;
@@ -778,7 +779,7 @@ public class VenusUI extends JFrame {
     }
 
 
-    void setMenuStateInitial() {
+    private void setMenuStateInitial() {
         fileNewAction.setEnabled(true);
         fileOpenAction.setEnabled(true);
         fileCloseAction.setEnabled(false);
@@ -1175,5 +1176,10 @@ public class VenusUI extends JFrame {
         //Add listener to components that can bring up popup menus.
         MouseListener popupListener = new PopupListener(popup);
         this.addMouseListener(popupListener);
+    }
+
+    public void updateUndoAndRedoState() {
+        editUndoAction.updateUndoState();
+        editRedoAction.updateRedoState();
     }
 }

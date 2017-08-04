@@ -1,4 +1,7 @@
-package mars.venus;
+package mars.venus.edit;
+
+import mars.venus.GuiAction;
+import mars.venus.VenusUI;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -32,16 +35,16 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 /**
- * Action  for the Edit -> Paste menu item
+ * Action  for the Edit -> Cut menu item
  */
-public class EditPasteAction extends GuiAction {
+public class EditCutAction extends GuiAction {
 
-    public EditPasteAction(String name, Icon icon, String descrip,
-                           Integer mnemonic, KeyStroke accel, VenusUI gui) {
+    public EditCutAction(String name, Icon icon, String descrip,
+                         Integer mnemonic, KeyStroke accel, VenusUI gui) {
         super(name, icon, descrip, mnemonic, accel, gui);
     }
 
     public void actionPerformed(ActionEvent e) {
-        mainUI.getMainPane().getEditPane().pasteText();
+        mainUI.getMainPane().getEditPane().cutText();
     }
 }

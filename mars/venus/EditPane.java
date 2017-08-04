@@ -418,17 +418,10 @@ public class EditPane extends JPanel implements Observer {
     }
 
     /**
-     * Update state of Edit menu's Undo menu item.
+     * Update state of Edit menu's Undo and Redo menu items.
      */
-    public void updateUndoState() {
-        mainUI.editUndoAction.updateUndoState();
-    }
-
-    /**
-     * Update state of Edit menu's Redo menu item.
-     */
-    public void updateRedoState() {
-        mainUI.editRedoAction.updateRedoState();
+    public void updateUndoAndRedoState() {
+        mainUI.updateUndoAndRedoState();
     }
 
     /**

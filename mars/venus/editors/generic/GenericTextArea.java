@@ -90,8 +90,7 @@ public class GenericTextArea extends JTextArea implements MARSTextEditingArea {
                             compoundEdit.addEdit(e.getEdit());
                         } else {
                             undoManager.addEdit(e.getEdit());
-                            editPane.updateUndoState();
-                            editPane.updateRedoState();
+                            editPane.updateUndoAndRedoState();
                         }
                     }
                 };
@@ -321,8 +320,7 @@ public class GenericTextArea extends JTextArea implements MARSTextEditingArea {
         sourceCode.replaceSelection(replace);
         compoundEdit.end();
         undoManager.addEdit(compoundEdit);
-        editPane.updateUndoState();
-        editPane.updateRedoState();
+        editPane.updateUndoAndRedoState();
         isCompoundEdit = false;
         sourceCode.setCaretPosition(nextPosn + replace.length());
         if (doFindText(find, caseSensitive) == TEXT_NOT_FOUND) {
@@ -373,8 +371,7 @@ public class GenericTextArea extends JTextArea implements MARSTextEditingArea {
         if (compoundEdit != null) {
             compoundEdit.end();
             undoManager.addEdit(compoundEdit);
-            editPane.updateUndoState();
-            editPane.updateRedoState();
+            editPane.updateUndoAndRedoState();
         }
         return replaceCount;
     }

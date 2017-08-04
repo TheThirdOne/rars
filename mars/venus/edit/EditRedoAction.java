@@ -1,4 +1,8 @@
-package mars.venus;
+package mars.venus.edit;
+
+import mars.venus.EditPane;
+import mars.venus.GuiAction;
+import mars.venus.VenusUI;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -32,16 +36,31 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 /**
- * Action  for the Edit -> Cut menu item
+ * Action  for the Edit -> Redo menu item
  */
-public class EditCutAction extends GuiAction {
+public class EditRedoAction extends GuiAction {
 
-    public EditCutAction(String name, Icon icon, String descrip,
-                         Integer mnemonic, KeyStroke accel, VenusUI gui) {
+    public EditRedoAction(String name, Icon icon, String descrip,
+                          Integer mnemonic, KeyStroke accel, VenusUI gui) {
         super(name, icon, descrip, mnemonic, accel, gui);
+        setEnabled(false);
     }
 
+    /**
+     * Adapted from TextComponentDemo.java in the
+     * Java Tutorial "Text Component Features"
+     */
     public void actionPerformed(ActionEvent e) {
-        mainUI.getMainPane().getEditPane().cutText();
+        EditPane editPane = mainUI.getMainPane().getEditPane();
+        if (editPane != null) {
+            editPane.redo();
+            mainUI.updateUndoAndRedoState();
+        }
+    }
+
+    public void updateRedoState() {
+        EditPane editPane = mainUI.getMainPane().getEditPane();
+        setEnabled(editPane != null && editPane.getUndoManager().canRedo());
     }
 }
+

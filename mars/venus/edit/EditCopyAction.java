@@ -1,4 +1,7 @@
-package mars.venus;
+package mars.venus.edit;
+
+import mars.venus.GuiAction;
+import mars.venus.VenusUI;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
