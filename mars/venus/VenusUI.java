@@ -75,7 +75,7 @@ public class VenusUI extends JFrame {
 
     // components of the menubar
     private JMenu file, run, window, help, edit, settings;
-    private JMenuItem fileNew, fileOpen, fileClose, fileCloseAll, fileSave, fileSaveAs, fileSaveAll, fileDumpMemory, filePrint, fileExit;
+    private JMenuItem fileNew, fileOpen, fileClose, fileCloseAll, fileSave, fileSaveAs, fileSaveAll, fileDumpMemory, fileExit;
     private JMenuItem editUndo, editRedo, editCut, editCopy, editPaste, editFindReplace, editSelectAll;
     private JMenuItem runGo, runStep, runBackstep, runReset, runAssemble, runStop, runPause, runClearBreakpoints, runToggleBreakpoints;
     private JCheckBoxMenuItem settingsLabel, settingsPopupInput, settingsValueDisplayBase, settingsAddressDisplayBase,
@@ -86,7 +86,7 @@ public class VenusUI extends JFrame {
 
     // components of the toolbar
     private JButton Undo, Redo, Cut, Copy, Paste, FindReplace, SelectAll;
-    private JButton New, Open, Save, SaveAs, SaveAll, DumpMemory, Print;
+    private JButton New, Open, Save, SaveAs, SaveAll, DumpMemory;
     private JButton Run, Assemble, Reset, Step, Backstep, Stop, Pause;
     private JButton Help;
 
@@ -95,7 +95,7 @@ public class VenusUI extends JFrame {
     // technique because it relates the button and menu item so closely
 
     private Action fileNewAction, fileOpenAction, fileCloseAction, fileCloseAllAction, fileSaveAction;
-    private Action fileSaveAsAction, fileSaveAllAction, fileDumpMemoryAction, filePrintAction, fileExitAction;
+    private Action fileSaveAsAction, fileSaveAllAction, fileDumpMemoryAction, fileExitAction;
     private EditUndoAction editUndoAction;
     private EditRedoAction editRedoAction;
     private Action editCutAction, editCopyAction, editPasteAction, editFindReplaceAction, editSelectAllAction;
@@ -278,10 +278,7 @@ public class VenusUI extends JFrame {
                     "Dump machine code or data in an available format", KeyEvent.VK_D,
                     KeyStroke.getKeyStroke(KeyEvent.VK_D, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),
                     mainUI);
-            filePrintAction = new FilePrintAction("Print ...",
-                    new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "Print22.gif"))),
-                    "Print current file", KeyEvent.VK_P,
-                    null, mainUI);
+
             fileExitAction = new FileExitAction("Exit", null,
                     "Exit Mars", KeyEvent.VK_X,
                     null, mainUI);
@@ -500,8 +497,6 @@ public class VenusUI extends JFrame {
         fileSaveAll.setIcon(new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "MyBlank16.gif"))));
         fileDumpMemory = new JMenuItem(fileDumpMemoryAction);
         fileDumpMemory.setIcon(new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "Dump16.png"))));
-        filePrint = new JMenuItem(filePrintAction);
-        filePrint.setIcon(new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "Print16.gif"))));
         fileExit = new JMenuItem(fileExitAction);
         fileExit.setIcon(new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "MyBlank16.gif"))));
         file.add(fileNew);
@@ -515,8 +510,6 @@ public class VenusUI extends JFrame {
         if (DumpFormatLoader.getDumpFormats().size() > 0) {
             file.add(fileDumpMemory);
         }
-        file.addSeparator();
-        file.add(filePrint);
         file.addSeparator();
         file.add(fileExit);
 
@@ -667,8 +660,6 @@ public class VenusUI extends JFrame {
         SaveAs.setText("");
         DumpMemory = new JButton(fileDumpMemoryAction);
         DumpMemory.setText("");
-        Print = new JButton(filePrintAction);
-        Print.setText("");
 
         Undo = new JButton(editUndoAction);
         Undo.setText("");
@@ -709,7 +700,6 @@ public class VenusUI extends JFrame {
         if (DumpFormatLoader.getDumpFormats().size() > 0) {
             toolBar.add(DumpMemory);
         }
-        toolBar.add(Print);
         toolBar.add(new JToolBar.Separator());
         toolBar.add(Undo);
         toolBar.add(Redo);
@@ -788,7 +778,6 @@ public class VenusUI extends JFrame {
         fileSaveAsAction.setEnabled(false);
         fileSaveAllAction.setEnabled(false);
         fileDumpMemoryAction.setEnabled(false);
-        filePrintAction.setEnabled(false);
         fileExitAction.setEnabled(true);
         editUndoAction.setEnabled(false);
         editRedoAction.setEnabled(false);
@@ -826,7 +815,6 @@ public class VenusUI extends JFrame {
         fileSaveAsAction.setEnabled(true);
         fileSaveAllAction.setEnabled(true);
         fileDumpMemoryAction.setEnabled(false);
-        filePrintAction.setEnabled(true);
         fileExitAction.setEnabled(true);
         editCutAction.setEnabled(true);
         editCopyAction.setEnabled(true);
@@ -864,7 +852,6 @@ public class VenusUI extends JFrame {
         fileSaveAsAction.setEnabled(true);
         fileSaveAllAction.setEnabled(true);
         fileDumpMemoryAction.setEnabled(false);
-        filePrintAction.setEnabled(true);
         fileExitAction.setEnabled(true);
         editCutAction.setEnabled(true);
         editCopyAction.setEnabled(true);
@@ -899,7 +886,6 @@ public class VenusUI extends JFrame {
         fileSaveAsAction.setEnabled(true);
         fileSaveAllAction.setEnabled(true);
         fileDumpMemoryAction.setEnabled(false);
-        filePrintAction.setEnabled(true);
         fileExitAction.setEnabled(true);
         editCutAction.setEnabled(true);
         editCopyAction.setEnabled(true);
@@ -934,7 +920,6 @@ public class VenusUI extends JFrame {
         fileSaveAsAction.setEnabled(true);
         fileSaveAllAction.setEnabled(true);
         fileDumpMemoryAction.setEnabled(true);
-        filePrintAction.setEnabled(true);
         fileExitAction.setEnabled(true);
         editCutAction.setEnabled(true);
         editCopyAction.setEnabled(true);
@@ -969,7 +954,6 @@ public class VenusUI extends JFrame {
         fileSaveAsAction.setEnabled(false);
         fileSaveAllAction.setEnabled(false);
         fileDumpMemoryAction.setEnabled(false);
-        filePrintAction.setEnabled(false);
         fileExitAction.setEnabled(false);
         editCutAction.setEnabled(false);
         editCopyAction.setEnabled(false);
@@ -1003,7 +987,6 @@ public class VenusUI extends JFrame {
         fileSaveAsAction.setEnabled(true);
         fileSaveAllAction.setEnabled(true);
         fileDumpMemoryAction.setEnabled(true);
-        filePrintAction.setEnabled(true);
         fileExitAction.setEnabled(true);
         editCutAction.setEnabled(true);
         editCopyAction.setEnabled(true);
