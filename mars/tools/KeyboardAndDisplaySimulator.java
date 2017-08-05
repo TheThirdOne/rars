@@ -3,7 +3,7 @@ package mars.tools;
 import mars.Globals;
 import mars.riscv.hardware.*;
 import mars.util.Binary;
-import mars.venus.AbstractFontSettingDialog;
+import mars.venus.util.AbstractFontSettingDialog;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;

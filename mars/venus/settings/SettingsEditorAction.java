@@ -2,7 +2,7 @@ package mars.venus.settings;
 
 import mars.Globals;
 import mars.Settings;
-import mars.venus.AbstractFontSettingDialog;
+import mars.venus.util.AbstractFontSettingDialog;
 import mars.venus.Editor;
 import mars.venus.GuiAction;
 import mars.venus.VenusUI;

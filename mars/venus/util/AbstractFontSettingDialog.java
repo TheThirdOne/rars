@@ -1,4 +1,4 @@
-package mars.venus;
+package mars.venus.util;
 
 import mars.util.EditorFont;
 

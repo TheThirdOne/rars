@@ -3,6 +3,7 @@ package mars.venus.settings;
 import mars.Globals;
 import mars.Settings;
 import mars.venus.*;
+import mars.venus.util.AbstractFontSettingDialog;
 
 import javax.swing.*;
 import javax.swing.border.BevelBorder;

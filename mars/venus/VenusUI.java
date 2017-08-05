@@ -11,6 +11,7 @@ import mars.venus.registers.RegistersPane;
 import mars.venus.registers.RegistersWindow;
 import mars.venus.run.*;
 import mars.venus.settings.*;
+import mars.venus.util.PopupListener;
 
 import javax.swing.*;
 import java.awt.*;
