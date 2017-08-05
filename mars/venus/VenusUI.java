@@ -5,12 +5,19 @@ import mars.Settings;
 import mars.riscv.dump.DumpFormatLoader;
 import mars.venus.edit.*;
 import mars.venus.file.*;
+import mars.venus.registers.ControlAndStatusWindow;
+import mars.venus.registers.FloatingPointWindow;
+import mars.venus.registers.RegistersPane;
+import mars.venus.registers.RegistersWindow;
 import mars.venus.run.*;
 import mars.venus.settings.*;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.net.URL;
 
 /*

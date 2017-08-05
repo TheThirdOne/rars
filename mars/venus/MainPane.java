@@ -1,6 +1,9 @@
 package mars.venus;
 
 import mars.Globals;
+import mars.venus.registers.ControlAndStatusWindow;
+import mars.venus.registers.FloatingPointWindow;
+import mars.venus.registers.RegistersWindow;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;

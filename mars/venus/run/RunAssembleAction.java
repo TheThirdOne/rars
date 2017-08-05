@@ -4,8 +4,12 @@ import mars.*;
 import mars.riscv.hardware.*;
 import mars.util.FilenameFinder;
 import mars.util.SystemIO;
-import mars.venus.*;
+import mars.venus.ExecutePane;
+import mars.venus.GuiAction;
+import mars.venus.MessagesPane;
+import mars.venus.VenusUI;
 import mars.venus.file.FileStatus;
+import mars.venus.registers.RegistersPane;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;

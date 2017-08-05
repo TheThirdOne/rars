@@ -1,4 +1,6 @@
-package mars.venus;
+package mars.venus.registers;
+
+import mars.venus.VenusUI;
 
 import javax.swing.*;
 
