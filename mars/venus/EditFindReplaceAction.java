@@ -1,9 +1,6 @@
-package mars.venus.edit;
+package mars.venus;
 
 import mars.Globals;
-import mars.venus.EditPane;
-import mars.venus.GuiAction;
-import mars.venus.VenusUI;
 import mars.venus.editors.MARSTextEditingArea;
 
 import javax.swing.*;

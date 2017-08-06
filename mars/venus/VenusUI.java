@@ -3,7 +3,6 @@ package mars.venus;
 import mars.Globals;
 import mars.Settings;
 import mars.riscv.dump.DumpFormatLoader;
-import mars.venus.edit.*;
 import mars.venus.registers.ControlAndStatusWindow;
 import mars.venus.registers.FloatingPointWindow;
 import mars.venus.registers.RegistersPane;
@@ -100,8 +99,8 @@ public class VenusUI extends JFrame {
 
     private Action fileNewAction, fileOpenAction, fileCloseAction, fileCloseAllAction, fileSaveAction;
     private Action fileSaveAsAction, fileSaveAllAction, fileDumpMemoryAction, fileExitAction;
-    private EditUndoAction editUndoAction;
-    private EditRedoAction editRedoAction;
+    private Action editUndoAction;
+    private Action editRedoAction;
     private Action editCutAction, editCopyAction, editPasteAction, editFindReplaceAction, editSelectAllAction;
     private Action runAssembleAction, runGoAction, runStepAction, runBackstepAction, runResetAction,
             runStopAction, runPauseAction, runClearBreakpointsAction, runToggleBreakpointsAction;
@@ -246,7 +245,7 @@ public class VenusUI extends JFrame {
      */
     private void createActionObjects() {
         Toolkit tk = Toolkit.getDefaultToolkit();
-        Class cs = this.getClass();
+        Class<? extends VenusUI> cs = this.getClass();
         try {
             fileNewAction = new GuiAction("New",
                     new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "New22.png"))),
@@ -314,41 +313,82 @@ public class VenusUI extends JFrame {
                 }
             };
 
-            editUndoAction = new EditUndoAction("Undo",
+            editUndoAction = new GuiAction("Undo",
                     new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "Undo22.png"))),
                     "Undo last edit", KeyEvent.VK_U,
                     KeyStroke.getKeyStroke(KeyEvent.VK_Z, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),
-                    mainUI);
-            editRedoAction = new EditRedoAction("Redo",
+                    mainUI) {
+                {
+                    setEnabled(false);
+                }
+
+                public void actionPerformed(ActionEvent e) {
+                    EditPane editPane = mainUI.getMainPane().getEditPane();
+                    if (editPane != null) {
+                        editPane.undo();
+                        mainUI.updateUndoAndRedoState();
+                    }
+                }
+            };
+            editRedoAction = new GuiAction("Redo",
                     new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "Redo22.png"))),
                     "Redo last edit", KeyEvent.VK_R,
                     KeyStroke.getKeyStroke(KeyEvent.VK_Y, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),
-                    mainUI);
-            editCutAction = new EditCutAction("Cut",
+                    mainUI) {
+                {
+                    setEnabled(false);
+                }
+
+                public void actionPerformed(ActionEvent e) {
+                    EditPane editPane = mainUI.getMainPane().getEditPane();
+                    if (editPane != null) {
+                        editPane.redo();
+                        mainUI.updateUndoAndRedoState();
+                    }
+                }
+            };
+            editCutAction = new GuiAction("Cut",
                     new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "Cut22.gif"))),
                     "Cut", KeyEvent.VK_C,
                     KeyStroke.getKeyStroke(KeyEvent.VK_X, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),
-                    mainUI);
-            editCopyAction = new EditCopyAction("Copy",
+                    mainUI) {
+                public void actionPerformed(ActionEvent e) {
+                    mainUI.getMainPane().getEditPane().cutText();
+                }
+            };
+            editCopyAction = new GuiAction("Copy",
                     new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "Copy22.png"))),
                     "Copy", KeyEvent.VK_O,
                     KeyStroke.getKeyStroke(KeyEvent.VK_C, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),
-                    mainUI);
-            editPasteAction = new EditPasteAction("Paste",
+                    mainUI) {
+                public void actionPerformed(ActionEvent e) {
+                    mainUI.getMainPane().getEditPane().copyText();
+                }
+            };
+            editPasteAction = new GuiAction("Paste",
                     new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "Paste22.png"))),
                     "Paste", KeyEvent.VK_P,
                     KeyStroke.getKeyStroke(KeyEvent.VK_V, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),
-                    mainUI);
+                    mainUI) {
+                public void actionPerformed(ActionEvent e) {
+                    mainUI.getMainPane().getEditPane().pasteText();
+                }
+            };
             editFindReplaceAction = new EditFindReplaceAction("Find/Replace",
                     new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "Find22.png"))),
                     "Find/Replace", KeyEvent.VK_F,
                     KeyStroke.getKeyStroke(KeyEvent.VK_F, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),
                     mainUI);
-            editSelectAllAction = new EditSelectAllAction("Select All",
+            editSelectAllAction = new GuiAction("Select All",
                     null, //new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath+"Find22.png"))),
                     "Select All", KeyEvent.VK_A,
                     KeyStroke.getKeyStroke(KeyEvent.VK_A, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),
-                    mainUI);
+                    mainUI) {
+                public void actionPerformed(ActionEvent e) {
+                    mainUI.getMainPane().getEditPane().selectAllText();
+                }
+            };
+
             runAssembleAction = new RunAssembleAction("Assemble",
                     new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "Assemble22.png"))),
                     "Assemble the current file and clear breakpoints", KeyEvent.VK_A,
@@ -830,8 +870,7 @@ public class VenusUI extends JFrame {
         runToggleBreakpointsAction.setEnabled(false);
         helpHelpAction.setEnabled(true);
         helpAboutAction.setEnabled(true);
-        editUndoAction.updateUndoState();
-        editRedoAction.updateRedoState();
+        updateUndoAndRedoState();
     }
 
     /* Added DPS 9-Aug-2011, for newly-opened files.  Retain
@@ -869,8 +908,7 @@ public class VenusUI extends JFrame {
         }
         helpHelpAction.setEnabled(true);
         helpAboutAction.setEnabled(true);
-        editUndoAction.updateUndoState();
-        editRedoAction.updateRedoState();
+        updateUndoAndRedoState();
     }
 
 
@@ -902,8 +940,7 @@ public class VenusUI extends JFrame {
         runToggleBreakpointsAction.setEnabled(false);
         helpHelpAction.setEnabled(true);
         helpAboutAction.setEnabled(true);
-        editUndoAction.updateUndoState();
-        editRedoAction.updateRedoState();
+        updateUndoAndRedoState();
     }
 
     /* Use this when "File -> New" is used
@@ -936,8 +973,7 @@ public class VenusUI extends JFrame {
         runToggleBreakpointsAction.setEnabled(false);
         helpHelpAction.setEnabled(true);
         helpAboutAction.setEnabled(true);
-        editUndoAction.updateUndoState();
-        editRedoAction.updateRedoState();
+        updateUndoAndRedoState();
     }
 
     /* Use this upon successful assemble or reset
@@ -970,8 +1006,7 @@ public class VenusUI extends JFrame {
         runToggleBreakpointsAction.setEnabled(true);
         helpHelpAction.setEnabled(true);
         helpAboutAction.setEnabled(true);
-        editUndoAction.updateUndoState();
-        editRedoAction.updateRedoState();
+        updateUndoAndRedoState();
     }
 
     /* Use this while program is running
@@ -1037,8 +1072,7 @@ public class VenusUI extends JFrame {
         runToggleBreakpointsAction.setEnabled(true);
         helpHelpAction.setEnabled(true);
         helpAboutAction.setEnabled(true);
-        editUndoAction.updateUndoState();
-        editRedoAction.updateRedoState();
+        updateUndoAndRedoState();
     }
 
 
@@ -1194,7 +1228,8 @@ public class VenusUI extends JFrame {
     }
 
     public void updateUndoAndRedoState() {
-        editUndoAction.updateUndoState();
-        editRedoAction.updateRedoState();
+        EditPane editPane = getMainPane().getEditPane();
+        editUndoAction.setEnabled(editPane != null && editPane.getUndoManager().canUndo());
+        editRedoAction.setEnabled(editPane != null && editPane.getUndoManager().canRedo());
     }
 }
