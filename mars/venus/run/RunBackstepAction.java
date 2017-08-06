@@ -6,7 +6,7 @@ import mars.riscv.hardware.FloatingPointRegisterFile;
 import mars.riscv.hardware.Memory;
 import mars.riscv.hardware.RegisterFile;
 import mars.venus.ExecutePane;
-import mars.venus.file.FileStatus;
+import mars.venus.FileStatus;
 import mars.venus.GuiAction;
 import mars.venus.VenusUI;
 

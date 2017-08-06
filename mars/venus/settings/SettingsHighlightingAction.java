@@ -2,7 +2,10 @@ package mars.venus.settings;
 
 import mars.Globals;
 import mars.Settings;
-import mars.venus.*;
+import mars.venus.ExecutePane;
+import mars.venus.GuiAction;
+import mars.venus.MonoRightCellRenderer;
+import mars.venus.VenusUI;
 import mars.venus.util.AbstractFontSettingDialog;
 
 import javax.swing.*;

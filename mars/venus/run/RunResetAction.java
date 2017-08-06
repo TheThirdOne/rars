@@ -5,7 +5,7 @@ import mars.Globals;
 import mars.riscv.hardware.*;
 import mars.util.SystemIO;
 import mars.venus.ExecutePane;
-import mars.venus.file.FileStatus;
+import mars.venus.FileStatus;
 import mars.venus.GuiAction;
 import mars.venus.VenusUI;
 

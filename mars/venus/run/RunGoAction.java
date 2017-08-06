@@ -9,7 +9,7 @@ import mars.simulator.Simulator;
 import mars.simulator.SimulatorNotice;
 import mars.util.SystemIO;
 import mars.venus.ExecutePane;
-import mars.venus.file.FileStatus;
+import mars.venus.FileStatus;
 import mars.venus.GuiAction;
 import mars.venus.VenusUI;
 

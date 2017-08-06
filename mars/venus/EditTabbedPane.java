@@ -6,7 +6,6 @@ import mars.RISCVprogram;
 import mars.Settings;
 import mars.riscv.hardware.RegisterFile;
 import mars.util.FilenameFinder;
-import mars.venus.file.FileStatus;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;

@@ -4,7 +4,6 @@ import mars.Globals;
 import mars.Settings;
 import mars.riscv.dump.DumpFormatLoader;
 import mars.venus.edit.*;
-import mars.venus.file.*;
 import mars.venus.registers.ControlAndStatusWindow;
 import mars.venus.registers.FloatingPointWindow;
 import mars.venus.registers.RegistersPane;
@@ -15,10 +14,7 @@ import mars.venus.util.PopupListener;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 import java.net.URL;
 
 /*
@@ -252,44 +248,72 @@ public class VenusUI extends JFrame {
         Toolkit tk = Toolkit.getDefaultToolkit();
         Class cs = this.getClass();
         try {
-            fileNewAction = new FileNewAction("New",
+            fileNewAction = new GuiAction("New",
                     new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "New22.png"))),
                     "Create a new file for editing", KeyEvent.VK_N,
                     KeyStroke.getKeyStroke(KeyEvent.VK_N, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),
-                    mainUI);
-            fileOpenAction = new FileOpenAction("Open ...",
+                    mainUI) {
+                public void actionPerformed(ActionEvent e) {
+                    mainUI.getEditor().newFile();
+                }
+            };
+            fileOpenAction = new GuiAction("Open ...",
                     new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "Open22.png"))),
                     "Open a file for editing", KeyEvent.VK_O,
                     KeyStroke.getKeyStroke(KeyEvent.VK_O, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),
-                    mainUI);
-            fileCloseAction = new FileCloseAction("Close", null,
-                    "Close the current file", KeyEvent.VK_C,
-                    KeyStroke.getKeyStroke(KeyEvent.VK_W, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),
-                    mainUI);
-            fileCloseAllAction = new FileCloseAllAction("Close All", null,
-                    "Close all open files", KeyEvent.VK_L,
-                    null, mainUI);
-            fileSaveAction = new FileSaveAction("Save",
+                    mainUI) {
+                public void actionPerformed(ActionEvent e) {
+                    mainUI.getEditor().open();
+                }
+            };
+            fileCloseAction = new GuiAction("Close", null, "Close the current file", KeyEvent.VK_C,
+                    KeyStroke.getKeyStroke(KeyEvent.VK_W, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()), mainUI) {
+                public void actionPerformed(ActionEvent e) {
+                    mainUI.getEditor().close();
+                }
+            };
+            fileCloseAllAction = new GuiAction("Close All", null, "Close all open files",
+                    KeyEvent.VK_L, null, mainUI) {
+                public void actionPerformed(ActionEvent e) {
+                    mainUI.getEditor().closeAll();
+                }
+            };
+            fileSaveAction = new GuiAction("Save",
                     new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "Save22.png"))),
                     "Save the current file", KeyEvent.VK_S,
                     KeyStroke.getKeyStroke(KeyEvent.VK_S, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),
-                    mainUI);
-            fileSaveAsAction = new FileSaveAsAction("Save as ...",
+                    mainUI) {
+                public void actionPerformed(ActionEvent e) {
+                    mainUI.getEditor().save();
+                }
+            };
+            fileSaveAsAction = new GuiAction("Save as ...",
                     new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "SaveAs22.png"))),
-                    "Save current file with different name", KeyEvent.VK_A,
-                    null, mainUI);
-            fileSaveAllAction = new FileSaveAllAction("Save All", null,
+                    "Save current file with different name", KeyEvent.VK_A, null, mainUI) {
+                public void actionPerformed(ActionEvent e) {
+                    mainUI.getEditor().saveAs();
+                }
+            };
+            fileSaveAllAction = new GuiAction("Save All", null,
                     "Save all open files", KeyEvent.VK_V,
-                    null, mainUI);
+                    null, mainUI) {
+                public void actionPerformed(ActionEvent e) {
+                    mainUI.getEditor().saveAll();
+                }
+            };
             fileDumpMemoryAction = new FileDumpMemoryAction("Dump Memory ...",
                     new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "Dump22.png"))),
                     "Dump machine code or data in an available format", KeyEvent.VK_D,
                     KeyStroke.getKeyStroke(KeyEvent.VK_D, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),
                     mainUI);
+            fileExitAction = new GuiAction("Exit", null, "Exit Mars", KeyEvent.VK_X, null, mainUI) {
+                public void actionPerformed(ActionEvent e) {
+                    if (mainUI.getEditor().closeAll()) {
+                        System.exit(0);
+                    }
+                }
+            };
 
-            fileExitAction = new FileExitAction("Exit", null,
-                    "Exit Mars", KeyEvent.VK_X,
-                    null, mainUI);
             editUndoAction = new EditUndoAction("Undo",
                     new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "Undo22.png"))),
                     "Undo last edit", KeyEvent.VK_U,

@@ -1,4 +1,4 @@
-package mars.venus.file;
+package mars.venus;
 
 import mars.Globals;
 import mars.riscv.dump.DumpFormat;
@@ -7,8 +7,6 @@ import mars.riscv.hardware.AddressErrorException;
 import mars.riscv.hardware.Memory;
 import mars.util.Binary;
 import mars.util.MemoryDump;
-import mars.venus.GuiAction;
-import mars.venus.VenusUI;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;

@@ -2,13 +2,13 @@ package mars.venus.settings;
 
 import mars.Globals;
 import mars.Settings;
-import mars.venus.util.AbstractFontSettingDialog;
 import mars.venus.Editor;
 import mars.venus.GuiAction;
 import mars.venus.VenusUI;
 import mars.venus.editors.jeditsyntax.SyntaxStyle;
 import mars.venus.editors.jeditsyntax.SyntaxUtilities;
 import mars.venus.editors.jeditsyntax.tokenmarker.RISCVTokenMarker;
+import mars.venus.util.AbstractFontSettingDialog;
 
 import javax.swing.*;
 import javax.swing.border.BevelBorder;

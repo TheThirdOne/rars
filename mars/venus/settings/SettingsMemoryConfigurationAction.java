@@ -5,7 +5,7 @@ import mars.riscv.hardware.MemoryConfiguration;
 import mars.riscv.hardware.MemoryConfigurations;
 import mars.simulator.Simulator;
 import mars.util.Binary;
-import mars.venus.file.FileStatus;
+import mars.venus.FileStatus;
 import mars.venus.GuiAction;
 import mars.venus.VenusUI;
 

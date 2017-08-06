@@ -5,7 +5,6 @@ import mars.Settings;
 import mars.venus.editors.MARSTextEditingArea;
 import mars.venus.editors.generic.GenericTextArea;
 import mars.venus.editors.jeditsyntax.JEditBasedTextArea;
-import mars.venus.file.FileStatus;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
