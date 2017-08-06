@@ -3,6 +3,7 @@ package mars.venus;
 import mars.Globals;
 import mars.Settings;
 import mars.riscv.dump.DumpFormatLoader;
+import mars.simulator.Simulator;
 import mars.venus.registers.ControlAndStatusWindow;
 import mars.venus.registers.FloatingPointWindow;
 import mars.venus.registers.RegistersPane;
@@ -409,16 +410,26 @@ public class VenusUI extends JFrame {
                     "Undo the last step", KeyEvent.VK_B,
                     KeyStroke.getKeyStroke(KeyEvent.VK_F8, 0),
                     mainUI);
-            runPauseAction = new RunPauseAction("Pause",
+            runPauseAction = new GuiAction("Pause",
                     new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "Pause22.png"))),
                     "Pause the currently running program", KeyEvent.VK_P,
                     KeyStroke.getKeyStroke(KeyEvent.VK_F9, 0),
-                    mainUI);
-            runStopAction = new RunStopAction("Stop",
+                    mainUI){
+                public void actionPerformed(ActionEvent e) {
+                    Simulator.getInstance().pauseExecution();
+                    // RunGoAction's "paused" method will do the cleanup.
+                }
+            };
+            runStopAction = new GuiAction("Stop",
                     new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "Stop22.png"))),
                     "Stop the currently running program", KeyEvent.VK_S,
                     KeyStroke.getKeyStroke(KeyEvent.VK_F11, 0),
-                    mainUI);
+                    mainUI){
+                public void actionPerformed(ActionEvent e) {
+                    Simulator.getInstance().stopExecution();
+                    // RunGoAction's "stopped" method will take care of the cleanup.
+                }
+            };
             runResetAction = new RunResetAction("Reset",
                     new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "Reset22.png"))),
                     "Reset memory and registers", KeyEvent.VK_R,
@@ -430,12 +441,16 @@ public class VenusUI extends JFrame {
                     KeyEvent.VK_K,
                     KeyStroke.getKeyStroke(KeyEvent.VK_K, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),
                     mainUI);
-            runToggleBreakpointsAction = new RunToggleBreakpointsAction("Toggle all breakpoints",
+            runToggleBreakpointsAction = new GuiAction("Toggle all breakpoints",
                     null,
                     "Disable/enable all breakpoints without clearing (can also click Bkpt column header)",
                     KeyEvent.VK_T,
                     KeyStroke.getKeyStroke(KeyEvent.VK_T, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),
-                    mainUI);
+                    mainUI){
+                public void actionPerformed(ActionEvent e) {
+                    Globals.getGui().getMainPane().getExecutePane().getTextSegmentWindow().toggleBreakpoints();
+                }
+            };
             settingsLabelAction = new SettingsAction("Show Labels Window (symbol table)",
                     "Toggle visibility of Labels window (symbol table) in the Execute tab",
                     mainUI, Settings.Bool.LABEL_WINDOW_VISIBILITY) {
