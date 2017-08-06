@@ -55,10 +55,12 @@ public class RunGoAction extends GuiAction {
     public static int maxSteps = defaultMaxSteps;
     private String name;
     private ExecutePane executePane;
+    private VenusUI mainUI;
 
     public RunGoAction(String name, Icon icon, String descrip,
                        Integer mnemonic, KeyStroke accel, VenusUI gui) {
-        super(name, icon, descrip, mnemonic, accel, gui);
+        super(name, icon, descrip, mnemonic, accel);
+        mainUI = gui;
     }
 
     /**

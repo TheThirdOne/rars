@@ -3,7 +3,6 @@ package mars.venus.settings;
 import mars.Globals;
 import mars.Settings;
 import mars.venus.GuiAction;
-import mars.venus.VenusUI;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -41,8 +40,8 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 public class SettingsAction extends GuiAction {
     private Settings.Bool setting;
 
-    public SettingsAction(String name, String descrip, VenusUI gui, Settings.Bool setting) {
-        super(name, null, descrip, null, null, gui);
+    public SettingsAction(String name, String descrip, Settings.Bool setting) {
+        super(name, null, descrip, null, null);
         this.setting = setting;
     }
     public void actionPerformed(ActionEvent e) {

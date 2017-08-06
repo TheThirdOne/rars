@@ -4,7 +4,6 @@ import mars.Globals;
 import mars.Settings;
 import mars.venus.Editor;
 import mars.venus.GuiAction;
-import mars.venus.VenusUI;
 import mars.venus.editors.jeditsyntax.SyntaxStyle;
 import mars.venus.editors.jeditsyntax.SyntaxUtilities;
 import mars.venus.editors.jeditsyntax.tokenmarker.RISCVTokenMarker;
@@ -53,14 +52,14 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 public class SettingsEditorAction extends GuiAction {
 
-    JDialog editorDialog;
+    private JDialog editorDialog;
 
     /**
      * Create a new SettingsEditorAction.  Has all the GuiAction parameters.
      */
     public SettingsEditorAction(String name, Icon icon, String descrip,
-                                Integer mnemonic, KeyStroke accel, VenusUI gui) {
-        super(name, icon, descrip, mnemonic, accel, gui);
+                                Integer mnemonic, KeyStroke accel) {
+        super(name, icon, descrip, mnemonic, accel);
     }
 
     /**

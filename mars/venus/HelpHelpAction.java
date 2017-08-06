@@ -55,9 +55,12 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * Action  for the Help -> Help menu item
  */
 public class HelpHelpAction extends GuiAction {
+    private VenusUI mainUI;
+
     public HelpHelpAction(String name, Icon icon, String descrip,
                           Integer mnemonic, KeyStroke accel, VenusUI gui) {
-        super(name, icon, descrip, mnemonic, accel, gui);
+        super(name, icon, descrip, mnemonic, accel);
+        mainUI = gui;
     }
 
     // ideally read or computed from config file...

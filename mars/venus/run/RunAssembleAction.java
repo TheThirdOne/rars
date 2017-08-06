@@ -50,10 +50,12 @@ public class RunAssembleAction extends GuiAction {
     private static boolean warningsAreErrors;
     // Threshold for adding filename to printed message of files being assembled.
     private static final int LINE_LENGTH_LIMIT = 60;
+    private VenusUI mainUI;
 
     public RunAssembleAction(String name, Icon icon, String descrip,
                              Integer mnemonic, KeyStroke accel, VenusUI gui) {
-        super(name, icon, descrip, mnemonic, accel, gui);
+        super(name, icon, descrip, mnemonic, accel);
+        mainUI = gui;
     }
 
     // These are both used by RunResetAction to re-assemble under identical conditions.

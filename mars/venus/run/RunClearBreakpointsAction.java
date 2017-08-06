@@ -2,7 +2,6 @@ package mars.venus.run;
 
 import mars.Globals;
 import mars.venus.GuiAction;
-import mars.venus.VenusUI;
 
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
@@ -51,8 +50,8 @@ public class RunClearBreakpointsAction extends GuiAction implements TableModelLi
      * each successful assembly).
      */
     public RunClearBreakpointsAction(String name, Icon icon, String descrip,
-                                     Integer mnemonic, KeyStroke accel, VenusUI gui) {
-        super(name, icon, descrip, mnemonic, accel, gui);
+                                     Integer mnemonic, KeyStroke accel) {
+        super(name, icon, descrip, mnemonic, accel);
         Globals.getGui().getMainPane().getExecutePane().getTextSegmentWindow().registerTableModelListener(this);
     }
 

@@ -37,9 +37,11 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * Action  for the Help -> About menu item
  */
 public class HelpAboutAction extends GuiAction {
+    private VenusUI mainUI;
     public HelpAboutAction(String name, Icon icon, String descrip,
                            Integer mnemonic, KeyStroke accel, VenusUI gui) {
-        super(name, icon, descrip, mnemonic, accel, gui);
+        super(name, icon, descrip, mnemonic, accel);
+        mainUI = gui;
     }
 
     public void actionPerformed(ActionEvent e) {

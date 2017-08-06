@@ -5,7 +5,6 @@ import mars.Settings;
 import mars.venus.ExecutePane;
 import mars.venus.GuiAction;
 import mars.venus.MonoRightCellRenderer;
-import mars.venus.VenusUI;
 import mars.venus.util.AbstractFontSettingDialog;
 
 import javax.swing.*;
@@ -114,8 +113,8 @@ public class SettingsHighlightingAction extends GuiAction {
      * Create a new SettingsEditorAction.  Has all the GuiAction parameters.
      */
     public SettingsHighlightingAction(String name, Icon icon, String descrip,
-                                      Integer mnemonic, KeyStroke accel, VenusUI gui) {
-        super(name, icon, descrip, mnemonic, accel, gui);
+                                      Integer mnemonic, KeyStroke accel) {
+        super(name, icon, descrip, mnemonic, accel);
     }
 
     /**

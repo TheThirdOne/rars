@@ -45,11 +45,14 @@ public class EditFindReplaceAction extends GuiAction {
     private static String searchString = "";
     private static boolean caseSensitivity = true;
     private static final String DIALOG_TITLE = "Find and Replace";
-    JDialog findReplaceDialog;
+    private EditPane editPane;
+
+    private JDialog findReplaceDialog;
 
     public EditFindReplaceAction(String name, Icon icon, String descrip,
                                  Integer mnemonic, KeyStroke accel, VenusUI gui) {
-        super(name, icon, descrip, mnemonic, accel, gui);
+        super(name, icon, descrip, mnemonic, accel);
+        editPane = gui.getMainPane().getEditPane();
     }
 
     public void actionPerformed(ActionEvent e) {
@@ -211,7 +214,6 @@ public class EditFindReplaceAction extends GuiAction {
         private void performFind() {
             resultsLabel.setText("");
             if (findInputField.getText().length() > 0) {
-                EditPane editPane = mainUI.getMainPane().getEditPane();
                 // Being cautious. Should not be null because find/replace tool button disabled if no file open
                 if (editPane != null) {
                     searchString = findInputField.getText();
@@ -235,7 +237,6 @@ public class EditFindReplaceAction extends GuiAction {
         private void performReplace() {
             resultsLabel.setText("");
             if (findInputField.getText().length() > 0) {
-                EditPane editPane = mainUI.getMainPane().getEditPane();
                 // Being cautious. Should not be null b/c find/replace tool button disabled if no file open
                 if (editPane != null) {
                     searchString = findInputField.getText();
@@ -269,7 +270,6 @@ public class EditFindReplaceAction extends GuiAction {
         private void performReplaceAll() {
             resultsLabel.setText("");
             if (findInputField.getText().length() > 0) {
-                EditPane editPane = mainUI.getMainPane().getEditPane();
                 // Being cautious. Should not be null b/c find/replace tool button disabled if no file open
                 if (editPane != null) {
                     searchString = findInputField.getText();

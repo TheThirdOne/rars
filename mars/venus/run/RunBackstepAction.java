@@ -46,12 +46,14 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 public class RunBackstepAction extends GuiAction {
 
-    String name;
-    ExecutePane executePane;
+    private String name;
+    private ExecutePane executePane;
+    private VenusUI mainUI;
 
     public RunBackstepAction(String name, Icon icon, String descrip,
                              Integer mnemonic, KeyStroke accel, VenusUI gui) {
-        super(name, icon, descrip, mnemonic, accel, gui);
+        super(name, icon, descrip, mnemonic, accel);
+        mainUI = gui;
     }
 
     /**

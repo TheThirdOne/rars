@@ -3,7 +3,6 @@ package mars.venus.settings;
 import mars.Globals;
 import mars.Settings;
 import mars.venus.GuiAction;
-import mars.venus.VenusUI;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -47,17 +46,17 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 public class SettingsExceptionHandlerAction extends GuiAction {
 
-    JDialog exceptionHandlerDialog;
-    JCheckBox exceptionHandlerSetting;
-    JButton exceptionHandlerSelectionButton;
-    JTextField exceptionHandlerDisplay;
+    private JDialog exceptionHandlerDialog;
+    private JCheckBox exceptionHandlerSetting;
+    private JButton exceptionHandlerSelectionButton;
+    private JTextField exceptionHandlerDisplay;
 
-    boolean initialSelected; // state of check box when dialog initiated.
-    String initialPathname;  // selected exception handler when dialog initiated.
+    private boolean initialSelected; // state of check box when dialog initiated.
+    private String initialPathname;  // selected exception handler when dialog initiated.
 
     public SettingsExceptionHandlerAction(String name, Icon icon, String descrip,
-                                          Integer mnemonic, KeyStroke accel, VenusUI gui) {
-        super(name, icon, descrip, mnemonic, accel, gui);
+                                          Integer mnemonic, KeyStroke accel) {
+        super(name, icon, descrip, mnemonic, accel);
     }
 
     // launch dialog for setting and filename specification

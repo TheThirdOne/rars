@@ -7,7 +7,6 @@ import mars.simulator.Simulator;
 import mars.util.Binary;
 import mars.venus.FileStatus;
 import mars.venus.GuiAction;
-import mars.venus.VenusUI;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -52,18 +51,12 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * Action class for the Settings menu item for text editor settings.
  */
 public class SettingsMemoryConfigurationAction extends GuiAction {
-
-    JDialog configDialog;
-    SettingsMemoryConfigurationAction thisAction;
-
-
     /**
      * Create a new SettingsEditorAction.  Has all the GuiAction parameters.
      */
     public SettingsMemoryConfigurationAction(String name, Icon icon, String descrip,
-                                             Integer mnemonic, KeyStroke accel, VenusUI gui) {
-        super(name, icon, descrip, mnemonic, accel, gui);
-        thisAction = this;
+                                             Integer mnemonic, KeyStroke accel) {
+        super(name, icon, descrip, mnemonic, accel);
     }
 
     /**
@@ -71,7 +64,7 @@ public class SettingsMemoryConfigurationAction extends GuiAction {
      * editor settings.
      */
     public void actionPerformed(ActionEvent e) {
-        configDialog = new MemoryConfigurationDialog(Globals.getGui(), "Memory Configuration", true);
+        JDialog configDialog = new MemoryConfigurationDialog(Globals.getGui(), "Memory Configuration", true);
         configDialog.setVisible(true);
     }
 
@@ -84,7 +77,7 @@ public class SettingsMemoryConfigurationAction extends GuiAction {
         JLabel[] nameDisplay;
         ConfigurationButton selectedConfigurationButton, initialConfigurationButton;
 
-        public MemoryConfigurationDialog(Frame owner, String title, boolean modality) {
+        private MemoryConfigurationDialog(Frame owner, String title, boolean modality) {
             super(owner, title, modality);
             this.setContentPane(buildDialogPanel());
             this.setDefaultCloseOperation(

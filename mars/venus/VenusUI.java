@@ -251,54 +251,50 @@ public class VenusUI extends JFrame {
             fileNewAction = new GuiAction("New",
                     new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "New22.png"))),
                     "Create a new file for editing", KeyEvent.VK_N,
-                    KeyStroke.getKeyStroke(KeyEvent.VK_N, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),
-                    mainUI) {
+                    KeyStroke.getKeyStroke(KeyEvent.VK_N, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask())) {
                 public void actionPerformed(ActionEvent e) {
-                    mainUI.getEditor().newFile();
+                    editor.newFile();
                 }
             };
             fileOpenAction = new GuiAction("Open ...",
                     new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "Open22.png"))),
                     "Open a file for editing", KeyEvent.VK_O,
-                    KeyStroke.getKeyStroke(KeyEvent.VK_O, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),
-                    mainUI) {
+                    KeyStroke.getKeyStroke(KeyEvent.VK_O, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask())) {
                 public void actionPerformed(ActionEvent e) {
-                    mainUI.getEditor().open();
+                    editor.open();
                 }
             };
             fileCloseAction = new GuiAction("Close", null, "Close the current file", KeyEvent.VK_C,
-                    KeyStroke.getKeyStroke(KeyEvent.VK_W, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()), mainUI) {
+                    KeyStroke.getKeyStroke(KeyEvent.VK_W, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask())) {
                 public void actionPerformed(ActionEvent e) {
-                    mainUI.getEditor().close();
+                    editor.close();
                 }
             };
             fileCloseAllAction = new GuiAction("Close All", null, "Close all open files",
-                    KeyEvent.VK_L, null, mainUI) {
+                    KeyEvent.VK_L, null) {
                 public void actionPerformed(ActionEvent e) {
-                    mainUI.getEditor().closeAll();
+                    editor.closeAll();
                 }
             };
             fileSaveAction = new GuiAction("Save",
                     new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "Save22.png"))),
                     "Save the current file", KeyEvent.VK_S,
-                    KeyStroke.getKeyStroke(KeyEvent.VK_S, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),
-                    mainUI) {
+                    KeyStroke.getKeyStroke(KeyEvent.VK_S, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask())) {
                 public void actionPerformed(ActionEvent e) {
-                    mainUI.getEditor().save();
+                    editor.save();
                 }
             };
             fileSaveAsAction = new GuiAction("Save as ...",
                     new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "SaveAs22.png"))),
-                    "Save current file with different name", KeyEvent.VK_A, null, mainUI) {
+                    "Save current file with different name", KeyEvent.VK_A, null) {
                 public void actionPerformed(ActionEvent e) {
-                    mainUI.getEditor().saveAs();
+                    editor.saveAs();
                 }
             };
-            fileSaveAllAction = new GuiAction("Save All", null,
-                    "Save all open files", KeyEvent.VK_V,
-                    null, mainUI) {
+            fileSaveAllAction = new GuiAction("Save All", null, "Save all open files",
+                    KeyEvent.VK_V, null) {
                 public void actionPerformed(ActionEvent e) {
-                    mainUI.getEditor().saveAll();
+                    editor.saveAll();
                 }
             };
             fileDumpMemoryAction = new FileDumpMemoryAction("Dump Memory ...",
@@ -306,9 +302,9 @@ public class VenusUI extends JFrame {
                     "Dump machine code or data in an available format", KeyEvent.VK_D,
                     KeyStroke.getKeyStroke(KeyEvent.VK_D, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),
                     mainUI);
-            fileExitAction = new GuiAction("Exit", null, "Exit Mars", KeyEvent.VK_X, null, mainUI) {
+            fileExitAction = new GuiAction("Exit", null, "Exit Mars", KeyEvent.VK_X, null) {
                 public void actionPerformed(ActionEvent e) {
-                    if (mainUI.getEditor().closeAll()) {
+                    if (editor.closeAll()) {
                         System.exit(0);
                     }
                 }
@@ -317,62 +313,57 @@ public class VenusUI extends JFrame {
             editUndoAction = new GuiAction("Undo",
                     new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "Undo22.png"))),
                     "Undo last edit", KeyEvent.VK_U,
-                    KeyStroke.getKeyStroke(KeyEvent.VK_Z, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),
-                    mainUI) {
+                    KeyStroke.getKeyStroke(KeyEvent.VK_Z, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask())) {
                 {
                     setEnabled(false);
                 }
 
                 public void actionPerformed(ActionEvent e) {
-                    EditPane editPane = mainUI.getMainPane().getEditPane();
+                    EditPane editPane = mainPane.getEditPane();
                     if (editPane != null) {
                         editPane.undo();
-                        mainUI.updateUndoAndRedoState();
+                        updateUndoAndRedoState();
                     }
                 }
             };
             editRedoAction = new GuiAction("Redo",
                     new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "Redo22.png"))),
                     "Redo last edit", KeyEvent.VK_R,
-                    KeyStroke.getKeyStroke(KeyEvent.VK_Y, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),
-                    mainUI) {
+                    KeyStroke.getKeyStroke(KeyEvent.VK_Y, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask())) {
                 {
                     setEnabled(false);
                 }
 
                 public void actionPerformed(ActionEvent e) {
-                    EditPane editPane = mainUI.getMainPane().getEditPane();
+                    EditPane editPane = mainPane.getEditPane();
                     if (editPane != null) {
                         editPane.redo();
-                        mainUI.updateUndoAndRedoState();
+                        updateUndoAndRedoState();
                     }
                 }
             };
             editCutAction = new GuiAction("Cut",
                     new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "Cut22.gif"))),
                     "Cut", KeyEvent.VK_C,
-                    KeyStroke.getKeyStroke(KeyEvent.VK_X, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),
-                    mainUI) {
+                    KeyStroke.getKeyStroke(KeyEvent.VK_X, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask())) {
                 public void actionPerformed(ActionEvent e) {
-                    mainUI.getMainPane().getEditPane().cutText();
+                    mainPane.getEditPane().cutText();
                 }
             };
             editCopyAction = new GuiAction("Copy",
                     new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "Copy22.png"))),
                     "Copy", KeyEvent.VK_O,
-                    KeyStroke.getKeyStroke(KeyEvent.VK_C, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),
-                    mainUI) {
+                    KeyStroke.getKeyStroke(KeyEvent.VK_C, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask())) {
                 public void actionPerformed(ActionEvent e) {
-                    mainUI.getMainPane().getEditPane().copyText();
+                    mainPane.getEditPane().copyText();
                 }
             };
             editPasteAction = new GuiAction("Paste",
                     new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "Paste22.png"))),
                     "Paste", KeyEvent.VK_P,
-                    KeyStroke.getKeyStroke(KeyEvent.VK_V, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),
-                    mainUI) {
+                    KeyStroke.getKeyStroke(KeyEvent.VK_V, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask())) {
                 public void actionPerformed(ActionEvent e) {
-                    mainUI.getMainPane().getEditPane().pasteText();
+                    mainPane.getEditPane().pasteText();
                 }
             };
             editFindReplaceAction = new EditFindReplaceAction("Find/Replace",
@@ -383,10 +374,9 @@ public class VenusUI extends JFrame {
             editSelectAllAction = new GuiAction("Select All",
                     null, //new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath+"Find22.png"))),
                     "Select All", KeyEvent.VK_A,
-                    KeyStroke.getKeyStroke(KeyEvent.VK_A, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),
-                    mainUI) {
+                    KeyStroke.getKeyStroke(KeyEvent.VK_A, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask())) {
                 public void actionPerformed(ActionEvent e) {
-                    mainUI.getMainPane().getEditPane().selectAllText();
+                    mainPane.getEditPane().selectAllText();
                 }
             };
 
@@ -413,8 +403,7 @@ public class VenusUI extends JFrame {
             runPauseAction = new GuiAction("Pause",
                     new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "Pause22.png"))),
                     "Pause the currently running program", KeyEvent.VK_P,
-                    KeyStroke.getKeyStroke(KeyEvent.VK_F9, 0),
-                    mainUI){
+                    KeyStroke.getKeyStroke(KeyEvent.VK_F9, 0)) {
                 public void actionPerformed(ActionEvent e) {
                     Simulator.getInstance().pauseExecution();
                     // RunGoAction's "paused" method will do the cleanup.
@@ -423,8 +412,7 @@ public class VenusUI extends JFrame {
             runStopAction = new GuiAction("Stop",
                     new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "Stop22.png"))),
                     "Stop the currently running program", KeyEvent.VK_S,
-                    KeyStroke.getKeyStroke(KeyEvent.VK_F11, 0),
-                    mainUI){
+                    KeyStroke.getKeyStroke(KeyEvent.VK_F11, 0)) {
                 public void actionPerformed(ActionEvent e) {
                     Simulator.getInstance().stopExecution();
                     // RunGoAction's "stopped" method will take care of the cleanup.
@@ -439,102 +427,93 @@ public class VenusUI extends JFrame {
                     null,
                     "Clears all execution breakpoints set since the last assemble.",
                     KeyEvent.VK_K,
-                    KeyStroke.getKeyStroke(KeyEvent.VK_K, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),
-                    mainUI);
+                    KeyStroke.getKeyStroke(KeyEvent.VK_K, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask())
+            );
             runToggleBreakpointsAction = new GuiAction("Toggle all breakpoints",
                     null,
                     "Disable/enable all breakpoints without clearing (can also click Bkpt column header)",
                     KeyEvent.VK_T,
-                    KeyStroke.getKeyStroke(KeyEvent.VK_T, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),
-                    mainUI){
+                    KeyStroke.getKeyStroke(KeyEvent.VK_T, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask())) {
                 public void actionPerformed(ActionEvent e) {
-                    Globals.getGui().getMainPane().getExecutePane().getTextSegmentWindow().toggleBreakpoints();
+                    mainPane.getExecutePane().getTextSegmentWindow().toggleBreakpoints();
                 }
             };
             settingsLabelAction = new SettingsAction("Show Labels Window (symbol table)",
                     "Toggle visibility of Labels window (symbol table) in the Execute tab",
-                    mainUI, Settings.Bool.LABEL_WINDOW_VISIBILITY) {
+                    Settings.Bool.LABEL_WINDOW_VISIBILITY) {
                 public void handler(boolean visibility) {
-                    Globals.getGui().getMainPane().getExecutePane().setLabelWindowVisibility(visibility);
+                    mainPane.getExecutePane().setLabelWindowVisibility(visibility);
                 }
             };
             settingsPopupInputAction = new SettingsAction("Popup dialog for input syscalls (5,6,7,8,12)",
                     "If set, use popup dialog for input syscalls (5,6,7,8,12) instead of cursor in Run I/O window",
-                    mainUI, Settings.Bool.POPUP_SYSCALL_INPUT);
+                    Settings.Bool.POPUP_SYSCALL_INPUT);
 
             settingsValueDisplayBaseAction = new SettingsAction("Values displayed in hexadecimal",
                     "Toggle between hexadecimal and decimal display of memory/register values",
-                    mainUI, Settings.Bool.DISPLAY_VALUES_IN_HEX) {
+                    Settings.Bool.DISPLAY_VALUES_IN_HEX) {
                 public void handler(boolean isHex) {
-                    Globals.getGui().getMainPane().getExecutePane().getValueDisplayBaseChooser().setSelected(isHex);
+                    mainPane.getExecutePane().getValueDisplayBaseChooser().setSelected(isHex);
                 }
             };
             settingsAddressDisplayBaseAction = new SettingsAction("Addresses displayed in hexadecimal",
                     "Toggle between hexadecimal and decimal display of memory addresses",
-                    mainUI, Settings.Bool.DISPLAY_ADDRESSES_IN_HEX) {
+                    Settings.Bool.DISPLAY_ADDRESSES_IN_HEX) {
                 public void handler(boolean isHex) {
-                    Globals.getGui().getMainPane().getExecutePane().getAddressDisplayBaseChooser().setSelected(isHex);
+                    mainPane.getExecutePane().getAddressDisplayBaseChooser().setSelected(isHex);
                 }
             };
             settingsExtendedAction = new SettingsAction("Permit extended (pseudo) instructions and formats",
                     "If set, extended (pseudo) instructions are formats are permitted.",
-                    mainUI, Settings.Bool.EXTENDED_ASSEMBLER_ENABLED);
+                    Settings.Bool.EXTENDED_ASSEMBLER_ENABLED);
             settingsAssembleOnOpenAction = new SettingsAction("Assemble file upon opening",
                     "If set, a file will be automatically assembled as soon as it is opened.  File Open dialog will show most recently opened file.",
-                    mainUI, Settings.Bool.ASSEMBLE_ON_OPEN);
+                    Settings.Bool.ASSEMBLE_ON_OPEN);
             settingsAssembleAllAction = new SettingsAction("Assemble all files in directory",
                     "If set, all files in current directory will be assembled when Assemble operation is selected.",
-                    mainUI, Settings.Bool.ASSEMBLE_ALL);
+                    Settings.Bool.ASSEMBLE_ALL);
             settingsAssembleOpenAction = new SettingsAction("Assemble all files currently open",
                     "If set, all files currently open for editing will be assembled when Assemble operation is selected.",
-                    mainUI, Settings.Bool.ASSEMBLE_OPEN);
+                    Settings.Bool.ASSEMBLE_OPEN);
             settingsWarningsAreErrorsAction = new SettingsAction("Assembler warnings are considered errors",
                     "If set, assembler warnings will be interpreted as errors and prevent successful assembly.",
-                    mainUI, Settings.Bool.WARNINGS_ARE_ERRORS);
+                    Settings.Bool.WARNINGS_ARE_ERRORS);
             settingsStartAtMainAction = new SettingsAction("Initialize Program Counter to global 'main' if defined",
                     "If set, assembler will initialize Program Counter to text address globally labeled 'main', if defined.",
-                    mainUI, Settings.Bool.START_AT_MAIN);
+                    Settings.Bool.START_AT_MAIN);
             settingsProgramArgumentsAction = new SettingsAction("Program arguments provided to program",
                     "If set, program arguments for the program can be entered in border of Text Segment window.",
-                    mainUI, Settings.Bool.PROGRAM_ARGUMENTS) {
+                    Settings.Bool.PROGRAM_ARGUMENTS) {
                 public void handler(boolean selected) {
                     if (selected) {
-                        Globals.getGui().getMainPane().getExecutePane().getTextSegmentWindow().addProgramArgumentsPanel();
+                        mainPane.getExecutePane().getTextSegmentWindow().addProgramArgumentsPanel();
                     } else {
-                        Globals.getGui().getMainPane().getExecutePane().getTextSegmentWindow().removeProgramArgumentsPanel();
+                        mainPane.getExecutePane().getTextSegmentWindow().removeProgramArgumentsPanel();
                     }
                 }
             };
             settingsSelfModifyingCodeAction = new SettingsAction("Self-modifying code",
                     "If set, the program can write and branch to both text and data segments.",
-                    mainUI, Settings.Bool.SELF_MODIFYING_CODE_ENABLED);
+                    Settings.Bool.SELF_MODIFYING_CODE_ENABLED);
 
-            settingsEditorAction = new SettingsEditorAction("Editor...",
-                    null,
-                    "View and modify text editor settings.",
-                    null, null,
-                    mainUI);
-            settingsHighlightingAction = new SettingsHighlightingAction("Highlighting...",
-                    null,
-                    "View and modify Execute Tab highlighting colors",
-                    null, null,
-                    mainUI);
-            settingsExceptionHandlerAction = new SettingsExceptionHandlerAction("Exception Handler...",
-                    null,
+            settingsEditorAction = new SettingsEditorAction("Editor...", null,
+                    "View and modify text editor settings.", null, null
+            );
+            settingsHighlightingAction = new SettingsHighlightingAction("Highlighting...", null,
+                    "View and modify Execute Tab highlighting colors", null, null
+            );
+            settingsExceptionHandlerAction = new SettingsExceptionHandlerAction("Exception Handler...", null,
                     "If set, the specified exception handler file will be included in all Assemble operations.",
-                    null, null,
-                    mainUI);
+                    null, null
+            );
             settingsMemoryConfigurationAction = new SettingsMemoryConfigurationAction("Memory Configuration...",
-                    null,
-                    "View and modify memory segment base addresses for the simulated processor",
-                    null, null,
-                    mainUI);
+                    null, "View and modify memory segment base addresses for the simulated processor",
+                    null, null
+            );
 
             helpHelpAction = new HelpHelpAction("Help",
                     new ImageIcon(tk.getImage(cs.getResource(Globals.imagesPath + "Help22.png"))),
-                    "Help", KeyEvent.VK_H,
-                    KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0),
-                    mainUI);
+                    "Help", KeyEvent.VK_H, KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0), mainUI);
             helpAboutAction = new HelpAboutAction("About ...", null,
                     "Information about Mars", null, null, mainUI);
         } catch (NullPointerException e) {

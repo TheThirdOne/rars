@@ -37,15 +37,12 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 public class GuiAction extends AbstractAction {
-    protected VenusUI mainUI;
-
     protected GuiAction(String name, Icon icon, String descrip,
-                        Integer mnemonic, KeyStroke accel, VenusUI gui) {
+                        Integer mnemonic, KeyStroke accel) {
         super(name, icon);
         putValue(SHORT_DESCRIPTION, descrip);
         putValue(MNEMONIC_KEY, mnemonic);
         putValue(ACCELERATOR_KEY, accel);
-        mainUI = gui;
     }
 
     /**
