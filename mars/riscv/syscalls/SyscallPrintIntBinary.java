@@ -1,8 +1,8 @@
 package mars.riscv.syscalls;
 
 import mars.ProgramStatement;
-import mars.riscv.hardware.RegisterFile;
 import mars.riscv.AbstractSyscall;
+import mars.riscv.hardware.RegisterFile;
 import mars.util.Binary;
 import mars.util.SystemIO;
 
@@ -34,14 +34,9 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 (MIT license, http://www.opensource.org/licenses/mit-license.html)
  */
 
-
-/**
- * Service to display on the console the integer stored in a0, in binary format.
- */
-
 public class SyscallPrintIntBinary extends AbstractSyscall {
     public SyscallPrintIntBinary() {
-        super("PrintIntBinary");
+        super("PrintIntBinary", "Prints an integer (in binary format left-padded with zeroes) ", "a0 = integer to print", "N/A");
     }
 
     public void simulate(ProgramStatement statement) {

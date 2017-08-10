@@ -34,14 +34,11 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 (MIT license, http://www.opensource.org/licenses/mit-license.html)
  */
 
-
-/**
- * Service to close file descriptor given in a0.
- */
-
 public class SyscallGetCWD extends AbstractSyscall {
     public SyscallGetCWD() {
-        super("GetCWD");
+        super("GetCWD", "Writes the path of the current working directgory into a buffer",
+                "a0 = the buffer to write into <br>a1 = the length of the buffer",
+                "a0 = -1 if the path is longer than the buffer");
     }
 
     public void simulate(ProgramStatement statement) throws ExitingException {

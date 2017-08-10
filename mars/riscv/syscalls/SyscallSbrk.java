@@ -3,8 +3,8 @@ package mars.riscv.syscalls;
 import mars.ExitingException;
 import mars.Globals;
 import mars.ProgramStatement;
-import mars.riscv.hardware.RegisterFile;
 import mars.riscv.AbstractSyscall;
+import mars.riscv.hardware.RegisterFile;
 
 /*
 Copyright (c) 2003-2006,  Pete Sanderson and Kenneth Vollmar
@@ -34,14 +34,9 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 (MIT license, http://www.opensource.org/licenses/mit-license.html)
  */
 
-
-/**
- * Service to allocate amount of heap memory specified in a0, putting address into a0.
- */
-
 public class SyscallSbrk extends AbstractSyscall {
     public SyscallSbrk() {
-        super("Sbrk");
+        super("Sbrk", "Allocate heap memory", "a0 = amount of memory in bytes", "a0 = address to the allocated block");
     }
 
 

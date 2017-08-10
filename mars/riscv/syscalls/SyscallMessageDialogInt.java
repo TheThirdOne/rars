@@ -2,8 +2,8 @@ package mars.riscv.syscalls;
 
 import mars.ExitingException;
 import mars.ProgramStatement;
-import mars.riscv.hardware.RegisterFile;
 import mars.riscv.AbstractSyscall;
+import mars.riscv.hardware.RegisterFile;
 
 import javax.swing.*;
 
@@ -35,18 +35,11 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 (MIT license, http://www.opensource.org/licenses/mit-license.html)
  */
 
-/**
- * Service to display a message to user.
- * <p>
- * Input arguments:<br>
- * a0 = address of null-terminated string that is the message to user <br>
- * a1 = int value to display in string form after the first message   <br>
- * Output: none
- */
-
 public class SyscallMessageDialogInt extends AbstractSyscall {
     public SyscallMessageDialogInt() {
-        super("MessageDialogInt");
+        super("MessageDialogInt", "Service to display a message followed by a int to user",
+                "a0 = address of null-terminated string that is the message to user <br>" +
+                        "a1 = the int to display", "N/A");
     }
 
     public void simulate(ProgramStatement statement) throws ExitingException {

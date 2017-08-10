@@ -3,9 +3,9 @@ package mars.riscv.syscalls;
 import mars.ExitingException;
 import mars.Globals;
 import mars.ProgramStatement;
+import mars.riscv.AbstractSyscall;
 import mars.riscv.hardware.AddressErrorException;
 import mars.riscv.hardware.RegisterFile;
-import mars.riscv.AbstractSyscall;
 import mars.util.SystemIO;
 
 /*
@@ -45,7 +45,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * string can be no longer than n-1. If less than that, add
  * newline to end.  In either case, then pad with null byte.
  */
-
+// TODO: delete, this is redundent in light of the read syscall, just add on the newline in user code and done
 public class SyscallReadString extends AbstractSyscall {
     public SyscallReadString() {
         super("ReadString");

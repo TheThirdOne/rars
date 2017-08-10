@@ -1,8 +1,8 @@
 package mars.riscv.syscalls;
 
 import mars.ProgramStatement;
-import mars.riscv.hardware.RegisterFile;
 import mars.riscv.AbstractSyscall;
+import mars.riscv.hardware.RegisterFile;
 import mars.util.SystemIO;
 
 /*
@@ -33,21 +33,13 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 (MIT license, http://www.opensource.org/licenses/mit-license.html)
  */
 
-
-/**
- * Service to display character stored in a0 on the console.<br>
- * <p>
- * Service Number: 11, Name: PrintChar
- */
-
 public class SyscallPrintChar extends AbstractSyscall {
     public SyscallPrintChar() {
-        super("PrintChar");
+        super("PrintChar", "Prints an ascii character",
+                "a0 = character to print (only lowest byte is considered)", "N/A");
     }
 
     public void simulate(ProgramStatement statement) {
-        // mask off the lower byte of register $a0.
-        // Convert to a one-character string and use the string technique.
         char t = (char) (RegisterFile.getValue("a0") & 0x000000ff);
         SystemIO.printString(Character.toString(t));
     }

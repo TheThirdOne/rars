@@ -2,8 +2,8 @@ package mars.riscv.syscalls;
 
 import mars.ExitingException;
 import mars.ProgramStatement;
-import mars.riscv.hardware.RegisterFile;
 import mars.riscv.AbstractSyscall;
+import mars.riscv.hardware.RegisterFile;
 
 import javax.swing.*;
 
@@ -35,28 +35,15 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 (MIT license, http://www.opensource.org/licenses/mit-license.html)
  */
 
-/**
- * Service to display a message to user.
- * <p>
- * Input arguments: a0 = address of null-terminated string that is the message to user<br>
- * Output: a0 contains value of user-chosen option<br>
- * 0: Yes    <br>
- * 1: No     <br>
- * 2: Cancel <br>
- */
-
 public class SyscallConfirmDialog extends AbstractSyscall {
     public SyscallConfirmDialog() {
-        super("ConfirmDialog");
+        super("ConfirmDialog", "Service to display a message to user",
+                "a0 = address of null-terminated string that is the message to user",
+                "a0 = Yes (0), No (1), or Cancel(2)");
     }
 
     public void simulate(ProgramStatement statement) throws ExitingException {
         String message = NullString.get(statement);
-        // update register a0 with the value from showConfirmDialog.
-        // showConfirmDialog returns an int with one of three possible values:
-        //    0 ---> meaning Yes
-        //    1 ---> meaning No
-        //    2 ---> meaning Cancel
         RegisterFile.updateRegister("a0", JOptionPane.showConfirmDialog(null, message));
 
     }

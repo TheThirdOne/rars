@@ -3,9 +3,9 @@ package mars.riscv.syscalls;
 import mars.ExitingException;
 import mars.Globals;
 import mars.ProgramStatement;
+import mars.riscv.AbstractSyscall;
 import mars.riscv.hardware.AddressErrorException;
 import mars.riscv.hardware.RegisterFile;
-import mars.riscv.AbstractSyscall;
 import mars.util.SystemIO;
 
 /*
@@ -44,7 +44,9 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 public class SyscallWrite extends AbstractSyscall {
     public SyscallWrite() {
-        super("Write");
+        super("Write", "Write to a filedescriptor from a buffer",
+                "a0 = the file descriptor<br>a1 = the buffer address<br>a2 = the length to write",
+                "a0 = the number of charcters written");
     }
 
     public void simulate(ProgramStatement statement) throws ExitingException {

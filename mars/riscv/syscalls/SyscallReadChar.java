@@ -2,8 +2,8 @@ package mars.riscv.syscalls;
 
 import mars.ExitingException;
 import mars.ProgramStatement;
-import mars.riscv.hardware.RegisterFile;
 import mars.riscv.AbstractSyscall;
+import mars.riscv.hardware.RegisterFile;
 import mars.util.SystemIO;
 
 /*
@@ -34,14 +34,9 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 (MIT license, http://www.opensource.org/licenses/mit-license.html)
  */
 
-
-/**
- * Service to read a character from input console into a0.
- */
-
 public class SyscallReadChar extends AbstractSyscall {
     public SyscallReadChar() {
-        super("ReadChar");
+        super("ReadChar", "Read a character from input console", "N/A", "a0 = the character");
     }
 
     public void simulate(ProgramStatement statement) throws ExitingException {

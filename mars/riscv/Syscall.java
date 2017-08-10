@@ -54,6 +54,13 @@ public interface Syscall {
      */
     String getName();
 
+    /*TODO:describe*/
+    String getDescription();
+
+    String getInputs();
+
+    String getOutputs();
+
     /**
      * Set the service number.  This is provided to allow MARS implementer or user
      * to override the default service number.

@@ -2,8 +2,8 @@ package mars.riscv.syscalls;
 
 import mars.ExitingException;
 import mars.ProgramStatement;
-import mars.riscv.hardware.RegisterFile;
 import mars.riscv.AbstractSyscall;
+import mars.riscv.hardware.RegisterFile;
 
 import java.util.Random;
 
@@ -35,19 +35,10 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 (MIT license, http://www.opensource.org/licenses/mit-license.html)
  */
 
-
-/**
- * System call to the random number generator.
- * <p>
- * Input arguments:<br>
- * a0 = index of pseudorandom number generator <br>
- * a1 = upper bound for random number <br>
- * Return: a0 = the next pseudorandom, uniformly distributed int value between 0 and the value in a1
- */
-
 public class SyscallRandIntRange extends AbstractSyscall {
     public SyscallRandIntRange() {
-        super("RandIntRange");
+        super("RandIntRange", "Get a random bounded integer", "a0 = index of pseudorandom number generator<br>a1 = upper bound for random number",
+                "a0 = uniformly selectect from [0,bound]");
     }
 
     public void simulate(ProgramStatement statement) throws ExitingException {

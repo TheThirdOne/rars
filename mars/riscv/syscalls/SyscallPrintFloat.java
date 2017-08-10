@@ -1,8 +1,8 @@
 package mars.riscv.syscalls;
 
 import mars.ProgramStatement;
-import mars.riscv.hardware.FloatingPointRegisterFile;
 import mars.riscv.AbstractSyscall;
+import mars.riscv.hardware.FloatingPointRegisterFile;
 import mars.util.SystemIO;
 
 /*
@@ -33,18 +33,13 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 (MIT license, http://www.opensource.org/licenses/mit-license.html)
  */
 
-
-/**
- * Service to display on the console float whose bits are stored in f12
- */
-
 public class SyscallPrintFloat extends AbstractSyscall {
     public SyscallPrintFloat() {
-        super("PrintFloat");
+        super("PrintFloat", "Prints an floating point number", "fa0 = float to print", "N/A");
     }
 
     public void simulate(ProgramStatement statement) {
         SystemIO.printString(Float.toString(Float.intBitsToFloat(
-                FloatingPointRegisterFile.getValue(12))));
+                FloatingPointRegisterFile.getValue("fa0"))));
     }
 }

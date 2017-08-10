@@ -34,18 +34,11 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 (MIT license, http://www.opensource.org/licenses/mit-license.html)
  */
 
-/**
- * Service to display a message to user.
- * <p>
- * Input arguments:<br>
- * a0 = address of null-terminated string that is an information-type message to user <br>
- * a1 = address of null-terminated string to display after the first message          <br>
- * Output: none
- */
-
 public class SyscallMessageDialogString extends AbstractSyscall {
     public SyscallMessageDialogString() {
-        super("MessageDialogString");
+        super("MessageDialogString", "Service to display a message followed by a string to user",
+                "a0 = address of null-terminated string that is the message to user <br>" +
+                        "a1 = address of the second string to display", "N/A");
     }
 
     public void simulate(ProgramStatement statement) throws ExitingException {

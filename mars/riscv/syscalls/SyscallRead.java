@@ -3,9 +3,9 @@ package mars.riscv.syscalls;
 import mars.ExitingException;
 import mars.Globals;
 import mars.ProgramStatement;
+import mars.riscv.AbstractSyscall;
 import mars.riscv.hardware.AddressErrorException;
 import mars.riscv.hardware.RegisterFile;
-import mars.riscv.AbstractSyscall;
 import mars.util.SystemIO;
 
 /*
@@ -36,15 +36,11 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 (MIT license, http://www.opensource.org/licenses/mit-license.html)
  */
 
-
-/**
- * Service to read from file descriptor given in a0.  a1 specifies buffer
- * and a2 specifies length.  Number of characters read is returned in a0.
- */
-
 public class SyscallRead extends AbstractSyscall {
     public SyscallRead() {
-        super("Read");
+        super("Read", "Read from a file descriptor into a buffer",
+                "a0 = the file descriptor <br>a1 = address of the buffer <br>a2 = maximum length to read",
+                "a0 = the length read or -1 if error");
     }
 
     public void simulate(ProgramStatement statement) throws ExitingException {
@@ -59,19 +55,6 @@ public class SyscallRead extends AbstractSyscall {
                 length); // length
         RegisterFile.updateRegister("a0", retLength); // set returned value in register
 
-
-        // Getting rid of processing exception.  It is the responsibility of the
-        // user program to check the syscall's return value.  MARS should not
-        // re-emptively terminate MIPS execution because of it.  Thanks to
-        // UCLA student Duy Truong for pointing this out.  DPS 28-July-2009
-         /*
-         if (retLength < 0) // some error in opening file
-         {
-            throw new ProcessingException(statement,
-                                    SystemIO.getFileErrorMessage()+" (syscall 14)",
-                                    Exceptions.SYSCALL_EXCEPTION);
-         }
-			*/
         // copy bytes from returned buffer into MARS memory
         try {
             while (index < retLength) {

@@ -2,8 +2,8 @@ package mars.riscv.syscalls;
 
 import mars.ExitingException;
 import mars.ProgramStatement;
-import mars.riscv.hardware.FloatingPointRegisterFile;
 import mars.riscv.AbstractSyscall;
+import mars.riscv.hardware.FloatingPointRegisterFile;
 
 import javax.swing.*;
 
@@ -35,18 +35,11 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 (MIT license, http://www.opensource.org/licenses/mit-license.html)
  */
 
-/**
- * Service to display a message to user.
- * <p>
- * Input arguments:<br>
- * a0 = address of null-terminated string that is the message to user   <br>
- * f12 = float value to display in string form after the first message <br>
- * Output: none
- */
-
 public class SyscallMessageDialogFloat extends AbstractSyscall {
     public SyscallMessageDialogFloat() {
-        super("MessageDialogFloat");
+        super("MessageDialogFloat", "Service to display a message followed by a float to user",
+                "a0 = address of null-terminated string that is the message to user <br>" +
+                        "fa1 = the float to display", "N/A");
     }
 
     public void simulate(ProgramStatement statement) throws ExitingException {
@@ -54,7 +47,7 @@ public class SyscallMessageDialogFloat extends AbstractSyscall {
 
         // Display the dialog.
         JOptionPane.showMessageDialog(null,
-                message + Float.toString(FloatingPointRegisterFile.getFloatFromRegister("f12")),
+                message + Float.toString(FloatingPointRegisterFile.getFloatFromRegister("fa1")),
                 null,
                 JOptionPane.INFORMATION_MESSAGE);
     }

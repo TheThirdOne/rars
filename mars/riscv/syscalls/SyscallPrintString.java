@@ -33,14 +33,10 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 (MIT license, http://www.opensource.org/licenses/mit-license.html)
  */
 
-
-/**
- * Service to display string stored starting at address in a0 onto the console.
- */
-
 public class SyscallPrintString extends AbstractSyscall {
     public SyscallPrintString() {
-        super("PrintString");
+        super("PrintString", "Prints a null-terminated string to the console",
+                "a0 = the address of the string", "N/A");
     }
 
     public void simulate(ProgramStatement statement) throws ExitingException {

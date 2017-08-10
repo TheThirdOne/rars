@@ -1,8 +1,8 @@
 package mars.riscv.syscalls;
 
 import mars.ProgramStatement;
-import mars.riscv.hardware.FloatingPointRegisterFile;
 import mars.riscv.AbstractSyscall;
+import mars.riscv.hardware.FloatingPointRegisterFile;
 
 import java.util.Random;
 
@@ -34,21 +34,14 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 (MIT license, http://www.opensource.org/licenses/mit-license.html)
  */
 
-
-/**
- * System call to the random number generator.
- * <p>
- * Input arguments: a0 = index of pseudorandom number generator <br>
- * Return: f0 = the next pseudorandom, uniformly distributed float value between 0.0 and 1.0
- */
-
 public class SyscallRandFloat extends AbstractSyscall {
     public SyscallRandFloat() {
-        super("RandFloat");
+        super("RandFloat", "Get a random float", "a0 = index of pseudorandom number generator",
+                "fa0 = uniformly randomly selected from from [0,1]");
     }
 
     public void simulate(ProgramStatement statement) {
         Random stream = RandomStreams.get("a0");
-        FloatingPointRegisterFile.setRegisterToFloat(0, stream.nextFloat());
+        FloatingPointRegisterFile.setRegisterToFloat(10, stream.nextFloat());// TODO: make this a string method fa0
     }
 }

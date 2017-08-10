@@ -33,13 +33,11 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 
-/**
- * Service to exit the MIPS program.
- */
+
 
 public class SyscallExit extends AbstractSyscall {
     public SyscallExit() {
-        super("Exit");
+        super("Exit", "Exits the program with code 0");
     }
 
     public void simulate(ProgramStatement statement) throws ExitingException {

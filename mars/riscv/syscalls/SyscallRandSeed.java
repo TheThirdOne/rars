@@ -1,8 +1,8 @@
 package mars.riscv.syscalls;
 
 import mars.ProgramStatement;
-import mars.riscv.hardware.RegisterFile;
 import mars.riscv.AbstractSyscall;
+import mars.riscv.hardware.RegisterFile;
 
 import java.util.Random;
 
@@ -34,19 +34,10 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 (MIT license, http://www.opensource.org/licenses/mit-license.html)
  */
 
-
-/**
- * Service to set seed for the underlying Java pseudorandom number generator.
- * <p>
- * Input arguments:<br>
- * a0 = index of pseudorandom number generator <br>
- * a1 = the seed <br>
- * Return: none
- */
-
 public class SyscallRandSeed extends AbstractSyscall {
     public SyscallRandSeed() {
-        super("RandSeed");
+        super("RandSeed", "Set seed for the underlying Java pseudorandom number generator",
+                "a0 = index of pseudorandom number generator<br>a1 = the seed", "N/A");
     }
 
     public void simulate(ProgramStatement statement) {

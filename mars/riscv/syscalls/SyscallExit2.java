@@ -3,8 +3,8 @@ package mars.riscv.syscalls;
 import mars.ExitingException;
 import mars.Globals;
 import mars.ProgramStatement;
-import mars.riscv.hardware.RegisterFile;
 import mars.riscv.AbstractSyscall;
+import mars.riscv.hardware.RegisterFile;
 
 /*
 Copyright (c) 2003-2006,  Pete Sanderson and Kenneth Vollmar
@@ -34,20 +34,14 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 (MIT license, http://www.opensource.org/licenses/mit-license.html)
  */
 
-
-/**
- * Service to exit the MIPS program with return value given in $a0.
- * If running in command mode, MARS will exit with that value.  If running under GUI,
- * return value is ignored.
- */
-
 public class SyscallExit2 extends AbstractSyscall {
     public SyscallExit2() {
-        super("Exit2");
+        super("Exit2", "Exits the program with a code", "a0 = the number ot exit with (ignored in the gui)", "N/A");
     }
 
     public void simulate(ProgramStatement statement) throws ExitingException {
         if (Globals.getGui() == null) {
+            // Todo: make this not ignored
             Globals.exitCode = RegisterFile.getValue("a0");
         }
         throw new ExitingException(); // empty error list

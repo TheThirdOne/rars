@@ -46,6 +46,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 public abstract class AbstractSyscall implements Syscall {
     private int serviceNumber;
     private String serviceName;
+    private String description, inputs, outputs;
 
     /**
      * Constructor is provided so subclass may initialize instance variables.
@@ -53,8 +54,19 @@ public abstract class AbstractSyscall implements Syscall {
      * @param name service name which may be used for reference independent of number
      */
     protected AbstractSyscall(String name) {
+        this(name, "N/A");
+    }
+
+    protected AbstractSyscall(String name, String descr) {
+        this(name, descr, "N/A", "N/A");
+    }
+
+    protected AbstractSyscall(String name, String descr, String in, String out) {
         serviceNumber = -1;
         serviceName = name;
+        description = descr;
+        inputs = in;
+        outputs = out;
     }
 
     /**
@@ -66,6 +78,21 @@ public abstract class AbstractSyscall implements Syscall {
      */
     public String getName() {
         return serviceName;
+    }
+
+
+    public String getDescription() {
+        return description;
+    }
+
+    /*TODO:describe*/
+    public String getInputs() {
+        return inputs;
+    }
+
+    /*TODO:describe*/
+    public String getOutputs() {
+        return outputs;
     }
 
     /**

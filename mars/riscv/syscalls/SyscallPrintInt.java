@@ -1,8 +1,8 @@
 package mars.riscv.syscalls;
 
 import mars.ProgramStatement;
-import mars.riscv.hardware.RegisterFile;
 import mars.riscv.AbstractSyscall;
+import mars.riscv.hardware.RegisterFile;
 import mars.util.SystemIO;
 
 /*
@@ -33,14 +33,9 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 (MIT license, http://www.opensource.org/licenses/mit-license.html)
  */
 
-
-/**
- * Service to display integer stored in a0 on the console.
- */
-
 public class SyscallPrintInt extends AbstractSyscall {
     public SyscallPrintInt() {
-        super("PrintInt");
+        super("PrintInt", "Prints an integer", "a0 = integer to print", "N/A");
     }
 
     public void simulate(ProgramStatement statement) {

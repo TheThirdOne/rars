@@ -1,8 +1,8 @@
 package mars.riscv.syscalls;
 
 import mars.ProgramStatement;
-import mars.riscv.hardware.RegisterFile;
 import mars.riscv.AbstractSyscall;
+import mars.riscv.hardware.RegisterFile;
 import mars.util.SystemIO;
 
 /*
@@ -33,14 +33,9 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 (MIT license, http://www.opensource.org/licenses/mit-license.html)
  */
 
-
-/**
- * Service to close file descriptor given in a0.
- */
-
 public class SyscallClose extends AbstractSyscall {
     public SyscallClose() {
-        super("Close");
+        super("Close", "Close a file", "a0 = the file descriptor to close", "N/A");
     }
 
     public void simulate(ProgramStatement statement) {

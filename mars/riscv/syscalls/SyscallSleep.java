@@ -1,8 +1,8 @@
 package mars.riscv.syscalls;
 
 import mars.ProgramStatement;
-import mars.riscv.hardware.RegisterFile;
 import mars.riscv.AbstractSyscall;
+import mars.riscv.hardware.RegisterFile;
 
 /*
 Copyright (c) 2003-2008,  Pete Sanderson and Kenneth Vollmar
@@ -32,17 +32,9 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 (MIT license, http://www.opensource.org/licenses/mit-license.html)
  */
 
-
-/**
- * Service to cause the MARS Java thread to sleep for (at least) the specified number of milliseconds.
- * This timing will not be precise as the Java implementation will add some overhead.
- * <p>
- * Input arguments: a0 is the length of time to sleep in milliseconds.
- */
-
 public class SyscallSleep extends AbstractSyscall {
     public SyscallSleep() {
-        super("Sleep");
+        super("Sleep", "Set the current thread to sleep for a time (not precise)", "a0 = time to sleep in milliseconds", "N/A");
     }
 
     public void simulate(ProgramStatement statement) {

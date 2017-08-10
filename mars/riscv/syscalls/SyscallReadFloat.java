@@ -2,8 +2,8 @@ package mars.riscv.syscalls;
 
 import mars.ExitingException;
 import mars.ProgramStatement;
-import mars.riscv.hardware.FloatingPointRegisterFile;
 import mars.riscv.AbstractSyscall;
+import mars.riscv.hardware.FloatingPointRegisterFile;
 import mars.util.SystemIO;
 
 /*
@@ -34,14 +34,9 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 (MIT license, http://www.opensource.org/licenses/mit-license.html)
  */
 
-
-/**
- * Service to read the bits of input float into f0
- */
-
 public class SyscallReadFloat extends AbstractSyscall {
     public SyscallReadFloat() {
-        super("ReadFloat");
+        super("ReadFloat", "Read a float from input console", "N/A", "fa0 = the float");
     }
 
     public void simulate(ProgramStatement statement) throws ExitingException {
@@ -52,6 +47,6 @@ public class SyscallReadFloat extends AbstractSyscall {
             throw new ExitingException(statement,
                     "invalid float input (syscall " + this.getNumber() + ")");
         }
-        FloatingPointRegisterFile.updateRegister(0, Float.floatToRawIntBits(floatValue));
+        FloatingPointRegisterFile.updateRegister(10, Float.floatToRawIntBits(floatValue)); // TODO: update to string fa0
     }
 }
