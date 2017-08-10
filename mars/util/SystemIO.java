@@ -366,7 +366,6 @@ public class SystemIO {
      * @return -1 on error
      */
     public static int seek(int fd, int offset, int base) {
-        // TODO: use base
         if (!FileIOData.fdInUse(fd, 0)) // Check the existence of the "read" fd
         {
             fileErrorString = "File descriptor " + fd + " is not open for reading";

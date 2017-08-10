@@ -2,9 +2,7 @@ package mars.venus;
 
 import mars.Globals;
 import mars.assembler.Directives;
-import mars.riscv.BasicInstruction;
-import mars.riscv.ExtendedInstruction;
-import mars.riscv.Instruction;
+import mars.riscv.*;
 
 import javax.swing.*;
 import javax.swing.event.HyperlinkEvent;
@@ -17,10 +15,12 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Vector;
 
 	/*
@@ -135,14 +135,7 @@ public class HelpHelpAction extends GuiAction {
         JScrollPane helpScrollPane;
         JEditorPane helpDisplay;
         try {
-            InputStream is = this.getClass().getResourceAsStream(Globals.helpPath + filename);
-            BufferedReader in = new BufferedReader(new InputStreamReader(is));
-            String line;
-            StringBuffer text = new StringBuffer();
-            while ((line = in.readLine()) != null) {
-                text.append(line + "\n");
-            }
-            in.close();
+            StringBuilder text = loadFiletoStringBuilder(Globals.helpPath + filename);
             helpDisplay = new JEditorPane("text/html", text.toString());
             helpDisplay.setEditable(false);
             helpDisplay.setCaretPosition(0); // assure top of document displayed
@@ -164,16 +157,8 @@ public class HelpHelpAction extends GuiAction {
         JScrollPane marsCopyrightScrollPane;
         JEditorPane marsCopyrightDisplay;
         try {
-            InputStream is = this.getClass().getResourceAsStream("/MARSlicense.txt");
-            BufferedReader in = new BufferedReader(new InputStreamReader(is));
-            String line;
-            StringBuffer text = new StringBuffer("<pre>");
-            while ((line = in.readLine()) != null) {
-                text.append(line + "\n");
-            }
-            in.close();
-            text.append("</pre>");
-            marsCopyrightDisplay = new JEditorPane("text/html", text.toString());
+            StringBuilder text = loadFiletoStringBuilder("MARSlicense.txt").append("</pre>");
+            marsCopyrightDisplay = new JEditorPane("text/html", "<pre>" + text.toString());
             marsCopyrightDisplay.setEditable(false);
             marsCopyrightDisplay.setCaretPosition(0); // assure top of document displayed
             marsCopyrightScrollPane = new JScrollPane(marsCopyrightDisplay, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
@@ -271,7 +256,7 @@ public class HelpHelpAction extends GuiAction {
         tabbedPane.addTab("Basic Instructions", createInstructionHelpPane(BasicInstruction.class));
         tabbedPane.addTab("Extended (pseudo) Instructions", createInstructionHelpPane(ExtendedInstruction.class));
         tabbedPane.addTab("Directives", createDirectivesHelpPane());
-        tabbedPane.addTab("Syscalls", createHTMLHelpPanel("SyscallHelp.html"));
+        tabbedPane.addTab("Syscalls", createSyscallsHelpPane());
         tabbedPane.addTab("Exceptions", createHTMLHelpPanel("ExceptionsHelp.html"));
         tabbedPane.addTab("Macros", createHTMLHelpPanel("MacrosHelp.html"));
         operandsScrollPane.setPreferredSize(new Dimension((int) this.getSize().getWidth(), (int) (this.getSize().getHeight() * .2)));
@@ -304,6 +289,39 @@ public class HelpHelpAction extends GuiAction {
         return scrollPane;
     }
 
+    /*
+     * Ideally, this would not use HTML to make the table, but the other methods tried were far uglier / not useful.
+     */
+    private JScrollPane createSyscallsHelpPane() {
+        ArrayList<Syscall> list = SyscallLoader.getSyscallList();
+        String[] columnNames = {"Name", "Number", "Description", "Inputs", "Ouputs"};
+        String[][] data = new String[list.size()][5];
+        Collections.sort(list, new Comparator<Syscall>() {
+            @Override
+            public int compare(Syscall t0, Syscall t1) {
+                assert t0.getNumber() != t1.getNumber() : "Syscalls have to have different numbers";
+                return t0.getNumber() > t1.getNumber() ? 1 : -1;
+            }
+        });
+        int i = 0;
+        for (Syscall syscall : SyscallLoader.getSyscallList()) {
+            data[i][0] = syscall.getName();
+            data[i][1] = Integer.toString(syscall.getNumber());
+            data[i][2] = syscall.getDescription();
+            data[i][3] = syscall.getInputs();
+            data[i][4] = syscall.getOutputs();
+            i++;
+        }
+
+        JEditorPane html = new JEditorPane("text/html",
+                loadFiletoStringBuilder(Globals.helpPath + "SyscallHelpPrelude.html") +
+                        convertToHTMLTable(data, columnNames).toString() + loadFiletoStringBuilder(Globals.helpPath + "SyscallHelpConclusion.html"));
+
+        html.setEditable(false);
+        return new JScrollPane(html, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+    }
+
     ////////////////////////////////////////////////////////////////////////////
     private JScrollPane createInstructionHelpPane(Class<? extends Instruction> instructionClass) {
         ArrayList<Instruction> instructionList = Globals.instructionSet.getInstructionList();
@@ -325,7 +343,40 @@ public class HelpHelpAction extends GuiAction {
         return scrollPane;
     }
 
+    private StringBuilder convertToHTMLTable(String[][] data, String[] headers) {
+        StringBuilder sb = new StringBuilder("<table border=1>");
+        sb.append("<tr>");
+        for (String elem : headers) {
+            sb.append("<td>").append(elem).append("</td>");
+        }
+        sb.append("</tr>");
+        for (String[] row : data) {
+            sb.append("<tr>");
+            for (String elem : row) {
+                sb.append("<td>").append(elem).append("</td>");
+            }
+            sb.append("</tr>");
+        }
+        sb.append("</table>");
+        return sb;
+    }
 
+    private StringBuilder loadFiletoStringBuilder(String path) {
+        InputStream is = this.getClass().getResourceAsStream(path);
+        BufferedReader in = new BufferedReader(new InputStreamReader(is));
+        String line;
+        StringBuilder out = new StringBuilder();
+        try {
+            while ((line = in.readLine()) != null) {
+                out.append(line).append("\n");
+            }
+            in.close();
+        } catch (IOException io) {
+            return new StringBuilder(path + " could not be loaded.");
+        }
+        return out;
+
+    }
     private class MyCellRenderer extends JLabel implements ListCellRenderer<String> {
         // This is the only method defined by ListCellRenderer.
         // We just reconfigure the JLabel each time we're called.

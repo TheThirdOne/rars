@@ -1,0 +1,26 @@
+<html>
+<title>Syscall functions available in MARS
+</title>
+<body>
+<center>
+    <h3>SYSCALL functions available in MARS</h3>
+</center>
+
+<h3>Introduction</h3>
+<p>A number of system services, mainly for input and output, are available for use by
+    your program.  They are described in the table below.</p>
+<p>Register contents are not affected by a system call, except for result registers
+    as specified in the table below.</p>
+<h3>How to use SYSCALL system services</h3>
+Step 1. Load the service number in register a7.<br>
+Step 2. Load argument values, if any, in a0, a1, a2, a3, fa0, ... as specified.<br>
+Step 3. Issue the ECALL instruction.<br>
+Step 4. Retrieve return values, if any, from result registers as specified.<br>
+</p>
+<strong>Example: display the value stored in $t0 on the console</strong><br>
+<pre>
+    li  a7, 1          # service 1 is print integer
+    add a0, t0, zero   # load desired value into argument register a0, using pseudo-op
+    ecall
+</pre>
+<h3>Table of Available Services</h3>

@@ -165,4 +165,8 @@ public class SyscallLoader {
         }
         return null;
     }
+
+    public static ArrayList<Syscall> getSyscallList() {
+        return syscallList;
+    }
 }
