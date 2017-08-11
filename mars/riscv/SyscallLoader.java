@@ -49,7 +49,7 @@ public class SyscallLoader {
     private static final String SYSCALLS_DIRECTORY_PATH = "mars/riscv/syscalls";
     private static final String CLASS_EXTENSION = "class";
 
-    private static ArrayList<Syscall> syscallList;
+    private static ArrayList<AbstractSyscall> syscallList;
 
     /*
        *  Dynamically loads Syscalls into an ArrayList.  This method is adapted from
@@ -74,10 +74,10 @@ public class SyscallLoader {
                 // grab the class, make sure it implements Syscall, instantiate, add to list
                 String syscallClassName = CLASS_PREFIX + file.substring(0, file.indexOf(CLASS_EXTENSION) - 1);
                 Class clas = Class.forName(syscallClassName);
-                if (!Syscall.class.isAssignableFrom(clas)) {
+                if (!AbstractSyscall.class.isAssignableFrom(clas)) {
                     continue;
                 }
-                Syscall syscall = (Syscall) clas.newInstance();
+                AbstractSyscall syscall = (AbstractSyscall) clas.newInstance();
                 if (syscall.getNumber() == -1) {
                     syscallList.add(syscall);
                 } else {
@@ -93,7 +93,7 @@ public class SyscallLoader {
 
     // Will get any syscall number override specifications from MARS config file and
     // process them.  This will alter syscallList entry for affected names.
-    private static ArrayList<Syscall> processSyscallNumberOverrides(ArrayList<Syscall> syscallList) {
+    private static ArrayList<AbstractSyscall> processSyscallNumberOverrides(ArrayList<AbstractSyscall> syscallList) {
         ArrayList<SyscallNumberOverride> overrides = new Globals().getSyscallOverrides();
         if (syscallList.size() != overrides.size()) {
             System.out.println("Error: the number of entries in the config file does not match the number of syscalls loaded");
@@ -101,7 +101,7 @@ public class SyscallLoader {
         }
         for (SyscallNumberOverride override : overrides) {
             boolean match = false;
-            for (Syscall syscall : syscallList) {
+            for (AbstractSyscall syscall : syscallList) {
                 if (syscall.getNumber() == override.getNumber()) {
                     System.out.println("Duplicate service number: " + syscall.getNumber() + " already registered to " +
                             findSyscall(syscall.getNumber()).getName());
@@ -127,28 +127,6 @@ public class SyscallLoader {
                 System.exit(0);
             }
         }
-        // Wait until end to check for duplicate numbers.  To do so earlier
-        // would disallow for instance the exchange of numbers between two
-        // services.  This is N-squared operation but N is small.
-        // This will also detect duplicates that accidently occur from addition
-        // of a new Syscall subclass to the collection, even if the config file
-        // does not contain any overrides.
-        Syscall syscallA, syscallB;
-        boolean duplicates = false;
-        for (int i = 0; i < syscallList.size(); i++) {
-            syscallA = syscallList.get(i);
-            for (int j = i + 1; j < syscallList.size(); j++) {
-                syscallB = syscallList.get(j);
-                if (syscallA.getNumber() == syscallB.getNumber()) {
-                    System.out.println("Error: syscalls " + syscallA.getName() + " and " +
-                            syscallB.getName() + " are both assigned same number " + syscallA.getNumber());
-                    duplicates = true;
-                }
-            }
-        }
-        if (duplicates) {
-            System.exit(0);
-        }
         return syscallList;
     }
 
@@ -156,9 +134,9 @@ public class SyscallLoader {
      * Method to find Syscall object associated with given service number.
      * Returns null if no associated object found.
      */
-    public static Syscall findSyscall(int number) {
+    public static AbstractSyscall findSyscall(int number) {
         // linear search is OK since number of syscalls is small.
-        for (Syscall service : syscallList) {
+        for (AbstractSyscall service : syscallList) {
             if (service.getNumber() == number) {
                 return service;
             }
@@ -166,7 +144,7 @@ public class SyscallLoader {
         return null;
     }
 
-    public static ArrayList<Syscall> getSyscallList() {
+    public static ArrayList<AbstractSyscall> getSyscallList() {
         return syscallList;
     }
 }

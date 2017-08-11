@@ -273,7 +273,7 @@ public class InstructionSet {
 
     public static void findAndSimulateSyscall(int number, ProgramStatement statement)
             throws SimulationException {
-        Syscall service = SyscallLoader.findSyscall(number);
+        AbstractSyscall service = SyscallLoader.findSyscall(number);
         if (service != null) {
             service.simulate(statement);
             return;

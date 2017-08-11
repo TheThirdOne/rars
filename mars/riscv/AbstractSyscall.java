@@ -32,10 +32,8 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
 /**
- * Abstract class that a MIPS syscall system service may extend.  A qualifying service
- * must be a class in the mars.riscv.syscalls package that
- * implements the Syscall interface, must be compiled into a .class file,
- * and its .class file must be in the same folder as Syscall.class.
+ * Abstract class that a syscall system service must extend.  A qualifying service
+ * must be a class in the mars.riscv.syscalls package, must be compiled into a .class file.
  * Mars will detect a qualifying syscall upon startup, create an instance
  * using its no-argument constructor and add it to its syscall list.
  * When its service is invoked at runtime ("syscall" instruction
@@ -43,7 +41,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * method will be invoked.
  */
 
-public abstract class AbstractSyscall implements Syscall {
+public abstract class AbstractSyscall implements Comparable<AbstractSyscall> {
     private int serviceNumber;
     private String serviceName;
     private String description, inputs, outputs;
@@ -57,10 +55,21 @@ public abstract class AbstractSyscall implements Syscall {
         this(name, "N/A");
     }
 
+    /**
+     * @param name service name which may be used for reference independent of number
+     * @param descr a hort description of what the system calll does
+     */
     protected AbstractSyscall(String name, String descr) {
         this(name, descr, "N/A", "N/A");
     }
 
+
+    /**
+     * @param name service name which may be used for reference independent of number
+     * @param descr a hort description of what the system calll does
+     * @param in    a description of what registers should be set to before the system call
+     * @param out   a description of what registers are set to after the system call
+     */
     protected AbstractSyscall(String name, String descr, String in, String out) {
         serviceNumber = -1;
         serviceName = name;
@@ -80,17 +89,23 @@ public abstract class AbstractSyscall implements Syscall {
         return serviceName;
     }
 
-
+    /**
+     * @return a string describing what the system call does
+     */
     public String getDescription() {
         return description;
     }
 
-    /*TODO:describe*/
+    /**
+     * @return a string documenting what registers should be set to before the system call runs
+     */
     public String getInputs() {
         return inputs;
     }
 
-    /*TODO:describe*/
+    /**
+     * @return a string documenting what registers are set to after the system call runs
+     */
     public String getOutputs() {
         return outputs;
     }
@@ -123,4 +138,11 @@ public abstract class AbstractSyscall implements Syscall {
      */
     public abstract void simulate(ProgramStatement statement)
             throws ExitingException;
+
+    public int compareTo(AbstractSyscall other) {
+        if (this == other) return 0;
+        assert getNumber() != other.getNumber() : "Different syscalls have to have different numbers";
+        return getNumber() > other.getNumber() ? 1 : -1;
+    }
+
 }

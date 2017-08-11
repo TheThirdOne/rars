@@ -20,7 +20,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Vector;
 
 	/*
@@ -293,18 +292,13 @@ public class HelpHelpAction extends GuiAction {
      * Ideally, this would not use HTML to make the table, but the other methods tried were far uglier / not useful.
      */
     private JScrollPane createSyscallsHelpPane() {
-        ArrayList<Syscall> list = SyscallLoader.getSyscallList();
+        ArrayList<AbstractSyscall> list = SyscallLoader.getSyscallList();
         String[] columnNames = {"Name", "Number", "Description", "Inputs", "Ouputs"};
         String[][] data = new String[list.size()][5];
-        Collections.sort(list, new Comparator<Syscall>() {
-            @Override
-            public int compare(Syscall t0, Syscall t1) {
-                assert t0.getNumber() != t1.getNumber() : "Syscalls have to have different numbers";
-                return t0.getNumber() > t1.getNumber() ? 1 : -1;
-            }
-        });
+        Collections.sort(list);
+
         int i = 0;
-        for (Syscall syscall : SyscallLoader.getSyscallList()) {
+        for (AbstractSyscall syscall : list) {
             data[i][0] = syscall.getName();
             data[i][1] = Integer.toString(syscall.getNumber());
             data[i][2] = syscall.getDescription();
