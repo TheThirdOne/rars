@@ -156,7 +156,7 @@ public class HelpHelpAction extends GuiAction {
         JScrollPane marsCopyrightScrollPane;
         JEditorPane marsCopyrightDisplay;
         try {
-            StringBuilder text = loadFiletoStringBuilder("MARSlicense.txt").append("</pre>");
+            StringBuilder text = loadFiletoStringBuilder("/MARSlicense.txt").append("</pre>");
             marsCopyrightDisplay = new JEditorPane("text/html", "<pre>" + text.toString());
             marsCopyrightDisplay.setEditable(false);
             marsCopyrightDisplay.setCaretPosition(0); // assure top of document displayed
