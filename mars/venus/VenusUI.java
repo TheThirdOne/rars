@@ -291,7 +291,7 @@ public class VenusUI extends JFrame {
             fileDumpMemoryAction = new FileDumpMemoryAction("Dump Memory ...", loadIcon("Dump22.png"),
                     "Dump machine code or data in an available format", KeyEvent.VK_D, makeShortcut(KeyEvent.VK_D),
                     mainUI);
-            fileExitAction = new GuiAction("Exit", null, "Exit Mars", KeyEvent.VK_X, null) {
+            fileExitAction = new GuiAction("Exit", null, "Exit Rars", KeyEvent.VK_X, null) {
                 public void actionPerformed(ActionEvent e) {
                     if (editor.closeAll()) {
                         System.exit(0);
@@ -468,7 +468,7 @@ public class VenusUI extends JFrame {
             helpHelpAction = new HelpHelpAction("Help", loadIcon("Help22.png"),
                     "Help", KeyEvent.VK_H, KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0), mainUI);
             helpAboutAction = new HelpAboutAction("About ...", null,
-                    "Information about Mars", null, null, mainUI);
+                    "Information about Rars", null, null, mainUI);
         } catch (NullPointerException e) {
             System.out.println("Internal Error: images folder not found, or other null pointer exception while creating Action objects");
             e.printStackTrace();

@@ -1,10 +1,6 @@
 <html>
-	<title>Macros in MARS</title>
+	<title>Macros in RARS</title>
 	<body>
-		<center>
-			<h3>Writing and Using Macros</h3>
-			<h4><tt>.macro</tt>, <tt>.end_macro</tt>,<tt>.eqv</tt> and <tt>.include</tt> directives are new in MARS 4.3</h4>
-		</center>
 		<h3> Introduction to macros</h3>
 		<p>Patterson and Hennessy define a <b>macro</b> as <i>a pattern-matching and replacement facility 
 		that provides a simple mechanism to name a frequently used sequence of instructions</i> [1].
@@ -14,20 +10,20 @@
 		not only reduces the chance for error but also facilitates program maintenance.</p>
 
 		<p>Macros are like procedures (subroutines) in this sense but operate differently than procedures.  
-		Procedures in MIPS assembly language follow particular protocols for procedure definition, call and return.
+		Procedures in assembly language follow particular protocols for procedure definition, call and return.
 		Macros operate by substituting the macro body for each use at the time of assembly.  This substitution
 		is called <i>macro expansion.</i>.  They do not require the protocols and execution overhead of procedures.</p>
 		
 		<p>As a simple example, you may want to terminate your program from a number of locations.  If you are running
-		from the MARS IDE, you will use system call 10, <tt>exit</tt>.  The instruction sequence is pretty easy</p>
+		from the RARS IDE, you will use system call 10, <tt>exit</tt>.  The instruction sequence is pretty easy</p>
 		<pre>
-		li $v0,10
-		syscall		</pre>
+		li a7, 10
+		ecall		</pre>
 		but still tedious.  You can define a macro, let's call it <tt>done</tt>, to represent this sequence
 		<pre>
 		.macro done
-		li $v0,10
-		syscall
+		li a7, 10
+		ecall
 		.end_macro		</pre>
 		then invoke it whenever you wish with the statement
 		<pre>
@@ -35,18 +31,18 @@
 		At assembly time, the assembler will replace each occurrence of the statement <tt>done</tt> with the two-statement
 		sequence
 		<pre>
-		li $v0,10
-		syscall		</pre>
+		li a7, 10
+		ecall		</pre>
 		This is the macro expansion.  The runtime simulator is unaware of macros or macro expansion.</p>
 		
-		<p>If running MARS from the command line, perhaps you want to return a termination value.  This can be done
-		with syscall 17, <tt>exit2</tt>, which takes the termination value as an argument.  An equivalent macro,
+		<p>If running RARS from the command line, perhaps you want to return a termination value.  This can be done
+		with syscall 93, <tt>exit2</tt>, which takes the termination value as an argument.  An equivalent macro,
 		let's call it <tt>terminate</tt>  would be
 		<pre>
 		.macro terminate (%termination_value)
-		li $a0, %termination_value
-		li $v0, 17
-		syscall
+		li a0, %termination_value
+		li a7, 93
+		ecall
 		.end_macro		</pre>
 		This macro defines a <i>formal parameter</i> to represent the termination value.  You would invoke it 
 		with the statement
@@ -55,15 +51,15 @@
 		to terminate with value 1.  Upon assembly,
 		the statement <tt>terminate (1)</tt> would be replaced by the three-statement sequence
 		<pre>
-		li $a0, 1
-		li $v0, 17
-		syscall		</pre>
+		li a0, 1
+		li a7, 17
+		ecall		</pre>
 		The <i>argument value</i>, 1, is substituted wherever the formal parameter <tt>%termination_value</tt> appears
 		in the macro body.
 		This is a textual substitution.  Note that in this example the argument value must be an integer, not a 
 		register name or a label, because the parameter is used as the second operand in the Load Immediate operation.</p>
 		
-		<p>In MARS, a macro is similar to an extended (pseudo) instruction. They are distinguished in that the expansion of 
+		<p>In RARS, a macro is similar to an extended (pseudo) instruction. They are distinguished in that the expansion of
 		extended instructions is supported by an internally-defined specification language and mechanism which can manipulate argument values.
 		The macro facility can only substitute argument values as given, and it uses a separate mechanism from extended instructions. </p>
 		
@@ -122,7 +118,7 @@
 			</li>
 			<li>
 				Macros are a part of the assembler, not the ISA. So the syntax might be different with other assemblers. 
-				For compatibility with the SPIM simulator, <i>SPIM-style macros are also supported in MARS</i>. SPIM-style macros are same as MARS but formal parameters begin with "$" instead of "%".
+				For compatibility with the SPIM simulator, <i>SPIM-style macros are also supported in RARS</i>. SPIM-style macros are same as RARS but formal parameters begin with "$" instead of "%".
 			</li>
 		</ul>
 		<h3> Examples</h3>
@@ -130,7 +126,7 @@
 			<li>
 				Printing an integer (argument may be either an immediate value or register name): 				
 				<pre><tt>	.macro print_int (%x)
-	li $v0, 1
+	li a7, 1
 	add $a0, $zero, %x
 	syscall
 	.end_macro
@@ -145,7 +141,7 @@
 	.data
 myLabel: .asciiz %str
 	.text
-	li $v0, 4
+	li a7, 4
 	la $a0, myLabel
 	syscall
 	.end_macro
@@ -180,7 +176,7 @@ myLabel: .asciiz %str
 			</li>
 		</ul>
 <h3>Macro source line numbers</h3>
-<p>For purpose of error messaging and Text Segment display, MARS attempts to display line numbers for both the definition and use of the pertinent
+<p>For purpose of error messaging and Text Segment display, RARS attempts to display line numbers for both the definition and use of the pertinent
 macro statement.  If an error message shows the line number in the form "<tt>X->Y</tt>" (e.g. "<tt>20->4</tt>"), then <tt>X</tt> is the line number in the expansion
 (use) where the error was detected and <tt>Y</tt> is the line number in the macro definition.  In the Text Segment display
 of source code, the macro definition 
@@ -188,7 +184,7 @@ line number will be displayed within brackets, e.g. "<tt>&lt;4&gt;</tt>", at the
 numbers you would see in the text editor. </p>
 
 <h3>The .eqv directive</h3>
-<p>The <tt>.eqv</tt> directive (short for "equivalence") is also new in MARS 4.3.  It is similar to <tt>#define</tt> in C or C++.  It 
+<p>The <tt>.eqv</tt> directive (short for "equivalence") is similar to <tt>#define</tt> in C or C++.  It 
 is used to substitute an arbitrary string for an identifier.  It is useful but much less powerful than macros.  
 It was developed independently of the macro facility.
 </p>
@@ -196,26 +192,26 @@ It was developed independently of the macro facility.
 pre-processing time.  For example, once you define
 <pre>
        .eqv  LIMIT      20
-       .eqv  CTR        $t2
-       .eqv  CLEAR_CTR  add  CTR, $zero, 0</pre>
+       .eqv  CTR        t2
+       .eqv  CLEAR_CTR  add  CTR, zero, 0</pre>
 then you can refer to them in subsequent code:
 <pre>
-       li $v0,1
+       li a7,1
        CLEAR_CTR
-loop:  move $a0, CTR
+loop:  move a0, CTR
        syscall
        add   CTR, CTR, 1
        blt   CTR, LIMIT, loop
        CLEAR_CTR</pre>
 During assembly pre-processing, the <tt>.eqv</tt> substitutions will be applied.  The resulting code is
 <pre>
-       li   $v0,1
-       add  $t2, $zero, 0
-loop:  move $a0, $t2
+       li   a7,1
+       add  t2, zero, 0
+loop:  move a0, t2
        syscall
-       add  $t2, $t2, 1
-       blt  $t2, 20, loop
-       add  $t2, $zero, 0</pre>
+       add  t2, t2, 1
+       blt  t2, 20, loop
+       add  t2, zero, 0</pre>
 which when run will display the values 0 through 19 on one line with no intervening spaces.
 </p>
 <p>Note that the substitution string is not limited to a single token.  Like <tt>.macro</tt>, <tt>.eqv</tt> is local to the file
@@ -223,7 +219,7 @@ in which it is defined, and must be defined prior to use.  Macro bodies can cont
  </p>
 
  <h3>The .include directive</h3>
- <p>The <tt>.include</tt> directive is also new in MARS 4.3.  It has one operand, a quoted filename.  When the
+ <p>The <tt>.include</tt> directive has one operand, a quoted filename.  When the
  directive is carried out, the contents of the specified file are substituted for the directive.  This occurs
  during assembly preprocessing.  It is like <tt>#include</tt> in C or C++.</p>
  
@@ -248,7 +244,7 @@ in which it is defined, and must be defined prior to use.  Macro bodies can cont
  then include it wherever you need it.  Suppose "macros.asm" contains the following:
  		<pre>
 		.macro done
-		li $v0,10
+		li a7,10
 		syscall
 		.end_macro		</pre>
  
@@ -258,21 +254,21 @@ in which it is defined, and must be defined prior to use.  Macro bodies can cont
 		.data
 value:		.word	 13
 		.text
-		li	 $v0, 1
-		lw	 $a0, value
+		li	 a7, 1
+		lw	 a0, value
 		syscall
 		done		</pre>
 <p>During assembly preprocessing, this would be expanded to
   		<pre>
 		.macro done
-		li $v0,10
+		li a7,10
 		syscall
 		.end_macro	
 		.data
 value:		.word	 13
 		.text
-		li	 $v0, 1
-		lw	 $a0, value
+		li	 a7, 1
+		lw	 a0, value
 		syscall
 		done		</pre>
 <p>The assembler will then perform the appropriate macro expansion.
@@ -280,9 +276,10 @@ value:		.word	 13
 
  
 <h3>Acknowledgements</h3>
-<p>The MARS macro facility was developed in 2012 by Mohammad Hossein Sekhavat, sekhavat17@gmail.com, while an engineering student at 
-Sharif University in Tehran.  MARS creators Pete and Ken are incredibly grateful for his contribution!  Pete developed <tt>.eqv</tt>
-and <tt>.include</tt> at about the same time.</p>
+<p>All of the RARS macro functionality comes straight from MARS.The MARS macro facility was developed in 2012 by
+	Mohammad Hossein Sekhavat, sekhavat17@gmail.com, while an engineering student at Sharif University in Tehran.  MARS
+	creators Pete and Ken are incredibly grateful for his contribution!  Pete developed <tt>.eqv</tt> and <tt>.include</tt>
+	at about the same time.</p>
 
 <h3>References</h3>
 		<p>[1] <i>Computer Organization and Design: The Hardware/Software Interface, Fourth Edition,</i> Patterson and Hennessy, 

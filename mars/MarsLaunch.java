@@ -63,7 +63,7 @@ public class MarsLaunch {
      * Valid options (not case sensitive, separate by spaces) are:<br>
      * a  -- assemble only, do not simulate<br>
      * ad  -- both a and d<br>
-     * ae<n>  -- terminate MARS with integer exit code <n> if an assemble error occurs.<br>
+     * ae<n>  -- terminate RARS with integer exit code <n> if an assemble error occurs.<br>
      * ascii  -- display memory or register contents interpreted as ASCII
      * b  -- brief - do not display register/memory address along with contents<br>
      * d  -- print debugging statements<br>
@@ -79,14 +79,14 @@ public class MarsLaunch {
      * ic  -- display count of basic instructions 'executed'");
      * mc  -- set memory configuration.  Option has 1 argument, e.g.<br>
      * <tt>mc &lt;config$gt;</tt>, where &lt;config$gt; is <tt>Default</tt><br>
-     * for the MARS default 32-bit address space, <tt>CompactDataAtZero</tt> for<br>
+     * for the RARS default 32-bit address space, <tt>CompactDataAtZero</tt> for<br>
      * a 32KB address space with data segment at address 0, or <tt>CompactTextAtZero</tt><br>
      * for a 32KB address space with text segment at address 0.<br>
-     * me  -- display MARS messages to standard err instead of standard out. Can separate via redirection.</br>
+     * me  -- display RARS messages to standard err instead of standard out. Can separate via redirection.</br>
      * nc  -- do not display copyright notice (for cleaner redirected/piped output).</br>
      * np  -- No Pseudo-instructions allowed ("ne" will work also).<br>
      * p  -- Project mode - assemble all files in the same directory as given file.<br>
-     * se<n>  -- terminate MARS with integer exit code <n> if a simulation (run) error occurs.<br>
+     * se<n>  -- terminate RARS with integer exit code <n> if a simulation (run) error occurs.<br>
      * sm  -- Start execution at Main - Execution will start at program statement globally labeled main.<br>
      * smc  -- Self Modifying Code - Program can write and branch to either text or data segment<br>
      * we  -- assembler Warnings will be considered Errors<br>
@@ -130,8 +130,8 @@ public class MarsLaunch {
     private PrintStream out; // stream for display of command line output
     private ArrayList<String[]> dumpTriples = null; // each element holds 3 arguments for dump option
     private ArrayList<String> programArgumentList; // optional program args for program (becomes argc, argv)
-    private int assembleErrorExitCode;  // MARS command exit code to return if assemble error occurs
-    private int simulateErrorExitCode;// MARS command exit code to return if simulation error occurs
+    private int assembleErrorExitCode;  // RARS command exit code to return if assemble error occurs
+    private int simulateErrorExitCode;// RARS command exit code to return if simulation error occurs
 
     public MarsLaunch(String[] args) {
         boolean gui = (args.length == 0);
@@ -157,7 +157,7 @@ public class MarsLaunch {
             memoryDisplayList = new ArrayList<>();
             filenameList = new ArrayList<>();
             MemoryConfigurations.setCurrentConfiguration(MemoryConfigurations.getDefaultConfiguration());
-            // do NOT use Globals.program for command line MARS -- it triggers 'backstep' log.
+            // do NOT use Globals.program for command line RARS -- it triggers 'backstep' log.
             code = new RISCVprogram();
             maxSteps = -1;
             out = System.out;
@@ -231,14 +231,14 @@ public class MarsLaunch {
     // launching the GUI-fronted integrated development environment.
 
     private void launchIDE() {
-        // System.setProperty("apple.laf.useScreenMenuBar", "true"); // Puts MARS menu on Mac OS menu bar
+        // System.setProperty("apple.laf.useScreenMenuBar", "true"); // Puts RARS menu on Mac OS menu bar
         new MarsSplashScreen(splashDuration).showSplash();
         SwingUtilities.invokeLater(
                 new Runnable() {
                     public void run() {
                         //Turn off metal's use of bold fonts
                         //UIManager.put("swing.boldMetal", Boolean.FALSE);
-                        new VenusUI("MARS " + Globals.version);
+                        new VenusUI("RARS " + Globals.version);
                     }
                 });
     }
@@ -259,7 +259,7 @@ public class MarsLaunch {
         programArgumentList = null;
         if (args.length == 0)
             return true; // should not get here...
-        // If the option to display MARS messages to standard erro is used,
+        // If the option to display RARS messages to standard erro is used,
         // it must be processed before any others (since messages may be
         // generated during option parsing).
         processDisplayMessagesToErrSwitch(args, displayMessagesToErrSwitch);
@@ -315,7 +315,7 @@ public class MarsLaunch {
                 }
                 continue;
             }
-            // Set MARS exit code for assemble error
+            // Set RARS exit code for assemble error
             if (args[i].toLowerCase().indexOf("ae") == 0) {
                 String s = args[i].substring(2);
                 try {
@@ -325,7 +325,7 @@ public class MarsLaunch {
                     // Let it fall thru and get handled by catch-all
                 }
             }
-            // Set MARS exit code for simulate error
+            // Set RARS exit code for simulate error
             if (args[i].toLowerCase().indexOf("se") == 0) {
                 String s = args[i].substring(2);
                 try {
@@ -697,7 +697,7 @@ public class MarsLaunch {
     }
 
     ///////////////////////////////////////////////////////////////////////
-    //  If option to display MARS messages to standard err (System.err) is
+    //  If option to display RARS messages to standard err (System.err) is
     //  present, it must be processed before all others.  Since messages may
     //  be output as early as during the command parse.
     private void processDisplayMessagesToErrSwitch(String[] args, String displayMessagesToErrSwitch) {
@@ -718,7 +718,7 @@ public class MarsLaunch {
                 return;
             }
         }
-        out.println("MARS " + Globals.version + "  Copyright " + Globals.copyrightYears + " " + Globals.copyrightHolders + "\n");
+        out.println("RARS " + Globals.version + "  Copyright " + Globals.copyrightYears + " " + Globals.copyrightHolders + "\n");
     }
 
 
@@ -742,13 +742,13 @@ public class MarsLaunch {
                 formats += ", ";
             }
         }
-        out.println("Usage:  Mars  [options] filename [additional filenames]");
+        out.println("Usage:  Rars  [options] filename [additional filenames]");
         out.println("  Valid options (not case sensitive, separate by spaces) are:");
         out.println("      a  -- assemble only, do not simulate");
-        out.println("  ae<n>  -- terminate MARS with integer exit code <n> if an assemble error occurs.");
+        out.println("  ae<n>  -- terminate RARS with integer exit code <n> if an assemble error occurs.");
         out.println("  ascii  -- display memory or register contents interpreted as ASCII codes.");
         out.println("      b  -- brief - do not display register/memory address along with contents");
-        out.println("      d  -- display MARS debugging statements");
+        out.println("      d  -- display RARS debugging statements");
         out.println("    dec  -- display memory or register contents in decimal.");
         out.println("   dump <segment> <format> <file> -- memory dump of specified memory segment");
         out.println("            in specified format to specified file.  Option may be repeated.");
@@ -764,12 +764,12 @@ public class MarsLaunch {
         out.println("            32-bit address space, CompactDataAtZero for a 32KB memory with");
         out.println("            data segment at address 0, or CompactTextAtZero for a 32KB");
         out.println("            memory with text segment at address 0.");
-        out.println("     me  -- display MARS messages to standard err instead of standard out. ");
+        out.println("     me  -- display RARS messages to standard err instead of standard out. ");
         out.println("            Can separate messages from program output using redirection");
         out.println("     nc  -- do not display copyright notice (for cleaner redirected/piped output).");
         out.println("     np  -- use of pseudo instructions and formats not permitted");
         out.println("      p  -- Project mode - assemble all files in the same directory as given file.");
-        out.println("  se<n>  -- terminate MARS with integer exit code <n> if a simulation (run) error occurs.");
+        out.println("  se<n>  -- terminate RARS with integer exit code <n> if a simulation (run) error occurs.");
         out.println("     sm  -- start execution at statement with global label main, if defined");
         out.println("    smc  -- Self Modifying Code - Program can write and branch to either text or data segment");
         out.println("    <n>  -- where <n> is an integer maximum count of steps to simulate.");
@@ -788,7 +788,7 @@ public class MarsLaunch {
         out.println("If more than one filename is listed, the first is assumed to be the main");
         out.println("unless the global statement label 'main' is defined in one of the files.");
         out.println("Exception handler not automatically assembled.  Add it to the file list.");
-        out.println("Options used here do not affect MARS Settings menu values and vice versa.");
+        out.println("Options used here do not affect RARS Settings menu values and vice versa.");
     }
 
 }

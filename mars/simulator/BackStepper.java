@@ -155,7 +155,7 @@ public class BackStepper {
                     }
                 } catch (Exception e) {
                     // if the original action did not cause an exception this will not either.
-                    System.out.println("Internal MARS error: address exception while back-stepping.");
+                    System.out.println("Internal RARS error: address exception while back-stepping.");
                     System.exit(0);
                 }
             } while (!backSteps.empty() && statement == backSteps.peek().ps);

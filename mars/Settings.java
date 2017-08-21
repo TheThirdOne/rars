@@ -908,7 +908,7 @@ public class Settings extends Observable {
     private void initialize() {
         applyDefaultSettings();
         if (!readSettingsFromPropertiesFile(settingsFile)) {
-            System.out.println("MARS System error: unable to read Settings.properties defaults. Using built-in defaults.");
+            System.out.println("RARS System error: unable to read Settings.properties defaults. Using built-in defaults.");
         }
         getSettingsFromPreferences();
     }

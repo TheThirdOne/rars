@@ -410,7 +410,7 @@ public class FilenameFinder {
                 }
             }
         } catch (Exception e) {
-            System.out.println("Exception occurred reading MarsTool list from JAR: " + e);
+            System.out.println("Exception occurred reading Filename list from JAR: " + e);
         }
         return nameList;
     }

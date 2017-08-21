@@ -46,16 +46,16 @@ public class HelpAboutAction extends GuiAction {
 
     public void actionPerformed(ActionEvent e) {
         JOptionPane.showMessageDialog(mainUI,
-                "MARS " + Globals.version + "    Copyright " + Globals.copyrightYears + "\n" +
+                "RARS " + Globals.version + "    Copyright " + Globals.copyrightYears + "\n" +
                         Globals.copyrightHolders + "\n" +
-                        "MARS is the Mips Assembler and Runtime Simulator.\n\n" +
+                        "RARS is the Mips Assembler and Runtime Simulator.\n\n" +
                         "Mars image courtesy of NASA/JPL.\n" +
                         "Toolbar and menu icons are from:\n" +
                         "  *  Tango Desktop Project (tango.freedesktop.org),\n" +
                         "  *  glyFX (www.glyfx.com) Common Toolbar Set,\n" +
                         "  *  KDE-Look (www.kde-look.org) crystalline-blue-0.1,\n" +
                         "  *  Icon-King (www.icon-king.com) Nuvola 1.0.",
-                "About Mars",
+                "About Rars",
                 JOptionPane.INFORMATION_MESSAGE,
                 new ImageIcon("images/RedMars50.gif"));
     }

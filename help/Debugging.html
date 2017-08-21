@@ -1,16 +1,16 @@
 <html>
-<title>MARS 4.5 help contents
+<title>RARS 1.0 help contents
 </title>
 <body>
 <center>
-<h3>MARS - Mips Assembly and Runtime Simulator</h3>
-<h4>Release 4.5</h4>
-<h4>August 2014</h4>
+<h3>RARS - RISC-V Assembler and Runtime Simulator</h3>
+<h4>Release 1.0</h4>
+<h4>August 2017</h4>
 <h4>Interactive Debugging Features</h4>
 </center>
 
 <p>
-MARS provides many features for interactive debugging through its Execute pane.
+RARS provides many features for interactive debugging through its Execute pane.
 Features include:
 <ul>
 <li>In <i>Step</i> mode, the next instruction to be simulated is highlighted and
@@ -21,7 +21,7 @@ It can also be used to continue simulation
 from a paused (step, breakpoint, pause) state.</li>
 
 <li>Breakpoints are easily set and reset using the check boxes next to each instruction displayed
-in the Text Segment window.  <i>New in Release 3.8:</i> You can temporarily suspend breakpoints
+in the Text Segment window. You can temporarily suspend breakpoints
 using Toggle Breakpoints in the Run menu or by clicking the "Bkpt" column header in the Text Segment
 window.  Repeat, to re-activate.</li>
 
@@ -45,7 +45,7 @@ speed, the system may not respond immediately but it will respond.</li>
 <li>You have the ability to interactively step "backward" through program execution 
 one instruction at a time to "undo" execution steps.  It will buffer up to 2000 of the most 
 recent execution steps (this limit is stored in a properties file and can be changed).
-It will undo changes made to MIPS memory, registers or condition flags,
+It will undo changes made to memory, registers or CSRs (however, interrupt state is not maintained currently),
 but not console or file I/O.  This should be a great debugging aid.  
 It is available anytime execution is paused and at termination (even if terminated due to 
 exception).  
@@ -65,12 +65,11 @@ at a time (with scrolling) starting with the data segment base address (0x100100
 Navigation buttons are provided to change the display to the next 
 section of memory, the previous, or back to the initial (home) range.  A combo box is 
 also provided to view memory contents in the vicinity of the stack pointer 
-(contents of MIPS $sp register), global pointer (contents of MIPS $gp register),
-the heap base address (0x10040000), .extern globals (0x10000000),
-the kernel data segment (0x90000000), or memory-mapped IO (MMIO, 0xFFFF0000).
-<em>Starting with Mars 4.4,</em> raw text segment contents can also be displayed.</li>
+(contents of sp register), global pointer (contents of gp register),
+the heap base address (0x10040000), .extern globals (0x10000000), or memory-mapped IO (MMIO, 0xFFFF0000).
+The raw text segment contents can also be displayed.</li>
 
-<li>Contents of any data segment memory word and almost any MIPS register can be modified by 
+<li>Contents of any data segment memory word and almost any register can be modified by
 editing its displayed table cell.  Double-click on a cell to edit it and press the Enter key
 when finished typing the new value.  If you
 enter an invalid 32-bit integer, the word INVALID appears in the cell
@@ -80,7 +79,7 @@ values can be entered in either two's complement or signed format.  Note
 that three of the integer registers (zero, program counter, return address) 
 cannot be edited.</li>
 
-<li><em>New in 4.4</em> If the setting for Self-Modifying Code is enabled
+<li>If the setting for Self-Modifying Code is enabled
 (disabled by default, look in the Settings menu), text segment binary
 code can be modified using the same technique described above. It can also
 be modified by double-clicking on a cell in the Text Segment display's Code
@@ -105,10 +104,5 @@ window as appropriate.  Note the Labels window is not displayed by default but
 can be by selecting it from the Settings menu.</li>
 
 </ul>
-
-<hr>
-<p>
-This document is available for printing on the MARS home page
-<tt><b>http://www.cs.missouristate.edu/MARS/</b></tt>.
 </body>
 </html>

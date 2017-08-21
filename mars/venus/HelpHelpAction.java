@@ -82,13 +82,12 @@ public class HelpHelpAction extends GuiAction {
     public void actionPerformed(ActionEvent e) {
         JTabbedPane tabbedPane = new JTabbedPane();
         tabbedPane.addTab("RISCV", createHelpInfoPanel());
-        tabbedPane.addTab("MARS", createMarsHelpInfoPanel());
+        tabbedPane.addTab("RARS", createRarsHelpInfoPanel());
         tabbedPane.addTab("License", createCopyrightInfoPanel());
         tabbedPane.addTab("Bugs/Comments", createHTMLHelpPanel("BugReportingHelp.html"));
         tabbedPane.addTab("Acknowledgements", createHTMLHelpPanel("Acknowledgements.html"));
-        tabbedPane.addTab("Instruction Set Song", createHTMLHelpPanel("MIPSInstructionSetSong.html"));
         // Create non-modal dialog. Based on java.sun.com "How to Make Dialogs", DialogDemo.java
-        final JDialog dialog = new JDialog(mainUI, "MARS " + Globals.version + " Help");
+        final JDialog dialog = new JDialog(mainUI, "RARS " + Globals.version + " Help");
         // assure the dialog goes away if user clicks the X
         dialog.addWindowListener(
                 new WindowAdapter() {
@@ -171,17 +170,16 @@ public class HelpHelpAction extends GuiAction {
     }
 
     // Set up MARS help tab.  Subtabs get their contents from HTML files.
-    private JPanel createMarsHelpInfoPanel() {
+    private JPanel createRarsHelpInfoPanel() {
         JPanel marsHelpInfo = new JPanel(new BorderLayout());
         JTabbedPane tabbedPane = new JTabbedPane();
-        tabbedPane.addTab("Intro", createHTMLHelpPanel("MarsHelpIntro.html"));
-        tabbedPane.addTab("IDE", createHTMLHelpPanel("MarsHelpIDE.html"));
-        tabbedPane.addTab("Debugging", createHTMLHelpPanel("MarsHelpDebugging.html"));
-        tabbedPane.addTab("Settings", createHTMLHelpPanel("MarsHelpSettings.html"));
-        tabbedPane.addTab("Tools", createHTMLHelpPanel("MarsHelpTools.html"));
-        tabbedPane.addTab("Command", createHTMLHelpPanel("MarsHelpCommand.html"));
-        tabbedPane.addTab("Limits", createHTMLHelpPanel("MarsHelpLimits.html"));
-        tabbedPane.addTab("History", createHTMLHelpPanel("MarsHelpHistory.html"));
+        tabbedPane.addTab("Intro", createHTMLHelpPanel("Intro.html"));
+        tabbedPane.addTab("IDE", createHTMLHelpPanel("IDE.html"));
+        tabbedPane.addTab("Debugging", createHTMLHelpPanel("Debugging.html"));
+        tabbedPane.addTab("Tools", createHTMLHelpPanel("Tools.html"));
+        tabbedPane.addTab("Command", createHTMLHelpPanel("Command.html"));
+        tabbedPane.addTab("Limits", createHTMLHelpPanel("Limits.html"));
+        tabbedPane.addTab("History", createHTMLHelpPanel("History.html"));
         marsHelpInfo.add(tabbedPane);
         return marsHelpInfo;
     }

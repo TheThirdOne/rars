@@ -77,7 +77,7 @@ public class SettingsEditorAction extends GuiAction {
     private static final Border ColorSelectButtonEnabledBorder = new BevelBorder(BevelBorder.RAISED, Color.WHITE, Color.GRAY);
     private static final Border ColorSelectButtonDisabledBorder = new LineBorder(Color.GRAY, 2);
 
-    private static final String GENERIC_TOOL_TIP_TEXT = "Use generic editor (original MARS editor, similar to Notepad) instead of language-aware styled editor";
+    private static final String GENERIC_TOOL_TIP_TEXT = "Use generic editor (original RARS editor, similar to Notepad) instead of language-aware styled editor";
 
     private static final String SAMPLE_TOOL_TIP_TEXT = "Current setting; modify using buttons to the right";
     private static final String FOREGROUND_TOOL_TIP_TEXT = "Click, to select text color";

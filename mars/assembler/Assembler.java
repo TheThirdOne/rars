@@ -445,7 +445,7 @@ public class Assembler {
         // a nice thing to do).
         if (tokenType == TokenTypes.IDENTIFIER && token.getValue().charAt(0) == '.') {
             errors.add(new ErrorMessage(ErrorMessage.WARNING, token.getSourceProgram(), token
-                    .getSourceLine(), token.getStartPos(), "MARS does not recognize the "
+                    .getSourceLine(), token.getStartPos(), "RARS does not recognize the "
                     + token.getValue() + " directive.  Ignored."));
             return null;
         }
@@ -592,7 +592,7 @@ public class Assembler {
         if (direct == null) {
             errors.add(new ErrorMessage(token.getSourceProgram(), token.getSourceLine(), token
                     .getStartPos(), "\"" + token.getValue()
-                    + "\" directive is invalid or not implemented in MARS"));
+                    + "\" directive is invalid or not implemented in RARS"));
             return;
         } else if (direct == Directives.EQV) { /* EQV added by DPS 11 July 2012 */
             // Do nothing.  This was vetted and processed during tokenizing.
