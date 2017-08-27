@@ -1,5 +1,5 @@
 #!/bin/bash
-RUN="java -jar -ea ./out/artifacts/mars/mars.jar" 
+RUN="java -jar -ea ./out/artifacts/rars/rars.jar"
 ERRORS=""
 for f in ./test/*.s ./test/riscv-tests/*.s
 do	

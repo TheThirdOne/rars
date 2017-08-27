@@ -13,9 +13,9 @@ RARS is capable of running externally-developed software that interacts with an 
 program and system resources.
 The requirements for such a program are:
 <ol>
-<li>It implements the <tt>mars.tools.MarsTool</tt> interface.  
-<li>It is part of the <tt>mars.tools</tt> package.
-<li>It compiles cleanly into a ".class" file, stored in the <tt>mars/tools</tt> directory.
+<li>It implements the <tt>rars.tools.Tool</tt> interface.
+<li>It is part of the <tt>rars.tools</tt> package.
+<li>It compiles cleanly into a ".class" file, stored in the <tt>rars/tools</tt> directory.
 </ol>
 
 RARS will detect all qualifying tools upon startup and include them in
@@ -30,7 +30,7 @@ from the Tools menu.  The tool's window will open and depending on how it is wri
 need to be "connected" to the program by clicking a button or will already be connected.  Run
 the program as you normally would, to initiate tool interaction with the executing program.
 
-<p>The abstract class <tt>mars.tools.AbstractMarsToolAndApplication</tt>
+<p>The abstract class <tt>rars.tools.AbstractToolAndApplication</tt>
 is included in the RARS distribution to provide
 a substantial framework for implementing your own Tool.  A subclass that extends it by
 implementing at least its two abstract methods can be run not only from the Tools menu but also
@@ -48,10 +48,10 @@ System calls (<tt>ecall</tt> instruction) are implemented using
 a technique similar to that for tools.  This permits anyone to add a new syscall by defining
 a new class that meets these requirements:
 <li>
-    <li>It extends the <tt>mars.riscv.AbstractSyscall</tt> class.</li>
-    <li>It is part of the <tt>mars.riscv.syscalls</tt> package.</li>
+    <li>It extends the <tt>rars.riscv.AbstractSyscall</tt> class.</li>
+    <li>It is part of the <tt>rars.riscv.syscalls</tt> package.</li>
     <li>It compiles cleanly into a ".class" file, stored in the
-    <tt>mars/riscv/syscalls</tt> directory.</li>
+    <tt>rars/riscv/syscalls</tt> directory.</li>
     <li>An entry is added to Syscall.properties</li>
 </ol>
 

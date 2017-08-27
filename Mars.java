@@ -26,6 +26,8 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 (MIT license, http://www.opensource.org/licenses/mit-license.html)
  */
 
+import rars.Launch;
+
 /**
  * Portal to Mars
  *
@@ -35,7 +37,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 public class Mars {
     public static void main(String[] args) {
-        new mars.MarsLaunch(args);
+        new Launch(args);
     }
 }
 
