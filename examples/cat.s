@@ -15,10 +15,11 @@ main:
 	beqz a0, error
 
 	# Free up s0, s1, s2 to be used	
-	sw s0, -4(sp)
-	sw s1, -8(sp)
-	sw s2,-12(sp)
+	
 	addi sp, sp, -12
+	sw s0, 0(sp)
+	sw s1, 4(sp)
+	sw s2, 8(sp)
 	
 	mv s1, a0 # argc
         mv s2, a1 # argv
@@ -70,10 +71,10 @@ skip:
 	addi s2, s2, 4
 	bnez s1, filesLoop
 
+	lw s0, 0(sp)
+	lw s1, 4(sp)
+	lw s2, 8(sp)
 	addi sp, sp, 12
-	lw s0, -4(sp)
-	lw s1, -8(sp)
-	lw s2, -12(sp)
 	j done
 
 error:

@@ -22,7 +22,7 @@ public class SimulationException extends Exception {
     public static final int ILLEGAL_INSTRUCTION = 2;
     public static final int LOAD_ADDRESS_MISALIGNED = 4;
     public static final int LOAD_ACCESS_FAULT = 5;
-    public static final int STORE_ADDRESS_MISALIGNED = 4;
+    public static final int STORE_ADDRESS_MISALIGNED = 6;
     public static final int STORE_ACCESS_FAULT = 7;
     public static final int ENVIRONMENT_CALL = 8;
 
