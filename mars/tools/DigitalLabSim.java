@@ -136,10 +136,10 @@ public class DigitalLabSim extends AbstractMarsToolAndApplication {
                         " This byte value is composed of row number (4 left bits) and column number (4 right bits)" +
                         " Here you'll find the code for each key : 0x11,0x21,0x41,0x81,0x12,0x22,0x42,0x82,0x14,0x24,0x44,0x84,0x18,0x28,0x48,0x88. \n" +
                         " For exemple key number 2 return 0x41, that mean the key is on column 3 and row 1. \n" +
-                        " If keyboard interruption is enable, an exception is started, with cause register bit number 11 set.\n \n" +
+                        " If keyboard interruption is enable, an external interrupt is started with value 0x00000200\n \n" +
                         "Counter\n" +
-                        " Byte value at address 0xFFFF0013 : If one bit of this byte is set, the counter interruption is enable.\n" +
-                        " If counter interruption is enable, every 30 instructions, an exception is started with cause register bit number 10.\n" +
+                        " Byte value at address 0xFFFF0013 : If one bit of this byte is set, the counter interruption is enabled.\n" +
+                        " If counter interruption is enable, every 30 instructions, a timer interrupt is started with value 0x00000100.\n" +
                         "   (contributed by Didier Teifreto, dteifreto@lifc.univ-fcomte.fr)";
         JButton help = new JButton("Help");
         help.addActionListener(

@@ -238,7 +238,7 @@ public class BitmapDisplay extends AbstractMarsToolAndApplication {
                         "each memory word in a specified address space corresponds to\n" +
                         "one display pixel in row-major order starting at the upper left\n" +
                         "corner of the display.  This tool may be run either from the\n" +
-                        "MARS Tools menu or as a stand-alone application.\n" +
+                        "Tools menu or as a stand-alone application.\n" +
                         "\n" +
                         "You can easily learn to use this small program by playing with\n" +
                         "it!   Each rectangular unit on the display represents one memory\n" +
@@ -252,10 +252,8 @@ public class BitmapDisplay extends AbstractMarsToolAndApplication {
                         "\n" +
                         "Version 1.0 is very basic and was constructed from the Memory\n" +
                         "Reference Visualization tool's code.  Feel free to improve it and\n" +
-                        "send me your code for consideration in the next MARS release.\n" +
-                        "\n" +
-                        "Contact Pete Sanderson at psanderson@otterbein.edu with\n" +
-                        "questions or comments.\n";
+                        "send your code for consideration in the next release.\n" +
+                        "\n";
         JButton help = new JButton("Help");
         help.addActionListener(
                 new ActionListener() {

@@ -267,8 +267,8 @@ public class MemoryReferenceVisualization extends AbstractMarsToolAndApplication
     protected JComponent getHelpComponent() {
         final String helpContent =
                 "Use this program to visualize dynamic memory reference\n" +
-                        "patterns in RISCV assembly programs.  It may be run either\n" +
-                        "from MARS' Tools menu or as a stand-alone application.  For\n" +
+                        "patterns in assembly programs.  It may be run either\n" +
+                        "from Tools menu or as a stand-alone application.  For\n" +
                         "the latter, simply write a small driver to instantiate a\n" +
                         "MemoryReferenceVisualization object and invoke its go() method.\n" +
                         "\n" +
@@ -282,10 +282,7 @@ public class MemoryReferenceVisualization extends AbstractMarsToolAndApplication
                         "assignments using the count slider and color patch.  Select a\n" +
                         "counter value then click on the color patch to change the color.\n" +
                         "This color will apply beginning at the selected count and\n" +
-                        "extending up to the next slider-provided count.\n" +
-                        "\n" +
-                        "Contact Pete Sanderson at psanderson@otterbein.edu with\n" +
-                        "questions or comments.\n";
+                        "extending up to the next slider-provided count.\n";
         JButton help = new JButton("Help");
         help.addActionListener(
                 new ActionListener() {

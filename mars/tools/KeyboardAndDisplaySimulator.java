@@ -464,12 +464,11 @@ public class KeyboardAndDisplaySimulator extends AbstractMarsToolAndApplication 
     /**
      * Overrides default method, to provide a Help button for this tool/app.
      */
-    // TODO: update documentation
     protected JComponent getHelpComponent() {
         final String helpContent =
                 "Keyboard And Display MMIO Simulator\n\n" +
                         "Use this program to simulate Memory-Mapped I/O (MMIO) for a keyboard input device and character " +
-                        "display output device.  It may be run either from MARS' Tools menu or as a stand-alone application. " +
+                        "display output device.  It may be run either from Tools menu or as a stand-alone application. " +
                         "For the latter, simply write a driver to instantiate a mars.tools.KeyboardAndDisplaySimulator object " +
                         "and invoke its go() method.\n" +
                         "\n" +
@@ -487,40 +486,33 @@ public class KeyboardAndDisplaySimulator extends AbstractMarsToolAndApplication 
                         "In a polled approach to I/O, a program idles in a loop, testing the device's Ready bit on each " +
                         "iteration until it is set to 1 before proceeding.  This tool also supports an interrupt-driven approach " +
                         "which requires the program to provide an interrupt handler but allows it to perform useful processing " +
-                        "instead of idly looping.  When the device is ready, it signals an interrupt and the MARS simuator will " +
-                        "transfer control to the interrupt handler.  Note: in MARS, the interrupt handler has to co-exist with the " +
-                        "exception handler in kernel memory, both having the same entry address.  Interrupt-driven I/O is enabled " +
+                        "instead of idly looping.  When the device is ready, it signals an interrupt and the RARS simuator will " +
+                        "transfer control to the interrupt handler. Interrupt-driven I/O is enabled " +
                         "when the program sets the Interrupt-Enable bit in the device's control register.  Details below.\n" +
                         "\n" +
                         "Upon setting the Receiver Controller's Ready bit to 1, its Interrupt-Enable bit (bit position 1) is tested. " +
-                        "If 1, then an External Interrupt will be generated.  Before executing the next instruction, the runtime " +
-                        "simulator will detect the interrupt, place the interrupt code (0) into bits 2-6 of Coprocessor 0's Cause " +
-                        "register ($13), set bit 8 to 1 to identify the source as keyboard, place the program counter value (address " +
-                        "of the NEXT instruction to be executed) into its EPC register ($14), and check to see if an interrupt/trap " +
-                        "handler is present (looks for instruction code at address 0x80000180).  If so, the program counter is set to " +
-                        "that address.  If not, program execution is terminated with a message to the Run I/O tab.  The Interrupt-Enable " +
+                        "If 1, then an External Interrupt will be generated. The Interrupt-Enable " +
                         "bit is 0 by default and has to be set by the program if interrupt-driven input is desired.  Interrupt-driven " +
                         "input permits the program to perform useful tasks instead of idling in a loop polling the Receiver Ready bit!  " +
-                        "Very event-oriented.  The Ready bit is supposed to be read-only but in MARS it is not.\n" +
+                        "Very event-oriented.  The Ready bit is supposed to be read-only but in RARS it is not.\n" +
                         "\n" +
                         "A similar test and potential response occurs when the Transmitter Controller's Ready bit is set to 1.  This " +
-                        "occurs after the simulated delay described above.  The only difference is the Cause register bit to identify " +
-                        "the (simulated) display as external interrupt source is bit position 9 rather than 8.  This permits you to " +
+                        "occurs after the simulated delay described above.  The only difference that utval will have a different code.  This permits you to " +
                         "write programs that perform interrupt-driven output - the program can perform useful tasks while the " +
                         "output device is processing its data.  Much better than idling in a loop polling the Transmitter Ready bit! " +
-                        "The Ready bit is supposed to be read-only but in MARS it is not.\n" +
+                        "The Ready bit is supposed to be read-only but in RARS it is not.\n" +
                         "\n" +
                         "IMPORTANT NOTE: The Transmitter Controller Ready bit is set to its initial value of 1 only when you click the tool's " +
                         "'Connect to Program' button ('Assemble and Run' in the stand-alone version) or the tool's Reset button!  If you run a " +
-                        "program and reset it in MARS, the controller's Ready bit is cleared to 0!  Configure the Data Segment Window to " +
+                        "program and reset it in RARS, the controller's Ready bit is cleared to 0!  Configure the Data Segment Window to " +
                         "display the MMIO address range so you can directly observe values stored in the MMIO addresses given above.\n" +
                         "\n" +
-                        "COOL NEW FEATURE (MARS 4.5, AUGUST 2014): Clear the display window from the program\n" +
+                        "Clear the display window from the program:\n" +
                         "\n" +
                         "When ASCII 12 (form feed) is stored in the Transmitter Data register, the tool's Display window will be cleared " +
                         "following the specified transmission delay.\n" +
                         "\n" +
-                        "COOL NEW FEATURE (MARS 4.5, AUGUST 2014): Simulate a text-based virtual terminal with (x,y) positioning\n" +
+                        "Simulate a text-based virtual terminal with (x,y) positioning:\n" +
                         "\n" +
                         "When ASCII 7 (bell) is stored in the Transmitter Data register, the cursor in the tool's Display window will " +
                         "be positioned at the (X,Y) coordinate specified by its high-order 3 bytes, following the specfied transmission delay. " +
@@ -541,9 +533,7 @@ public class KeyboardAndDisplaySimulator extends AbstractMarsToolAndApplication 
                         "transmitted to the window thus replaces an existing character in the string.\n" +
                         "\n" +
                         "Thanks to Eric Wang at Washington State University, who requested these features to enable use of this display as the target " +
-                        "for programming MMIO text-based games.\n" +
-                        "\n" +
-                        "Contact Pete Sanderson at psanderson@otterbein.edu with questions or comments.\n";
+                        "for programming MMIO text-based games.";
         JButton help = new JButton("Help");
         help.addActionListener(
                 new ActionListener() {
