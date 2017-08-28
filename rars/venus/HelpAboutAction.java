@@ -49,7 +49,6 @@ public class HelpAboutAction extends GuiAction {
                 "RARS " + Globals.version + "    Copyright " + Globals.copyrightYears + "\n" +
                         Globals.copyrightHolders + "\n" +
                         "RARS is the RISC-V Assembler and Runtime Simulator.\n\n" +
-                        "Mars image courtesy of NASA/JPL.\n" +
                         "Toolbar and menu icons are from:\n" +
                         "  *  Tango Desktop Project (tango.freedesktop.org),\n" +
                         "  *  glyFX (www.glyfx.com) Common Toolbar Set,\n" +
@@ -57,6 +56,6 @@ public class HelpAboutAction extends GuiAction {
                         "  *  Icon-King (www.icon-king.com) Nuvola 1.0.",
                 "About Rars",
                 JOptionPane.INFORMATION_MESSAGE,
-                new ImageIcon("images/RedMars50.gif"));
+                new ImageIcon("images/RISC-V.png"));
     }
 }

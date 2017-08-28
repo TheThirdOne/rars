@@ -145,7 +145,7 @@ public class VenusUI extends JFrame {
         Globals.initialize(true);
 
         //  image courtesy of NASA/JPL.
-        URL im = this.getClass().getResource(Globals.imagesPath + "RedMars16.gif");
+        URL im = this.getClass().getResource(Globals.imagesPath + "RISC-V.png");
         if (im == null) {
             System.out.println("Internal Error: images folder or file not found");
             System.exit(0);
