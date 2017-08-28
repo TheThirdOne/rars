@@ -132,7 +132,10 @@ public class Launch {
     private int assembleErrorExitCode;  // RARS command exit code to return if assemble error occurs
     private int simulateErrorExitCode;// RARS command exit code to return if simulation error occurs
 
-    public Launch(String[] args) {
+    public static void main(String[] args){
+        new Launch(args);
+    }
+    private Launch(String[] args) {
         boolean gui = (args.length == 0);
         Globals.initialize(gui);
         if (gui) {

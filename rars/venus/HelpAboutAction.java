@@ -48,8 +48,7 @@ public class HelpAboutAction extends GuiAction {
         JOptionPane.showMessageDialog(mainUI,
                 "RARS " + Globals.version + "    Copyright " + Globals.copyrightYears + "\n" +
                         Globals.copyrightHolders + "\n" +
-                        "RARS is the RISC-V Assembler and Runtime Simulator.\n\n" +
-                        "Toolbar and menu icons are from:\n" +
+                        "RARS is the RISC-V Assembler and Runtime Simulator.\n\n" +                        "Toolbar and menu icons are from:\n" +
                         "  *  Tango Desktop Project (tango.freedesktop.org),\n" +
                         "  *  glyFX (www.glyfx.com) Common Toolbar Set,\n" +
                         "  *  KDE-Look (www.kde-look.org) crystalline-blue-0.1,\n" +
