@@ -171,7 +171,7 @@ public class InstructionSet {
             System.exit(0);
         }
         try {
-            String line, pseudoOp, template, firstTemplate, token;
+            String line, pseudoOp, template, token;
             String description;
             StringTokenizer tokenizer;
             while ((line = in.readLine()) != null) {
@@ -182,7 +182,6 @@ public class InstructionSet {
                     tokenizer = new StringTokenizer(line, ";");
                     pseudoOp = tokenizer.nextToken();
                     template = "";
-                    firstTemplate = null;
                     while (tokenizer.hasMoreTokens()) {
                         token = tokenizer.nextToken();
                         if (token.startsWith("#")) {
@@ -190,21 +189,12 @@ public class InstructionSet {
                             description = token.substring(1);
                             break;
                         }
-                        if (token.startsWith("COMPACT")) {
-                            // has second template for Compact (16-bit) memory config -- added DPS 3 Aug 2009
-                            firstTemplate = template;
-                            template = "";
-                            continue;
-                        }
                         template = template + token;
                         if (tokenizer.hasMoreTokens()) {
                             template = template + "\n";
                         }
                     }
-                    ExtendedInstruction inst = (firstTemplate == null)
-                            ? new ExtendedInstruction(pseudoOp, template, description)
-                            : new ExtendedInstruction(pseudoOp, firstTemplate, template, description);
-                    instructionList.add(inst);
+                    instructionList.add(new ExtendedInstruction(pseudoOp, template, description));
                     //if (firstTemplate != null) System.out.println("\npseudoOp: "+pseudoOp+"\ndefault template:\n"+firstTemplate+"\ncompact template:\n"+template);
                 }
             }

@@ -233,11 +233,8 @@ public class Assembler {
                     // ////////////////////////////////////////////////////////////////////////////
                     // If we are using compact memory config and there is a compact expansion, use it
                     ArrayList<String> templateList;
-                    if (compactTranslationCanBeApplied(statement)) {
-                        templateList = inst.getCompactBasicIntructionTemplateList();
-                    } else {
-                        templateList = inst.getBasicIntructionTemplateList();
-                    }
+                    templateList = inst.getBasicIntructionTemplateList();
+
 
                     // subsequent ProgramStatement constructor needs the correct text segment address.
                     textAddress.set(statement.getAddress());
@@ -494,9 +491,6 @@ public class Assembler {
                 // Modified to permit use of compact expansion if address fits
                 // in 15 bits. DPS 4-Aug-2009
                 int instLength = inst.getInstructionLength();
-                if (compactTranslationCanBeApplied(programStatement)) {
-                    instLength = ((ExtendedInstruction) inst).getCompactInstructionLength();
-                }
                 textAddress.increment(instLength);
                 ret.add(programStatement);
                 return ret;
@@ -508,18 +502,6 @@ public class Assembler {
     private void detectLabels(TokenList tokens, Macro current) {
         if (tokenListBeginsWithLabel(tokens))
             current.addLabel(tokens.get(0).getValue());
-    }
-
-    // Determine whether or not a compact (16-bit) translation from
-    // pseudo-instruction to basic instruction can be applied. If
-    // the argument is a basic instruction, obviously not. If an
-    // extended instruction, we have to be operating under a 16-bit
-    // memory model and the instruction has to have defined an
-    // alternate compact translation.
-    private boolean compactTranslationCanBeApplied(ProgramStatement statement) {
-        return (statement.getInstruction() instanceof ExtendedInstruction
-                && Globals.memory.usingCompactMemoryConfiguration() && ((ExtendedInstruction) statement
-                .getInstruction()).hasCompactTranslation());
     }
 
     // //////////////////////////////////////////////////////////////////////////////////
