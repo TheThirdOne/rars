@@ -242,10 +242,11 @@ public class Assembler {
                     // subsequent ProgramStatement constructor needs the correct text segment address.
                     textAddress.set(statement.getAddress());
                     // Will generate one basic instruction for each template in the list.
+                    int PC = textAddress.get(); // Save the starting PC so that it can be used for PC relative stuff
                     for (int instrNumber = 0; instrNumber < templateList.size(); instrNumber++) {
                         String instruction = ExtendedInstruction.makeTemplateSubstitutions(
                                 this.fileCurrentlyBeingAssembled,
-                                templateList.get(instrNumber), theTokenList, textAddress.get());
+                                templateList.get(instrNumber), theTokenList, PC);
 
                         // All substitutions have been made so we have generated
                         // a valid basic instruction!

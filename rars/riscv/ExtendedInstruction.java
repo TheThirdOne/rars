@@ -179,8 +179,8 @@ public class ExtendedInstruction extends Instruction {
      * <LI>RGn means substitute register found in n'th token of source statement
      * <LI>LLn means substitute low order 16 bits from label address in source token n.
      * <LI>LHn means substitute high order 16 bits from label address in source token n. Must add 1 if address bit 15 is 1.
-     * <LI>PCLn is similar to LLn except the value substituted will be relative to PC.
-     * # <LI>PCHn is similar to LHn except the value substituted will be relative to PC.
+     * <LI>PCLn is similar to LLn except the value substituted will be relative to PC of the psuedo-op that generated it.
+     * <LI>PCHn is similar to LHn except the value substituted will be relative to PC of the psuedo-op that generated it.
      * <LI>VLn means substitute low order 16 bits from 32 bit value in source token n.
      * <LI>VHn means substitute high order 16 bits from 32 bit value in source token n, then add 1 if value's bit 15 is 1.
      * <LI>LAB means substitute textual label from last token of source statement.  Used for various branches.
