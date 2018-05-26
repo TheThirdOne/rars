@@ -36,7 +36,7 @@ public class LBU extends Load {
     }
 
     public int load(int address) throws AddressErrorException {
-        return Globals.memory.getHalf(address) & 0x000000FF;
+        return Globals.memory.getByte(address) & 0x000000FF;
     }
 }
 
