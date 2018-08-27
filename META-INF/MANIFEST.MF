@@ -1,4 +1,4 @@
-Manifest-Version: 1.0
+Manifest-Version: 1.1
 Class-Path: .
 Created-By: 1.6.0_33 (Sun Microsystems Inc.)
 Main-Class: rars.Launch
