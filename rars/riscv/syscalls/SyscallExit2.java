@@ -36,7 +36,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 public class SyscallExit2 extends AbstractSyscall {
     public SyscallExit2() {
-        super("Exit2", "Exits the program with a code", "a0 = the number ot exit with (ignored in the gui)", "N/A");
+        super("Exit2", "Exits the program with a code", "a0 = the number to exit with (ignored in the gui)", "N/A");
     }
 
     public void simulate(ProgramStatement statement) throws ExitingException {

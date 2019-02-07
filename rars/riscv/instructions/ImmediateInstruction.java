@@ -53,7 +53,7 @@ public abstract class ImmediateInstruction extends BasicInstruction {
     /**
      * @param value     the value from the register
      * @param immediate the value from the immediate
-     * @return the result to be stored from teh instruction
+     * @return the result to be stored from the instruction
      */
     protected abstract int compute(int value, int immediate);
 }
