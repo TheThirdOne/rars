@@ -97,6 +97,7 @@ public class SyscallLoader {
         ArrayList<SyscallNumberOverride> overrides = new Globals().getSyscallOverrides();
         if (syscallList.size() != overrides.size()) {
             System.out.println("Error: the number of entries in the config file does not match the number of syscalls loaded");
+            System.out.println("Ensure there is a Syscall.properties file in the directory you are executing if you are a developer");
             System.exit(0);
         }
         for (SyscallNumberOverride override : overrides) {
