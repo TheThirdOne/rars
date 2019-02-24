@@ -48,7 +48,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // TODO: delete, this is redundent in light of the read syscall, just add on the newline in user code and done
 public class SyscallReadString extends AbstractSyscall {
     public SyscallReadString() {
-        super("PrintString", "Reads a string from the console",
+        super("ReadString", "Reads a string from the console",
                 "a0 = address of input buffer<br>a1 = maximum number of characters to read", "N/A");
     }
 
