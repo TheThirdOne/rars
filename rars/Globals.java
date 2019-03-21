@@ -99,7 +99,7 @@ public class Globals {
     /**
      * The current version number. Can't wait for "initialize()" call to get it.
      */
-    public static final String version = "1.1";
+    public static final String version = "1.2";
     /**
      * List of accepted file extensions for RISCV assembly source files.
      */
@@ -140,7 +140,7 @@ public class Globals {
     public static boolean runSpeedPanelExists = false;
 
     private static String getCopyrightYears() {
-        return "2003-2018";
+        return "2003-2019";
     }
 
     private static String getCopyrightHolders() {

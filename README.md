@@ -5,6 +5,11 @@ RARS, the RISC-V Assembler, Simulator, and Runtime, will assemble and simulate
 the execution of RISC-V assembly language programs. Its primary goal is to be
 an effective development environment for people getting started with RISC-V. 
 
+The latest release can be found on the [releases page](https://github.com/TheThirdOne/rars/releases).
+
+![Screenshot of sample program](screenshot.png)
+
+
 ## Changes from MARS 4.5
 
 RARS was built on MARS 4.5 and owes a lot to the development of MARS; its
