@@ -5,7 +5,22 @@ RARS, the RISC-V Assembler, Simulator, and Runtime, will assemble and simulate
 the execution of RISC-V assembly language programs. Its primary goal is to be
 an effective development environment for people getting started with RISC-V. 
 
+## Features
+
+  - RV32IMF ISA with some support for user level interrupts.
+  - Several system calls that match behaviour from MARS or SPIKE.
+  - Support for debugging using breakpoints and/or `ebreak`
+  - Side by side comparison from psuedo-instruction to machine code with
+    intermediate steps
+  - Multifile assembly using either files open or a directory
+
+## Download
+
+RARS is distributed as an executable jar. You will need at least Java 8 to run it. 
+
 The latest release can be found on the [releases page](https://github.com/TheThirdOne/rars/releases).
+
+## Screenshot
 
 ![Screenshot of sample program](screenshot.png)
 
