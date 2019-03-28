@@ -70,6 +70,8 @@
 
 #######################  arithmetic and branch pseudo-ops #####################
 
+nop ;addi x0, x0, 0 ;#NO OPeration
+
 not t1,t2 ;xori RG1, RG2, -1 ;#Bitwise NOT (bit inversion)
 mv  t1,t2 ;add RG1, x0, RG2  ;#MoVe : Set t1 to contents of t2
 neg t1,t2 ;sub RG1, x0, RG2  ;#NEGate : Set t1 to negation of t2
