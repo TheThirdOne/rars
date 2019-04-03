@@ -41,15 +41,11 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 /**
- * Represents MIPS memory.  Different segments are represented by different data structs.
+ * Represents memory. Different segments are represented by different data structs.
  *
  * @author Pete Sanderson
  * @version August 2003
  */
-
-/////////////////////////////////////////////////////////////////////
-// NOTE: This implementation is purely big-endian.  MIPS can handle either one.
-/////////////////////////////////////////////////////////////////////
 
 public class Memory extends Observable {
 
@@ -103,20 +99,17 @@ public class Memory extends Observable {
     public static int kernelHighAddress = MemoryConfigurations.getDefaultKernelHighAddress(); //0xffffffff;
 
     /**
-     * MIPS word length in bytes.
+     * Word length in bytes.
      **/
     // NOTE:  Much of the code is hardwired for 4 byte words.  Refactoring this is low priority.
     public static final int WORD_LENGTH_BYTES = 4;
+
+    // TODO: remove this as RISCV is little endian and it is only used in like one spot
     /**
      * Constant representing byte order of each memory word.  Little-endian means lowest
      * numbered byte is right most [3][2][1][0].
      */
     public static final boolean LITTLE_ENDIAN = true;
-    /**
-     * Constant representing byte order of each memory word.  Big-endian means lowest
-     * numbered byte is left most [0][1][2][3].
-     */
-    public static final boolean BIG_ENDIAN = false;
     /**
      * Current setting for endian (default LITTLE_ENDIAN)
      **/
@@ -251,7 +244,7 @@ public class Memory extends Observable {
     }
 
     /**
-     * Sets current memory configuration for simulated MIPS.  Configuration is
+     * Sets current memory configuration for simulation. Configuration is
      * collection of memory segment addresses. e.g. text segment starting at
      * address 0x00400000.  Configuration can be modified starting with MARS 3.7.
      */
@@ -283,18 +276,6 @@ public class Memory extends Observable {
                         BLOCK_LENGTH_WORDS * MMIO_TABLE_LENGTH * WORD_LENGTH_BYTES);
     }
 
-
-    /**
-     * Determine whether the current memory configuration has a maximum address that can be stored
-     * in 16 bits.
-     *
-     * @return true if maximum address can be stored in 16 bits or less, false otherwise
-     */
-    public boolean usingCompactMemoryConfiguration() {
-        return (kernelHighAddress & 0x00007fff) == kernelHighAddress;
-    }
-
-
     private void initialize() {
         heapAddress = heapBaseAddress;
         textBlockTable = new ProgramStatement[TEXT_BLOCK_TABLE_LENGTH][];
@@ -304,9 +285,10 @@ public class Memory extends Observable {
         System.gc(); // call garbage collector on any Table memory just deallocated.
     }
 
+    // TODO: add some heap managment so programs can malloc and free
     /**
      * Returns the next available word-aligned heap address.  There is no recycling and
-     * no heap management!  There is however nearly 4MB of heap space available in Mars.
+     * no heap management!  There is however nearly 4MB of heap space available in Rars.
      *
      * @param numBytes Number of bytes requested.  Should be multiple of 4, otherwise next higher multiple of 4 allocated.
      * @return address of allocated heap storage.
@@ -328,26 +310,6 @@ public class Memory extends Observable {
         return result;
     }
 
-
-    /**
-     * Set byte order to either LITTLE_ENDIAN or BIG_ENDIAN.  Default is LITTLE_ENDIAN.
-     *
-     * @param order either LITTLE_ENDIAN or BIG_ENDIAN
-     */
-    public void setByteOrder(boolean order) {
-        byteOrder = order;
-    }
-
-    /**
-     * Retrieve memory byte order.  Default is LITTLE_ENDIAN (like PCs).
-     *
-     * @return either LITTLE_ENDIAN or BIG_ENDIAN
-     */
-    public boolean getByteOrder() {
-        return byteOrder;
-    }
-
-   	
    /*  *******************************  THE SETTER METHODS  ******************************/
 
 
@@ -399,7 +361,7 @@ public class Memory extends Observable {
             relativeByteAddress = address - memoryMapBaseAddress;
             oldValue = storeBytesInTable(memoryMapBlockTable, relativeByteAddress, length, value);
         } else {
-            // falls outside Mars addressing range
+            // falls outside addressing range
             throw new AddressErrorException("address out of range ",
                     SimulationException.STORE_ACCESS_FAULT, address);
         }
@@ -450,7 +412,7 @@ public class Memory extends Observable {
             relative = (address - memoryMapBaseAddress) >> 2; // convert byte address to word
             oldValue = storeWordInTable(memoryMapBlockTable, relative, value);
         } else {
-            // falls outside Mars addressing range
+            // falls outside addressing range
             throw new AddressErrorException("store address out of range ",
                     SimulationException.STORE_ACCESS_FAULT, address);
         }
@@ -607,7 +569,7 @@ public class Memory extends Observable {
                         SimulationException.LOAD_ACCESS_FAULT, address);
             }
         } else {
-            // falls outside Mars addressing range
+            // falls outside addressing range
             throw new AddressErrorException("address out of range ",
                     SimulationException.LOAD_ACCESS_FAULT, address);
         }
@@ -661,7 +623,7 @@ public class Memory extends Observable {
                         SimulationException.LOAD_ACCESS_FAULT, address);
             }
         } else {
-            // falls outside Mars addressing range
+            // falls outside addressing range
             throw new AddressErrorException("address out of range ",
                     SimulationException.LOAD_ACCESS_FAULT, address);
         }
@@ -678,7 +640,7 @@ public class Memory extends Observable {
      * <p>
      * Returns null if reading from text segment and there is no instruction at the
      * requested address. Returns null if reading from data segment and this is the
-     * first reference to the MARS 4K memory allocation block (i.e., an array to
+     * first reference to the 4K memory allocation block (i.e., an array to
      * hold the memory has not been allocated).
      * <p>
      * This method was developed by Greg Giberling of UC Berkeley to support the memory
@@ -710,11 +672,11 @@ public class Memory extends Observable {
                 value = null;
             }
         } else {
-            // falls outside Mars addressing range
+            // falls outside addressing range
             throw new AddressErrorException("address out of range ", SimulationException.LOAD_ACCESS_FAULT, address);
         }
         // Do not notify observers.  This read operation is initiated by the
-        // dump feature, not the executing MIPS program.
+        // dump feature, not the executing program.
         return value;
     }
 
@@ -724,8 +686,8 @@ public class Memory extends Observable {
      * the program.  For data segment, this represents the first block of simulated memory (block length
      * currently 4K words) that has not been referenced by an assembled/executing program.
      *
-     * @param baseAddress  lowest MIPS address to be searched; the starting point
-     * @param limitAddress highest MIPS address to be searched
+     * @param baseAddress  lowest address to be searched; the starting point
+     * @param limitAddress highest address to be searched
      * @return lowest address within specified range that contains "null" value as described above.
      * @throws AddressErrorException if the base address is not on a word boundary
      */
@@ -888,14 +850,14 @@ public class Memory extends Observable {
     }
 
     /**
-     * Handy little utility to find out if given address is in MARS text
+     * Handy little utility to find out if given address is in the text
      * segment (starts at Memory.textBaseAddress).
-     * Note that MARS does not implement the entire MIPS text segment space,
+     * Note that RARS does not implement the entire text segment space,
      * but it does implement enough for hundreds of thousands of lines
      * of code.
      *
      * @param address integer memory address
-     * @return true if that address is within MARS-defined text segment,
+     * @return true if that address is within RARS-defined text segment,
      * false otherwise.
      */
     public static boolean inTextSegment(int address) {
@@ -903,13 +865,11 @@ public class Memory extends Observable {
     }
 
     /**
-     * Handy little utility to find out if given address is in MARS data
+     * Handy little utility to find out if given address is in RARS data
      * segment (starts at Memory.dataSegmentBaseAddress).
-     * Note that MARS does not implement the entire MIPS data segment space,
-     * but it does support at least 4MB.
      *
      * @param address integer memory address
-     * @return true if that address is within MARS-defined data segment,
+     * @return true if that address is within RARS-defined data segment,
      * false otherwise.
      */
     public static boolean inDataSegment(int address) {
@@ -921,7 +881,7 @@ public class Memory extends Observable {
      * starts at Memory.memoryMapBaseAddress, range 0xffff0000 to 0xffffffff.
      *
      * @param address integer memory address
-     * @return true if that address is within MARS-defined memory map (MMIO) area,
+     * @return true if that address is within RARS-defined memory map (MMIO) area,
      * false otherwise.
      */
     public static boolean inMemoryMapSegment(int address) {
@@ -1087,7 +1047,7 @@ public class Memory extends Observable {
     //
     // Method to notify any observers of memory operation that has just occurred.
     //
-    // The "|| Globals.getGui()==null" is a hack added 19 July 2012 DPS.  IF MIPS simulation
+    // The "|| Globals.getGui()==null" is a hack added 19 July 2012 DPS.  IF simulation
     // is from command mode, Globals.program is null but still want ability to observe.
     private void notifyAnyObservers(int type, int address, int length, int value) {
         if ((Globals.program != null || Globals.getGui() == null) && this.observables.size() > 0) {
@@ -1101,7 +1061,7 @@ public class Memory extends Observable {
 
     ////////////////////////////////////////////////////////////////////////////////
     //
-    // Helper method to store 1, 2 or 4 byte value in table that represents MIPS
+    // Helper method to store 1, 2 or 4 byte value in table that represents
     // memory. Originally used just for data segment, but now also used for stack.
     // Both use different tables but same storage method and same table size
     // and block size.
@@ -1117,7 +1077,7 @@ public class Memory extends Observable {
 
     ////////////////////////////////////////////////////////////////////////////////
     //
-    // Helper method to fetch 1, 2 or 4 byte value from table that represents MIPS
+    // Helper method to fetch 1, 2 or 4 byte value from table that represents
     // memory.  Originally used just for data segment, but now also used for stack.
     // Both use different tables but same storage method and same table size
     // and block size.
@@ -1181,7 +1141,7 @@ public class Memory extends Observable {
 
     ////////////////////////////////////////////////////////////////////////////////
     //
-    // Helper method to store 4 byte value in table that represents MIPS memory.
+    // Helper method to store 4 byte value in table that represents memory.
     // Originally used just for data segment, but now also used for stack.
     // Both use different tables but same storage method and same table size
     // and block size.  Assumes address is word aligned, no endian processing.
@@ -1200,14 +1160,7 @@ public class Memory extends Observable {
         return oldValue;
     }
 
-    ////////////////////////////////////////////////////////////////////////////////
-    //
-    // Helper method to fetch 4 byte value from table that represents MIPS memory.
-    // Originally used just for data segment, but now also used for stack.
-    // Both use different tables but same storage method and same table size
-    // and block size.  Assumes word alignment, no endian processing.
-    //
-
+    // Same as above, but doesn't set, just gets
     private synchronized int fetchWordFromTable(int[][] blockTable, int relative) {
         int value = 0;
         int block, offset;
@@ -1222,18 +1175,8 @@ public class Memory extends Observable {
         return value;
     }
 
-    ////////////////////////////////////////////////////////////////////////////////
-    //
-    // Helper method to fetch 4 byte value from table that represents MIPS memory.
-    // Originally used just for data segment, but now also used for stack.
-    // Both use different tables but same storage method and same table size
-    // and block size.  Assumes word alignment, no endian processing.
-    //
-    // This differs from "fetchWordFromTable()" in that it returns an Integer and
-    // returns null instead of 0 if the 4K table has not been allocated.  Developed
-    // by Greg Gibeling of UC Berkeley, fall 2007.
-    //
-
+    // Same as above, but if it hasn't been allocated returns null.
+    // Developed by Greg Gibeling of UC Berkeley, fall 2007.
     private synchronized Integer fetchWordOrNullFromTable(int[][] blockTable, int relative) {
         int value = 0;
         int block, offset;
@@ -1264,18 +1207,7 @@ public class Memory extends Observable {
     }
 
     ///////////////////////////////////////////////////////////////////////
-    // Reverses byte sequence of given value.  Can use to convert between big and
-    // little endian if needed.
-    private int reverseBytes(int source) {
-        return (source >> 24 & 0x000000FF) |
-                (source >> 8 & 0x0000FF00) |
-                (source << 8 & 0x00FF0000) |
-                (source << 24);
-    }
-
-    ///////////////////////////////////////////////////////////////////////
-    // Store a program statement at the given address.  Address has already been verified
-    // as valid.  It may be either in user or kernel text segment, as specified by arguments.
+    // Store a program statement at the given address.  Address has already been verified as valid.
     private void storeProgramStatement(int address, ProgramStatement statement,
                                        int baseAddress, ProgramStatement[][] blockTable) {
         int relative = (address - baseAddress) >> 2; // convert byte address to words

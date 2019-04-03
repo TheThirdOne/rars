@@ -45,7 +45,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 /**
- * Used to simulate the execution of an assembled MIPS program.
+ * Used to simulate the execution of an assembled source program.
  *
  * @author Pete Sanderson
  * @version August 2005
@@ -93,7 +93,7 @@ public class Simulator extends Observable {
     }
 
     /**
-     * Simulate execution of given MIPS program (in this thread).  It must have already been assembled.
+     * Simulate execution of given source program (in this thread).  It must have already been assembled.
      *
      * @param pc          address of first instruction to simulate; this goes into program counter
      * @param maxSteps    maximum number of steps to perform before returning false (0 or less means no max)
@@ -108,7 +108,7 @@ public class Simulator extends Observable {
         SimulationException pe = simulatorThread.pe;
         boolean done = simulatorThread.done;
         Reason out = simulatorThread.constructReturnReason;
-        if (done) SystemIO.resetFiles(); // close any files opened in MIPS program
+        if (done) SystemIO.resetFiles(); // close any files opened in the process of simulating
         this.simulatorThread = null;
         if (pe != null) {
             throw pe;
@@ -117,7 +117,7 @@ public class Simulator extends Observable {
     }
 
     /**
-     * Start simulated execution of given MIPS program (in a new thread).  It must have already been assembled.
+     * Start simulated execution of given source program (in a new thread).  It must have already been assembled.
      *
      * @param pc          address of first instruction to simulate; this goes into program counter
      * @param maxSteps    maximum number of steps to perform before returning false (0 or less means no max)
@@ -132,7 +132,7 @@ public class Simulator extends Observable {
 
     /**
      * Set the volatile stop boolean variable checked by the execution
-     * thread at the end of each MIPS instruction execution.  If variable
+     * thread at the end of each instruction execution.  If variable
      * is found to be true, the execution thread will depart
      * gracefully so the main thread handling the GUI can take over.
      * This is used by both STOP and PAUSE features.
@@ -194,8 +194,8 @@ public class Simulator extends Observable {
 
     /**
      * Perform the simulated execution. It is "interrupted" when main thread sets
-     * the "stop" variable to true. The variable is tested before the next MIPS
-     * instruction is simulated.  Thus interruption occurs in a tightly controlled fashion.
+     * the "stop" variable to true. The variable is tested before the next instruction
+     * is simulated.  Thus interruption occurs in a tightly controlled fashion.
      */
 
     class SimThread implements Runnable {
@@ -223,7 +223,7 @@ public class Simulator extends Observable {
 
         /**
          * Sets to "true" the volatile boolean variable that is tested after each
-         * MIPS instruction is executed.  After calling this method, the next test
+         * instruction is executed.  After calling this method, the next test
          * will yield "true" and "construct" will return.
          *
          * @param reason the Reason for stopping (PAUSE or STOP)
@@ -242,7 +242,7 @@ public class Simulator extends Observable {
         private void stopExecution(boolean done, Reason reason) {
             this.done = done;
             this.constructReturnReason = reason;
-            if (done) SystemIO.resetFiles(); // close any files opened in MIPS program
+            if (done) SystemIO.resetFiles(); // close any files opened in the process of simulating
             Simulator.getInstance().notifyObserversOfExecution(new SimulatorNotice(SimulatorNotice.SIMULATOR_STOP,
                     maxSteps, RunSpeedPanel.getInstance().getRunSpeed(), pc, reason, pe, done));
         }
@@ -252,14 +252,10 @@ public class Simulator extends Observable {
         }
 
         private boolean handleTrap(SimulationException se, int pc) {
-            // See if an exception handler is present.  Assume this is the case
-            // if and only if memory location Memory.exceptionHandlerAddress
-            // (e.g. 0x80000180) contains an instruction.  If so, then set the
-            // program counter there and continue.  Otherwise terminate the
-            // MIPS program with appropriate error message.
             assert se.cause() != -1 : "Unhandlable exception not thrown through ExitingEception";
             assert se.cause() >= 0 : "Interrupts cannot be handled by the trap handler";
-            // set the CSRs
+
+            // set the relevant CSRs
             ControlAndStatusRegisterFile.updateRegister("ucause", se.cause());
             ControlAndStatusRegisterFile.updateRegister("uepc", pc);
             ControlAndStatusRegisterFile.updateRegister("utval", se.value());
@@ -294,16 +290,13 @@ public class Simulator extends Observable {
 
 
         private boolean handleInterrupt(int value, int cause, int pc) {
-            // See if an exception handler is present.  Assume this is the case
-            // if and only if memory location Memory.exceptionHandlerAddress
-            // (e.g. 0x80000180) contains an instruction.  If so, then set the
-            // program counter there and continue.  Otherwise terminate the
-            // MIPS program with appropriate error message.
             assert (cause & 0x10000000) != 0 : "Traps cannot be handled by the interupt handler";
             int code = cause & 0x7FFFFFFF;
+
             // Don't handle cases where that interrupt isn't enabled
             assert ((ControlAndStatusRegisterFile.getValue("ustatus") & 0x1) == 0 && (ControlAndStatusRegisterFile.getValue("uie") & (1 << code)) == 0) : "The interrupt handler must be enabled";
-            // set the CSRs
+
+            // set the relevant CSRs
             ControlAndStatusRegisterFile.updateRegister("ucause", cause);
             ControlAndStatusRegisterFile.updateRegister("uepc", pc);
             ControlAndStatusRegisterFile.updateRegister("utval", value);
@@ -372,7 +365,7 @@ public class Simulator extends Observable {
             // just after the call to the simulate method itself.  The BackStepper method does
             // the aforementioned check and decides whether to push or not.  The result
             // is a a smoother interaction experience.  But it comes at the cost of slowing
-            // simulation speed for flat-out runs, for every MIPS instruction executed even
+            // simulation speed for flat-out runs, for every instruction executed even
             // though very few will require the "do nothing" stack entry.  For stepped or
             // timed execution the slower execution speed is not noticeable.
             //
@@ -392,13 +385,12 @@ public class Simulator extends Observable {
             boolean ebreak = false, waiting = false;
 
             // Volatile variable initialized false but can be set true by the main thread.
-            // Used to stop or pause a running MIPS program.  See stopSimulation() above.
+            // Used to stop or pause a running program.  See stopSimulation() above.
             while (!stop) {
-                // Perform the MIPS instruction in synchronized block.  If external threads agree
-                // to access MIPS memory and registers only through synchronized blocks on same
-                // lock variable, then full (albeit heavy-handed) protection of MIPS memory and
+                // Perform the RISCV instruction in synchronized block.  If external threads agree
+                // to access memory and registers only through synchronized blocks on same
+                // lock variable, then full (albeit heavy-handed) protection of memory and
                 // registers is assured.  Not as critical for reading from those resources.
-                // Check number of instructions executed.  Return if at limit (-1 is no limit).
                 synchronized (Globals.memoryAndRegistersLock) {
                     // Handle pending interupts and traps first
                     int uip = ControlAndStatusRegisterFile.getValueNoNotify("uip"), uie = ControlAndStatusRegisterFile.getValueNoNotify("uie");
@@ -443,6 +435,7 @@ public class Simulator extends Observable {
                     }
 
                     // always handle interrupts and traps before quiting
+                    // Check number of instructions executed.  Return if at limit (-1 is no limit).
                     if (maxSteps > 0) {
                         steps++;
                         if (steps > maxSteps) {
@@ -546,9 +539,8 @@ public class Simulator extends Observable {
                 }
 
                 // schedule GUI update only if: there is in fact a GUI! AND
-                //                              using Run,  not Step (maxSteps > 1) AND
+                //                              using Run,  not Step (maxSteps != 1) AND
                 //                              running slowly enough for GUI to keep up
-                //if (Globals.getGui() != null && maxSteps != 1 &&
                 if (interactiveGUIUpdater != null && maxSteps != 1 &&
                         RunSpeedPanel.getInstance().getRunSpeed() < RunSpeedPanel.UNLIMITED_SPEED) {
                     SwingUtilities.invokeLater(interactiveGUIUpdater);

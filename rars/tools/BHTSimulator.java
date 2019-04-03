@@ -38,7 +38,7 @@ import java.util.Observable;
 
 
 /**
- * A MARS tool for simulating branch prediction with a Branch History Table (BHT)
+ * A RARS tool for simulating branch prediction with a Branch History Table (BHT)
  * <p>
  * The simulation is based on observing the access to the instruction memory area (text segment).
  * If a branch instruction is encountered, a prediction based on a BHT is performed.
@@ -52,10 +52,7 @@ import java.util.Observable;
  *
  * @author ingo.kofler@itec.uni-klu.ac.at
  */
-//@SuppressWarnings("serial")
 public class BHTSimulator extends AbstractToolAndApplication implements ActionListener {
-
-
     /**
      * constant for the default size of the BHT
      */
@@ -143,12 +140,7 @@ public class BHTSimulator extends AbstractToolAndApplication implements ActionLi
         return m_gui;
     }
 
-
-    /**
-     * Returns the name of the tool.
-     *
-     * @return the tool's name as String
-     */
+    @Override
     public String getName() {
         return BHTSimulator.BHT_NAME;
     }
@@ -253,21 +245,20 @@ public class BHTSimulator extends AbstractToolAndApplication implements ActionLi
 
     /**
      * Extracts the target address of the branch.
-     * <p>
-     * In MIPS the target address is encoded as 16-bit value.
-     * The target address is encoded relative to the address of the instruction after the branch instruction
      *
      * @param stmt the branch instruction
      * @return the address of the instruction that is executed if the branch is taken
      */
     protected static int extractBranchAddress(ProgramStatement stmt) {
-        short offset = (short) (stmt.getBinaryStatement() & 0xFFFF);
-        return stmt.getAddress() + (offset << 2) + 4;
+        assert stmt.getInstruction() instanceof Branch: "Should only be called on branch instructions";
+        int offset = stmt.getOperand(2);
+
+        return stmt.getAddress() + (offset << 1);
     }
 
 
     /**
-     * Callback for text segment access by the MIPS simulator.
+     * Callback for text segment access by the RISCV simulator.
      * <p>
      * The method is called each time the text segment is accessed to fetch the next instruction.
      * If the next instruction to execute was a branch instruction, the branch prediction is performed and visualized.

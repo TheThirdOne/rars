@@ -133,8 +133,7 @@ public class RISCVprogram {
     /**
      * Produces new empty list to hold parsed source code statements.
      *
-     * @return ArrayList of ProgramStatement.  Each ProgramStatement represents a parsed
-     * MIPS statement.
+     * @return ArrayList of ProgramStatement.  Each ProgramStatement represents a parsed RISCV statement.
      * @see ProgramStatement
      **/
 
@@ -146,8 +145,7 @@ public class RISCVprogram {
     /**
      * Produces existing list of parsed source code statements.
      *
-     * @return ArrayList of ProgramStatement.  Each ProgramStatement represents a parsed
-     * MIPS statement.
+     * @return ArrayList of ProgramStatement.  Each ProgramStatement represents a parsed RISCV statement.
      * @see ProgramStatement
      **/
 
@@ -159,7 +157,7 @@ public class RISCVprogram {
      * Produces list of machine statements that are assembled from the program.
      *
      * @return ArrayList of ProgramStatement.  Each ProgramStatement represents an assembled
-     * basic MIPS instruction.
+     * basic RISCV instruction.
      * @see ProgramStatement
      **/
 

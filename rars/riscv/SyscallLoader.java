@@ -35,13 +35,14 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 
-/****************************************************************************/
-    /* This class provides functionality to bring external Syscall definitions
-     * into MARS.  This permits anyone with knowledge of the Mars public interfaces, 
-     * in particular of the Memory and Register classes, to write custom MIPS syscall
-     * functions. This is adapted from the ToolLoader class, which is in turn adapted
-     * from Bret Barker's GameServer class from the book "Developing Games In Java".
-     */
+
+/**
+ * This class provides functionality to bring external Syscall definitions
+ * into RARS.  This permits anyone with knowledge of the Rars public interfaces,
+ * in particular of the Memory and Register classes, to write custom RISCV syscall
+ * functions. This is adapted from the ToolLoader class, which is in turn adapted
+ * from Bret Barker's GameServer class from the book "Developing Games In Java".
+ */
 
 public class SyscallLoader {
 
@@ -91,8 +92,7 @@ public class SyscallLoader {
         syscallList = processSyscallNumberOverrides(syscallList);
     }
 
-    // Will get any syscall number override specifications from MARS config file and
-    // process them.  This will alter syscallList entry for affected names.
+    // Loads system call numbers from Syscall.properties
     private static ArrayList<AbstractSyscall> processSyscallNumberOverrides(ArrayList<AbstractSyscall> syscallList) {
         ArrayList<SyscallNumberOverride> overrides = new Globals().getSyscallOverrides();
         if (syscallList.size() != overrides.size()) {

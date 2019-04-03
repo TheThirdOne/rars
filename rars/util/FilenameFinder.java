@@ -60,7 +60,7 @@ public class FilenameFinder {
      * Locate files and return list of file names.  Given a known relative directory path,
      * it will locate it and build list of all names of files in that directory
      * having the given file extension. If the "known file path" doesn't work
-     * because MARS is running from an executable JAR file, it will locate the
+     * because RARS is running from an executable JAR file, it will locate the
      * directory in the JAR file and proceed from there.  NOTE: since this uses
      * the class loader to get the resource, the directory path needs to be
      * relative to classpath, not absolute.  To work with an arbitrary file system,
@@ -97,7 +97,7 @@ public class FilenameFinder {
         // This requires use of ClassLoader getResources() instead of
         // getResource().  The former will look in all JAR files listed in
         // in the java command.
-        //
+        // TODO: update to use toURI
         URI uri;
         try {
             Enumeration<URL> urls = classLoader.getResources(directoryPath);
@@ -135,35 +135,7 @@ public class FilenameFinder {
             return filenameList;
         }
          
-         /* Original implementation
-      URI uri;
-         try {
-            uri = new URI(classLoader.getResource(directoryPath).toString());
-            if (uri.toString().indexOf(JAR_URI_PREFIX)==0) {
-               uri = new URI(uri.toString().substring(JAR_URI_PREFIX.length()));
-            }
-         }
-             catch (URISyntaxException e) {
-               e.printStackTrace();
-               return filenameList;
-            }
-         File f = new File(uri.getPath());
-         File[] files = f.listFiles();
-         if (files == null) {         
-            if (f.toString().toLowerCase().indexOf(JAR_EXTENSION)>0) {
-               // Must be running from a JAR file. Use ZipFile to find files and create list.         
-               filenameList = getListFromJar(extractJarFilename(f.toString()), directoryPath, fileExtension);
-            } 
-         }
-         else {  // have array of File objects; convert to names and add to list
-            FileFilter filter = getFileFilter(fileExtension, "", NO_DIRECTORIES);
-            for (int i=0; i<files.length; i++) {
-               if (filter.accept(files[i])) { 
-                  filenameList.add(files[i].getName());
-               }
-            }
-         }
-         return filenameList; */
+        // 3/4/2019 - Removed original commented out implementation - Benjamin Landers
     }
 
 
@@ -171,7 +143,7 @@ public class FilenameFinder {
      * Locate files and return list of file names.  Given a known relative directory path,
      * it will locate it and build list of all names of files in that directory
      * having the given file extension. If the "known file path" doesn't work
-     * because MARS is running from an executable JAR file, it will locate the
+     * because RARS is running from an executable JAR file, it will locate the
      * directory in the JAR file and proceed from there.  NOTE: since this uses
      * the class loader to get the resource, the directory path needs to be
      * relative to classpath, not absolute.  To work with an arbitrary file system,
@@ -334,20 +306,7 @@ public class FilenameFinder {
      */
 
     public static FileFilter getFileFilter(ArrayList<String> extensions, String description, boolean acceptDirectories) {
-        return new MarsFileFilter(extensions, description, acceptDirectories);
-    }
-
-    /**
-     * Get a FileFilter that will filter files based on the given list of filename extensions.
-     * All directories are accepted by the filter.
-     *
-     * @param extensions  ArrayList of Strings, each string is acceptable filename extension
-     * @param description String containing description to be added in parentheses after list of extensions.
-     * @return a FileFilter object that accepts files with given extensions, and directories if so indicated.
-     */
-
-    public static FileFilter getFileFilter(ArrayList<String> extensions, String description) {
-        return getFileFilter(extensions, description, true);
+        return new RarsFileFilter(extensions, description, acceptDirectories);
     }
 
     /**
@@ -362,22 +321,7 @@ public class FilenameFinder {
     public static FileFilter getFileFilter(String extension, String description, boolean acceptDirectories) {
         ArrayList<String> extensions = new ArrayList<>();
         extensions.add(extension);
-        return new MarsFileFilter(extensions, description, acceptDirectories);
-    }
-
-    /**
-     * Get a FileFilter that will filter files based on the given filename extension.
-     * All directories are accepted by the filter.
-     *
-     * @param extension   String containing acceptable filename extension
-     * @param description String containing description to be added in parentheses after list of extensions.
-     * @return a FileFilter object that accepts files with given extensions, and directories if so indicated.
-     */
-
-    public static FileFilter getFileFilter(String extension, String description) {
-        ArrayList<String> extensions = new ArrayList<>();
-        extensions.add(extension);
-        return getFileFilter(extensions, description, true);
+        return new RarsFileFilter(extensions, description, acceptDirectories);
     }
 
     /**
@@ -443,13 +387,13 @@ public class FilenameFinder {
     //  FileFilter subclass to be instantiated by the getFileFilter method above.
     //  This extends javax.swing.filechooser.FileFilter
 
-    private static class MarsFileFilter extends FileFilter {
+    private static class RarsFileFilter extends FileFilter {
 
         private ArrayList<String> extensions;
         private String fullDescription;
         private boolean acceptDirectories;
 
-        private MarsFileFilter(ArrayList<String> extensions, String description, boolean acceptDirectories) {
+        private RarsFileFilter(ArrayList<String> extensions, String description, boolean acceptDirectories) {
             this.extensions = extensions;
             this.fullDescription = buildFullDescription(description, extensions);
             this.acceptDirectories = acceptDirectories;
@@ -498,8 +442,5 @@ public class FilenameFinder {
             }
             return false;
         }
-
-    } // MarsFileFilter class
-
-} // FilenameFinder class
-
+    }
+}

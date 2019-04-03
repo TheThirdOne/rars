@@ -26,16 +26,10 @@ public class IntelHexDumpFormat extends AbstractDumpFormat {
     }
 
     /**
-     * Write MIPS memory contents according to the Memory Initialization File
+     * Write memory contents according to the Memory Initialization File
      * (MIF) specification.
      *
-     * @param file         File in which to store MIPS memory contents.
-     * @param firstAddress first (lowest) memory address to dump.  In bytes but
-     *                     must be on word boundary.
-     * @param lastAddress  last (highest) memory address to dump.  In bytes but
-     *                     must be on word boundary.  Will dump the word that starts at this address.
-     * @throws AddressErrorException if firstAddress is invalid or not on a word boundary.
-     * @throws IOException           if error occurs during file output.
+     * @see AbstractDumpFormat
      */
     public void dumpMemoryRange(File file, int firstAddress, int lastAddress)
             throws AddressErrorException, IOException {

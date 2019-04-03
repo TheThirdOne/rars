@@ -46,8 +46,8 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 /**
  * A data cache simulator.  It can be run either as a stand-alone Java application having
- * access to the rars package, or through MARS as an item in its Tools menu.  It makes
- * maximum use of methods inherited from its abstract superclass AbstractMarsToolOrApp.
+ * access to the rars package, or through RARS as an item in its Tools menu.  It makes
+ * maximum use of methods inherited from its abstract superclass AbstractToolAndApplication.
  * Pete Sanderson, v 1.0: 16-18 October 2006, v 1.1: 7 November 2006. v 1.2: 23 December 2010.
  * <p>Version 1.2 fixes a bug in the hit/miss animator under full or N-way set associative. It was
  * animating the block of initial access (first block of set).  Now it animates the block
@@ -110,7 +110,7 @@ public class CacheSimulator extends AbstractToolAndApplication {
     }
 
     /**
-     * Simple constructor, likely used by the MARS Tools menu mechanism
+     * Simple constructor, likely used by the RARS Tools menu mechanism
      */
     public CacheSimulator() {
         super("Data Cache Simulation Tool, " + version, heading);
@@ -120,29 +120,23 @@ public class CacheSimulator extends AbstractToolAndApplication {
     /**
      * Main provided for pure stand-alone use.  Recommended stand-alone use is to write a
      * driver program that instantiates a CacheSimulator object then invokes its go() method.
-     * "stand-alone" means it is not invoked from the MARS Tools menu.  "Pure" means there
+     * "stand-alone" means it is not invoked from the RARS Tools menu.  "Pure" means there
      * is no driver program to invoke the Cache Simulator.
      */
     public static void main(String[] args) {
         new CacheSimulator("Data Cache Simulator stand-alone, " + version, heading).go();
     }
 
-
-    /**
-     * Required Tool method to return Tool name.
-     *
-     * @return Tool name.  MARS will display this in menu item.
-     */
+    @Override
     public String getName() {
         return "Data Cache Simulator";
     }
-
 
     /**
      * Method that constructs the main cache simulator display area.  It is organized vertically
      * into three major components: the cache configuration which an be modified
      * using combo boxes, the cache performance which is updated as the
-     * attached MIPS program executes, and the runtime log which is optionally used
+     * attached program executes, and the runtime log which is optionally used
      * to display log of each cache access.
      *
      * @return the GUI component containing these three areas
@@ -421,7 +415,7 @@ public class CacheSimulator extends AbstractToolAndApplication {
     //////////////////////////////////////////////////////////////////////////////////////
 
     /**
-     * Apply caching policies and update display when connected MIPS program accesses (data) memory.
+     * Apply caching policies and update display when connected program accesses (data) memory.
      *
      * @param memory       the attached memory
      * @param accessNotice information provided by memory in MemoryAccessNotice object
@@ -490,7 +484,7 @@ public class CacheSimulator extends AbstractToolAndApplication {
 
     /**
      * Updates display immediately after each update (AccessNotice) is processed, after
-     * cache configuration changes as needed, and after each execution step when Mars
+     * cache configuration changes as needed, and after each execution step when Rars
      * is running in timed mode.  Overrides inherited method that does nothing.
      */
     protected void updateDisplay() {

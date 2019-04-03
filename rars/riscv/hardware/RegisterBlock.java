@@ -34,7 +34,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 /**
- * Helper class for RegisterFile (and later Coproccessor0 and 1)
+ * Helper class for RegisterFile, FPRegisterFile, and CSRFile
  * <p>
  * Much of the implementation was ripped directly from RegisterFile
  *

@@ -339,7 +339,7 @@ public class BackStepper {
     // simulation thread and the GUI thread for the back-step button).
     // Upon construction, it is filled with newly-created empty BackStep objects which
     // will exist for the life of the stack.  Push does not create a BackStep object
-    // but instead overwrites the contents of the existing one.  Thus during MIPS
+    // but instead overwrites the contents of the existing one.  Thus during RISCV
     // program (simulated) execution, BackStep objects are never created or junked
     // regardless of how many steps are executed.  This will speed things up a bit
     // and make life easier for the garbage collector.
@@ -352,7 +352,7 @@ public class BackStepper {
 
         // Stack is created upon successful assembly or reset.  The one-time overhead of
         // creating all the BackStep objects will not be noticed by the user, and enhances
-        // runtime performance by not having to create or recycle them during MIPS
+        // runtime performance by not having to create or recycle them during
         // program execution.
         private BackstepStack(int capacity) {
             this.capacity = capacity;

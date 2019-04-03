@@ -53,7 +53,6 @@ import java.util.Vector;
  * @author ingo.kofler@itec.uni-klu.ac.at
  */
 
-//@SuppressWarnings("serial")
 public class BHTableModel extends AbstractTableModel {
 
     /**

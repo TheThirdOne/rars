@@ -35,7 +35,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 /**
- * Provides standard i/o services needed to simulate the MIPS syscall
+ * Provides standard i/o services needed to simulate the RISCV syscall
  * routines.  These methods will detect whether the simulator is being
  * run from the command line or through the GUI, then do I/O to
  * System.in and System.out in the former situation, and interact with
@@ -543,12 +543,10 @@ public class SystemIO {
             for (int i = 0; i < SYSCALL_MAXFILES; i++) {
                 if (fileNames[i] != null
                         && fileNames[i].equals(requestedFilename)) {
-                    // System.out.println("Mars.SystemIO.FileIOData.filenameInUse: rtng TRUE for " + requestedFilename);
                     return true;
                 }
             }
 
-            // System.out.println("Mars.SystemIO.FileIOData.filenameInUse: rtng TRUE for " + requestedFilename);
             return false;
 
         }
@@ -624,12 +622,7 @@ public class SystemIO {
             fileFlags[i] = flag;
             fileErrorString = new String("File operation OK");
             return i;
-
         }
 
     } // end private class FileIOData
-    ////////////////////////////////////////////////////////////////////////////////
-
-
 }
-

@@ -50,7 +50,7 @@ public abstract class AbstractDumpFormat implements DumpFormat {
      * class but subclass constructor can call this one.
      *
      * @param name              Brief descriptive name to be displayed in selection list.
-     * @param commandDescriptor One-word descriptive name to be used by MARS command mode parser and user.
+     * @param commandDescriptor One-word descriptive name to be used by RARS command mode parser and user.
      *                          Any spaces in this string will be removed.
      * @param description       Description to go with standard file extension for
      *                          display in file save dialog or to be used as tool tip.
@@ -96,7 +96,7 @@ public abstract class AbstractDumpFormat implements DumpFormat {
     }
 
     /**
-     * One-word description of format to be used by MARS command mode parser
+     * One-word description of format to be used by RARS command mode parser
      * and user in conjunction with the "dump" option.
      *
      * @return One-word String describing the format.
@@ -106,10 +106,10 @@ public abstract class AbstractDumpFormat implements DumpFormat {
     }
 
     /**
-     * Write MIPS memory contents according to the
+     * Write memory contents according to the
      * specification for this format.
      *
-     * @param file         File in which to store MIPS memory contents.
+     * @param file         File in which to store memory contents.
      * @param firstAddress first (lowest) memory address to dump.  In bytes but
      *                     must be on word boundary.
      * @param lastAddress  last (highest) memory address to dump.  In bytes but

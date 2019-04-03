@@ -30,7 +30,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
 /**
- * Information about MIPS data types.
+ * Information about data types.
  *
  * @author Pete Sanderson
  * @version August 2003
@@ -38,43 +38,43 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 public final class DataTypes {
     /**
-     * Number of bytes occupied by MIPS double is 8.
+     * Number of bytes occupied by double is 8.
      **/
     public static final int DOUBLE_SIZE = 8;
     /**
-     * Number of bytes occupied by MIPS float is 4.
+     * Number of bytes occupied by float is 4.
      **/
     public static final int FLOAT_SIZE = 4;
     /**
-     * Number of bytes occupied by MIPS word is 4.
+     * Number of bytes occupied by word is 4.
      **/
     public static final int WORD_SIZE = 4;
     /**
-     * Number of bytes occupied by MIPS halfword is 2.
+     * Number of bytes occupied by halfword is 2.
      **/
     public static final int HALF_SIZE = 2;
     /**
-     * Number of bytes occupied by MIPS byte is 1.
+     * Number of bytes occupied by byte is 1.
      **/
     public static final int BYTE_SIZE = 1;
     /**
-     * Number of bytes occupied by MIPS character is 1.
+     * Number of bytes occupied by character is 1.
      **/
     public static final int CHAR_SIZE = 1;
     /**
-     * Maximum value that can be stored in a MIPS word is 2<sup>31</sup>-1
+     * Maximum value that can be stored in a word is 2<sup>31</sup>-1
      **/
     public static final int MAX_WORD_VALUE = Integer.MAX_VALUE;
     /**
-     * Lowest value that can be stored in a MIPS word is -2<sup>31</sup>
+     * Lowest value that can be stored in aword is -2<sup>31</sup>
      **/
     public static final int MIN_WORD_VALUE = Integer.MIN_VALUE;
     /**
-     * Maximum value that can be stored in a MIPS halfword is 2<sup>15</sup>-1
+     * Maximum value that can be stored in a halfword is 2<sup>15</sup>-1
      **/
     public static final int MAX_HALF_VALUE = 32767; //(int)Math.pow(2,15) - 1;
     /**
-     * Lowest value that can be stored in a MIPS halfword is -2<sup>15</sup>
+     * Lowest value that can be stored in a halfword is -2<sup>15</sup>
      **/
     public static final int MIN_HALF_VALUE = -32768; //0 - (int) Math.pow(2,15);
     /**
@@ -94,24 +94,24 @@ public final class DataTypes {
      **/
     public static final int MIN_UPPER_VALUE = 0xFFF80000;
     /**
-     * Maximum value that can be stored in a MIPS byte is 2<sup>7</sup>-1
+     * Maximum value that can be stored in a byte is 2<sup>7</sup>-1
      **/
     public static final int MAX_BYTE_VALUE = Byte.MAX_VALUE;
     /**
-     * Lowest value that can be stored in a MIPS byte is -2<sup>7</sup>
+     * Lowest value that can be stored in a byte is -2<sup>7</sup>
      **/
     public static final int MIN_BYTE_VALUE = Byte.MIN_VALUE;
     /**
-     * Maximum positive finite value that can be stored in a MIPS float is same as Java Float
+     * Maximum positive finite value that can be stored in a float is same as Java Float
      **/
     public static final double MAX_FLOAT_VALUE = Float.MAX_VALUE;
     /**
-     * Largest magnitude negative value that can be stored in a MIPS float (negative of the max)
+     * Largest magnitude negative value that can be stored in a float (negative of the max)
      **/
     public static final double LOW_FLOAT_VALUE = -Float.MAX_VALUE;
 
     /**
-     * Get length in bytes for numeric MIPS directives.
+     * Get length in bytes for numeric RISCV directives.
      *
      * @param direct Directive to be measured.
      * @return Returns length in bytes for values of that type.  If type is not numeric

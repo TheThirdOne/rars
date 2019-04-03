@@ -31,10 +31,10 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 /**
- * Class representing MIPS assembler directives.  If Java had enumerated types, these
+ * Class representing RISCV assembler directives.  If Java had enumerated types, these
  * would probably be implemented that way.  Each directive is represented by a unique object.
  * The directive name is indicative of the directive it represents.  For example, DATA
- * represents the MIPS .data directive.
+ * represents the RISCV .data directive.
  *
  * @author Pete Sanderson
  * @version August 2003
@@ -128,7 +128,7 @@ public final class Directives {
     /**
      * Get name of this Directives object
      *
-     * @return name of this MIPS directive as a String
+     * @return name of this directive as a String
      **/
 
     public String getName() {
@@ -138,7 +138,7 @@ public final class Directives {
     /**
      * Get description of this Directives object
      *
-     * @return description of this MIPS directive (for help purposes)
+     * @return description of this directive (for help purposes)
      **/
 
     public String getDescription() {
@@ -148,7 +148,7 @@ public final class Directives {
     /**
      * Produces List of Directive objects
      *
-     * @return MIPS Directive
+     * @return All directives defined
      **/
     public static ArrayList<Directives> getDirectiveList() {
         return directiveList;
@@ -158,8 +158,8 @@ public final class Directives {
     /**
      * Lets you know whether given directive is for integer (WORD,HALF,BYTE).
      *
-     * @param direct a MIPS directive
-     * @return true if given directive is FLOAT or DOUBLE, false otherwise
+     * @param direct a directive
+     * @return true if given directive is WORD, HALF, or BYTE, false otherwise
      **/
     public static boolean isIntegerDirective(Directives direct) {
         return direct == Directives.WORD || direct == Directives.HALF || direct == Directives.BYTE;
@@ -169,7 +169,7 @@ public final class Directives {
     /**
      * Lets you know whether given directive is for floating number (FLOAT,DOUBLE).
      *
-     * @param direct a MIPS directive
+     * @param direct a directive
      * @return true if given directive is FLOAT or DOUBLE, false otherwise.
      **/
     public static boolean isFloatingDirective(Directives direct) {

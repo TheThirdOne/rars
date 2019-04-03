@@ -28,8 +28,9 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 (MIT license, http://www.opensource.org/licenses/mit-license.html)
  */
 
+// TODO: update documentation here to be up to date with RISCV + change the enum names to match the spec
 /**
- * These are the MIPS-defined formats of basic machine instructions.  The R-format indicates
+ * These are the RISCV-defined formats of basic machine instructions.  The R-format indicates
  * the instruction works only with registers.  The I-format indicates the instruction
  * works with an immediate value (e.g. constant).  The J-format indicates this is a Jump
  * instruction.  The I-branch-format is defined by me, not MIPS, to to indicate this is

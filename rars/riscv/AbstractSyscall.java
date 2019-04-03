@@ -34,10 +34,10 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 /**
  * Abstract class that a syscall system service must extend.  A qualifying service
  * must be a class in the rars.riscv.syscalls package, must be compiled into a .class file.
- * Mars will detect a qualifying syscall upon startup, create an instance
+ * Rars will detect a qualifying syscall upon startup, create an instance
  * using its no-argument constructor and add it to its syscall list.
- * When its service is invoked at runtime ("syscall" instruction
- * with its service number stored in register $v0), its simulate()
+ * When its service is invoked at runtime ("ecall" instruction
+ * with its service number stored in register a7), its simulate()
  * method will be invoked.
  */
 

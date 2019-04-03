@@ -52,7 +52,7 @@ public class SyscallMidiOutSync extends AbstractSyscall {
         super("MidiOutSync", "Outputs simulated MIDI tone to sound card, then waits until the sound finishes playing.", "See MIDI note below", "N/A");
     }
 
-    /*
+    /**
      * Arguments:
      * a0 - pitch (note).  Integer value from 0 to 127, with 60 being middle-C on a piano.<br>
      * a1 - duration. Integer value in milliseconds.<br>
@@ -62,11 +62,10 @@ public class SyscallMidiOutSync extends AbstractSyscall {
      * Default values, in case any parameters are outside the above ranges, are a0=60, a1=1000,
      * a2=0, a3=100.<br>
      * <p>
-     * See MARS documentation elsewhere or www.midi.org for more information.  Note that the pitch,
+     * See MARS/RARS documentation elsewhere or www.midi.org for more information.  Note that the pitch,
      * instrument and volume value ranges 0-127 are from javax.sound.midi; actual MIDI instruments
      * use the range 1-128.
      */
-
     public void simulate(ProgramStatement statement) {
         int pitch = RegisterFile.getValue("a0");
         int duration = RegisterFile.getValue("a1");

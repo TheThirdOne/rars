@@ -55,7 +55,7 @@ public class SyscallRead extends AbstractSyscall {
                 length); // length
         RegisterFile.updateRegister("a0", retLength); // set returned value in register
 
-        // copy bytes from returned buffer into MARS memory
+        // copy bytes from returned buffer into memory
         try {
             while (index < retLength) {
                 Globals.memory.setByte(byteAddress++,

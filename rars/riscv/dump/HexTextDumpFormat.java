@@ -38,7 +38,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 /**
  * Class that represents the "hexadecimal text" memory dump format.  The output
- * is a text file with one word of MIPS memory per line.  The word is formatted
+ * is a text file with one word of memory per line.  The word is formatted
  * using hexadecimal characters, e.g. 3F205A39.
  *
  * @author Pete Sanderson
@@ -57,18 +57,12 @@ public class HexTextDumpFormat extends AbstractDumpFormat {
 
 
     /**
-     * Write MIPS memory contents in hexadecimal text format.  Each line of
+     * Write memory contents in hexadecimal text format.  Each line of
      * text contains one memory word written in hexadecimal characters.  Written
      * using PrintStream's println() method.
      * Adapted by Pete Sanderson from code written by Greg Gibeling.
      *
-     * @param file         File in which to store MIPS memory contents.
-     * @param firstAddress first (lowest) memory address to dump.  In bytes but
-     *                     must be on word boundary.
-     * @param lastAddress  last (highest) memory address to dump.  In bytes but
-     *                     must be on word boundary.  Will dump the word that starts at this address.
-     * @throws AddressErrorException if firstAddress is invalid or not on a word boundary.
-     * @throws IOException           if error occurs during file output.
+     * @see AbstractDumpFormat
      */
     public void dumpMemoryRange(File file, int firstAddress, int lastAddress)
             throws AddressErrorException, IOException {

@@ -41,6 +41,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
 public class MemoryConfiguration {
+    // TODO: remove kernel mode maybe?
     // TODO: move away from a multi-array approach to array of ranges approach
     // Identifier is used for saving setting; name is used for display
     private String configurationIdentifier, configurationName;

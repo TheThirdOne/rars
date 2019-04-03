@@ -37,7 +37,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 /**
- * ExtendedInstruction represents a MIPS extended (a.k.a pseudo) instruction.  This
+ * ExtendedInstruction represents a RISCV extended (a.k.a pseudo) instruction.  This
  * assembly language instruction does not have a corresponding machine instruction.  Instead
  * it is translated by the extended assembler into one or more basic instructions (operations
  * that have a corresponding machine instruction).
@@ -188,6 +188,7 @@ public class ExtendedInstruction extends Instruction {
         return instruction;
     }
 
+    // TODO: update these two methods to Java 1.8
     // Performs a String substitution.  Java 1.5 adds an overloaded String.replace method to
     // do this directly but I wanted to stay 1.4 compatible.
     // Modified 12 July 2006 to "substitute all occurances", not just the first.
@@ -201,6 +202,7 @@ public class ExtendedInstruction extends Instruction {
             modified = modified.substring(0, i) + replacement + modified.substring(i + find.length());
         }
         return modified;
+
     }
 
     // Performs a String substitution, but will only substitute for the first match.

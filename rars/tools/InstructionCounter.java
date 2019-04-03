@@ -46,7 +46,6 @@ import java.util.Observable;
  *
  * @author Felipe Lessa <felipe.lessa@gmail.com>
  */
-//@SuppressWarnings("serial")
 public class InstructionCounter extends AbstractToolAndApplication {
     private static String name = "Instruction Counter";
     private static String version = "Version 1.0 (Felipe Lessa)";
@@ -105,18 +104,18 @@ public class InstructionCounter extends AbstractToolAndApplication {
     }
 
     /**
-     * Simple construction, likely used by the MARS Tools menu mechanism.
+     * Simple construction, likely used by the RARS Tools menu mechanism.
      */
     public InstructionCounter() {
         super(name + ", " + version, heading);
     }
 
-    //	@Override
+    @Override
     public String getName() {
         return name;
     }
 
-    //	@Override
+    @Override
     protected JComponent buildMainDisplayArea() {
         // Create everything
         JPanel panel = new JPanel(new GridBagLayout());
@@ -209,12 +208,12 @@ public class InstructionCounter extends AbstractToolAndApplication {
         return panel;
     }
 
-    //	@Override
+    @Override
     protected void addAsObserver() {
         addAsObserver(Memory.textBaseAddress, Memory.textLimitAddress);
     }
 
-    //	@Override
+    @Override
     protected void processRISCVUpdate(Observable resource, AccessNotice notice) {
         if (!notice.accessIsFromRISCV()) return;
         if (notice.getAccessType() != AccessNotice.READ) return;
@@ -223,6 +222,7 @@ public class InstructionCounter extends AbstractToolAndApplication {
         if (a == lastAddress) return;
         lastAddress = a;
         counter++;
+        // TODO: update this to have labels for the extra formats
         try {
             ProgramStatement stmt = Memory.getInstance().getStatement(a);
             BasicInstruction instr = (BasicInstruction) stmt.getInstruction();
@@ -242,20 +242,20 @@ public class InstructionCounter extends AbstractToolAndApplication {
         updateDisplay();
     }
 
-    //	@Override
+    @Override
     protected void initializePreGUI() {
         counter = counterR = counterI = counterS = counterU = 0;
         lastAddress = -1;
     }
 
-    // @Override
+    @Override
     protected void reset() {
         counter = counterR = counterI = counterS = 0;
         lastAddress = -1;
         updateDisplay();
     }
 
-    //	@Override
+    @Override
     protected void updateDisplay() {
         counterField.setText(String.valueOf(counter));
 

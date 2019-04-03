@@ -35,7 +35,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
 /* This class provides functionality to bring external memory dump format definitions
- * into MARS.  This is adapted from the ToolLoader class, which is in turn adapted
+ * into RARS.  This is adapted from the ToolLoader class, which is in turn adapted
  * from Bret Barker's GameServer class from the book "Developing Games In Java".
  */
 
@@ -73,7 +73,11 @@ public class DumpFormatLoader {
      * Dynamically loads dump formats into an ArrayList.  This method is adapted from
      * the loadGameControllers() method in Bret Barker's GameServer class.
      * Barker (bret@hypefiend.com) is co-author of the book "Developing Games
-     * in Java".  Also see the ToolLoader and SyscallLoader classes elsewhere in MARS.
+     * in Java".
+     *
+     * @see rars.riscv.SyscallLoader
+     * @see rars.venus.ToolLoader
+     * @see rars.riscv.InstructionSet
      */
 
     public static ArrayList<DumpFormat> getDumpFormats() {

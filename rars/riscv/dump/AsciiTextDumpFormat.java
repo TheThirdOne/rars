@@ -40,7 +40,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 /**
  * Class that represents the "ASCII text" memory dump format. Memory contents
  * are interpreted as ASCII codes. The output
- * is a text file with one word of MIPS memory per line.  The word is formatted
+ * is a text file with one word of memory per line.  The word is formatted
  * to leave three spaces for each character.  Non-printing characters
  * rendered as period (.) as placeholder.  Common escaped characters
  * rendered using backslash and single-character descriptor, e.g. \t for tab.
@@ -61,7 +61,7 @@ public class AsciiTextDumpFormat extends AbstractDumpFormat {
 
 
     /**
-     * Interpret MIPS memory contents as ASCII characters.  Each line of
+     * Interpret memory contents as ASCII characters.  Each line of
      * text contains one memory word written in ASCII characters.  Those
      * corresponding to tab, newline, null, etc are rendered as backslash
      * followed by single-character code, e.g. \t for tab, \0 for null.
@@ -70,13 +70,7 @@ public class AsciiTextDumpFormat extends AbstractDumpFormat {
      * using PrintStream's println() method.
      * Adapted by Pete Sanderson from code written by Greg Gibeling.
      *
-     * @param file         File in which to store MIPS memory contents.
-     * @param firstAddress first (lowest) memory address to dump.  In bytes but
-     *                     must be on word boundary.
-     * @param lastAddress  last (highest) memory address to dump.  In bytes but
-     *                     must be on word boundary.  Will dump the word that starts at this address.
-     * @throws AddressErrorException if firstAddress is invalid or not on a word boundary.
-     * @throws IOException           if error occurs during file output.
+     * @see AbstractDumpFormat
      */
     public void dumpMemoryRange(File file, int firstAddress, int lastAddress)
             throws AddressErrorException, IOException {

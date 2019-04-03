@@ -34,7 +34,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 /**
  * Provides means to work with ".properties" files which are used to store
- * various MARS settings.
+ * various RARS settings.
  *
  * @author Pete Sanderson
  * @version October 2006

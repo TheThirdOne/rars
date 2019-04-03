@@ -45,7 +45,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 /**
  * Tool to help students learn about IEEE 754 representation of 32 bit
- * floating point values.  This representation is used by MIPS "float"
+ * floating point values.  This representation is used by the "float"
  * directive and instructions and also the Java (and most other languages)
  * "float" data type.  As written, it can ALMOST be adapted to 64 bit by
  * changing a few constants.
@@ -81,7 +81,6 @@ public class FloatRepresentation extends AbstractToolAndApplication {
 
     private Register attachedRegister = null;
     private Register[] fpRegisters;
-    private FloatRepresentation thisFloatTool;
     // Panels to hold binary displays and decorations (labels, arrows)
     private JPanel binarySignDecoratedDisplay,
             binaryExponentDecoratedDisplay, binaryFractionDecoratedDisplay;
@@ -104,11 +103,10 @@ public class FloatRepresentation extends AbstractToolAndApplication {
      */
     public FloatRepresentation(String title, String heading) {
         super(title, heading);
-        thisFloatTool = this;
     }
 
     /**
-     * Simple constructor, likely used by the MARS Tools menu mechanism
+     * Simple constructor, likely used by the RARS Tools menu mechanism
      */
     public FloatRepresentation() {
         this(title + version, heading);
@@ -117,18 +115,14 @@ public class FloatRepresentation extends AbstractToolAndApplication {
     /**
      * Main provided for pure stand-alone use.  Recommended stand-alone use is to write a
      * driver program that instantiates a FloatRepresentation object then invokes its go() method.
-     * "stand-alone" means it is not invoked from the MARS Tools menu.  "Pure" means there
+     * "stand-alone" means it is not invoked from the RARS Tools menu.  "Pure" means there
      * is no driver program to invoke the application.
      */
     public static void main(String[] args) {
         new FloatRepresentation(title + version, heading).go();
     }
 
-    /**
-     * Fetch tool name (for display in MARS Tools menu)
-     *
-     * @return String containing tool name
-     */
+    @Override
     public String getName() {
         return "Floating Point Representation";
     }
@@ -138,7 +132,7 @@ public class FloatRepresentation extends AbstractToolAndApplication {
      * (starting address 0x10010000) only.  This version will register us as observer over the selected
      * floating point register, if any. If no register is selected, it will not do anything.
      * If you use the inherited GUI buttons, this method is invoked when you click "Connect" button
-     * on Tool or the "Assemble and Run" button on a Mars-based app.
+     * on Tool or the "Assemble and Run" button on a Rars-based app.
      */
     protected void addAsObserver() {
         addAsObserver(attachedRegister);
@@ -148,8 +142,8 @@ public class FloatRepresentation extends AbstractToolAndApplication {
      * Delete this app/tool as an Observer of the attached register.  This overrides
      * the inherited version which deletes only as an Observer of memory.
      * This method is called when the default "Disconnect" button on a Tool is selected or
-     * when the MIPS program execution triggered by the default "Assemble and run" on a stand-alone
-     * Mars app terminates (e.g. when the button is re-enabled).
+     * when the program execution triggered by the default "Assemble and run" on a stand-alone
+     * app terminates (e.g. when the button is re-enabled).
      */
     protected void deleteAsObserver() {
         deleteAsObserver(attachedRegister);
@@ -167,9 +161,9 @@ public class FloatRepresentation extends AbstractToolAndApplication {
 
     /**
      * Override inherited update() to update display when "attached" register is modified
-     * either by MIPS program or by user editing it on the MARS user interface.
+     * either by the program or by user editing it on the RARS user interface.
      * The latter is the reason for overriding the inherited update() method.
-     * The inherited method will filter out notices triggered by the MARS GUI or the user.
+     * The inherited method will filter out notices triggered by the RARS GUI or the user.
      *
      * @param register     the attached register
      * @param accessNotice information provided by register in RegisterAccessNotice object
@@ -182,7 +176,7 @@ public class FloatRepresentation extends AbstractToolAndApplication {
 
     /**
      * Method to reset display values to 0 when the Reset button selected.
-     * If attached to a MIPS register at the time, the register will be reset as well.
+     * If attached to a register at the time, the register will be reset as well.
      * Overrides inherited method that does nothing.
      */
     protected void reset() {
@@ -397,7 +391,7 @@ public class FloatRepresentation extends AbstractToolAndApplication {
             synchronized (Globals.memoryAndRegistersLock) {
                 attachedRegister.setValue(intValue);
             }
-            // HERE'S A HACK!!  Want to immediately display the updated register value in MARS
+            // HERE'S A HACK!!  Want to immediately display the updated register value in RARS
             // but that code was not written for event-driven update (e.g. Observer) --
             // it was written to poll the registers for their values.  So we force it to do so.
             if (Globals.getGui() != null) {

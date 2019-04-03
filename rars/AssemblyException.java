@@ -28,7 +28,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 /**
- * Exception wrapping ErrorList, used mainly in Tokenier and Assembler; Represents errors that occurs while assembling a RISCV program.
+ * Exception wrapping ErrorList, used mainly in Tokenizer and Assembler; Represents errors that occurs while assembling a RISCV program.
  *
  * @author Benjamin Landers
  * @version July 2017

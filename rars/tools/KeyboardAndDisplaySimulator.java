@@ -47,9 +47,11 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 (MIT license, http://www.opensource.org/licenses/mit-license.html)
  */
 
+// TODO: make an example that uses this. I'm not sure it wasn't broken in the porting process.
+
 /**
  * Keyboard and Display Simulator.  It can be run either as a stand-alone Java application having
- * access to the rars package, or through MARS as an item in its Tools menu.  It makes
+ * access to the rars package, or through RARS as an item in its Tools menu.  It makes
  * maximum use of methods inherited from its abstract superclass AbstractToolAndApplication.
  * Pete Sanderson<br>
  * Version 1.0, 24 July 2008.<br>
@@ -141,36 +143,29 @@ public class KeyboardAndDisplaySimulator extends AbstractToolAndApplication {
     }
 
     /**
-     * Simple constructor, likely used by the MARS Tools menu mechanism
+     * Simple constructor, likely used by the RARS Tools menu mechanism
      */
     public KeyboardAndDisplaySimulator() {
         super(heading + ", " + version, heading);
-        simulator = this;
     }
-
 
     /**
      * Main provided for pure stand-alone use.  Recommended stand-alone use is to write a
      * driver program that instantiates a KeyboardAndDisplaySimulator object then invokes its go() method.
-     * "stand-alone" means it is not invoked from the MARS Tools menu.  "Pure" means there
+     * "stand-alone" means it is not invoked from the RARS Tools menu.  "Pure" means there
      * is no driver program to invoke the application.
      */
     public static void main(String[] args) {
         new KeyboardAndDisplaySimulator(heading + " stand-alone, " + version, heading).go();
     }
 
-
-    /**
-     * Required Tool method to return Tool name.
-     *
-     * @return Tool name.  MARS will display this in menu item.
-     */
+    @Override
     public String getName() {
         return heading;
     }
 
     // Set the MMIO addresses.  Prior to MARS 3.7 these were final because
-    // MIPS address space was final as well.  Now we will get MMIO base address
+    // address space was final as well.  Now we will get MMIO base address
     // each time to reflect possible change in memory configuration. DPS 6-Aug-09
     protected void initializePreGUI() {
         RECEIVER_CONTROL = Memory.memoryMapBaseAddress; //0xffff0000; // keyboard Ready in low-order bit
@@ -179,7 +174,6 @@ public class KeyboardAndDisplaySimulator extends AbstractToolAndApplication {
         TRANSMITTER_DATA = Memory.memoryMapBaseAddress + 12; //0xffff000c; // display character in low-order byte
         displayPanelTitle = "DISPLAY: Store to Transmitter Data " + Binary.intToHexString(TRANSMITTER_DATA);
         keyboardPanelTitle = "KEYBOARD: Characters typed here are stored to Receiver Data " + Binary.intToHexString(RECEIVER_DATA);
-
     }
 
 
@@ -193,12 +187,12 @@ public class KeyboardAndDisplaySimulator extends AbstractToolAndApplication {
      * echo the character to display, wait for delay period, then set TRANSMITTER_CONTROL.
      * <p>
      * If you use the inherited GUI buttons, this method is invoked when you click "Connect" button on Tool or the
-     * "Assemble and Run" button on a Mars-based app.
+     * "Assemble and Run" button on a Rars-based app.
      */
     protected void addAsObserver() {
         // Set transmitter Control ready bit to 1, means we're ready to accept display character.
         updateMMIOControl(TRANSMITTER_CONTROL, readyBitSet(TRANSMITTER_CONTROL));
-        // We want to be an observer only of MIPS reads from RECEIVER_DATA and writes to TRANSMITTER_DATA.
+        // We want to be an observer only of reads from RECEIVER_DATA and writes to TRANSMITTER_DATA.
         // Use the Globals.memory.addObserver() methods instead of inherited method to achieve this.
         addAsObserver(RECEIVER_DATA, RECEIVER_DATA);
         addAsObserver(TRANSMITTER_DATA, TRANSMITTER_DATA);
@@ -208,7 +202,6 @@ public class KeyboardAndDisplaySimulator extends AbstractToolAndApplication {
         // TRANSMITTER_DATA.
         addAsObserver(Memory.textBaseAddress, Memory.textLimitAddress);
     }
-
 
     /**
      * Method that constructs the main display area.  It is organized vertically
@@ -234,28 +227,22 @@ public class KeyboardAndDisplaySimulator extends AbstractToolAndApplication {
         return keyboardAndDisplay;
     }
 
-
     //////////////////////////////////////////////////////////////////////////////////////
     //  Rest of the protected methods.  These all override do-nothing methods inherited from
     //  the abstract superclass.
     //////////////////////////////////////////////////////////////////////////////////////
 
-    /**
-     * Update display when connected MIPS program accesses (data) memory.
-     *
-     * @param memory       the attached memory
-     * @param accessNotice information provided by memory in MemoryAccessNotice object
-     */
+    @Override
     protected void processRISCVUpdate(Observable memory, AccessNotice accessNotice) {
         MemoryAccessNotice notice = (MemoryAccessNotice) accessNotice;
-        // If MIPS program has just read (loaded) the receiver (keyboard) data register,
+        // If the program has just read (loaded) the receiver (keyboard) data register,
         // then clear the Ready bit to indicate there is no longer a keystroke available.
         // If Ready bit was initially clear, they'll get the old keystroke -- serves 'em right
         // for not checking!
         if (notice.getAddress() == RECEIVER_DATA && notice.getAccessType() == AccessNotice.READ) {
             updateMMIOControl(RECEIVER_CONTROL, readyBitCleared(RECEIVER_CONTROL));
         }
-        // MIPS program has just written (stored) the transmitter (display) data register.  If transmitter
+        // The program has just written (stored) the transmitter (display) data register.  If transmitter
         // Ready bit is clear, device is not ready yet so ignore this event -- serves 'em right for not checking!
         // If transmitter Ready bit is set, then clear it to indicate the display device is processing the character.
         // Also start an intruction counter that will simulate the delay of the slower
@@ -268,11 +255,11 @@ public class KeyboardAndDisplaySimulator extends AbstractToolAndApplication {
             this.instructionCount = 0;
             this.transmitDelayInstructionCountLimit = generateDelay();
         }
-        // We have been notified of a MIPS instruction execution.
+        // We have been notified of an instruction execution.
         // If we are in transmit delay period, increment instruction count and if limit
-        // has been reached, set the transmitter Ready flag to indicate the MIPS program
+        // has been reached, set the transmitter Ready flag to indicate the program
         // can write another character to the transmitter data register.  If the Interrupt-Enabled
-        // bit had been set by the MIPS program, generate an interrupt!
+        // bit had been set by the program, generate an interrupt!
         if (this.countingInstructions &&
                 notice.getAccessType() == AccessNotice.READ && Memory.inTextSegment(notice.getAddress())) {
             this.instructionCount++;
@@ -351,10 +338,7 @@ public class KeyboardAndDisplaySimulator extends AbstractToolAndApplication {
         }
     }
 
-    /**
-     * Initialization code to be executed after the GUI is configured.  Overrides inherited default.
-     */
-
+    @Override
     protected void initializePostGUI() {
         initializeTransmitDelaySimulator();
         keyEventAccepter.requestFocusInWindow();
@@ -379,7 +363,7 @@ public class KeyboardAndDisplaySimulator extends AbstractToolAndApplication {
 
     // The display JTextArea (top half) is initialized either to the empty
     // string, or to a string filled with lines of spaces. It will do the
-    // latter only if the MIPS program has sent the BELL character (Ascii 7) to
+    // latter only if the program has sent the BELL character (Ascii 7) to
     // the transmitter.  This sets the caret (cursor) to a specific (x,y) position
     // on a text-based virtual display.  The lines of spaces is necessary because
     // the caret can only be placed at a position within the current text string.
@@ -461,9 +445,7 @@ public class KeyboardAndDisplaySimulator extends AbstractToolAndApplication {
         }
     }
 
-    /**
-     * Overrides default method, to provide a Help button for this tool/app.
-     */
+    @Override
     protected JComponent getHelpComponent() {
         final String helpContent =
                 "Keyboard And Display MMIO Simulator\n\n" +
@@ -543,6 +525,7 @@ public class KeyboardAndDisplaySimulator extends AbstractToolAndApplication {
                         ja.setColumns(60);
                         ja.setLineWrap(true);
                         ja.setWrapStyleWord(true);
+                        // TODO: potentially implement method 2
                         // Make the Help dialog modeless (can remain visible while working with other components).
                         // Unfortunately, JOptionPane.showMessageDialog() cannot be made modeless.  I found two
                         // workarounds:
@@ -693,7 +676,7 @@ public class KeyboardAndDisplaySimulator extends AbstractToolAndApplication {
     // This one does the work: update the MMIO Control and optionally the Data register as well
     // NOTE: last argument TRUE means update only the MMIO Control register; FALSE means update both Control and Data.
     private synchronized void updateMMIOControlAndData(int controlAddr, int controlValue, int dataAddr, int dataValue, boolean controlOnly) {
-        if (!this.isBeingUsedAsAMarsTool || (this.isBeingUsedAsAMarsTool && connectButton.isConnected())) {
+        if (!this.isBeingUsedAsATool || (this.isBeingUsedAsATool && connectButton.isConnected())) {
             synchronized (Globals.memoryAndRegistersLock) {
                 try {
                     Globals.memory.setRawWord(controlAddr, controlValue);
@@ -803,7 +786,7 @@ public class KeyboardAndDisplaySimulator extends AbstractToolAndApplication {
 
     //////////////////////////////////////////////////////////////////////////////////
     //
-    //  Class for selecting transmitter delay lengths (# of MIPS instruction executions).
+    //  Class for selecting transmitter delay lengths (# of instruction executions).
     //
 
     private class DelayLengthPanel extends JPanel {

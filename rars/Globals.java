@@ -105,7 +105,7 @@ public class Globals {
      */
     public static final ArrayList<String> fileExtensions = getFileExtensions();
     /**
-     * Maximum length of scrolled message window (MARS Messages and Run I/O)
+     * Maximum length of scrolled message window (RARS Messages and Run I/O)
      */
     public static final int maximumMessageCharacters = getMessageLimit();
     /**
@@ -176,7 +176,7 @@ public class Globals {
         }
     }
 
-    // Read byte limit of Run I/O or MARS Messages text to buffer.
+    // Read byte limit of Run I/O or RARS Messages text to buffer.
     private static int getMessageLimit() {
         return getIntegerProperty(configPropertiesFile, "MessageLimit", 1000000);
     }

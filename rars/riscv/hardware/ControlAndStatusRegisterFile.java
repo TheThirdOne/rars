@@ -5,10 +5,9 @@ import rars.Globals;
 import java.util.Observer;
 
 /*
-Copyright (c) 2003-2009,  Pete Sanderson and Kenneth Vollmar
+Copyright (c) 2017-2019,  Benjamin Landers
 
-Developed by Pete Sanderson (psanderson@otterbein.edu)
-and Kenneth Vollmar (kenvollmar@missouristate.edu)
+Developed by Benjamin Landers (benjaminrlanders@gmail.com)
 
 Permission is hereby granted, free of charge, to any person obtaining 
 a copy of this software and associated documentation files (the 
@@ -36,9 +35,8 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * Represents the implemented control and status registers. The main classes are fcsr (for floating point errors),
  * timers, and interrupt handling.
  *
- * @author Pete Sanderson
  * @author Benjamin Landers
- * @version August 2005
+ * @version August 2017
  **/
 
 public class ControlAndStatusRegisterFile {

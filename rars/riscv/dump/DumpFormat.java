@@ -33,7 +33,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 /**
- * Interface for memory dump file formats.  All MARS needs to be able
+ * Interface for memory dump file formats.  All RARS needs to be able
  * to do is save an assembled program or data in the specified manner for
  * a given format.  Formats are specified through classes
  * that implement this interface.
@@ -65,8 +65,8 @@ public interface DumpFormat {
     String getDescription();
 
     /**
-     * A short one-word descriptor that will be used by the MARS
-     * command line parser (and the MARS command line user) to specify
+     * A short one-word descriptor that will be used by the RARS
+     * command line parser (and the RARS command line user) to specify
      * that this format is to be used.
      */
     String getCommandDescriptor();
@@ -79,10 +79,10 @@ public interface DumpFormat {
     String toString();
 
     /**
-     * Write MIPS memory contents according to the
+     * Write memory contents according to the
      * specification for this format.
      *
-     * @param file         File in which to store MIPS memory contents.
+     * @param file         File in which to store memory contents.
      * @param firstAddress first (lowest) memory address to dump.  In bytes but
      *                     must be on word boundary.
      * @param lastAddress  last (highest) memory address to dump.  In bytes but

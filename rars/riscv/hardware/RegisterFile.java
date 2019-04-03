@@ -36,7 +36,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 /**
- * Represents the collection of MIPS registers.
+ * Represents the collection of RISCV integer registers.
  *
  * @author Jason Bumgarner, Jason Shrewsbury
  * @version June 2003

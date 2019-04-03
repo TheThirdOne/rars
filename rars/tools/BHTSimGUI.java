@@ -47,7 +47,6 @@ import java.util.Vector;
  *
  * @author ingo.kofler@itec.uni-klu.ac.at
  */
-//@SuppressWarnings("serial")
 public class BHTSimGUI extends JPanel {
 
     /**
@@ -118,7 +117,7 @@ public class BHTSimGUI extends JPanel {
 
     /**
      * Creates the GUI components of the BHT Simulator
-     * The GUI is a subclass of JPanel which is integrated in the GUI of the MARS tool
+     * The GUI is a subclass of JPanel which is integrated in the GUI of the RARS tool
      */
     public BHTSimGUI() {
         BorderLayout layout = new BorderLayout();

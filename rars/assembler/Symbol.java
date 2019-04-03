@@ -29,7 +29,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 /**
- * Represents a MIPS program identifier to be stored in the symbol table.
+ * Represents a program identifier to be stored in the symbol table.
  *
  * @author Jason Bumgarner, Jason Shrewsbury
  * @version June 2003
@@ -39,15 +39,13 @@ public class Symbol {
     private String name;
     private int address;
     private boolean data; // boolean true if data symbol false if text symbol.
-    public static final boolean TEXT_SYMBOL = false;
-    public static final boolean DATA_SYMBOL = true;
 
     /**
      * Basic constructor, creates a symbol object.
      *
      * @param name    The name of the Symbol.
      * @param address The memroy address that the Symbol refers to.
-     * @param data    The type of Symbol that it is.
+     * @param data    true if it represents data, false if code.
      **/
 
     public Symbol(String name, int address, boolean data) {

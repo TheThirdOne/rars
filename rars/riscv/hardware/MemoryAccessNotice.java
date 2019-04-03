@@ -29,7 +29,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 /**
- * Object provided to Observers of runtime access to MIPS memory.
+ * Object provided to Observers of runtime access to memory.
  * Observer can get the access type (R/W), address and length in bytes (4,2,1).
  *
  * @author Pete Sanderson

@@ -74,17 +74,5 @@ public class SyscallWrite extends AbstractSyscall {
                 myBuffer, // buffer
                 RegisterFile.getValue("a2")); // length
         RegisterFile.updateRegister("a0", retValue); // set returned value in register
-
-        // Getting rid of processing exception.  It is the responsibility of the
-        // user program to check the syscall's return value.  MARS should not
-        // re-emptively terminate MIPS execution because of it.  Thanks to
-        // UCLA student Duy Truong for pointing this out.  DPS 28-July-2009
-         /*
-         if (retValue < 0) // some error in opening file
-         {
-            throw new ProcessingException(statement,
-                                    SystemIO.getFileErrorMessage());
-         }
-			*/
     }
 }

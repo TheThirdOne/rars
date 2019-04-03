@@ -52,25 +52,25 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 /**
  * An abstract class that provides generic components to facilitate implementation of
- * a Tool and/or stand-alone Mars-based application.  Provides default definitions
+ * a Tool and/or stand-alone Rars-based application.  Provides default definitions
  * of both the action() method required to implement Tool and the go() method
- * conventionally used to launch a Mars-based stand-alone application. It also provides
+ * conventionally used to launch a Rars-based stand-alone application. It also provides
  * generic definitions for interactively controlling the application.  The generic controls
- * for MarsTools are 3 buttons:  connect/disconnect to MIPS resource (memory and/or
- * registers), reset, and close (exit).  The generic controls for stand-alone Mars apps
+ * for RarsTools are 3 buttons:  connect/disconnect to a resource (memory and/or
+ * registers), reset, and close (exit).  The generic controls for stand-alone Rars apps
  * include: button that triggers a file open dialog, a text field to display status
- * messages, the run-speed slider to control execution rate when running a MIPS program,
- * a button that assembles and runs the current MIPS program, a button to interrupt
- * the running MIPS program, a reset button, and an exit button.
+ * messages, the run-speed slider to control execution rate when running a program,
+ * a button that assembles and runs the current program, a button to interrupt
+ * the running program, a reset button, and an exit button.
  * Pete Sanderson, 14 November 2006.
  */
 public abstract class AbstractToolAndApplication extends JFrame implements Tool, Observer {
-    protected boolean isBeingUsedAsAMarsTool = false;  // can use to determine whether invoked as Tool or stand-alone.
+    protected boolean isBeingUsedAsATool = false;  // can use to determine whether invoked as Tool or stand-alone.
     private JDialog dialog;  // used only for Tool use.  This is the pop-up dialog that appears when menu item selected.
     protected Window theWindow;  // highest level GUI component (a JFrame for app, a JDialog for Tool)
 
     // Major GUI components
-    JLabel headingLabel;
+    private JLabel headingLabel;
     private String title;  // descriptive title for title bar provided to constructor.
     private String heading; // Text to be displayed in the top portion of the main window.
 
@@ -113,7 +113,7 @@ public abstract class AbstractToolAndApplication extends JFrame implements Tool,
     /**
      * Required Tool method to return Tool name.  Must be defined by subclass.
      *
-     * @return Tool name.  MARS will display this in menu item.
+     * @return Tool name. RARS will display this in menu item.
      */
     public abstract String getName();
 
@@ -131,12 +131,12 @@ public abstract class AbstractToolAndApplication extends JFrame implements Tool,
     /**
      * Run the simulator as stand-alone application.  For this default implementation,
      * the user-defined main display of the user interface is identical for both stand-alone
-     * and MARS Tools menu use, but the control buttons are different because the stand-alone
+     * and RARS Tools menu use, but the control buttons are different because the stand-alone
      * must include a mechansim for controlling the opening, assembling, and executing of
-     * an underlying MIPS program.  The generic controls include: a button that triggers a
+     * an underlying source program.  The generic controls include: a button that triggers a
      * file open dialog, a text field to display status messages, the run-speed slider
-     * to control execution rate when running a MIPS program, a button that assembles and
-     * runs the current MIPS program, a reset button, and an exit button.
+     * to control execution rate when running a program, a button that assembles and
+     * runs the current source program, a reset button, and an exit button.
      * This method calls 3 methods that can be defined/overriden in the subclass: initializePreGUI()
      * for any special initialization that must be completed before building the user
      * interface (e.g. data structures whose properties determine default GUI settings),
@@ -147,7 +147,7 @@ public abstract class AbstractToolAndApplication extends JFrame implements Tool,
      */
     public void go() {
         theWindow = this;
-        this.isBeingUsedAsAMarsTool = false;
+        this.isBeingUsedAsATool = false;
         this.setTitle(this.title);
         rars.Globals.initialize(true);
         // assure the dialog goes away if user clicks the X
@@ -175,10 +175,10 @@ public abstract class AbstractToolAndApplication extends JFrame implements Tool,
 
 
     /**
-     * Required Tool method to carry out Tool functions.  It is invoked when MARS
+     * Required Tool method to carry out Tool functions.  It is invoked when the
      * user selects this tool from the Tools menu.  This default implementation provides
      * generic definitions for interactively controlling the tool.  The generic controls
-     * for MarsTools are 3 buttons:  connect/disconnect to MIPS resource (memory and/or
+     * for RarsTools are 3 buttons:  connect/disconnect to a resource (memory and/or
      * registers), reset, and close (exit).  Like "go()" above, this default version
      * calls 3 methods that can be defined/overriden in the subclass: initializePreGUI()
      * for any special initialization that must be completed before building the user
@@ -190,7 +190,7 @@ public abstract class AbstractToolAndApplication extends JFrame implements Tool,
      */
 
     public void action() {
-        this.isBeingUsedAsAMarsTool = true;
+        this.isBeingUsedAsATool = true;
         dialog = new JDialog(Globals.getGui(), this.title);
         // assure the dialog goes away if user clicks the X
         dialog.addWindowListener(
@@ -206,7 +206,7 @@ public abstract class AbstractToolAndApplication extends JFrame implements Tool,
         contentPane.setOpaque(true);
         contentPane.add(buildHeadingArea(), BorderLayout.NORTH);
         contentPane.add(buildMainDisplayArea(), BorderLayout.CENTER);
-        contentPane.add(buildButtonAreaMarsTool(), BorderLayout.SOUTH);
+        contentPane.add(buildButtonAreaForTool(), BorderLayout.SOUTH);
         initializePostGUI();
         dialog.setContentPane(contentPane);
         dialog.pack();
@@ -259,9 +259,9 @@ public abstract class AbstractToolAndApplication extends JFrame implements Tool,
 
     /**
      * The Tool default set of controls has one row of 3 buttons.  It includes a dual-purpose button to
-     * attach or detach simulator to MIPS memory, a button to reset the cache, and one to close the tool.
+     * attach or detach simulator to memory, a button to reset the cache, and one to close the tool.
      */
-    protected JComponent buildButtonAreaMarsTool() {
+    protected JComponent buildButtonAreaForTool() {
         Box buttonArea = Box.createHorizontalBox();
         TitledBorder tc = new TitledBorder("Tool Control");
         tc.setTitleJustification(TitledBorder.CENTER);
@@ -315,8 +315,8 @@ public abstract class AbstractToolAndApplication extends JFrame implements Tool,
     }
 
     /**
-     * The Mars stand-alone app default set of controls has two rows of controls.  It includes a text field for
-     * displaying status messages, a button to trigger an open file dialog, the MARS run speed slider
+     * The Rars stand-alone app default set of controls has two rows of controls.  It includes a text field for
+     * displaying status messages, a button to trigger an open file dialog, the RARS run speed slider
      * to control timed execution, a button to assemble and run the program, a reset button
      * whose action is determined by the subclass reset() method, and an exit button.
      */
@@ -465,14 +465,14 @@ public abstract class AbstractToolAndApplication extends JFrame implements Tool,
     //////////////////////////////////////////////////////////////////////////////////////
 
     /**
-     * Called when receiving notice of access to MIPS memory or registers.  Default
+     * Called when receiving notice of access to memory or registers.  Default
      * implementation of method required by Observer interface.  This method will filter out
-     * notices originating from the MARS GUI or from direct user editing of memory or register
-     * displays.  Only notices arising from MIPS program access are allowed in.
+     * notices originating from the RARS GUI or from direct user editing of memory or register
+     * displays. Only notices arising from program access are allowed in.
      * It then calls two methods to be overridden by the subclass (since they do
      * nothing by default): processRISCVUpdate() then updateDisplay().
      *
-     * @param resource     the attached MIPS resource
+     * @param resource     the attached resource
      * @param accessNotice AccessNotice information provided by the resource
      */
     public void update(Observable resource, Object accessNotice) {
@@ -483,8 +483,8 @@ public abstract class AbstractToolAndApplication extends JFrame implements Tool,
     }
 
     /**
-     * Override this method to process a received notice from MIPS Observable (memory or register)
-     * It will only be called if the notice was generated as the result of MIPS instruction execution.
+     * Override this method to process a received notice from an Observable (memory or register)
+     * It will only be called if the notice was generated as the result of RISCV instruction execution.
      * By default it does nothing. After this method is complete, the updateDisplay() method will be
      * invoked automatically.
      */
@@ -500,13 +500,13 @@ public abstract class AbstractToolAndApplication extends JFrame implements Tool,
 
 
     /**
-     * Add this app/tool as an Observer of desired MIPS Observables (memory and registers).
+     * Add this app/tool as an Observer of desired Observables (memory and registers).
      * By default, will add as an Observer of the entire Data Segment in memory.
      * Override if you want something different.  Note that the Memory methods to add an
      * Observer to memory are flexible (you can register for a range of addresses) but
      * may throw an AddressErrorException that you need to catch.
      * This method is called whenever the default "Connect" button on a Tool or the
-     * default "Assemble and run" on a stand-alone Mars app is selected.  The corresponding
+     * default "Assemble and run" on a stand-alone Rars app is selected.  The corresponding
      * NOTE: if you do not want to register as an Observer of the entire data segment
      * (starts at address 0x10000000) then override this to either do some alternative
      * or nothing at all.  This method is also overloaded to allow arbitrary memory
@@ -518,7 +518,7 @@ public abstract class AbstractToolAndApplication extends JFrame implements Tool,
     }
 
     /**
-     * Add this app/tool as an Observer of the specified subrange of MIPS memory.  Note
+     * Add this app/tool as an Observer of the specified subrange of memory.  Note
      * that this method is not invoked automatically like the no-argument version, but
      * if you use this method, you can still take advantage of provided default deleteAsObserver()
      * since it will remove the app as a memory observer regardless of the subrange
@@ -533,7 +533,7 @@ public abstract class AbstractToolAndApplication extends JFrame implements Tool,
         try {
             Globals.memory.addObserver(this, lowEnd, highEnd);
         } catch (AddressErrorException aee) {
-            if (this.isBeingUsedAsAMarsTool) {
+            if (this.isBeingUsedAsATool) {
                 headingLabel.setText(errorMessage);
             } else {
                 operationStatusMessages.displayTerminatingMessage(errorMessage);
@@ -542,7 +542,7 @@ public abstract class AbstractToolAndApplication extends JFrame implements Tool,
     }
 
     /**
-     * Add this app/tool as an Observer of the specified MIPS register.
+     * Add this app/tool as an Observer of the specified register.
      */
     protected void addAsObserver(Register reg) {
         if (reg != null) {
@@ -552,12 +552,12 @@ public abstract class AbstractToolAndApplication extends JFrame implements Tool,
 
 
     /**
-     * Delete this app/tool as an Observer of MIPS Observables (memory and registers).
+     * Delete this app/tool as an Observer of Observables (memory and registers).
      * By default, will delete as an Observer of memory.
      * Override if you want something different.
      * This method is called when the default "Disconnect" button on a Tool is selected or
-     * when the MIPS program execution triggered by the default "Assemble and run" on a stand-alone
-     * Mars app terminates (e.g. when the button is re-enabled).
+     * when the RISCV program execution triggered by the default "Assemble and run" on a stand-alone
+     * app terminates (e.g. when the button is re-enabled).
      */
 
     protected void deleteAsObserver() {
@@ -565,7 +565,7 @@ public abstract class AbstractToolAndApplication extends JFrame implements Tool,
     }
 
     /**
-     * Delete this app/tool as an Observer of the specified MIPS register
+     * Delete this app/tool as an Observer of the specified register
      */
 
     protected void deleteAsObserver(Register reg) {
@@ -576,13 +576,13 @@ public abstract class AbstractToolAndApplication extends JFrame implements Tool,
 
     /**
      * Query method to let you know if the tool/app is (or could be) currently
-     * "observing" any MIPS resources.  When running as a Tool, this
-     * will be true by default after clicking the "Connect to MIPS" button until "Disconnect
-     * from MIPS" is clicked.  When running as a stand-alone app, this will be
+     * "observing" any resources.  When running as a Tool, this
+     * will be true by default after clicking the "Connect to Program" button until "Disconnect
+     * from Program" is clicked.  When running as a stand-alone app, this will be
      * true by default after clicking the "Assemble and Run" button until until
      * program execution has terminated either normally or by clicking the "Stop"
      * button.  The phrase "or could be" was added above because depending on how
-     * the tool/app operates, it may be possible to run the MIPS program without
+     * the tool/app operates, it may be possible to run the program without
      * first registering as an Observer -- i.e. addAsObserver() is overridden and
      * takes no action.
      *
@@ -594,7 +594,7 @@ public abstract class AbstractToolAndApplication extends JFrame implements Tool,
     }
 
     /**
-     * Override this method to implement updating of GUI after each MIPS instruction is executed,
+     * Override this method to implement updating of GUI after each instruction is executed,
      * while running in "timed" mode (user specifies execution speed on the slider control).
      * Does nothing by default.
      */
@@ -777,7 +777,7 @@ public abstract class AbstractToolAndApplication extends JFrame implements Tool,
 
     //////////////////////////////////////////////////////////////////////////
     //  Class for text message field used to update operation status when
-    //  assembling and running MIPS programs.
+    //  assembling and running programs.
     private class MessageField extends JTextField {
 
         public MessageField(String text) {

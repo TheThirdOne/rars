@@ -41,7 +41,7 @@ import java.util.Collections;
  */
 
 /**
- * An Assembler is capable of assembling a MIPS program. It has only one public
+ * An Assembler is capable of assembling a RISCV program. It has only one public
  * method, <tt>assemble()</tt>, which implements a two-pass assembler. It
  * translates RISCV source code into binary machine code.
  *
@@ -74,7 +74,7 @@ public class Assembler {
     }
 
     /**
-     * Parse and generate machine code for the given MIPS program. All source
+     * Parse and generate machine code for the given program. All source
      * files must have already been tokenized.
      *
      * @param tokenizedProgramFiles    An ArrayList of RISCVprogram objects, each produced from a
@@ -430,6 +430,7 @@ public class Assembler {
             return ret;
         }
 
+        // TODO: check what gcc and clang generated assembly looks like currently
         // DPS 14-July-2008
         // Yet Another Hack: detect unrecognized directive. MARS recognizes the same directives
         // as SPIM but other MIPS assemblers recognize additional directives. Compilers such
@@ -565,8 +566,8 @@ public class Assembler {
                 && tokens.get(1).getType() == TokenTypes.COLON;
     }
 
-    // //////////////////////////////////////////////////////////////////////////////////
-    // This source code line is a directive, not a MIPS instruction. Let's carry it out.
+    // /////////////////////////////////////////////////////////////////////////////
+    // This source code line is a directive, not a instruction. Let's carry it out.
     private void executeDirective(TokenList tokens) {
         Token token = tokens.get(0);
         Directives direct = Directives.matchDirective(token.getValue());
@@ -713,7 +714,7 @@ public class Assembler {
             // If label already in global symtab, do nothing. If not, add it right now.
             if (Globals.symbolTable.getAddress(tokens.get(1).getValue()) == SymbolTable.NOT_FOUND) {
                 Globals.symbolTable.addSymbol(tokens.get(1), this.externAddress,
-                        Symbol.DATA_SYMBOL, errors);
+                        true, errors);
                 this.externAddress += size;
             }
         } else if (direct == Directives.GLOBL) {
@@ -870,27 +871,7 @@ public class Assembler {
                         storeRealNumber(valueToken, directive, errors);
                     }
                 }
-            } // WHAT ABOUT .KDATA SEGMENT?
-            /*
-             * /****** NOTE of 11/20/06. Below will always throw exception b/c
-             * you cannot use Memory.set() with text segment addresses and the
-             * "not valid address" produced here is misleading. Added data
-             * segment check prior to this point, so this "else" will never be
-             * executed. I'm leaving it in just in case MARS in the future adds
-             * capability of writing to the text segment (e.g. ability to
-             * de-assemble a binary value into its corresponding MIPS
-             * instruction)
-             *
-             * else { // not in data segment...which we assume to mean in text
-             * segment. try { for (int i=0; i < repetitions; i++) {
-             * Globals.memory.set(this.textAddress.get(),
-             * Binary.stringToInt(valueToken.getValue()), lengthInBytes);
-             * this.textAddress.increment(lengthInBytes); } } catch
-             * (AddressErrorException e) { errors.add(new
-             * ErrorMessage(token.getSourceProgram(), token.getSourceLine(),
-             * token.getStartPos(), "\""+this.textAddress.get()+
-             * "\" is not a valid text segment address")); } }
-             ************************************************************************/
+            }
             return;
         }
 

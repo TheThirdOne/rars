@@ -39,13 +39,12 @@ import java.util.Observable;
 
 
 /**
- * A MARS tool for obtaining instruction statistics by instruction category.
+ * A RARS tool for obtaining instruction statistics by instruction category.
  * <p>
  * The code of this tools is initially based on the Instruction counter tool by Felipe Lassa.
  *
  * @author Ingo Kofler <ingo.kofler@itec.uni-klu.ac.at>
  */
-// @SuppressWarnings("serial")
 public class InstructionStatistics extends AbstractToolAndApplication {
 
     /**
@@ -103,12 +102,12 @@ public class InstructionStatistics extends AbstractToolAndApplication {
     /**
      * array of text field - one for each instruction category
      */
-    private JTextField m_tfCounters[];
+    private JTextField[] m_tfCounters;
 
     /**
      * array of progress pars - one for each instruction category
      */
-    private JProgressBar m_pbCounters[];
+    private JProgressBar[] m_pbCounters;
 
 
     /**
@@ -119,12 +118,12 @@ public class InstructionStatistics extends AbstractToolAndApplication {
     /**
      * array of counter variables - one for each instruction category
      */
-    private int m_counters[] = new int[MAX_CATEGORY];
+    private int[] m_counters = new int[MAX_CATEGORY];
 
     /**
      * names of the instruction categories as array
      */
-    private String m_categoryLabels[] = {"ALU", "Jump", "Branch", "Memory", "Other"};
+    private String[] m_categoryLabels = {"ALU", "Jump", "Branch", "Memory", "Other"};
 
 
     // From Felipe Lessa's instruction counter.  Prevent double-counting of instructions 
@@ -148,18 +147,14 @@ public class InstructionStatistics extends AbstractToolAndApplication {
 
 
     /**
-     * Simple construction, likely used by the MARS Tools menu mechanism.
+     * Simple construction, likely used by the RARS Tools menu mechanism.
      */
     public InstructionStatistics() {
         super(InstructionStatistics.NAME + ", " + InstructionStatistics.VERSION, InstructionStatistics.HEADING);
     }
 
 
-    /**
-     * returns the name of the tool
-     *
-     * @return the tools's name
-     */
+    @Override
     public String getName() {
         return NAME;
     }
@@ -219,13 +214,13 @@ public class InstructionStatistics extends AbstractToolAndApplication {
 
 
     /**
-     * registers the tool as observer for the text segment of the MIPS program
+     * registers the tool as observer for the text segment of the program
      */
     protected void addAsObserver() {
         addAsObserver(Memory.textBaseAddress, Memory.textLimitAddress);
     }
 
-
+    // TODO: Port this to work with RISCV rather than MIPS
     /**
      * decodes the instruction and determines the category of the instruction.
      * <p>
@@ -241,7 +236,6 @@ public class InstructionStatistics extends AbstractToolAndApplication {
      * @see InstructionStatistics#CATEGORY_OTHER
      */
     protected int getInstructionCategory(ProgramStatement stmt) {
-
         int opCode = stmt.getBinaryStatement() >>> (32 - 6);
         int funct = stmt.getBinaryStatement() & 0x1F;
 
@@ -281,7 +275,7 @@ public class InstructionStatistics extends AbstractToolAndApplication {
 
 
     /**
-     * method that is called each time the MIPS simulator accesses the text segment.
+     * method that is called each time the simulator accesses the text segment.
      * Before an instruction is executed by the simulator, the instruction is fetched from the program memory.
      * This memory access is observed and the corresponding instruction is decoded and categorized by the tool.
      * According to the category the counter values are increased and the display gets updated.

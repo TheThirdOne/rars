@@ -59,6 +59,7 @@ public class DigitalLabSim extends AbstractToolAndApplication {
         new DigitalLabSim(heading + ", " + version, heading).go();
     }
 
+    @Override
     public String getName() {
         return "Digital Lab Sim";
     }
@@ -106,7 +107,7 @@ public class DigitalLabSim extends AbstractToolAndApplication {
     }
 
     private synchronized void updateMMIOControlAndData(int dataAddr, int dataValue) {
-        if (!this.isBeingUsedAsAMarsTool || (this.isBeingUsedAsAMarsTool && connectButton.isConnected())) {
+        if (!this.isBeingUsedAsATool || (this.isBeingUsedAsATool && connectButton.isConnected())) {
             synchronized (Globals.memoryAndRegistersLock) {
                 try {
                     Globals.memory.setByte(dataAddr, dataValue);

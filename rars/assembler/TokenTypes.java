@@ -35,8 +35,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 /**
- * Constants to identify the types of tokens found in MIPS programs.  If Java had
- * enumerated types, that's how these would probably be implemented.
+ * Constants to identify the types of tokens found in RISCV programs.
  *
  * @author Pete Sanderson
  * @version August 2003
@@ -44,14 +43,15 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 public final class TokenTypes {
 
+    // TODO: possibly turn these into an enum
     public static final String TOKEN_DELIMITERS = "\t ,()";
     public static final TokenTypes COMMENT = new TokenTypes("COMMENT");
     public static final TokenTypes DIRECTIVE = new TokenTypes("DIRECTIVE");
     public static final TokenTypes OPERATOR = new TokenTypes("OPERATOR");
     public static final TokenTypes DELIMITER = new TokenTypes("DELIMITER");
     /**
-     * note: REGISTER_NAME is token of form $zero whereas REGISTER_NUMBER is token
-     * of form $0.  The former is part of extended assembler, and latter is part
+     * note: REGISTER_NAME is token of form zero whereas REGISTER_NUMBER is token
+     * of form 0.  The former is part of extended assembler, and latter is part
      * of basic assembler.
      **/
     public static final TokenTypes REGISTER_NAME = new TokenTypes("REGISTER_NAME"); // mnemonic

@@ -32,7 +32,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 /**
- * Represents the list of tokens in a single line of MIPS code.  It uses, but is not
+ * Represents the list of tokens in a single line of code.  It uses, but is not
  * a subclass of, ArrayList.
  *
  * @author Pete Sanderson

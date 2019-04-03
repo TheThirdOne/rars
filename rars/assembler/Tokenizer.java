@@ -36,13 +36,13 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 /**
- * A tokenizer is capable of tokenizing a complete MIPS program, or a given line from
- * a MIPS program.  Since MIPS is line-oriented, each line defines a complete statement.
- * Tokenizing is the process of analyzing the input MIPS program for the purpose of
- * recognizing each MIPS language element.  The types of language elements are known as "tokens".
- * MIPS tokens are defined in the TokenTypes class.<br><br>
+ * A tokenizer is capable of tokenizing a complete source program, or a given line from
+ * a source program.  Since RARS assembly is line-oriented, each line defines a complete statement.
+ * Tokenizing is the process of analyzing the input program for the purpose of
+ * recognizing each RISCV language element.  The types of language elements are known as "tokens".
+ * Tokens are defined in the TokenTypes class.<br><br>
  * Example: <br>
- * The MIPS statement  <tt>here:  lw  $t3, 8($t4)   #load third member of array</tt><br>
+ * The RISCV statement  <tt>here:  lw  t3, 8(t4)   #load third member of array</tt><br>
  * generates the following token list<br>
  * IDENTIFIER, COLON, OPERATOR, REGISTER_NAME, COMMA, INTEGER_5, LEFT_PAREN,
  * REGISTER_NAME, RIGHT_PAREN, COMMENT<br>
@@ -58,6 +58,7 @@ public class Tokenizer {
     private HashMap<String, String> equivalents; // DPS 11-July-2012
     // The 8 escaped characters are: single quote, double quote, backslash, newline (linefeed),
     // tab, backspace, return, form feed.  The characters and their corresponding decimal codes:
+    // TODO: potentially make this automatic
     private static final String escapedCharacters = "'\"\\ntbrf0";
     private static final String[] escapedCharactersValues = {"39", "34", "92", "10", "9", "8", "13", "12", "0"};
 
@@ -80,8 +81,7 @@ public class Tokenizer {
     }
 
     /**
-     * Will tokenize a complete MIPS program.  MIPS is line oriented (not free format),
-     * so we will be line-oriented too.
+     * Will tokenize a complete soure program.
      *
      * @param p The RISCVprogram to be tokenized.
      * @return An ArrayList representing the tokenized program.  Each list member is a TokenList
@@ -175,7 +175,7 @@ public class Tokenizer {
      * Used only to create a token list for the example provided with each instruction
      * specification.
      *
-     * @param example The example MIPS instruction to be tokenized.
+     * @param example The example RISCV instruction to be tokenized.
      * @return An TokenList representing the tokenized instruction.  Each list member is a Token
      * that represents one language element.
      * @throws AssemblyException This occurs only if the instruction specification itself
@@ -203,7 +203,7 @@ public class Tokenizer {
     /*
     * 
     * Tokenizing is not as easy as it appears at first blush, because the typical 
-    * delimiters: space, tab, comma, can all appear inside MIPS quoted ASCII strings!
+    * delimiters: space, tab, comma, can all appear inside quoted ASCII strings!
     * Also, spaces are not as necessary as they seem, the following line is accepted
     * and parsed correctly by SPIM:    label:lw,$t4,simple#comment
     * as is this weird variation:      label  :lw  $t4  ,simple ,  ,  , # comment

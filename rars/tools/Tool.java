@@ -30,23 +30,23 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
 /**
- * Interface for any tool that interacts with an executing MIPS program.
+ * Interface for any tool that interacts with an executing program.
  * A qualifying tool must be a class in the Tools package that
  * implements the Tool interface, must be compiled into a .class file,
  * and its .class file must be in the same Tools folder as Tool.class.
- * Mars will detect a qualifying tool upon startup, create an instance
+ * Rars will detect a qualifying tool upon startup, create an instance
  * using its no-argument constructor and add it to its Tools menu.
  * When its menu item is selected, the action() method will be invoked.
  * <p>
- * <p>A tool may receive communication from MIPS system resources
+ * <p>A tool may receive communication from system resources
  * (registers or memory) by registering as an Observer with
- * Mars.Memory and/or Mars.Register objects.
+ * Memory and/or Register objects.
  * <p>
  * It may also
  * communicate directly with those resources through their
  * published methods PROVIDED any such communication is
  * wrapped inside a block synchronized on the
- * Mars.Globals.memoryAndRegistersLock object.
+ * Globals.memoryAndRegistersLock object.
  */
 
 public interface Tool {

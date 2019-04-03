@@ -41,7 +41,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 /**
- * The list of Instruction objects, each of which represents a MIPS instruction.
+ * The list of Instruction objects, each of which represents a RISCV instruction.
  * The instruction may either be basic (translates into binary machine code) or
  * extended (translates into sequence of one or more basic instructions).
  *
@@ -232,6 +232,7 @@ public class InstructionSet {
     }
 
 
+    // TODO: check to see if autocomplete was accidentally removed
     /**
      * Given a string, will return the Instruction object(s) from the instruction
      * set whose operator mnemonic prefix matches it.  Case-insensitive.  For example

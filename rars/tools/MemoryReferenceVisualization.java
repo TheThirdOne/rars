@@ -44,7 +44,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 /**
  * Memory reference visualization.  It can be run either as a stand-alone Java application having
- * access to the rars package, or through MARS as an item in its Tools menu.  It makes
+ * access to the rars package, or through RARS as an item in its Tools menu.  It makes
  * maximum use of methods inherited from its abstract superclass AbstractToolAndApplication.
  * Pete Sanderson, verison 1.0, 14 November 2006.
  */
@@ -131,7 +131,7 @@ public class MemoryReferenceVisualization extends AbstractToolAndApplication {
     }
 
     /**
-     * Simple constructor, likely used by the MARS Tools menu mechanism
+     * Simple constructor, likely used by the RARS Tools menu mechanism
      */
     public MemoryReferenceVisualization() {
         super("Memory Reference Visualization, " + version, heading);
@@ -141,7 +141,7 @@ public class MemoryReferenceVisualization extends AbstractToolAndApplication {
     /**
      * Main provided for pure stand-alone use.  Recommended stand-alone use is to write a
      * driver program that instantiates a MemoryReferenceVisualization object then invokes its go() method.
-     * "stand-alone" means it is not invoked from the MARS Tools menu.  "Pure" means there
+     * "stand-alone" means it is not invoked from the RARS Tools menu.  "Pure" means there
      * is no driver program to invoke the application.
      */
     public static void main(String[] args) {
@@ -149,11 +149,7 @@ public class MemoryReferenceVisualization extends AbstractToolAndApplication {
     }
 
 
-    /**
-     * Required Tool method to return Tool name.
-     *
-     * @return Tool name.  MARS will display this in menu item.
-     */
+    @Override
     public String getName() {
         return "Memory Reference Visualization";
     }
@@ -167,7 +163,7 @@ public class MemoryReferenceVisualization extends AbstractToolAndApplication {
      * It does so by calling the inherited 2-parameter overload of this method.
      * If you use the inherited GUI buttons, this
      * method is invoked when you click "Connect" button on Tool or the
-     * "Assemble and Run" button on a Mars-based app.
+     * "Assemble and Run" button on a Rars-based app.
      */
     protected void addAsObserver() {
         int highAddress = baseAddress + theGrid.getRows() * theGrid.getColumns() * Memory.WORD_LENGTH_BYTES * wordsPerUnit;
@@ -186,7 +182,7 @@ public class MemoryReferenceVisualization extends AbstractToolAndApplication {
      * Method that constructs the main display area.  It is organized vertically
      * into two major components: the display configuration which an be modified
      * using combo boxes, and the visualization display which is updated as the
-     * attached MIPS program executes.
+     * attached program executes.
      *
      * @return the GUI component containing these two areas
      */
@@ -203,15 +199,9 @@ public class MemoryReferenceVisualization extends AbstractToolAndApplication {
     //  the abstract superclass.
     //////////////////////////////////////////////////////////////////////////////////////
 
-    /**
-     * Update display when connected MIPS program accesses (data) memory.
-     *
-     * @param memory       the attached memory
-     * @param accessNotice information provided by memory in MemoryAccessNotice object
-     */
+    @Override
     protected void processRISCVUpdate(Observable memory, AccessNotice accessNotice) {
         incrementReferenceCountForAddress(((MemoryAccessNotice) accessNotice).getAddress());
-        updateDisplay();
     }
 
 
@@ -251,11 +241,7 @@ public class MemoryReferenceVisualization extends AbstractToolAndApplication {
         updateDisplay();
     }
 
-    /**
-     * Updates display immediately after each update (AccessNotice) is processed, after
-     * display configuration changes as needed, and after each execution step when Mars
-     * is running in timed mode.  Overrides inherited method that does nothing.
-     */
+    @Override
     protected void updateDisplay() {
         canvas.repaint();
     }
@@ -392,9 +378,9 @@ public class MemoryReferenceVisualization extends AbstractToolAndApplication {
                         // starting at 0x10010000. To change this requires override of
                         // AbstractToolAndApplication.addAsObserver().  The no-argument version of
                         // that method is called automatically  when "Connect" button is clicked for Tool
-                        // and when "Assemble and Run" button is clicked for Mars application.
+                        // and when "Assemble and Run" button is clicked for Rars application.
                         updateBaseAddress();
-                        // If display base address is changed while connected to MIPS (this can only occur
+                        // If display base address is changed while connected to a program (this can only occur
                         // when being used as a Tool), we have to delete ourselves as an observer and re-register.
                         if (connectButton != null && connectButton.isConnected()) {
                             deleteAsObserver();

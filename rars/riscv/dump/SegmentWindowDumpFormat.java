@@ -40,7 +40,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 /**
- * Dump MIPS memory contents in Segment Window format.  Each line of
+ * Dump memory contents in Segment Window format.  Each line of
  * text output resembles the Text Segment Window or Data Segment Window
  * depending on which segment is selected for the dump.  Written
  * using PrintStream's println() method.  Each line of Text Segment
@@ -69,18 +69,12 @@ public class SegmentWindowDumpFormat extends AbstractDumpFormat {
 
 
     /**
-     * Write MIPS memory contents in Segment Window format.  Each line of
+     * Write memory contents in Segment Window format.  Each line of
      * text output resembles the Text Segment Window or Data Segment Window
      * depending on which segment is selected for the dump.  Written
      * using PrintStream's println() method.
      *
-     * @param file         File in which to store MIPS memory contents.
-     * @param firstAddress first (lowest) memory address to dump.  In bytes but
-     *                     must be on word boundary.
-     * @param lastAddress  last (highest) memory address to dump.  In bytes but
-     *                     must be on word boundary.  Will dump the word that starts at this address.
-     * @throws AddressErrorException if firstAddress is invalid or not on a word boundary.
-     * @throws IOException           if error occurs during file output.
+     * @see AbstractDumpFormat
      */
     public void dumpMemoryRange(File file, int firstAddress, int lastAddress)
             throws AddressErrorException, IOException {

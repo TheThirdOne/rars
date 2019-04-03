@@ -35,7 +35,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 /**
- * Provides utility method related to MIPS operand formats.
+ * Provides utility method related to operand formats.
  *
  * @author Pete Sanderson
  * @version August 2003
@@ -43,11 +43,11 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
 public class OperandFormat {
-   /*
+   /**
     * Syntax test for correct match in both numbers and types of operands.
     * 
     * @param candidateList List of tokens generated from programmer's MIPS statement.
-    * @param spec The (resumably best matched) MIPS instruction.
+    * @param inst The (presumably best matched) RISCV instruction.
     * @param errors ErrorList into which any error messages generated here will be added.
     * 
     * @return Returns <tt>true</tt> if the programmer's statement matches the MIPS 
@@ -58,7 +58,7 @@ public class OperandFormat {
         return numOperandsCheck(candidateList, inst, errors) && operandTypeCheck(candidateList, inst, errors);
     }
 
-    /*
+    /**
      * If candidate operator token matches more than one instruction mnemonic, then select
      * first such Instruction that has an exact operand match.  If none match,
      * return the first Instruction and let client deal with operand mismatches.
@@ -146,19 +146,6 @@ public class OperandFormat {
                 return false;
             }
         }
-
-        /* nice little debugging code to see which operand format
-           the operands for this source code instruction matched.
-         System.out.print("Candidate: ");
-         for (int i=1; i<spec.size(); i++) {
-         System.out.print(cand.get(i).getValue()+" ");
-         }
-         System.out.print("Matched Spec: ");
-         for (int i=1; i<spec.size(); i++) {
-         System.out.print(spec.get(i).getValue()+" ");
-         }
-         System.out.println();
-         **/
 
         return true;
     }

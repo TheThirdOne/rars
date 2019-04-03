@@ -1,7 +1,5 @@
 package rars.util;
 
-import rars.Globals;
-import rars.riscv.hardware.AddressErrorException;
 import rars.riscv.hardware.Memory;
 
 	/*
@@ -31,25 +29,11 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 (MIT license, http://www.opensource.org/licenses/mit-license.html)
  */
-
+// TODO: refactor this out of existance
 public class MemoryDump {
-
-    /*
-     * A list of segmentname/dumpformat/filename triples which should be dumped
-     * Unused as far as I can tell - Ben
-     */
-    //public static ArrayList dumpTriples = null;
-
-    /*
-     * A mapping from segments names (like ".text") to the base and limit for that segment.
-     * Unused as far as I can tell - Ben
-     */
-    //private static final HashMap segmentBoundMap = new HashMap();
-
     private static final String[] segmentNames = {".text", ".data"};
     private static int[] baseAddresses = new int[2];
     private static int[] limitAddresses = new int[2];
-
 
     /**
      * Return array with segment address bounds for specified segment.
@@ -58,7 +42,6 @@ public class MemoryDump {
      * @return array of two Integer, the base and limit address for that segment.  Null if parameter
      * name does not match a known segment name.
      */
-
     public static Integer[] getSegmentBounds(String segment) {
         for (int i = 0; i < segmentNames.length; i++) {
             if (segmentNames[i].equals(segment)) {
@@ -71,20 +54,17 @@ public class MemoryDump {
         return null;
     }
 
-
     /**
      * Get the names of segments available for memory dump.
      *
      * @return array of Strings, each string is segment name (e.g. ".text", ".data")
      */
-
     public static String[] getSegmentNames() {
         return segmentNames;
     }
 
-
     /**
-     * Get the MIPS memory base address(es) of the specified segment name(s).
+     * Get the base address(es) of the specified segment name(s).
      * If invalid segment name is provided, will throw NullPointerException, so
      * I recommend getting segment names from getSegmentNames().
      *
@@ -97,9 +77,8 @@ public class MemoryDump {
         return baseAddresses;
     }
 
-
     /**
-     * Get the MIPS memory limit address(es) of the specified segment name(s).
+     * Get the limit address(es) of the specified segment name(s).
      * If invalid segment name is provided, will throw NullPointerException, so
      * I recommend getting segment names from getSegmentNames().
      *
@@ -111,27 +90,4 @@ public class MemoryDump {
         limitAddresses[1] = Memory.dataSegmentLimitAddress;
         return limitAddresses;
     }
-
-
-    /**
-     * Look for first "null" memory value in an address range.  For text segment (binary code), this
-     * represents a word that does not contain an instruction.  Normally use this to find the end of
-     * the program.  For data segment, this represents the first block of simulated memory (block length
-     * currently 4K words) that has not been referenced by an assembled/executing program.
-     *
-     * @param baseAddress  lowest MIPS address to be searched; the starting point
-     * @param limitAddress highest MIPS address to be searched
-     * @return lowest address within specified range that contains "null" value as described above.
-     * @throws AddressErrorException if the base address is not on a word boundary
-     */
-    public static int getAddressOfFirstNull(int baseAddress, int limitAddress) throws AddressErrorException {
-        int address = baseAddress;
-        for (; address < limitAddress; address += Memory.WORD_LENGTH_BYTES) {
-            if (Globals.memory.getRawWordOrNull(address) == null) {
-                break;
-            }
-        }
-        return address;
-    }
-
 }

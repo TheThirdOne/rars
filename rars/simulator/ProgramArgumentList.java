@@ -37,7 +37,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 /**
- * Models Program Arguments, one or more strings provided to the MIPS
+ * Models Program Arguments, one or more strings provided to the source
  * program at runtime. Equivalent to C's main(int argc, char **argv) or
  * Java's main(String[] args).
  *
@@ -119,7 +119,7 @@ public class ProgramArgumentList {
 
 
     //////////////////////////////////////////////////////////////////////
-    // Place any program arguments into MIPS memory and registers
+    // Place any program arguments into memory and registers
     // Arguments are stored starting at highest word of non-kernel
     // memory and working back toward runtime stack (there is a 4096
     // byte gap in between).  The argument count (argc) and pointers

@@ -29,7 +29,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 /**
- * Object provided to Observers of runtime access to MIPS register.
+ * Object provided to Observers of runtime access to register.
  * Observer can get the access type (R/W) and register number.
  *
  * @author Pete Sanderson

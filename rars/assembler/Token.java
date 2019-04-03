@@ -31,7 +31,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 /**
- * Represents one token in the input MIPS program.  Each Token carries, along with its
+ * Represents one token in the input program.  Each Token carries, along with its
  * type and value, the position (line, column) in which its source appears in the program.
  *
  * @author Pete Sanderson
@@ -76,7 +76,7 @@ public class Token {
      * of the ".include" directive, and we need to keep the original
      * for later reference (error messages, text segment display).
      *
-     * @param origProgram    MIPS program containing this token.
+     * @param origProgram    source program containing this token.
      * @param origSourceLine Line within that program of this token.
      **/
     public void setOriginal(RISCVprogram origProgram, int origSourceLine) {
@@ -155,7 +155,7 @@ public class Token {
     }
 
     /**
-     * Produces line number of MIPS program of this token.
+     * Produces line number of source program of this token.
      *
      * @return line number in source program of this token.
      **/

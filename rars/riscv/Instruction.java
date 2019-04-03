@@ -35,7 +35,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 /**
- * Base class to represent member of MIPS instruction set.
+ * Base class to represent member of RISCV instruction set.
  *
  * @author Pete Sanderson and Ken Vollmar
  * @version August 2003
@@ -43,8 +43,8 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 public abstract class Instruction {
     /**
-     * Length in bytes of a machine instruction.  MIPS is a RISC architecture
-     * so all instructions are the same length.  Currently set to 4.
+     * Length in bytes of a machine instruction. Currently just 4 because other
+     * instruction sizes defined in the specification are nor supported.
      */
     public static final int INSTRUCTION_LENGTH = 4;
     public static final int INSTRUCTION_LENGTH_BITS = 32;
@@ -83,9 +83,10 @@ public abstract class Instruction {
     /**
      * Get string descriptor of instruction's format.  This is an example MIPS
      * assembler instruction usage which contains the operator and all operands.
-     * Operands are separated by commas, an operand that begins with a '$'
-     * represents a register, and an integer operand represents an immediate value
-     * or address.  Here are two examples: "nor $1,$2,$3" and "sw $1,100($2)"
+     * Operands are separated by commas, an operand that is the standard name or
+     * machine name for a register represents a register, and an integer operand
+     * represents an immediate value or address.  Here are two examples:
+     * "or x1,x2,x3" and "sw x1,100(x2)"
      *
      * @return String representing example instruction format.
      */
@@ -95,7 +96,7 @@ public abstract class Instruction {
 
     /**
      * Get string describing the instruction.  This is not used internally by
-     * MARS, but is for display to the user.
+     * RARS, but is for display to the user.
      *
      * @return String describing the instruction.
      */
@@ -105,7 +106,7 @@ public abstract class Instruction {
 
     /**
      * Get TokenList corresponding to correct instruction syntax.
-     * For example, the instruction with format "sw $1,100($2)" yields token list
+     * For example, the instruction with format "sw x1, 100(x2)" yields token list
      * operator:register_number:integer:left_paren:register_number:right_parent
      *
      * @return TokenList object representing correct instruction usage.

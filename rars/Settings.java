@@ -49,7 +49,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * instantiating Settings object.
  * <p>
  * NOTE: If the Preference objects fail due to security exceptions, changes to
- * settings will not carry over from one MARS session to the next.
+ * settings will not carry over from one RARS session to the next.
  * <p>
  * Actual implementation of the Preference objects is platform-dependent.
  * For Windows, they are stored in Registry.  To see, run regedit and browse to:
@@ -61,11 +61,8 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 public class Settings extends Observable {
     /* Properties file used to hold default settings. */
     private static String settingsFile = "Settings";
-    /////////////////////////////  PROPERTY ARRAY INDEXES /////////////////////////////
-    // Because MARS is programmed to Java 1.4, we cannot use an enumerated type.
 
     // BOOLEAN SETTINGS...
-
     public enum Bool {
         /**
          * Flag to determine whether or not program being assembled is limited to
@@ -175,7 +172,7 @@ public class Settings extends Observable {
     }
     // STRING SETTINGS.  Each array position has associated name.
     /**
-     * Current specified exception handler file (a MIPS assembly source file)
+     * Current specified exception handler file (a RISCV assembly source file)
      */
     public static final int EXCEPTION_HANDLER = 0;
     /**
@@ -397,7 +394,7 @@ public class Settings extends Observable {
     /**
      * Return whether backstepping is permitted at this time.  Backstepping is ability to undo execution
      * steps one at a time.  Available only in the IDE.  This is not a persistent setting and is not under
-     * MARS user control.
+     * RARS user control.
      *
      * @return true if backstepping is permitted, false otherwise.
      */
@@ -746,7 +743,7 @@ public class Settings extends Observable {
 
     /**
      * Temporarily establish boolean setting.  This setting will NOT be written to persisent
-     * store!  Currently this is used only when running MARS from the command line
+     * store!  Currently this is used only when running RARS from the command line
      *
      * @param setting the setting to set the value of
      * @param value True to enable the setting, false otherwise.
@@ -991,7 +988,7 @@ public class Settings extends Observable {
     //
     // NOTE: If there is NO ENTRY for the specified property, Globals.getPropertyEntry() returns
     // null.  This is no cause for alarm.  It will occur during system development or upon the
-    // first use of a new MARS release in which new settings have been defined.
+    // first use of a new RARS release in which new settings have been defined.
     // In that case, this method will NOT make an assignment to the settings array!
     // So consider it a precondition of this method: the settings arrays must already be
     // initialized with last-resort default values.
