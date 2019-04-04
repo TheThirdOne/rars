@@ -41,48 +41,23 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * @version August 2003
  **/
 
-public final class TokenTypes {
-
-    // TODO: possibly turn these into an enum
-    public static final String TOKEN_DELIMITERS = "\t ,()";
-    public static final TokenTypes COMMENT = new TokenTypes("COMMENT");
-    public static final TokenTypes DIRECTIVE = new TokenTypes("DIRECTIVE");
-    public static final TokenTypes OPERATOR = new TokenTypes("OPERATOR");
-    public static final TokenTypes DELIMITER = new TokenTypes("DELIMITER");
+public enum TokenTypes {
+    COMMENT, DIRECTIVE, OPERATOR, DELIMITER,
     /**
      * note: REGISTER_NAME is token of form zero whereas REGISTER_NUMBER is token
-     * of form 0.  The former is part of extended assembler, and latter is part
+     * of form x0.  The former is part of extended assembler, and latter is part
      * of basic assembler.
      **/
-    public static final TokenTypes REGISTER_NAME = new TokenTypes("REGISTER_NAME"); // mnemonic
-    public static final TokenTypes REGISTER_NUMBER = new TokenTypes("REGISTER_NUMBER");
-    public static final TokenTypes FP_REGISTER_NAME = new TokenTypes("FP_REGISTER_NAME");
-    public static final TokenTypes IDENTIFIER = new TokenTypes("IDENTIFIER");
-    public static final TokenTypes LEFT_PAREN = new TokenTypes("LEFT_PAREN");
-    public static final TokenTypes RIGHT_PAREN = new TokenTypes("RIGHT_PAREN");
-    //public static final TokenTypes INTEGER       = new TokenTypes("INTEGER");
-    public static final TokenTypes INTEGER_5 = new TokenTypes("INTEGER_5");
-    public static final TokenTypes INTEGER_12 = new TokenTypes("INTEGER_12");
-    public static final TokenTypes INTEGER_20 = new TokenTypes("INTEGER_20");
-    public static final TokenTypes INTEGER_32 = new TokenTypes("INTEGER_32");
-    public static final TokenTypes REAL_NUMBER = new TokenTypes("REAL_NUMBER");
-    public static final TokenTypes QUOTED_STRING = new TokenTypes("QUOTED_STRING");
-    public static final TokenTypes PLUS = new TokenTypes("PLUS");
-    public static final TokenTypes MINUS = new TokenTypes("MINUS");
-    public static final TokenTypes COLON = new TokenTypes("COLON");
-    public static final TokenTypes ERROR = new TokenTypes("ERROR");
-    public static final TokenTypes MACRO_PARAMETER = new TokenTypes("MACRO_PARAMETER");
+    // TODO: merge REGISTER_NUMBER and REGISTER_NAME
+    // TODO: maybe add CSR register_name
+    REGISTER_NAME, REGISTER_NUMBER, FP_REGISTER_NAME,
+    IDENTIFIER, LEFT_PAREN, RIGHT_PAREN,
+    INTEGER_5, INTEGER_12, INTEGER_20, INTEGER_32, REAL_NUMBER,
+    QUOTED_STRING,
+    PLUS, MINUS, COLON,
+    ERROR, MACRO_PARAMETER;
 
-    private String descriptor;
-
-    private TokenTypes() {
-        // private ctor assures no objects can be created other than those above.
-        descriptor = "generic";
-    }
-
-    private TokenTypes(String name) {
-        descriptor = name;
-    }
+    public static final String TOKEN_DELIMITERS = "\t ,()";
 
     /**
      * Produces String equivalent of this token type, which is its name.
@@ -90,20 +65,17 @@ public final class TokenTypes {
      * @return String containing descriptive name for token type.
      **/
     public String toString() {
-        return descriptor;
+        return name(); // Get the literal string from enum
     }
 
     /**
-     * Classifies the given token into one of the MIPS types.
+     * Classifies the given string into one of the types.
      *
      * @param value String containing candidate language element, extracted from MIPS program.
      * @return Returns the corresponding TokenTypes object if the parameter matches a
      * defined MIPS token type, else returns <tt>null</tt>.
      **/
-
     public static TokenTypes matchTokenType(String value) {
-
-        TokenTypes type = null;
         // If it starts with single quote ('), it is a mal-formed character literal
         // because a well-formed character literal was converted to string-ified
         // integer before getting here...
@@ -241,7 +213,7 @@ public final class TokenTypes {
         if (isValidIdentifier(value))
             return TokenTypes.IDENTIFIER;
 
-        // Matches no MIPS language token.
+        // Matches no language token.
         return TokenTypes.ERROR;
     }
 
@@ -267,7 +239,7 @@ public final class TokenTypes {
         return type == TokenTypes.REAL_NUMBER;
     }
 
-
+    // TODO: is $ still relevant?
     // COD2, A-51:  "Identifiers are a sequence of alphanumeric characters,
     //               underbars (_), and dots (.) that do not begin with a number."
     // Ideally this would be in a separate Identifier class but I did not see an immediate
