@@ -231,9 +231,9 @@ public class InstructionCounter extends AbstractToolAndApplication {
                 counterR++;
             else if (format == BasicInstructionFormat.I_FORMAT)
                 counterI++;
-            else if (format == BasicInstructionFormat.S_FORMAT || format == BasicInstructionFormat.S_BRANCH_FORMAT)
+            else if (format == BasicInstructionFormat.S_FORMAT || format == BasicInstructionFormat.B_FORMAT)
                 counterS++;
-            else if (format == BasicInstructionFormat.U_FORMAT || format == BasicInstructionFormat.U_JUMP_FORMAT)
+            else if (format == BasicInstructionFormat.U_FORMAT || format == BasicInstructionFormat.J_FORMAT)
                 counterU++;
         } catch (AddressErrorException e) {
             // TODO Auto-generated catch block

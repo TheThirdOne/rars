@@ -42,7 +42,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 public abstract class Branch extends BasicInstruction {
     public Branch(String usage, String description, String funct) {
-        super(usage, description, BasicInstructionFormat.S_BRANCH_FORMAT,
+        super(usage, description, BasicInstructionFormat.B_FORMAT,
                 "ttttttt sssss fffff " + funct + " ttttt 1100011 ");
     }
 

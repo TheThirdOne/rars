@@ -37,7 +37,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 public class JAL extends BasicInstruction {
     public JAL() {
         super("jal t1, target", "Jump and link : Set t1 to Program Counter (return address) then jump to statement at target address",
-                BasicInstructionFormat.U_JUMP_FORMAT, "s ssssssssss s ssssssss fffff 1101111 ");
+                BasicInstructionFormat.J_FORMAT, "s ssssssssss s ssssssss fffff 1101111 ");
     }
 
     public void simulate(ProgramStatement statement) {

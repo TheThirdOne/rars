@@ -1,10 +1,9 @@
 package rars.riscv;
 
 /*
-Copyright (c) 2003-2006,  Pete Sanderson and Kenneth Vollmar
+Copyright (c) 2017-2019,  Benjamin Landers
 
-Developed by Pete Sanderson (psanderson@otterbein.edu)
-and Kenneth Vollmar (kenvollmar@missouristate.edu)
+Developed by Benjamin Landers (benjaminrlanders@gmail.com)
 
 Permission is hereby granted, free of charge, to any person obtaining 
 a copy of this software and associated documentation files (the 
@@ -28,24 +27,19 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 (MIT license, http://www.opensource.org/licenses/mit-license.html)
  */
 
-// TODO: update documentation here to be up to date with RISCV + change the enum names to match the spec
 /**
- * These are the RISCV-defined formats of basic machine instructions.  The R-format indicates
- * the instruction works only with registers.  The I-format indicates the instruction
- * works with an immediate value (e.g. constant).  The J-format indicates this is a Jump
- * instruction.  The I-branch-format is defined by me, not MIPS, to to indicate this is
- * a Branch instruction, specifically to distinguish immediate
- * values used as target addresses.
+ * These are seven RISCV-defined formats of basic machine instructions:
+ * R, R4, I, S, B, U, and J. Examples of each respectively would be add, fmadd, addi, sw, beq, lui, and jal.
  *
- * @author Pete Sanderson
- * @version August 2003
+ * @author Benjamin Landers
+ * @version April 2019
  */
 public enum BasicInstructionFormat {
-    R_FORMAT,
-    R4_FORMAT,
-    I_FORMAT,
-    S_FORMAT,
-    S_BRANCH_FORMAT,
-    U_FORMAT,
-    U_JUMP_FORMAT
+    R_FORMAT, // 3 register instructions
+    R4_FORMAT,// 4 registers instructions
+    I_FORMAT, // 1 dst and 1 src register + small immediate
+    S_FORMAT, // 2 src registers + small immediate
+    B_FORMAT, // 2 src registers + small immediate shifted left
+    U_FORMAT, // 1 dst register  + large immediate
+    J_FORMAT  // 1 dst register  + large immediate for jumping
 }
