@@ -28,6 +28,8 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package rars.venus.editors.jeditsyntax;
 
+import java.util.ArrayList;
+
 /**
  * Handly little class to contain help information for a popupMenu or
  * tool tip item.
@@ -128,5 +130,17 @@ public class PopupHelpItem {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    // Utility method.  Traverse ArrayList of PopupHelpItem objects
+    // and return String length of longest example.
+    public static int maxExampleLength(ArrayList<PopupHelpItem> matches) {
+        int length = 0;
+        if (matches != null) {
+            for (PopupHelpItem match : matches) {
+                length = Math.max(length, match.getExampleLength());
+            }
+        }
+        return length;
     }
 }

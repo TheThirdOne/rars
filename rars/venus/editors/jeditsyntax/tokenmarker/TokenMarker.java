@@ -9,7 +9,10 @@
 
 package rars.venus.editors.jeditsyntax.tokenmarker;
 
+import rars.venus.editors.jeditsyntax.PopupHelpItem;
+
 import javax.swing.text.Segment;
+import java.util.ArrayList;
 
 /**
  * A token marker that splits lines of text into tokens. Each token carries
@@ -182,6 +185,36 @@ public abstract class TokenMarker {
     public boolean isNextLineRequested() {
         return nextLineRequested;
     }
+
+    /**
+     * Construct and return any appropriate help information for
+     * the given token.  This default definition returns null;
+     * override it in language-specific subclasses.
+     *
+     * @param token     the pertinent Token object
+     * @param tokenText the source String that matched to the token
+     * @return ArrayList containing PopupHelpItem objects, one per match.
+     */
+    public ArrayList<PopupHelpItem> getTokenExactMatchHelp(Token token, String tokenText) {
+        return null;
+    }
+
+    /**
+     * Construct and return any appropriate help information for
+     * the given token or "token prefix".  Will match instruction prefixes, e.g. "s" matches "sw".
+     * This default definition returns null;
+     * override it in language-specific subclasses.
+     *
+     * @param line      String containing current line
+     * @param tokenList first Token on the current line
+     * @param tokenAtOffset     the pertinent Token object
+     * @param tokenText the source String that matched to the token
+     * @return ArrayList containing PopupHelpItem objects, one per match.
+     */
+    public ArrayList<PopupHelpItem> getTokenPrefixMatchHelp(String line, Token tokenList, Token tokenAtOffset, String tokenText) {
+        return null;
+    }
+
 
     // protected members
 
