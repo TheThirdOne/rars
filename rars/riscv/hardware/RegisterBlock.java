@@ -123,6 +123,8 @@ public class RegisterBlock {
      * @return The register object,or null if not found.
      **/
     public Register getRegister(String name) {
+        if(name.length() < 2) return null;
+
         // Handle a direct name
         for (Register r : regFile) {
             if (r.getName().equals(name)) {
@@ -131,12 +133,14 @@ public class RegisterBlock {
         }
         // Handle prefix case
         if (name.charAt(0) == prefix) {
-            try {
-                return getRegister(Binary.stringToInt(name.substring(1)));    // KENV 1/6/05
-            } catch (Exception e) {
-                // handles both NumberFormat
-                return null;
+            if(name.charAt(1) == 0) { // Ensure that it is a normal decimal number
+                if(name.length() > 2) return null;
+                return getRegister(0);
             }
+
+            Integer num = Binary.stringToIntFast(name.substring(1));
+            if(num == null) return null;
+            return getRegister(num);
         }
         return null;
     }

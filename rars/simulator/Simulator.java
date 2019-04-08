@@ -236,7 +236,8 @@ public class Simulator extends Observable {
 
         private void startExecution() {
             Simulator.getInstance().notifyObserversOfExecution(new SimulatorNotice(SimulatorNotice.SIMULATOR_START,
-                    maxSteps, RunSpeedPanel.getInstance().getRunSpeed(), pc, null, pe, done));
+                    maxSteps,(Globals.getGui() != null || Globals.runSpeedPanelExists)?RunSpeedPanel.getInstance().getRunSpeed():RunSpeedPanel.UNLIMITED_SPEED,
+                    pc, null, pe, done));
         }
 
         private void stopExecution(boolean done, Reason reason) {
@@ -244,7 +245,8 @@ public class Simulator extends Observable {
             this.constructReturnReason = reason;
             if (done) SystemIO.resetFiles(); // close any files opened in the process of simulating
             Simulator.getInstance().notifyObserversOfExecution(new SimulatorNotice(SimulatorNotice.SIMULATOR_STOP,
-                    maxSteps, RunSpeedPanel.getInstance().getRunSpeed(), pc, reason, pe, done));
+                    maxSteps, (Globals.getGui() != null || Globals.runSpeedPanelExists)?RunSpeedPanel.getInstance().getRunSpeed():RunSpeedPanel.UNLIMITED_SPEED,
+                    pc, reason, pe, done));
         }
 
         private synchronized void interrupt() {

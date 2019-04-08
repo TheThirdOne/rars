@@ -372,62 +372,66 @@ public class Binary {
      * @return returns int value represented by given string
      * @throws NumberFormatException if string cannot be translated into an int
      */
-
     public static int stringToInt(String s) throws NumberFormatException {
-        String work = new String(s);
+        // Profiling showed that the old method here using Integer.decode was slow
+        // stringToIntFast should be input by input compatible
+        Integer res2 = stringToIntFast(s);
+        if(res2 == null) throw new NumberFormatException();
+        return res2;
+    }
+
+    public static Integer stringToIntFast(String s){
+        if(s.length() == 0) return null;
+        char first = s.charAt(0);
+        if(!(('0' <= first && first <= '9') || first == '-')) return null;
         int result = 0;
-        // First, use Integer.decode().  This will validate most, but it flags
-        // valid hex two's complement values as exceptions.  We'll catch those and
-        // do our own validation.
-        try {
-            result = Integer.decode(s);
-        } catch (NumberFormatException nfe) {
-            // Multistep process toward validation of hex two's complement. 3-step test:
-            //   (1) exactly 10 characters long,
-            //   (2) starts with Ox or 0X,
-            //   (3) last 8 characters are valid hex digits.
-            work = work.toLowerCase();
-            if (work.length() == 10 && work.startsWith("0x")) {
-                String bitString = "";
-                int index;
-                // while testing characters, build bit string to set up for binaryStringToInt
-                for (int i = 2; i < 10; i++) {
-                    index = Arrays.binarySearch(chars, work.charAt(i));
-                    if (index < 0) {
-                        throw new NumberFormatException();
-                    }
-                    bitString = bitString + intToBinaryString(index, 4);
-                }
-                result = binaryStringToInt(bitString);
-            }
-               /*  The following "else" composed by Jose Baiocchi Paredes, Oct 2009.  This new code 
-                   will correctly translate a string representing an unsigned decimal (not hex) 
-               	 value whose signed value is negative.  This is the decimal equivalent of the
-               	 "then" case just above.  The method was not used in this context until Release 3.6 
-               	 when background highlighting of the Data Segment was added.  Caused exceptions 
-               	 under certain conditions.
-                */
-            else if (!work.startsWith("0x")) {
-                result = 0;
-                for (int i = 0; i < work.length(); i++) {
-                    char c = work.charAt(i);
-                    if ('0' <= c && c <= '9') {
-                        result *= 10;
-                        result += c - '0';
-                    } else {
-                        throw new NumberFormatException();
-                    }
+        // Not doing s = s.lowercase() because it is slightly slower
+        if(s.length() > 2 && first == '0' && (s.charAt(1) == 'x' || s.charAt(1) == 'X')) { // Hex case
+            if(s.length() > 10) return null; // This must overflow or contain invalid characters
+            for(int i = 2; i < s.length(); i++) {
+                char c = s.charAt(i);
+                result *= 16;
+                if ('0' <= c && c <= '9') {
+                    result += c - '0';
+                } else if ('a' <= c && c <= 'f') {
+                    result += c - 'a' + 10;
+                } else if ('A' <= c && c <= 'F') {
+                    result += c - 'A' + 10;
+                } else {
+                    return null;
                 }
             }
-               /*  End of the Jose Paredes code */
-            else {
-                throw new NumberFormatException();
+        }else if (first == '0'){ // Octal case
+            for(int i = 0; i < s.length(); i++){
+                char c = s.charAt(i);
+                if ('0' <= c && c <= '7') {
+                    result *= 8;
+                    result += c - '0';
+                } else {
+                    return null;
+                }
             }
+            if(result < 0)return null;
+        } else {
+            int i = 0;
+            if(first == '-') i=1;
+            for(; i < s.length(); i++){
+                char c = s.charAt(i);
+                if ('0' <= c && c <= '9') {
+                    result *= 10;
+                    result += c - '0';
+                } else {
+                    return null;
+                }
+            }
+            // Overflowing to min and negating keeps the value at min
+            if(result == Integer.MIN_VALUE && first == '-') return Integer.MIN_VALUE;
+            // Don't allow overflow and negation as that produces unexpected values.
+            if(result < 0 && first == '-') return null;
+            if(first == '-') result*=-1;
         }
         return result;
     }
-
-
     /**
      * Attempt to validate given string whose characters represent a 64 bit long.
      * Long.decode() is insufficient because it will not allow incorporation of
