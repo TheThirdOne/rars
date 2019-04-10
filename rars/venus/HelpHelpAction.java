@@ -190,6 +190,7 @@ public class HelpHelpAction extends GuiAction {
         JPanel helpInfo = new JPanel(new BorderLayout());
         String helpRemarksColor = "CCFF99";
         // Introductory remarks go at the top as a label
+        // TODO: update this to consider 12 and 20 bit numbers rather than 16
         String helpRemarks =
                 "<html><center><table bgcolor=\"#" + helpRemarksColor + "\" border=0 cellpadding=0>" +// width="+this.getSize().getWidth()+">"+
                         "<tr>" +
