@@ -79,11 +79,25 @@ public class InstructionCounter extends AbstractToolAndApplication {
     private JProgressBar progressbarS;
 
     /**
+     * Number of instructions of type B.
+     */
+    private int counterB = 0;
+    private JTextField counterBField;
+    private JProgressBar progressbarB;
+    
+    /**
      * Number of instructions of type U.
      */
     private int counterU = 0;
     private JTextField counterUField;
     private JProgressBar progressbarU;
+
+    /**
+     * Number of instructions of type J.
+     */
+    private int counterJ = 0;
+    private JTextField counterJField;
+    private JProgressBar progressbarJ;
 
 
     /**
