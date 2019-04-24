@@ -1,3 +1,8 @@
 out
 .idea
-.class
+*.class
+
+# Eclipse project files
+.classpath
+.project
+examples/riscv
