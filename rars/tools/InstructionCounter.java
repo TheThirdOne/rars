@@ -63,6 +63,13 @@ public class InstructionCounter extends AbstractToolAndApplication {
     private int counterR = 0;
     private JTextField counterRField;
     private JProgressBar progressbarR;
+    
+    /**
+     * Number of instructions of type R4.
+     */
+    private int counterR4 = 0;
+    private JTextField counterR4Field;
+    private JProgressBar progressbarR4;
 
     /**
      * Number of instructions of type I.
@@ -140,6 +147,11 @@ public class InstructionCounter extends AbstractToolAndApplication {
         counterRField.setEditable(false);
         progressbarR = new JProgressBar(JProgressBar.HORIZONTAL);
         progressbarR.setStringPainted(true);
+        
+        counterR4Field = new JTextField("0", 10);
+        counterR4Field.setEditable(false);
+        progressbarR4 = new JProgressBar(JProgressBar.HORIZONTAL);
+        progressbarR4.setStringPainted(true);
 
         counterIField = new JTextField("0", 10);
         counterIField.setEditable(false);
@@ -182,6 +194,9 @@ public class InstructionCounter extends AbstractToolAndApplication {
         panel.add(counterRField, c);
 
         c.gridy++;
+        panel.add(counterR4Field, c);
+        
+        c.gridy++;
         panel.add(counterIField, c);
 
         c.gridy++;
@@ -209,6 +224,9 @@ public class InstructionCounter extends AbstractToolAndApplication {
         c.gridwidth = 1;
         c.gridy++;
         panel.add(new JLabel("R-type: "), c);
+        
+        c.gridy++;
+        panel.add(new JLabel("R4-type: "), c);
 
         c.gridy++;
         panel.add(new JLabel("I-type: "), c);
@@ -231,6 +249,9 @@ public class InstructionCounter extends AbstractToolAndApplication {
         c.gridy = 2;
         panel.add(progressbarR, c);
 
+        c.gridy++;
+        panel.add(progressbarR4, c);
+        
         c.gridy++;
         panel.add(progressbarI, c);
 
@@ -269,6 +290,8 @@ public class InstructionCounter extends AbstractToolAndApplication {
             BasicInstructionFormat format = instr.getInstructionFormat();
             if (format == BasicInstructionFormat.R_FORMAT)
                 counterR++;
+            else if (format == BasicInstructionFormat.R4_FORMAT)
+                counterR4++;
             else if (format == BasicInstructionFormat.I_FORMAT)
                 counterI++;
             else if (format == BasicInstructionFormat.S_FORMAT)
@@ -288,13 +311,13 @@ public class InstructionCounter extends AbstractToolAndApplication {
 
     @Override
     protected void initializePreGUI() {
-        counter = counterR = counterI = counterS = counterB = counterU = counterJ = 0;
+        counter = counterR = counterR4 = counterI = counterS = counterB = counterU = counterJ = 0;
         lastAddress = -1;
     }
 
     @Override
     protected void reset() {
-        counter = counterR = counterI = counterS = counterB = counterU = counterJ = 0;
+        counter = counterR = counterR4 = counterI = counterS = counterB = counterU = counterJ = 0;
         lastAddress = -1;
         updateDisplay();
     }
@@ -306,6 +329,10 @@ public class InstructionCounter extends AbstractToolAndApplication {
         counterRField.setText(String.valueOf(counterR));
         progressbarR.setMaximum(counter);
         progressbarR.setValue(counterR);
+        
+        counterR4Field.setText(String.valueOf(counterR4));
+        progressbarR4.setMaximum(counter);
+        progressbarR4.setValue(counterR4);
 
         counterIField.setText(String.valueOf(counterI));
         progressbarI.setMaximum(counter);
@@ -329,6 +356,7 @@ public class InstructionCounter extends AbstractToolAndApplication {
         
         if (counter == 0) {
             progressbarR.setString("0%");
+            progressbarR4.setString("0%");
             progressbarI.setString("0%");
             progressbarS.setString("0%");
             progressbarB.setString("0%");
@@ -336,6 +364,7 @@ public class InstructionCounter extends AbstractToolAndApplication {
             progressbarJ.setString("0%");
         } else {
             progressbarR.setString((counterR * 100) / counter + "%");
+            progressbarR4.setString((counterR4 * 100) / counter + "%");
             progressbarI.setString((counterI * 100) / counter + "%");
             progressbarS.setString((counterS * 100) / counter + "%");
             progressbarB.setString((counterB * 100) / counter + "%");
