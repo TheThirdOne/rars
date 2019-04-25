@@ -286,22 +286,27 @@ public class InstructionCounter extends AbstractToolAndApplication {
         counter++;
         try {
             ProgramStatement stmt = Memory.getInstance().getStatement(a);
-            BasicInstruction instr = (BasicInstruction) stmt.getInstruction();
-            BasicInstructionFormat format = instr.getInstructionFormat();
-            if (format == BasicInstructionFormat.R_FORMAT)
-                counterR++;
-            else if (format == BasicInstructionFormat.R4_FORMAT)
-                counterR4++;
-            else if (format == BasicInstructionFormat.I_FORMAT)
-                counterI++;
-            else if (format == BasicInstructionFormat.S_FORMAT)
-                counterS++;
-            else if(format == BasicInstructionFormat.B_FORMAT)
-            	counterB++;
-            else if (format == BasicInstructionFormat.U_FORMAT)
-                counterU++;
-            else if(format == BasicInstructionFormat.J_FORMAT)
-            	counterJ++;
+            
+            // If the program is finished, getStatement() will return null,
+            // a null statement will cause the simulator to stall.
+            if(stmt != null) {
+	            BasicInstruction instr = (BasicInstruction) stmt.getInstruction();
+	            BasicInstructionFormat format = instr.getInstructionFormat();
+	            if (format == BasicInstructionFormat.R_FORMAT)
+	                counterR++;
+	            else if (format == BasicInstructionFormat.R4_FORMAT)
+	                counterR4++;
+	            else if (format == BasicInstructionFormat.I_FORMAT)
+	                counterI++;
+	            else if (format == BasicInstructionFormat.S_FORMAT)
+	                counterS++;
+	            else if(format == BasicInstructionFormat.B_FORMAT)
+	            	counterB++;
+	            else if (format == BasicInstructionFormat.U_FORMAT)
+	                counterU++;
+	            else if(format == BasicInstructionFormat.J_FORMAT)
+	            	counterJ++;
+            }
         } catch (AddressErrorException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
