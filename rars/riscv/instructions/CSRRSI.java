@@ -36,7 +36,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 public class CSRRSI extends BasicInstruction {
     public CSRRSI() {
         super("csrrsi t0, 0xFF, 10", "Atomic Read/Set CSR Immediate: read from the CSR into t0 and logical or a constant into the CSR",
-                BasicInstructionFormat.I_FORMAT, "tttttttttttt sssss 110 fffff 1110011");
+                BasicInstructionFormat.I_FORMAT, "ssssssssssss ttttt 110 fffff 1110011");
     }
 
     public void simulate(ProgramStatement statement) throws SimulationException {

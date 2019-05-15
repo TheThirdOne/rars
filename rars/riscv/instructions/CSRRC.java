@@ -36,7 +36,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 public class CSRRC extends BasicInstruction {
     public CSRRC() {
         super("csrrc t0, 0xFF, t1", "Atomic Read/Clear CSR: read from the CSR into t0 and clear bits of the CSR according to t1",
-                BasicInstructionFormat.I_FORMAT, "tttttttttttt sssss 011 fffff 1110011");
+                BasicInstructionFormat.I_FORMAT, "ssssssssssss ttttt 011 fffff 1110011");
     }
 
     public void simulate(ProgramStatement statement) throws SimulationException {
