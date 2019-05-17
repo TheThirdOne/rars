@@ -5,9 +5,11 @@ import rars.Globals;
 import rars.ProgramStatement;
 import rars.riscv.hardware.AddressErrorException;
 import rars.riscv.hardware.RegisterFile;
+import java.util.ArrayList;
+import java.io.UnsupportedEncodingException;
 
 /*
-Copyright (c) 2003-20017,  Pete Sanderson,Benjamin Landers and Kenneth Vollmar
+Copyright (c) 2003-2017,  Pete Sanderson,Benjamin Landers and Kenneth Vollmar
 
 Developed by Pete Sanderson (psanderson@otterbein.edu),
 Benjamin Landers (benjaminrlanders@gmail.com),
@@ -55,20 +57,33 @@ public class NullString {
      * @throws ExitingException if it hits a #AddressErrorException
      */
     public static String get(ProgramStatement statement, String reg) throws ExitingException {
-        String message = "";
         int byteAddress = RegisterFile.getValue(reg);
-        char ch[] = {' '}; // Need an array to convert to String
+        ArrayList<Byte> utf8BytesList = new ArrayList<Byte>(); // Need an array to hold bytes
         try {
-            ch[0] = (char) Globals.memory.getByte(byteAddress);
-            while (ch[0] != 0) // only uses single location ch[0]
+            utf8BytesList.add((byte) Globals.memory.getByte(byteAddress));
+            while (utf8BytesList.get(utf8BytesList.size() - 1) != 0) // until null terminator
             {
-                message = message.concat(new String(ch)); // parameter to String constructor is a char[] array
                 byteAddress++;
-                ch[0] = (char) Globals.memory.getByte(byteAddress);
+                utf8BytesList.add((byte) Globals.memory.getByte(byteAddress));
             }
         } catch (AddressErrorException e) {
             throw new ExitingException(statement, e);
         }
+
+        int size = utf8BytesList.size();
+        byte[] utf8Bytes = new byte[size];
+        for (int i=0; i<size; i++){
+            utf8Bytes[i] = utf8BytesList.get(i);
+        }
+
+        //construct the string using UTF8 encoding
+        String message = "";
+        try {
+            message = new String(utf8Bytes, "UTF8");
+        } catch (UnsupportedEncodingException e) {
+            System.out.println("Unsupported character set");
+        }
+        
         return message;
     }
 }
