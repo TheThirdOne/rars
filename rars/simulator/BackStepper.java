@@ -2,6 +2,8 @@ package rars.simulator;
 
 import rars.Globals;
 import rars.ProgramStatement;
+import rars.riscv.hardware.ControlAndStatusRegisterFile;
+import rars.riscv.hardware.FloatingPointRegisterFile;
 import rars.riscv.hardware.RegisterFile;
 import rars.riscv.Instruction;
 
@@ -146,6 +148,12 @@ public class BackStepper {
                             break;
                         case REGISTER_RESTORE:
                             RegisterFile.updateRegister(step.param1, step.param2);
+                            break;
+                        case FLOATING_POINT_REGISTER_RESTORE:
+                            FloatingPointRegisterFile.updateRegister(step.param1,step.param2);
+                            break;
+                        case CONTROL_AND_STATUS_REGISTER_RESTORE:
+                            ControlAndStatusRegisterFile.updateRegister(step.param1,step.param2);
                             break;
                         case PC_RESTORE:
                             RegisterFile.setProgramCounter(step.param1);
