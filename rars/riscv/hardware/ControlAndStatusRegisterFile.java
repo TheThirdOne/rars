@@ -61,7 +61,11 @@ public class ControlAndStatusRegisterFile {
                 new Register("uepc", 0x041, 0),
                 new Register("ucause", 0x042, 0),
                 new Register("utval", 0x043, 0),
-                new Register("uip", 0x044, 0)
+                new Register("uip", 0x044, 0),
+                new ReadOnlyRegister("cycle", 0xC00, 0, -1),
+                new ReadOnlyRegister("instret",0xC02, 0, -1),
+                new ReadOnlyRegister("cycleh", 0xC80, 0, -1),
+                new ReadOnlyRegister("instreth",0xC81, 0, -1),
         };
         tmp[1] = new LinkedRegister("fflags", 0x001, tmp[3], 0x1F);
         tmp[2] = new LinkedRegister("frm", 0x002, tmp[3], 0xE0);
@@ -90,6 +94,30 @@ public class ControlAndStatusRegisterFile {
      **/
     public static int updateRegister(String name, int val) {
         return updateRegister(instance.getRegister(name).getNumber(), val);
+    }
+
+    /**
+     * This method updates the register value silently and bypasses read only
+     *
+     * @param num Number of register to set the value of.
+     * @param val  The desired value for the register.
+     * @return old value in register prior to update
+     **/
+    public static int updateRegisterBackdoor(int num, int val) {
+        return (Globals.getSettings().getBackSteppingEnabled())
+                ? Globals.program.getBackStepper().addControlAndStatusBackdoor(num, instance.getRegister(num).setValueBackdoor(val))
+                : instance.getRegister(num).setValueBackdoor(val);
+    }
+
+    /**
+     * This method updates the register value silently and bypasses read only
+     *
+     * @param name Name of register to set the value of.
+     * @param val  The desired value for the register.
+     * @return old value in register prior to update
+     **/
+    public static int updateRegisterBackdoor(String name, int val) {
+        return updateRegisterBackdoor(instance.getRegister(name).getNumber(), val);
     }
 
     /**

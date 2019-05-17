@@ -132,6 +132,21 @@ public class Register extends Observable {
     }
 
     /**
+     * Sets the value of the register to the val passed to it. This should only
+     * be used to update registers not related to the current instruction.
+     *
+     * @param val Value to set the Register to.
+     * @return previous value of register
+     */
+
+    public synchronized int setValueBackdoor(int val) {
+        int old = value;
+        value = val;
+        return old;
+    }
+
+
+    /**
      * Resets the value of the register to the value it was constructed with.
      * Observers are not notified.
      */

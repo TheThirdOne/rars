@@ -1,10 +1,7 @@
 package rars.simulator;
 
 import rars.*;
-import rars.riscv.hardware.AddressErrorException;
-import rars.riscv.hardware.ControlAndStatusRegisterFile;
-import rars.riscv.hardware.InterruptController;
-import rars.riscv.hardware.RegisterFile;
+import rars.riscv.hardware.*;
 import rars.riscv.BasicInstruction;
 import rars.riscv.Instruction;
 import rars.util.Binary;
@@ -519,7 +516,23 @@ public class Simulator extends Observable {
                     }
                 }// end synchronized block
 
-                //	Return if we've reached a breakpoint.
+                // Update cycle(h) and instret(h)
+                int cycle = ControlAndStatusRegisterFile.getValueNoNotify("cycle"),
+                         instret = ControlAndStatusRegisterFile.getValueNoNotify("instret");
+                ControlAndStatusRegisterFile.updateRegisterBackdoor("cycle",cycle+1);
+                if(cycle == -1){
+                    int cycleh = ControlAndStatusRegisterFile.getValueNoNotify("cycleh");
+                    ControlAndStatusRegisterFile.updateRegisterBackdoor("cycleh",cycleh+1);
+                }
+
+                ControlAndStatusRegisterFile.updateRegisterBackdoor("instret",instret+1);
+                if(instret == -1){
+                    int instreth = ControlAndStatusRegisterFile.getValueNoNotify("instreth");
+                    ControlAndStatusRegisterFile.updateRegisterBackdoor("instreth",instreth+1);
+                }
+
+
+                //     Return if we've reached a breakpoint.
                 if (ebreak || (breakPoints != null) &&
                         (Arrays.binarySearch(breakPoints, RegisterFile.getProgramCounter()) >= 0)) {
                     stopExecution(false, Reason.BREAKPOINT);
