@@ -20,7 +20,7 @@ import javax.swing.*;
 
 public class TimerTool extends AbstractToolAndApplication {
     private static String heading = "Timer Tool";
-    private static String version = "Version 1.0";
+    private static String version = "Version 1.0 (Zachary Selk)";
     private static final int TIME_ADDRESS = Memory.memoryMapBaseAddress + 0x18;
     private static final int TIME_CMP_ADDRESS = Memory.memoryMapBaseAddress + 0x20;
 
@@ -104,6 +104,10 @@ public class TimerTool extends AbstractToolAndApplication {
         startTime = System.currentTimeMillis();
         tick.updateTimecmp = true;
         timePanel.updateTime();
+    }
+
+    protected void performSpecialClosingDuties() {
+        stop();
     }
 
     /*****************************  Timer Classes  *****************************/
