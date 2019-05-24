@@ -1,3 +1,28 @@
+/*
+Developed by Zachary Selk (zrselk@gmail.com)
+
+Permission is hereby granted, free of charge, to any person obtaining 
+a copy of this software and associated documentation files (the 
+"Software"), to deal in the Software without restriction, including 
+without limitation the rights to use, copy, modify, merge, publish, 
+distribute, sublicense, and/or sell copies of the Software, and to 
+permit persons to whom the Software is furnished to do so, subject 
+to the following conditions:
+
+The above copyright notice and this permission notice shall be 
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF 
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR 
+ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF 
+CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION 
+WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+(MIT license, http://www.opensource.org/licenses/mit-license.html)
+*/
+
 package rars.tools;
 
 import rars.Globals;
@@ -18,28 +43,34 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.*;
 
+
+/**
+ * A RARS tool used to implement a timing module and timer inturrpts.
+ **/
 public class TimerTool extends AbstractToolAndApplication {
     private static String heading = "Timer Tool";
     private static String version = "Version 1.0 (Zachary Selk)";
     private static final int TIME_ADDRESS = Memory.memoryMapBaseAddress + 0x18;
     private static final int TIME_CMP_ADDRESS = Memory.memoryMapBaseAddress + 0x20;
 
-    // GUI Interface
+    // GUI window sections
     private static JPanel panelTools;
     private TimePanel timePanel;
 
     // Internal time values
-    private static long time = 0L;
-    private static TimeCmpDaemon timeCmp = null;
-    private static long startTime = 0L;
-    private static long savedTime = 0L;
+    private static long time = 0L;      // The current time of the program (starting from 0)
+    private static long startTime = 0L; // Tmp unix time used to keep track of how much time has passed
+    private static long savedTime = 0L; // Accumulates time as we pause/play the timer
+
+    // Timing threads
+    private static TimeCmpDaemon timeCmp = null; // Watches for changes made to timecmp
     private Timer timer = new Timer();
-    private Tick tick = new Tick();
+    private Tick tick = new Tick(); // Runs every millisecond to decide if a timer inturrupt should be raised
 
     // Internal timing flags
-    private static boolean postInterrupt = false;
-    private static boolean updateTime = false;
-    private static boolean running = false;
+    private static boolean postInterrupt = false; // Signals when timecmp has been writen to
+    private static boolean updateTime = false;    // Controls when time progresses (for pausing)
+    private static boolean running = false;       // true while tick thread is running
 
     public TimerTool() {
         super(heading + ", " + version, heading);
@@ -60,9 +91,35 @@ public class TimerTool extends AbstractToolAndApplication {
         return "Timer Tool";
     }
 
+    // Set up the tools interface
     protected JComponent buildMainDisplayArea() {
         JPanel panelTools = new JPanel(new GridLayout(1, 2));
         timePanel = new TimePanel();
+
+        // Adds a play button to start/resume time
+        JButton playButton = new JButton("Play");
+        playButton.setToolTipText("Starts the counter");
+        playButton.addActionListener(
+                    new ActionListener() {
+                        public void actionPerformed(ActionEvent e) {
+                            play();
+                        }
+                    });
+        playButton.addKeyListener(new EnterKeyListener(playButton));
+
+        // Adds a pause button to pause time
+        JButton pauseButton = new JButton("Pause");
+        pauseButton.setToolTipText("Pauses the counter");
+        pauseButton.addActionListener(
+                     new ActionListener() {
+                         public void actionPerformed(ActionEvent e) {
+                             pause();
+                         }
+                     });
+        pauseButton.addKeyListener(new EnterKeyListener(pauseButton));
+
+        timePanel.add(playButton);
+        timePanel.add(pauseButton);
         panelTools.add(timePanel);
         return panelTools;
     }
@@ -74,9 +131,15 @@ public class TimerTool extends AbstractToolAndApplication {
         }
     }
 
+    // Overwrites the empty parent method, called when the tool is closed
+    protected void performSpecialClosingDuties() {
+        stop();
+    }
+
+
+    /***************************  Timer controls  *****************************/
+
     public void start() {
-        updateTime = true;
-        startTime = System.currentTimeMillis();
         if (!running) {
             // Start a timer that checks to see if a timer interupt needs to be raised
             // every millisecond
@@ -85,10 +148,25 @@ public class TimerTool extends AbstractToolAndApplication {
         }
     }
 
-    public void puase() {
+    public void play() {
+        updateTime = true;
+        startTime = System.currentTimeMillis();
+
+    }
+
+    public void pause() {
         updateTime = false;
         time = savedTime + System.currentTimeMillis() - startTime;
         savedTime = time;
+    }
+
+    protected void reset() {
+        time = 0L;
+        savedTime = 0L;
+        startTime = System.currentTimeMillis();
+        tick.updateTimecmp = true;
+        timePanel.updateTime();
+        tick.reset();
     }
 
     public void stop() {
@@ -98,23 +176,13 @@ public class TimerTool extends AbstractToolAndApplication {
         reset();
     }
 
-    protected void reset() {
-        time = 0L;
-        savedTime = 0L;
-        startTime = System.currentTimeMillis();
-        tick.updateTimecmp = true;
-        timePanel.updateTime();
-    }
-
-    protected void performSpecialClosingDuties() {
-        stop();
-    }
 
     /*****************************  Timer Classes  *****************************/
 
+    // Watches for changes made to the timecmp MMIO
     public class TimeCmpDaemon implements Observer {
         public boolean postInterrupt = false;
-        public long value = 0L;
+        public long value = 0L; // Holds the most recent value of timecmp writen to the MMIO
 
         public TimeCmpDaemon() {
             addAsObserver();
@@ -136,44 +204,69 @@ public class TimerTool extends AbstractToolAndApplication {
             if (accessType == 1) {
                 int address = notice.getAddress();
                 int value = notice.getValue();
+
+                // Check what word was changed, then update the corrisponding information
                 if (address == TIME_CMP_ADDRESS) {
                     this.value = ((this.value >> 32) << 32) + value;
-                    postInterrupt = true;
+                    postInterrupt = true; // timecmp was writen to
                 }
                 else if (address == TIME_CMP_ADDRESS+4) {
                     this.value = (this.value & 0xFFFFFFFF) + (value << 32);
-                    postInterrupt = true;
+                    postInterrupt = true; // timecmp was writen to
                 }
             }
         }
     }
 
+    // Runs every millisecond to decide if a timer inturrupt should be raised
     private class Tick extends TimerTask {
         public volatile boolean updateTimecmp = true;
+
         public void run() {
+            // Check to see if the tool is connected
+            // Note: "connectButton != null" short circuits the expression when null
             if (connectButton != null && connectButton.isConnected()) {
+                // If the tool is not paused
                 if (updateTime) {
+                    // time is the difference between the last time we started the time and now, plus
+                    // our time accumulator
                     time = savedTime + System.currentTimeMillis() - startTime;
 
+                    // Write the lower and upper words of the time MMIO respectivly
                     updateMMIOControlAndData(TIME_ADDRESS, (int)(time & 0xFFFFFFFF));
                     updateMMIOControlAndData(TIME_ADDRESS+4, (int)(time >> 32));
+
+                    // The logic for if a timer interrupt should be raised
+                    // Note: if either the UTIP bit in the uie CSR or the UIE bit in the ustatus CSR
+                    //      are zero then this interrupt will be stopped further on in the pipeline
                     if (time >= timeCmp.value && timeCmp.postInterrupt) {
                         InterruptController.registerTimerInterrupt(ControlAndStatusRegisterFile.TIMER_INTERRUPT);
-                        timeCmp.postInterrupt = false;
+                        timeCmp.postInterrupt = false; // Wait for timecmp to be writen to again
+                        // BUG: If timecmp is writen to before the other timer/interrupt bits are set
+                        //      then no interrupt will be sent until timecmp is writen to again
+                        // TODO: Fix by checking the timer/interrupt bits here and the TIP bit or set
+                        //       postInterrupt to false when timer interrupt is handled
                     }
                     timePanel.updateTime();
                 }
             }
+            // Otherwise we keep track of the last time the tool was not connected
             else {
                 time = savedTime + System.currentTimeMillis() - startTime;
-                //savedTime = time;
                 startTime = System.currentTimeMillis();
             }
         }
+
+        // Set time MMIO to zero
+        public void reset() {
+            updateMMIOControlAndData(TIME_ADDRESS, 0);
+            updateMMIOControlAndData(TIME_ADDRESS+4, 0);
+
+        }
     }
 
+    // Writes a word to a virtual memory address
     private synchronized void updateMMIOControlAndData(int dataAddr, int dataValue) {
-        //if (!this.isBeingUsedAsATool || (this.isBeingUsedAsATool && connectButton.isConnected())) {
         synchronized (Globals.memoryAndRegistersLock) {
             try {
                 Globals.memory.setRawWord(dataAddr, dataValue);
@@ -185,8 +278,9 @@ public class TimerTool extends AbstractToolAndApplication {
     }
 
 
-    /*****************************  GUI Classes  *******************************/
+    /*****************************  GUI Objects  *******************************/
 
+    // A panel that displays time
     public class TimePanel extends JPanel {
         JLabel currentTime = new JLabel("Hello world");
         public TimePanel() {
@@ -202,6 +296,7 @@ public class TimerTool extends AbstractToolAndApplication {
         }
     }
 
+    // A help popup window on how to use this tool
     protected JComponent getHelpComponent() {
         final String helpContent =
             "Use this tool to simulate the Memory Mapped IO (MMIO) for a timing device allowing the program to utalize timer interupts. " +
