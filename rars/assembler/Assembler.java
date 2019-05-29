@@ -12,6 +12,8 @@ import rars.util.SystemIO;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import java.io.UnsupportedEncodingException;
+
 /*
  Copyright (c) 2003-2012,  Pete Sanderson and Kenneth Vollmar
 
@@ -1069,15 +1071,24 @@ public class Assembler {
                             // codes...
                         }
                     }
-                    try {
-                        Globals.memory.set(this.dataAddress.get(), (int) theChar,
-                                DataTypes.CHAR_SIZE);
-                    } catch (AddressErrorException e) {
-                        errors.add(new ErrorMessage(token.getSourceProgram(), token
-                                .getSourceLine(), token.getStartPos(), "\""
-                                + this.dataAddress.get() + "\" is not a valid data segment address"));
+                    String strOfChar = String.valueOf(theChar);
+                    try{
+                        byte[] bytesOfChar = strOfChar.getBytes("UTF-8");
+                        int lenOfArray = bytesOfChar.length;
+                        for (int k = 0; k < lenOfArray; k++){
+                            try {
+                                Globals.memory.set(this.dataAddress.get(), bytesOfChar[k],
+                                        DataTypes.CHAR_SIZE);
+                            } catch (AddressErrorException e) {
+                                errors.add(new ErrorMessage(token.getSourceProgram(), token
+                                        .getSourceLine(), token.getStartPos(), "\""
+                                        + this.dataAddress.get() + "\" is not a valid data segment address"));
+                            }
+                            this.dataAddress.increment(DataTypes.CHAR_SIZE);
+                        }
+                    } catch (UnsupportedEncodingException e) {
+                        System.out.println("Unsupported character set");
                     }
-                    this.dataAddress.increment(DataTypes.CHAR_SIZE);
                 }
                 if (direct == Directives.ASCIZ || direct == Directives.STRING) {
                     try {
