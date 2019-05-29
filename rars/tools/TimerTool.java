@@ -68,7 +68,6 @@ public class TimerTool extends AbstractToolAndApplication {
     private Tick tick = new Tick(); // Runs every millisecond to decide if a timer inturrupt should be raised
 
     // Internal timing flags
-    private static boolean postInterrupt = false; // Signals when timecmp has been writen to
     private static boolean updateTime = false;    // Controls when time progresses (for pausing)
     private static boolean running = false;       // true while tick thread is running
 
@@ -149,22 +148,29 @@ public class TimerTool extends AbstractToolAndApplication {
     }
 
     public void play() {
-        updateTime = true;
-        startTime = System.currentTimeMillis();
+        // Gaurd against multiple plays
+        if (!updateTime) {
+            updateTime = true;
+            startTime = System.currentTimeMillis();
+        }
 
     }
 
     public void pause() {
-        updateTime = false;
-        time = savedTime + System.currentTimeMillis() - startTime;
-        savedTime = time;
+        // Gaurd against multiple pauses
+        if (updateTime) {
+            updateTime = false;
+            time = savedTime + System.currentTimeMillis() - startTime;
+            savedTime = time;
+        }
     }
 
     // Reset all of our counters to their default values
     protected void reset() {
         time = 0L;
         savedTime = 0L;
-        startTime = System.currentTimeMillis();
+        //startTime = System.currentTimeMillis();
+        startTime = -1000000L;
         tick.updateTimecmp = true;
         timePanel.updateTime();
         tick.reset();
@@ -213,7 +219,7 @@ public class TimerTool extends AbstractToolAndApplication {
                     postInterrupt = true; // timecmp was writen to
                 }
                 else if (address == TIME_CMP_ADDRESS+4) {
-                    this.value = (this.value & 0xFFFFFFFF) + (value << 32);
+                    this.value = (this.value & 0xFFFFFFFF) + (((long)value) << 32);
                     postInterrupt = true; // timecmp was writen to
                 }
             }
