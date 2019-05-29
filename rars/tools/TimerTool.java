@@ -160,6 +160,7 @@ public class TimerTool extends AbstractToolAndApplication {
         savedTime = time;
     }
 
+    // Reset all of our counters to their default values
     protected void reset() {
         time = 0L;
         savedTime = 0L;
@@ -169,6 +170,7 @@ public class TimerTool extends AbstractToolAndApplication {
         tick.reset();
     }
 
+    // Shutdown the timer (note that we keep the TimeCmpDaemon running)
     public void stop() {
         updateTime = false;
         timer.cancel();
@@ -239,13 +241,9 @@ public class TimerTool extends AbstractToolAndApplication {
                     // The logic for if a timer interrupt should be raised
                     // Note: if either the UTIP bit in the uie CSR or the UIE bit in the ustatus CSR
                     //      are zero then this interrupt will be stopped further on in the pipeline
-                    if (time >= timeCmp.value && timeCmp.postInterrupt) {
+                    if (time >= timeCmp.value && timeCmp.postInterrupt && bitsEnabled()) {
                         InterruptController.registerTimerInterrupt(ControlAndStatusRegisterFile.TIMER_INTERRUPT);
                         timeCmp.postInterrupt = false; // Wait for timecmp to be writen to again
-                        // BUG: If timecmp is writen to before the other timer/interrupt bits are set
-                        //      then no interrupt will be sent until timecmp is writen to again
-                        // TODO: Fix by checking the timer/interrupt bits here and the TIP bit or set
-                        //       postInterrupt to false when timer interrupt is handled
                     }
                     timePanel.updateTime();
                 }
@@ -257,11 +255,18 @@ public class TimerTool extends AbstractToolAndApplication {
             }
         }
 
+        // Checks the control bits to see if user-level timer inturrupts are enabled
+        private boolean bitsEnabled() {
+            boolean utip = (ControlAndStatusRegisterFile.getValue("uie") & 0x10) == 0x10;
+            boolean uie = (ControlAndStatusRegisterFile.getValue("ustatus") & 0x1) == 0x1;
+
+            return (utip && uie);
+        }
+
         // Set time MMIO to zero
         public void reset() {
             updateMMIOControlAndData(TIME_ADDRESS, 0);
             updateMMIOControlAndData(TIME_ADDRESS+4, 0);
-
         }
     }
 
