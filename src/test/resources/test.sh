@@ -1,7 +1,7 @@
 #!/bin/bash
 RUN="java -jar -ea ./rars.jar"
 ERRORS=""
-for f in ./test/*.s ./test/riscv-tests/*.s
+for f in ./asm/*.s ./asm/riscv-tests/*.s
 do	
 	$RUN $f > /dev/null
 	if [ $? -eq 42 ]

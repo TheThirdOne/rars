@@ -5,6 +5,9 @@ out
 # Eclipse project files
 .classpath
 .project
-examples/riscv
-build
+/examples/riscv
+/build
 *.jar
+/bin
+/.gradle/
+/.settings

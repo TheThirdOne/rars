@@ -1,5 +1,7 @@
 package rars;
 
+import java.io.File;
+
 import rars.program.RISCVprogram;
 
 /*
@@ -30,7 +32,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 (MIT license, http://www.opensource.org/licenses/mit-license.html)
  */
 
-public abstract class ErrorMessage {
+public class ErrorMessage {
     private boolean isWarning; // allow for warnings too (added Nov 2006)
     private String filename; // name of source file  (added Oct 2006)
     private String message;
@@ -89,9 +91,33 @@ public abstract class ErrorMessage {
     }
     
     /**
+     * Returns the default prefix which includes a warning/error prefix and the source file
+     * 
+     * @return Returns the prefix
+     */
+    protected String getDefaultPrefix() {
+        String out = ((isWarning) ? ErrorList.WARNING_MESSAGE_PREFIX : ErrorList.ERROR_MESSAGE_PREFIX) + ErrorList.FILENAME_PREFIX;
+        if (getFilename().length() > 0)
+            out = out + (new File(getFilename()).getPath()); //.getName());
+        return out;
+    }
+    
+    /**
+     * Returns the default suffix which includes a message seperator followed by the error message
+     * followed by a newline.
+     * 
+     * @return Returns the suffix
+     */
+    protected String getDefaultSuffix() {
+    	return ErrorList.MESSAGE_SEPARATOR + getMessage() + "\n";
+    }
+    
+    /**
      * Generates an error message
      * 
      * @return Returns the generated message
      */
-    public abstract String generateReport();
+	public String generateReport() {
+		return this.getDefaultPrefix() + this.getDefaultSuffix();
+	}
 }

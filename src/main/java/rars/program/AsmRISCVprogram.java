@@ -1,8 +1,8 @@
 package rars.program;
 
+import rars.AsmErrorMessage;
 import rars.AssemblyException;
 import rars.ErrorList;
-import rars.AsmErrorMessage;
 import rars.ProgramStatement;
 import rars.SimulationException;
 import rars.assembler.*;
@@ -56,7 +56,6 @@ public class AsmRISCVprogram extends RISCVprogram {
     // See explanation of method inSteppedExecution() below.
     // private boolean steppedExecution = false;
 
-	private ArrayList<String> sourceList;
     private ArrayList<TokenList> tokenList;
     private ArrayList<ProgramStatement> parsedList;
     private MacroPool macroPool;
@@ -64,16 +63,6 @@ public class AsmRISCVprogram extends RISCVprogram {
     private Tokenizer tokenizer;
     
     private boolean extendedAssemblerEnabled;
-    
-    /**
-     * Produces list of source statements that comprise the program.
-     *
-     * @return ArrayList of String.  Each String is one line of RISCV source code.
-     **/
-
-    public ArrayList<String> getSourceList() {
-        return sourceList;
-    }
 
     /**
      * Set list of source statements that comprise the program.
@@ -84,10 +73,11 @@ public class AsmRISCVprogram extends RISCVprogram {
 
     public void setSourceLineList(ArrayList<SourceLine> sourceLineList) {
         this.sourceLineList = sourceLineList;
-        sourceList = new ArrayList<>();
+        ArrayList<String> sourceList = new ArrayList<>();
         for (SourceLine sl : sourceLineList) {
             sourceList.add(sl.getSource());
         }
+        super.setSourceList(sourceList);
     }
 
     /**
@@ -144,21 +134,6 @@ public class AsmRISCVprogram extends RISCVprogram {
 
     public ArrayList<ProgramStatement> getParsedList() {
         return parsedList;
-    }
-
-    /**
-     * Produces specified line of RISCV source program.
-     *
-     * @param i Line number of RISCV source program to get.  Line 1 is first line.
-     * @return Returns specified line of RISCV source.  If outside the line range,
-     * it returns null.  Line 1 is first line.
-     **/
-
-    public String getSourceLine(int i) {
-        if ((i >= 1) && (i <= sourceList.size()))
-            return sourceList.get(i - 1);
-        else
-            return null;
     }
 
     /**
@@ -282,8 +257,8 @@ public class AsmRISCVprogram extends RISCVprogram {
     /* OVERRIDES **********************/
     
     @Override
-    public void readSourceHelper() throws AssemblyException {
-        this.sourceList = new ArrayList<>();
+    public ArrayList<String> readSourceHelper() throws AssemblyException {
+        ArrayList<String> sourceList = new ArrayList<>();
         ErrorList errors;
         BufferedReader inputFile;
         String line;
@@ -300,6 +275,8 @@ public class AsmRISCVprogram extends RISCVprogram {
             errors.add(new AsmErrorMessage((AsmRISCVprogram) null, 0, 0, e.toString()));
             throw new AssemblyException(errors);
         }
+        
+        return sourceList;
     }
     
     @Override

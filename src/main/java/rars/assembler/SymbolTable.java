@@ -1,7 +1,7 @@
 package rars.assembler;
 
-import rars.ErrorList;
 import rars.AsmErrorMessage;
+import rars.ErrorList;
 import rars.Globals;
 
 import java.util.ArrayList;

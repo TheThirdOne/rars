@@ -1,7 +1,7 @@
 package rars.assembler;
 
-import rars.ErrorList;
 import rars.AsmErrorMessage;
+import rars.ErrorList;
 import rars.program.AsmRISCVprogram;
 import rars.riscv.hardware.FloatingPointRegisterFile;
 import rars.riscv.hardware.RegisterFile;

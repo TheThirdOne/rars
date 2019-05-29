@@ -160,19 +160,6 @@ public class AsmErrorMessage extends ErrorMessage {
         return position;
     }
 
-    @Override
-    public String generateReport() {
-        String out = ((super.isWarning()) ? ErrorList.WARNING_MESSAGE_PREFIX : ErrorList.ERROR_MESSAGE_PREFIX) + ErrorList.FILENAME_PREFIX;
-        if (getFilename().length() > 0)
-            out = out + (new File(getFilename()).getPath()); //.getName());
-        if (getLine() > 0)
-            out = out + ErrorList.LINE_PREFIX + getMacroExpansionHistory() + getLine();
-        if (getPosition() > 0)
-            out = out + ErrorList.POSITION_PREFIX + getPosition();
-        out = out + ErrorList.MESSAGE_SEPARATOR + getMessage() + "\n";
-        return out;
-    }
-
     /**
      * Returns string describing macro expansion.  Empty string if none.
      *
@@ -190,6 +177,16 @@ public class AsmErrorMessage extends ErrorMessage {
         if (sourceProgram == null || sourceProgram.getLocalMacroPool() == null)
             return "";
         return sourceProgram.getLocalMacroPool().getExpansionHistory();
+    }
+    
+    @Override
+    public String generateReport() {
+        String out = super.getDefaultPrefix();
+        if (getLine() > 0)
+            out = out + ErrorList.LINE_PREFIX + getMacroExpansionHistory() + getLine();
+        if (getPosition() > 0)
+            out = out + ErrorList.POSITION_PREFIX + getPosition();
+        return out + super.getDefaultSuffix();
     }
 
 }  // ErrorMessage

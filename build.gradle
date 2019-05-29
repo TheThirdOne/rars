@@ -1,0 +1,11 @@
+repositories {
+	jcenter()
+}
+
+apply plugin: 'java'
+apply plugin: 'maven'
+apply plugin: 'maven-publish'
+
+dependencies {
+	testCompile group: 'junit', name: 'junit', version: '4.12'
+}

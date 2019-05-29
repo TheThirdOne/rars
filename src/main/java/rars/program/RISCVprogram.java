@@ -37,10 +37,12 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 public abstract class RISCVprogram {
+	
     private String filename;
     private ArrayList<ProgramStatement> machineList;
     private BackStepper backStepper;
     private SymbolTable localSymbolTable;
+	private ArrayList<String> sourceList;
     
     /**
      * Produces name of associated source code file.
@@ -71,6 +73,11 @@ public abstract class RISCVprogram {
         return machineList;
     }
     
+    /**
+     * Sets the machine code list of this program
+     * 
+     * @param machineList
+     */
     protected void setMachineList(ArrayList<ProgramStatement> machineList) {
     	this.machineList = machineList;
     }
@@ -99,6 +106,40 @@ public abstract class RISCVprogram {
      */
     protected void setLocalSymbolTable(SymbolTable localSymbolTable) {
     	this.localSymbolTable = localSymbolTable;
+    }
+    
+    /**
+     * Produces list of source statements that comprise the program.
+     *
+     * @return ArrayList of String.  Each String is one line of RISCV source code.
+     **/
+
+    public ArrayList<String> getSourceList() {
+        return sourceList;
+    }
+    
+    /**
+     * Sets the source code list of this program
+     * 
+     * @param sourceList The source code list
+     */
+    protected void setSourceList(ArrayList<String> sourceList) {
+    	this.sourceList = sourceList;
+    }
+    
+    /**
+     * Produces specified line of RISCV source program.
+     *
+     * @param i Line number of RISCV source program to get.  Line 1 is first line.
+     * @return Returns specified line of RISCV source.  If outside the line range,
+     * it returns null.  Line 1 is first line.
+     **/
+
+    public String getSourceLine(int i) {
+        if ((i >= 1) && (i <= sourceList.size()))
+            return sourceList.get(i - 1);
+        else
+            return null;
     }
     
     /**
@@ -137,7 +178,7 @@ public abstract class RISCVprogram {
      **/
     public final void readSource(String filename) throws AssemblyException {
     	this.setFilename(filename);
-    	readSourceHelper();
+    	this.sourceList = readSourceHelper();
     }
     
     /**
@@ -166,5 +207,5 @@ public abstract class RISCVprogram {
      *
      * @throws AssemblyException Will throw exception if there is any problem reading the file.
      **/
-    public abstract void readSourceHelper() throws AssemblyException;
+    public abstract ArrayList<String> readSourceHelper() throws AssemblyException;
 }
