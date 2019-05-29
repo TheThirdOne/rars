@@ -1,8 +1,8 @@
 package rars.riscv;
 
-import rars.RISCVprogram;
 import rars.assembler.Symbol;
 import rars.assembler.TokenList;
+import rars.program.AsmRISCVprogram;
 import rars.util.Binary;
 
 import java.util.ArrayList;
@@ -129,7 +129,7 @@ public class ExtendedInstruction extends Instruction {
      * @return String representing basic assembler statement.
      */
 
-    public static String makeTemplateSubstitutions(RISCVprogram program, String template, TokenList tokenList, int PC) {
+    public static String makeTemplateSubstitutions(AsmRISCVprogram program, String template, TokenList tokenList, int PC) {
         String instruction = template;
         // substitute first operand token for template's RG1 or OP1, second for RG2 or OP2, etc
         for (int op = 1; op < tokenList.size(); op++) {

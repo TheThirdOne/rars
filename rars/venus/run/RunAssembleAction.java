@@ -1,6 +1,7 @@
 package rars.venus.run;
 
 import rars.*;
+import rars.program.AsmRISCVprogram;
 import rars.riscv.hardware.*;
 import rars.util.FilenameFinder;
 import rars.util.SystemIO;
@@ -45,7 +46,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 public class RunAssembleAction extends GuiAction {
 
-    private static ArrayList<RISCVprogram> programsToAssemble;
+    private static ArrayList<AsmRISCVprogram> programsToAssemble;
     private static boolean extendedAssemblerEnabled;
     private static boolean warningsAreErrors;
     // Threshold for adding filename to printed message of files being assembled.
@@ -59,7 +60,7 @@ public class RunAssembleAction extends GuiAction {
     }
 
     // These are both used by RunResetAction to re-assemble under identical conditions.
-    public static ArrayList<RISCVprogram> getProgramsToAssemble() {
+    public static ArrayList<AsmRISCVprogram> getProgramsToAssemble() {
         return programsToAssemble;
     }
 
@@ -83,7 +84,7 @@ public class RunAssembleAction extends GuiAction {
                 mainUI.getEditor().save();
             }
             try {
-                Globals.program = new RISCVprogram();
+                Globals.program = new AsmRISCVprogram();
                 ArrayList<String> filesToAssemble;
                 if (Globals.getSettings().getBooleanSetting(Settings.Bool.ASSEMBLE_ALL)) {// setting calls for multiple file assembly
                     filesToAssemble = FilenameFinder.getFilenameList(
@@ -110,8 +111,8 @@ public class RunAssembleAction extends GuiAction {
                 programsToAssemble = Globals.program.prepareFilesForAssembly(filesToAssemble, FileStatus.getFile().getPath(), exceptionHandler);
                 messagesPane.postMessage(buildFileNameList(name + ": assembling ", programsToAssemble));
                 // added logic to receive any warnings and output them.... DPS 11/28/06
-                ErrorList warnings = Globals.program.assemble(programsToAssemble, extendedAssemblerEnabled,
-                        warningsAreErrors);
+                Globals.program.setExtendedAssembler(extendedAssemblerEnabled);
+                ErrorList warnings = Globals.program.assemble(programsToAssemble, warningsAreErrors);
                 if (warnings.warningsOccurred()) {
                     messagesPane.postMessage(warnings.generateWarningReport());
                 }
@@ -175,7 +176,7 @@ public class RunAssembleAction extends GuiAction {
 
     // Handy little utility for building comma-separated list of filenames
     // while not letting line length get out of hand.
-    private String buildFileNameList(String preamble, ArrayList<RISCVprogram> programList) {
+    private String buildFileNameList(String preamble, ArrayList<AsmRISCVprogram> programList) {
         String result = preamble;
         int lineLength = result.length();
         for (int i = 0; i < programList.size(); i++) {

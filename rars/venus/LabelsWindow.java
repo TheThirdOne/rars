@@ -1,9 +1,9 @@
 package rars.venus;
 
 import rars.Globals;
-import rars.RISCVprogram;
 import rars.assembler.Symbol;
 import rars.assembler.SymbolTable;
+import rars.program.AsmRISCVprogram;
 import rars.riscv.hardware.Memory;
 import rars.util.Binary;
 import rars.venus.run.RunAssembleAction;
@@ -177,7 +177,7 @@ public class LabelsWindow extends JInternalFrame {
         listOfLabelsForSymbolTable = new ArrayList<>();
         listOfLabelsForSymbolTable.add(new LabelsForSymbolTable(null));// global symtab
         Box allSymtabTables = Box.createVerticalBox();
-        for (RISCVprogram program : RunAssembleAction.getProgramsToAssemble()) {
+        for (AsmRISCVprogram program : RunAssembleAction.getProgramsToAssemble()) {
             listOfLabelsForSymbolTable.add(new LabelsForSymbolTable(program));
         }
         ArrayList<Box> tableNames = new ArrayList<>();
@@ -289,7 +289,7 @@ public class LabelsWindow extends JInternalFrame {
     ///////////////////////////////////////////////////////////////////
     // Represents one symbol table for the display.
     private class LabelsForSymbolTable {
-        private RISCVprogram program;
+        private AsmRISCVprogram program;
         private Object[][] labelData;
         private JTable labelTable;
         private ArrayList<Symbol> symbols;
@@ -297,7 +297,7 @@ public class LabelsWindow extends JInternalFrame {
         private String tableName;
 
         // Associated RISCVprogram object.  If null, this represents global symbol table.
-        public LabelsForSymbolTable(RISCVprogram program) {
+        public LabelsForSymbolTable(AsmRISCVprogram program) {
             this.program = program;
             symbolTable = (program == null)
                     ? Globals.symbolTable

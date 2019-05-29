@@ -32,6 +32,8 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 (MIT license, http://www.opensource.org/licenses/mit-license.html)
  */
 
+import rars.program.AsmRISCVprogram;
+
 /**
  * Represents occurrance of an error detected during tokenizing, assembly or simulation.
  *
@@ -68,7 +70,7 @@ public class ErrorMessage {
      * @param message       String containing appropriate error message.
      **/
 
-    public ErrorMessage(RISCVprogram sourceProgram, int line, int position, String message) {
+    public ErrorMessage(AsmRISCVprogram sourceProgram, int line, int position, String message) {
         this(ERROR, sourceProgram, line, position, message);
     }
 
@@ -85,7 +87,7 @@ public class ErrorMessage {
      * @param message       String containing appropriate error message.
      **/
 
-    public ErrorMessage(boolean isWarning, RISCVprogram sourceProgram, int line, int position, String message) {
+    public ErrorMessage(boolean isWarning, AsmRISCVprogram sourceProgram, int line, int position, String message) {
         this.isWarning = isWarning;
         if (sourceProgram == null) {
             this.filename = "";
@@ -237,7 +239,7 @@ public class ErrorMessage {
     }
 
     // Added by Mohammad Sekavat Dec 2012
-    private static String getExpansionHistory(RISCVprogram sourceProgram) {
+    private static String getExpansionHistory(AsmRISCVprogram sourceProgram) {
         if (sourceProgram == null || sourceProgram.getLocalMacroPool() == null)
             return "";
         return sourceProgram.getLocalMacroPool().getExpansionHistory();

@@ -1,6 +1,6 @@
 package rars.assembler;
 
-import rars.RISCVprogram;
+import rars.program.AsmRISCVprogram;
 
 /*
 Copyright (c) 2003-2008,  Pete Sanderson and Kenneth Vollmar
@@ -42,10 +42,10 @@ public class Token {
 
     private TokenTypes type;
     private String value;
-    private RISCVprogram sourceProgram;
+    private AsmRISCVprogram sourceProgram;
     private int sourceLine, sourcePos;
     // original program and line will differ from the above if token was defined in an included file
-    private RISCVprogram originalProgram;
+    private AsmRISCVprogram originalProgram;
     private int originalSourceLine;
 
     /**
@@ -59,7 +59,7 @@ public class Token {
      * @see TokenTypes
      **/
 
-    public Token(TokenTypes type, String value, RISCVprogram sourceProgram, int line, int start) {
+    public Token(TokenTypes type, String value, AsmRISCVprogram sourceProgram, int line, int start) {
         this.type = type;
         this.value = value;
         this.sourceProgram = sourceProgram;
@@ -79,7 +79,7 @@ public class Token {
      * @param origProgram    source program containing this token.
      * @param origSourceLine Line within that program of this token.
      **/
-    public void setOriginal(RISCVprogram origProgram, int origSourceLine) {
+    public void setOriginal(AsmRISCVprogram origProgram, int origSourceLine) {
         this.originalProgram = origProgram;
         this.originalSourceLine = origSourceLine;
     }
@@ -89,7 +89,7 @@ public class Token {
      *
      * @return RISCVprogram of origin for this token.
      **/
-    public RISCVprogram getOriginalProgram() {
+    public AsmRISCVprogram getOriginalProgram() {
         return this.originalProgram;
     }
 
@@ -150,7 +150,7 @@ public class Token {
      * @return RISCVprogram object associated with this token.
      **/
 
-    public RISCVprogram getSourceProgram() {
+    public AsmRISCVprogram getSourceProgram() {
         return sourceProgram;
     }
 

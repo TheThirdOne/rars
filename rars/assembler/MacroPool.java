@@ -1,8 +1,8 @@
 package rars.assembler;
 
-import rars.RISCVprogram;
-
 import java.util.ArrayList;
+
+import rars.program.AsmRISCVprogram;
 
 /*
 Copyright (c) 2013.
@@ -37,7 +37,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * reaches <code>.end_macro</code> directive. then calls
  * {@link MacroPool#commitMacro(Token)} and the macro information stored in a
  * {@link Macro} instance will be added to {@link #macroList}. <br>
- * Each {@link RISCVprogram} will have one {@link MacroPool}<br>
+ * Each {@link AsmRISCVprogram} will have one {@link MacroPool}<br>
  * NOTE: Forward referencing macros (macro expansion before its definition in
  * source code) and Nested macro definition (defining a macro inside other macro
  * definition) are not supported.
@@ -45,7 +45,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * @author M.H.Sekhavat sekhavat17@gmail.com
  */
 public class MacroPool {
-    private RISCVprogram program;
+    private AsmRISCVprogram program;
     /**
      * List of macros defined by now
      */
@@ -67,7 +67,7 @@ public class MacroPool {
      *
      * @param program associated program
      */
-    public MacroPool(RISCVprogram program) {
+    public MacroPool(AsmRISCVprogram program) {
         this.program = program;
         macroList = new ArrayList<>();
         callStack = new ArrayList<>();

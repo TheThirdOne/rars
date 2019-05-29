@@ -1,6 +1,6 @@
 package rars.assembler;
 
-import rars.RISCVprogram;
+import rars.program.AsmRISCVprogram;
 
 /*
 Copyright (c) 2003-2013,  Pete Sanderson and Kenneth Vollmar
@@ -41,7 +41,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 public class SourceLine {
     private String source;
     private String filename;
-    private RISCVprogram program;
+    private AsmRISCVprogram program;
     private int lineNumber;
 
     /**
@@ -51,7 +51,7 @@ public class SourceLine {
      * @param program    The program (object representing source file) containing that line
      * @param lineNumber The line number within that program where source appears.
      */
-    public SourceLine(String source, RISCVprogram program, int lineNumber) {
+    public SourceLine(String source, AsmRISCVprogram program, int lineNumber) {
         this.source = source;
         this.program = program;
         if (program != null)
@@ -94,7 +94,7 @@ public class SourceLine {
      * @return program as RISCVprogram object
      */
 
-    public RISCVprogram getRISCVprogram() {
+    public AsmRISCVprogram getRISCVprogram() {
         return program;
     }
 }

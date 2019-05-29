@@ -4,6 +4,7 @@ import rars.assembler.SymbolTable;
 import rars.assembler.Token;
 import rars.assembler.TokenList;
 import rars.assembler.TokenTypes;
+import rars.program.AsmRISCVprogram;
 import rars.riscv.hardware.FloatingPointRegisterFile;
 import rars.riscv.hardware.RegisterFile;
 import rars.riscv.BasicInstruction;
@@ -53,7 +54,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
 public class ProgramStatement implements Comparable<ProgramStatement> {
-    private RISCVprogram sourceProgram;
+    private AsmRISCVprogram sourceProgram;
     private String source, basicAssemblyStatement, machineStatement;
     private TokenList originalTokenList, strippedTokenList;
     private BasicStatementList basicStatementList;
@@ -80,7 +81,7 @@ public class ProgramStatement implements Comparable<ProgramStatement> {
      * @param textAddress       The Text Segment address in memory where the binary machine code for this statement
      *                          is stored.
      **/
-    public ProgramStatement(RISCVprogram sourceProgram, String source, TokenList origTokenList, TokenList strippedTokenList,
+    public ProgramStatement(AsmRISCVprogram sourceProgram, String source, TokenList origTokenList, TokenList strippedTokenList,
                             Instruction inst, int textAddress, int sourceLine) {
         this.sourceProgram = sourceProgram;
         this.source = source;
@@ -480,7 +481,7 @@ public class ProgramStatement implements Comparable<ProgramStatement> {
      *
      * @return The RISCVprogram object.  May be null...
      **/
-    public RISCVprogram getSourceProgram() {
+    public AsmRISCVprogram getSourceProgram() {
         return sourceProgram;
     }
 

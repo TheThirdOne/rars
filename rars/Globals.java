@@ -1,6 +1,7 @@
 package rars;
 
 import rars.assembler.SymbolTable;
+import rars.program.AsmRISCVprogram;
 import rars.riscv.hardware.Memory;
 import rars.riscv.InstructionSet;
 import rars.riscv.SyscallNumberOverride;
@@ -58,7 +59,7 @@ public class Globals {
     /**
      * the program currently being worked with.  Used by GUI only, not command line.
      **/
-    public static RISCVprogram program;
+    public static AsmRISCVprogram program;
     /**
      * Symbol table for file currently being assembled.
      **/

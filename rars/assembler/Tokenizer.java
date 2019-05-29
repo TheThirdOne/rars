@@ -1,6 +1,7 @@
 package rars.assembler;
 
 import rars.*;
+import rars.program.AsmRISCVprogram;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -54,7 +55,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 public class Tokenizer {
 
     private ErrorList errors;
-    private RISCVprogram sourceRISCVprogram;
+    private AsmRISCVprogram sourceRISCVprogram;
     private HashMap<String, String> equivalents; // DPS 11-July-2012
     // The 8 escaped characters are: single quote, double quote, backslash, newline (linefeed),
     // tab, backspace, return, form feed.  The characters and their corresponding decimal codes:
@@ -75,7 +76,7 @@ public class Tokenizer {
      *
      * @param program A previously-existing RISCVprogram object or null if none.
      */
-    public Tokenizer(RISCVprogram program) {
+    public Tokenizer(AsmRISCVprogram program) {
         errors = new ErrorList();
         sourceRISCVprogram = program;
     }
@@ -88,7 +89,7 @@ public class Tokenizer {
      * that represents a tokenized source statement from the program.
      **/
 
-    public ArrayList<TokenList> tokenize(RISCVprogram p) throws AssemblyException {
+    public ArrayList<TokenList> tokenize(AsmRISCVprogram p) throws AssemblyException {
         sourceRISCVprogram = p;
         equivalents = new HashMap<>(); // DPS 11-July-2012
         ArrayList<TokenList> tokenList = new ArrayList<>();
@@ -124,7 +125,7 @@ public class Tokenizer {
     // files that themselves have .include.  Plus it will detect and report recursive
     // includes both direct and indirect.
     // DPS 11-Jan-2013
-    private ArrayList<SourceLine> processIncludes(RISCVprogram program, Map<String, String> inclFiles) throws AssemblyException {
+    private ArrayList<SourceLine> processIncludes(AsmRISCVprogram program, Map<String, String> inclFiles) throws AssemblyException {
         ArrayList<String> source = program.getSourceList();
         ArrayList<SourceLine> result = new ArrayList<>(source.size());
         for (int i = 0; i < source.size(); i++) {
@@ -149,7 +150,7 @@ public class Tokenizer {
                         throw new AssemblyException(errors);
                     }
                     inclFiles.put(filename, filename);
-                    RISCVprogram incl = new RISCVprogram();
+                    AsmRISCVprogram incl = new AsmRISCVprogram();
                     try {
                         incl.readSource(filename);
                     } catch (AssemblyException p) {
@@ -271,7 +272,7 @@ public class Tokenizer {
      * @param doEqvSubstitutes boolean param set true to perform .eqv substitutions, else false
      * @return the generated token list for that line
      **/
-    public TokenList tokenizeLine(RISCVprogram program, int lineNum, String theLine, boolean doEqvSubstitutes) {
+    public TokenList tokenizeLine(AsmRISCVprogram program, int lineNum, String theLine, boolean doEqvSubstitutes) {
         TokenTypes tokenType;
         TokenList result = new TokenList();
         if (theLine.length() == 0)
@@ -451,7 +452,7 @@ public class Tokenizer {
     // contains a symbol that was previously defined in an .eqv directive, in which case
     // the substitution needs to be made.
     // DPS 11-July-2012
-    private TokenList processEqv(RISCVprogram program, int lineNum, String theLine, TokenList tokens) {
+    private TokenList processEqv(AsmRISCVprogram program, int lineNum, String theLine, TokenList tokens) {
         // See if it is .eqv directive.  If so, record it...
         // Have to assure it is a well-formed statement right now (can't wait for assembler).
 
@@ -529,7 +530,7 @@ public class Tokenizer {
 
 
     // Given candidate token and its position, will classify and record it.
-    private void processCandidateToken(char[] token, RISCVprogram program, int line, String theLine,
+    private void processCandidateToken(char[] token, AsmRISCVprogram program, int line, String theLine,
                                        int tokenPos, int tokenStartPos, TokenList tokenList) {
         String value = new String(token, 0, tokenPos);
         if (value.length() > 0 && value.charAt(0) == '\'') value = preprocessCharacterLiteral(value);

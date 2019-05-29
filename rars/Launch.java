@@ -1,5 +1,6 @@
 package rars;
 
+import rars.program.AsmRISCVprogram;
 import rars.riscv.dump.DumpFormat;
 import rars.riscv.dump.DumpFormatLoader;
 import rars.riscv.hardware.*;
@@ -123,7 +124,7 @@ public class Launch {
     private ArrayList<String> registerDisplayList;
     private ArrayList<String> memoryDisplayList;
     private ArrayList<String> filenameList;
-    private RISCVprogram code;
+    private AsmRISCVprogram code;
     private int maxSteps;
     private int instructionCount;
     private PrintStream out; // stream for display of command line output
@@ -160,7 +161,7 @@ public class Launch {
             filenameList = new ArrayList<>();
             MemoryConfigurations.setCurrentConfiguration(MemoryConfigurations.getDefaultConfiguration());
             // do NOT use Globals.program for command line RARS -- it triggers 'backstep' log.
-            code = new RISCVprogram();
+            code = new AsmRISCVprogram();
             maxSteps = -1;
             out = System.out;
             if (parseCommandArgs(args)) {
@@ -476,13 +477,14 @@ public class Launch {
             if (Globals.debug) {
                 out.println("--------  TOKENIZING BEGINS  -----------");
             }
-            ArrayList<RISCVprogram> programsToAssemble =
+            ArrayList<AsmRISCVprogram> programsToAssemble =
                     code.prepareFilesForAssembly(filesToAssemble, mainFile.getAbsolutePath(), null);
             if (Globals.debug) {
                 out.println("--------  ASSEMBLY BEGINS  -----------");
             }
             // Added logic to check for warnings and print if any. DPS 11/28/06
-            ErrorList warnings = code.assemble(programsToAssemble, pseudo, warningsAreErrors);
+            code.setExtendedAssembler(pseudo);
+            ErrorList warnings = code.assemble(programsToAssemble, warningsAreErrors);
             if (warnings != null && warnings.warningsOccurred()) {
                 out.println(warnings.generateWarningReport());
             }

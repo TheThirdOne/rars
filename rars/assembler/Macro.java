@@ -2,7 +2,7 @@ package rars.assembler;
 
 import rars.ErrorList;
 import rars.ErrorMessage;
-import rars.RISCVprogram;
+import rars.program.AsmRISCVprogram;
 import rars.riscv.hardware.FloatingPointRegisterFile;
 import rars.riscv.hardware.RegisterFile;
 
@@ -41,7 +41,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 public class Macro {
     private String name;
-    private RISCVprogram program;
+    private AsmRISCVprogram program;
     private ArrayList<String> labels;
 
     /**
@@ -72,11 +72,11 @@ public class Macro {
         this.name = name;
     }
 
-    public RISCVprogram getProgram() {
+    public AsmRISCVprogram getProgram() {
         return program;
     }
 
-    public void setProgram(RISCVprogram program) {
+    public void setProgram(AsmRISCVprogram program) {
         this.program = program;
     }
 

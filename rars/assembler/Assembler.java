@@ -1,6 +1,7 @@
 package rars.assembler;
 
 import rars.*;
+import rars.program.AsmRISCVprogram;
 import rars.riscv.hardware.AddressErrorException;
 import rars.riscv.hardware.Memory;
 import rars.riscv.BasicInstruction;
@@ -57,7 +58,7 @@ public class Assembler {
     private int externAddress;
     private boolean autoAlign;
     private Directives dataDirective;
-    private RISCVprogram fileCurrentlyBeingAssembled;
+    private AsmRISCVprogram fileCurrentlyBeingAssembled;
     private TokenList globalDeclarationList;
     private AddressSpace textAddress;
     private AddressSpace dataAddress;
@@ -92,7 +93,7 @@ public class Assembler {
      * statement. Returns null if incoming array list is null or empty.
      * @see ProgramStatement
      **/
-    public ArrayList<ProgramStatement> assemble(ArrayList<RISCVprogram> tokenizedProgramFiles, boolean extendedAssemblerEnabled,
+    public ArrayList<ProgramStatement> assemble(ArrayList<AsmRISCVprogram> tokenizedProgramFiles, boolean extendedAssemblerEnabled,
                                                 boolean warningsAreErrors) throws AssemblyException {
 
         if (tokenizedProgramFiles == null || tokenizedProgramFiles.size() == 0)
@@ -112,7 +113,7 @@ public class Assembler {
         // TO SECOND PASS. THIS ASSURES ALL SYMBOL TABLES ARE CORRECTLY BUILT.
         // THERE IS ONE GLOBAL SYMBOL TABLE (for identifiers declared .globl) PLUS
         // ONE LOCAL SYMBOL TABLE FOR EACH SOURCE FILE.
-        for (RISCVprogram program : tokenizedProgramFiles) {
+        for (AsmRISCVprogram program : tokenizedProgramFiles) {
             if (errors.errorLimitExceeded())
                 break;
             this.fileCurrentlyBeingAssembled = program;
@@ -189,7 +190,7 @@ public class Assembler {
             System.out.println("Assembler second pass begins");
         // SECOND PASS OF ASSEMBLER GENERATES BASIC ASSEMBLER THEN MACHINE CODE.
         // Generates basic assembler statements...
-        for (RISCVprogram program : tokenizedProgramFiles) {
+        for (AsmRISCVprogram program : tokenizedProgramFiles) {
             if (errors.errorLimitExceeded())
                 break;
             this.fileCurrentlyBeingAssembled = program;

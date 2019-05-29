@@ -29,6 +29,8 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 (MIT license, http://www.opensource.org/licenses/mit-license.html)
  */
 
+import rars.program.AsmRISCVprogram;
+
 /**
  * Maintains list of generated error messages, regardless of source (tokenizing, parsing,
  * assembly, execution).
@@ -106,7 +108,7 @@ public class ErrorList {
             return;
         }
         if (errorCount == getErrorLimit()) {
-            messages.add(new ErrorMessage((RISCVprogram) null, mess.getLine(), mess.getPosition(), "Error Limit of " + getErrorLimit() + " exceeded."));
+            messages.add(new ErrorMessage((AsmRISCVprogram) null, mess.getLine(), mess.getPosition(), "Error Limit of " + getErrorLimit() + " exceeded."));
             errorCount++; // subsequent errors will not be added; see if statement above
             return;
         }

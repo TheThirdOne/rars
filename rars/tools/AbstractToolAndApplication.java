@@ -2,8 +2,8 @@ package rars.tools;
 
 import rars.AssemblyException;
 import rars.Globals;
-import rars.RISCVprogram;
 import rars.Settings;
+import rars.program.AsmRISCVprogram;
 import rars.riscv.hardware.*;
 import rars.simulator.Simulator;
 import rars.simulator.SimulatorNotice;
@@ -716,7 +716,7 @@ public abstract class AbstractToolAndApplication extends JFrame implements Tool,
 
             Thread.currentThread().setPriority(Thread.NORM_PRIORITY - 1);
             Thread.yield();
-            RISCVprogram program = new RISCVprogram();
+            AsmRISCVprogram program = new AsmRISCVprogram();
             rars.Globals.program = program; // Shouldn't have to do this...
             String fileToAssemble = mostRecentlyOpenedFile.getPath();
             ArrayList<String> filesToAssemble;
@@ -727,7 +727,7 @@ public abstract class AbstractToolAndApplication extends JFrame implements Tool,
                 filesToAssemble = new ArrayList<>();
                 filesToAssemble.add(fileToAssemble);
             }
-            ArrayList<RISCVprogram> programsToAssemble;
+            ArrayList<AsmRISCVprogram> programsToAssemble;
             try {
                 operationStatusMessages.displayNonTerminatingMessage("Assembling " + fileToAssemble);
                 programsToAssemble = program.prepareFilesForAssembly(filesToAssemble, fileToAssemble, exceptionHandler);
@@ -737,8 +737,8 @@ public abstract class AbstractToolAndApplication extends JFrame implements Tool,
             }
 
             try {
-                program.assemble(programsToAssemble, Globals.getSettings().getBooleanSetting(Settings.Bool.EXTENDED_ASSEMBLER_ENABLED),
-                        Globals.getSettings().getBooleanSetting(Settings.Bool.WARNINGS_ARE_ERRORS));
+            	program.setExtendedAssembler(Globals.getSettings().getBooleanSetting(Settings.Bool.EXTENDED_ASSEMBLER_ENABLED));
+                program.assemble(programsToAssemble, Globals.getSettings().getBooleanSetting(Settings.Bool.WARNINGS_ARE_ERRORS));
             } catch (AssemblyException pe) {
                 operationStatusMessages.displayTerminatingMessage("Assembly Error: " + fileToAssemble);
                 return;

@@ -2,8 +2,8 @@ package rars.venus;
 
 import rars.AssemblyException;
 import rars.Globals;
-import rars.RISCVprogram;
 import rars.Settings;
+import rars.program.AsmRISCVprogram;
 import rars.riscv.hardware.RegisterFile;
 import rars.util.FilenameFinder;
 
@@ -620,7 +620,7 @@ public class EditTabbedPane extends JTabbedPane {
             FileStatus.setFile(theFile);
             FileStatus.set(FileStatus.OPENING);// DPS 9-Aug-2011
             if (theFile.canRead()) {
-                Globals.program = new RISCVprogram();
+                Globals.program = new AsmRISCVprogram();
                 try {
                     Globals.program.readSource(currentFilePath);
                 } catch (AssemblyException pe) {
