@@ -169,8 +169,7 @@ public class TimerTool extends AbstractToolAndApplication {
     protected void reset() {
         time = 0L;
         savedTime = 0L;
-        //startTime = System.currentTimeMillis();
-        startTime = -1000000L;
+        startTime = System.currentTimeMillis();
         tick.updateTimecmp = true;
         timePanel.updateTime();
         tick.reset();
