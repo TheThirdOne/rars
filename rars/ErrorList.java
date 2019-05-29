@@ -40,7 +40,7 @@ import rars.program.AsmRISCVprogram;
  **/
 
 public class ErrorList {
-    private ArrayList<ErrorMessage> messages;
+    private ArrayList<AsmErrorMessage> messages;
     private int errorCount;
     private int warningCount;
     public static final String ERROR_MESSAGE_PREFIX = "Error";
@@ -66,7 +66,7 @@ public class ErrorList {
      *
      * @return ArrayList of ErrorMessage objects
      */
-    public ArrayList<ErrorMessage> getErrorMessages() {
+    public ArrayList<AsmErrorMessage> getErrorMessages() {
         return messages;
     }
 
@@ -93,7 +93,7 @@ public class ErrorList {
      *
      * @param mess ErrorMessage object to be added to end of error list.
      **/
-    public void add(ErrorMessage mess) {
+    public void add(AsmErrorMessage mess) {
         add(mess, messages.size());
     }
 
@@ -103,12 +103,12 @@ public class ErrorList {
      * @param mess  ErrorMessage object to be added to end of error list.
      * @param index position in error list
      **/
-    public void add(ErrorMessage mess, int index) {
+    public void add(AsmErrorMessage mess, int index) {
         if (errorCount > getErrorLimit()) {
             return;
         }
         if (errorCount == getErrorLimit()) {
-            messages.add(new ErrorMessage((AsmRISCVprogram) null, mess.getLine(), mess.getPosition(), "Error Limit of " + getErrorLimit() + " exceeded."));
+            messages.add(new AsmErrorMessage((AsmRISCVprogram) null, mess.getLine(), mess.getPosition(), "Error Limit of " + getErrorLimit() + " exceeded."));
             errorCount++; // subsequent errors will not be added; see if statement above
             return;
         }
@@ -168,7 +168,7 @@ public class ErrorList {
      * @return String containing report.
      **/
     public String generateErrorReport() {
-        return generateReport(ErrorMessage.ERROR);
+        return generateReport(AsmErrorMessage.ERROR);
     }
 
     /**
@@ -177,7 +177,7 @@ public class ErrorList {
      * @return String containing report.
      **/
     public String generateWarningReport() {
-        return generateReport(ErrorMessage.WARNING);
+        return generateReport(AsmErrorMessage.WARNING);
     }
 
     /**
@@ -192,7 +192,7 @@ public class ErrorList {
     // Produces either error or warning report.
     private String generateReport(boolean isWarning) {
         StringBuilder report = new StringBuilder("");
-        for (ErrorMessage m : messages) {
+        for (AsmErrorMessage m : messages) {
             if ((isWarning && m.isWarning()) || (!isWarning && !m.isWarning())) {
                 report.append(m.generateReport());
             }

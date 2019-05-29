@@ -1,7 +1,7 @@
 package rars.assembler;
 
 import rars.ErrorList;
-import rars.ErrorMessage;
+import rars.AsmErrorMessage;
 import rars.riscv.Instruction;
 
 import java.util.ArrayList;
@@ -152,7 +152,7 @@ public class OperandFormat {
 
     // Handy utility for all parse errors...
     private static void generateMessage(Token token, String mess, ErrorList errors) {
-        errors.add(new ErrorMessage(token.getSourceProgram(), token.getSourceLine(), token.getStartPos(),
+        errors.add(new AsmErrorMessage(token.getSourceProgram(), token.getSourceLine(), token.getStartPos(),
                 "\"" + token.getValue() + "\": " + mess));
     }
 

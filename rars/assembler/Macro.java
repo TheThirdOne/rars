@@ -1,7 +1,7 @@
 package rars.assembler;
 
 import rars.ErrorList;
-import rars.ErrorMessage;
+import rars.AsmErrorMessage;
 import rars.program.AsmRISCVprogram;
 import rars.riscv.hardware.FloatingPointRegisterFile;
 import rars.riscv.hardware.RegisterFile;
@@ -168,7 +168,7 @@ public class Macro {
                 if (repl != -1)
                     substitute = args.get(repl + 1).toString();
                 else {
-                    errors.add(new ErrorMessage(program, token.getSourceLine(),
+                    errors.add(new AsmErrorMessage(program, token.getSourceLine(),
                             token.getStartPos(), "Unknown macro parameter"));
                 }
                 s = replaceToken(s, token, substitute);

@@ -45,7 +45,7 @@ public class AssemblyException extends Exception {
      *
      * @return Returns ErrorList of error messages.
      * @see ErrorList
-     * @see ErrorMessage
+     * @see AsmErrorMessage
      **/
     public ErrorList errors() {
         return errs;

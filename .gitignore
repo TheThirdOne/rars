@@ -7,3 +7,4 @@ out
 .project
 examples/riscv
 build
+*.jar

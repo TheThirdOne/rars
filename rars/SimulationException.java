@@ -27,7 +27,7 @@ public class SimulationException extends Exception {
     public static final int ENVIRONMENT_CALL = 8;
 
     private int cause = -1, value = 0;
-    private ErrorMessage message = null;
+    private AsmErrorMessage message = null;
 
     public SimulationException() {
     }
@@ -44,7 +44,7 @@ public class SimulationException extends Exception {
      * @param m  a String containing specialized error message
      **/
     public SimulationException(ProgramStatement ps, String m) {
-        message = new ErrorMessage(ps, "Runtime exception at " +
+        message = new AsmErrorMessage(ps, "Runtime exception at " +
                 Binary.intToHexString(RegisterFile.getProgramCounter() - Instruction.INSTRUCTION_LENGTH) +
                 ": " + m);
         // Stopped using ps.getAddress() because of pseudo-instructions.  All instructions in
@@ -61,11 +61,11 @@ public class SimulationException extends Exception {
     }
 
     public SimulationException(String m) {
-        message = new ErrorMessage(null, 0, 0, m);
+        message = new AsmErrorMessage(null, 0, 0, m);
     }
 
     public SimulationException(String m, int cause) {
-        message = new ErrorMessage(null, 0, 0, m);
+        message = new AsmErrorMessage(null, 0, 0, m);
         this.cause = cause;
     }
 
@@ -73,9 +73,9 @@ public class SimulationException extends Exception {
      * Produce the list of error messages.
      *
      * @return Returns the Message associated with the exception
-     * @see ErrorMessage
+     * @see AsmErrorMessage
      **/
-    public ErrorMessage error() {
+    public AsmErrorMessage error() {
         return message;
     }
 

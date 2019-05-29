@@ -2,7 +2,7 @@ package rars.program;
 
 import rars.AssemblyException;
 import rars.ErrorList;
-import rars.ErrorMessage;
+import rars.AsmErrorMessage;
 import rars.ProgramStatement;
 import rars.SimulationException;
 import rars.assembler.*;
@@ -297,7 +297,7 @@ public class AsmRISCVprogram extends RISCVprogram {
             inputFile.close();
         } catch (Exception e) {
             errors = new ErrorList();
-            errors.add(new ErrorMessage((AsmRISCVprogram) null, 0, 0, e.toString()));
+            errors.add(new AsmErrorMessage((AsmRISCVprogram) null, 0, 0, e.toString()));
             throw new AssemblyException(errors);
         }
     }
@@ -311,6 +311,8 @@ public class AsmRISCVprogram extends RISCVprogram {
     	for(RISCVprogram rp : programsToAssemble) {
     		if(rp instanceof AsmRISCVprogram)
     			src.add((AsmRISCVprogram)rp);
+    		else
+    			throw new RuntimeException("Attempting to assemble illegal source file.");
     	}
     	
         Assembler asm = new Assembler();

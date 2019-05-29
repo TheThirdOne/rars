@@ -145,7 +145,7 @@ public class Tokenizer {
                     if (inclFiles.containsKey(filename)) {
                         // This is a recursive include.  Generate error message and return immediately.
                         Token t = tl.get(ii + 1);
-                        errors.add(new ErrorMessage(program, t.getSourceLine(), t.getStartPos(),
+                        errors.add(new AsmErrorMessage(program, t.getSourceLine(), t.getStartPos(),
                                 "Recursive include of file " + filename));
                         throw new AssemblyException(errors);
                     }
@@ -155,7 +155,7 @@ public class Tokenizer {
                         incl.readSource(filename);
                     } catch (AssemblyException p) {
                         Token t = tl.get(ii + 1);
-                        errors.add(new ErrorMessage(program, t.getSourceLine(), t.getStartPos(),
+                        errors.add(new AsmErrorMessage(program, t.getSourceLine(), t.getStartPos(),
                                 "Error reading include file " + filename));
                         throw new AssemblyException(errors);
                     }
@@ -464,13 +464,13 @@ public class Tokenizer {
                 int tokenPosLastOperand = tokens.size() - ((tokens.get(tokens.size() - 1).getType() == TokenTypes.COMMENT) ? 2 : 1);
                 // There have to be at least two non-comment tokens beyond the directive
                 if (tokenPosLastOperand < dirPos + 2) {
-                    errors.add(new ErrorMessage(program, lineNum, tokens.get(dirPos).getStartPos(),
+                    errors.add(new AsmErrorMessage(program, lineNum, tokens.get(dirPos).getStartPos(),
                             "Too few operands for " + Directives.EQV.getName() + " directive"));
                     return tokens;
                 }
                 // Token following the directive has to be IDENTIFIER
                 if (tokens.get(dirPos + 1).getType() != TokenTypes.IDENTIFIER) {
-                    errors.add(new ErrorMessage(program, lineNum, tokens.get(dirPos).getStartPos(),
+                    errors.add(new AsmErrorMessage(program, lineNum, tokens.get(dirPos).getStartPos(),
                             "Malformed " + Directives.EQV.getName() + " directive"));
                     return tokens;
                 }
@@ -479,7 +479,7 @@ public class Tokenizer {
                 // undetected it will result in infinite recursion.  e.g.  .eqv ONE, (ONE)
                 for (int i = dirPos + 2; i < tokens.size(); i++) {
                     if (tokens.get(i).getValue().equals(symbol)) {
-                        errors.add(new ErrorMessage(program, lineNum, tokens.get(dirPos).getStartPos(),
+                        errors.add(new AsmErrorMessage(program, lineNum, tokens.get(dirPos).getStartPos(),
                                 "Cannot substitute " + symbol + " for itself in " + Directives.EQV.getName() + " directive"));
                         return tokens;
                     }
@@ -492,7 +492,7 @@ public class Tokenizer {
                 String expression = theLine.substring(startExpression - 1, endExpression - 1);
                 // Symbol cannot be redefined - the only reason for this is to act like the Gnu .eqv
                 if (equivalents.containsKey(symbol) && !equivalents.get(symbol).equals(expression)) {
-                    errors.add(new ErrorMessage(program, lineNum, tokens.get(dirPos + 1).getStartPos(),
+                    errors.add(new AsmErrorMessage(program, lineNum, tokens.get(dirPos + 1).getStartPos(),
                             "\"" + symbol + "\" is already defined"));
                     return tokens;
                 }
@@ -536,7 +536,7 @@ public class Tokenizer {
         if (value.length() > 0 && value.charAt(0) == '\'') value = preprocessCharacterLiteral(value);
         TokenTypes type = TokenTypes.matchTokenType(value);
         if (type == TokenTypes.ERROR) {
-            errors.add(new ErrorMessage(program, line, tokenStartPos,
+            errors.add(new AsmErrorMessage(program, line, tokenStartPos,
                     theLine + "\nInvalid language element: " + value));
         }
         Token toke = new Token(type, value, program, line, tokenStartPos);

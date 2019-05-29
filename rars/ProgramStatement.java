@@ -192,7 +192,7 @@ public class ProgramStatement implements Comparable<ProgramStatement> {
                     registerNumber = RegisterFile.getRegister(tokenValue).getNumber();
                 } catch (Exception e) {
                     // should never happen; should be caught before now...
-                    errors.add(new ErrorMessage(this.sourceProgram, token.getSourceLine(), token.getStartPos(), "invalid register name"));
+                    errors.add(new AsmErrorMessage(this.sourceProgram, token.getSourceLine(), token.getStartPos(), "invalid register name"));
                     return;
                 }
                 this.operands[this.numOperands++] = registerNumber;
@@ -203,7 +203,7 @@ public class ProgramStatement implements Comparable<ProgramStatement> {
                 basicStatementList.addString(basicStatementElement);
                 if (registerNumber < 0) {
                     // should never happen; should be caught before now...
-                    errors.add(new ErrorMessage(this.sourceProgram, token.getSourceLine(), token.getStartPos(), "invalid register name"));
+                    errors.add(new AsmErrorMessage(this.sourceProgram, token.getSourceLine(), token.getStartPos(), "invalid register name"));
                     return;
                 }
                 this.operands[this.numOperands++] = registerNumber;
@@ -214,14 +214,14 @@ public class ProgramStatement implements Comparable<ProgramStatement> {
                 basicStatementList.addString(basicStatementElement);
                 if (registerNumber < 0) {
                     // should never happen; should be caught before now...
-                    errors.add(new ErrorMessage(this.sourceProgram, token.getSourceLine(), token.getStartPos(), "invalid FPU register name"));
+                    errors.add(new AsmErrorMessage(this.sourceProgram, token.getSourceLine(), token.getStartPos(), "invalid FPU register name"));
                     return;
                 }
                 this.operands[this.numOperands++] = registerNumber;
             } else if (tokenType == TokenTypes.IDENTIFIER) {
                 int address = this.sourceProgram.getLocalSymbolTable().getAddressLocalOrGlobal(tokenValue);
                 if (address == SymbolTable.NOT_FOUND) { // symbol used without being defined
-                    errors.add(new ErrorMessage(this.sourceProgram, token.getSourceLine(), token.getStartPos(),
+                    errors.add(new AsmErrorMessage(this.sourceProgram, token.getSourceLine(), token.getStartPos(),
                             "Symbol \"" + tokenValue + "\" not found in symbol table."));
                     return;
                 }
@@ -235,7 +235,7 @@ public class ProgramStatement implements Comparable<ProgramStatement> {
                         if (address >= (1 << 11) || address < -(1 << 11)) {
                             // attempt to jump beyond 21-bit byte (20-bit word) address range.
                             // SPIM flags as warning, I'll flag as error b/c RARS text segment not long enough for it to be OK.
-                            errors.add(new ErrorMessage(this.sourceProgram, this.sourceLine, 0,
+                            errors.add(new AsmErrorMessage(this.sourceProgram, this.sourceLine, 0,
                                     "Branch target word address beyond 12-bit range"));
                             return;
                         }
@@ -243,7 +243,7 @@ public class ProgramStatement implements Comparable<ProgramStatement> {
                     } else if (format == BasicInstructionFormat.J_FORMAT) {
                         address = (address - this.textAddress) >> 1;
                         if (address >= (1 << 19) || address < -(1 << 19)) {
-                            errors.add(new ErrorMessage(this.sourceProgram, this.sourceLine, 0,
+                            errors.add(new AsmErrorMessage(this.sourceProgram, this.sourceLine, 0,
                                     "Jump target word address beyond 20-bit range"));
                             return;
                         }
@@ -342,7 +342,7 @@ public class ProgramStatement implements Comparable<ProgramStatement> {
             // This means the pseudo-instruction expansion generated another
             // pseudo-instruction (expansion must be to all basic instructions).
             // This is an error on the part of the pseudo-instruction author.
-            errors.add(new ErrorMessage(this.sourceProgram, this.sourceLine, 0,
+            errors.add(new AsmErrorMessage(this.sourceProgram, this.sourceLine, 0,
                     "INTERNAL ERROR: pseudo-instruction expansion contained a pseudo-instruction"));
             return;
         }
@@ -664,7 +664,7 @@ public class ProgramStatement implements Comparable<ProgramStatement> {
         // should NEVER occur
         // if it does, then one of the BasicInstructions is malformed
         if (length == 0) {
-            errors.add(new ErrorMessage(this.sourceProgram, this.sourceLine, 0,
+            errors.add(new AsmErrorMessage(this.sourceProgram, this.sourceLine, 0,
                     "INTERNAL ERROR: mismatch in number of operands in statement vs mask"));
             return;
         }
