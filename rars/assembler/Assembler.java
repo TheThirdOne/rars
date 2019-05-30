@@ -12,6 +12,8 @@ import rars.util.SystemIO;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import java.io.UnsupportedEncodingException;
+
 /*
  Copyright (c) 2003-2012,  Pete Sanderson and Kenneth Vollmar
 
@@ -1032,6 +1034,7 @@ public class Assembler {
                 char theChar;
                 for (int j = 1; j < quote.length() - 1; j++) {
                     theChar = quote.charAt(j);
+                    String strOfChar = "";
                     if (theChar == '\\') {
                         theChar = quote.charAt(++j);
                         switch (theChar) {
@@ -1062,22 +1065,42 @@ public class Assembler {
                             case '0':
                                 theChar = '\0';
                                 break;
+                            case 'u':
+                                String codePoint = quote.substring(j+1, j+5); //get the UTF-8 codepoint following that follows the unicode escape sequence
+                                try{
+                                    theChar = Character.toChars(Integer.parseInt(codePoint, 16))[0]; //converts the codepoint to single character
+                                } catch(NumberFormatException e){
+                                    errors.add(new ErrorMessage(token.getSourceProgram(), token
+                                        .getSourceLine(), token.getStartPos(), "illegal unicode escape: \"\\u" + codePoint + "\""));
+                                }
+                                j = j + 4; //skip past the codepoint for next iteration
+                                break;
+
                             // Not implemented: \ n = octal character (n is number)
                             // \ x n = hex character (n is number)
-                            // \ u n = unicode character (n is number)
                             // There are of course no spaces in these escape
                             // codes...
                         }
                     }
-                    try {
-                        Globals.memory.set(this.dataAddress.get(), (int) theChar,
-                                DataTypes.CHAR_SIZE);
-                    } catch (AddressErrorException e) {
-                        errors.add(new ErrorMessage(token.getSourceProgram(), token
-                                .getSourceLine(), token.getStartPos(), "\""
-                                + this.dataAddress.get() + "\" is not a valid data segment address"));
+                    strOfChar = String.valueOf(theChar); //gets the string representation of the char for use with getBytes
+                    try{
+                        byte[] bytesOfChar = strOfChar.getBytes("UTF-8");
+                        int lenOfArray = bytesOfChar.length;
+                        for (int k = 0; k < lenOfArray; k++){
+                            try {
+                                Globals.memory.set(this.dataAddress.get(), bytesOfChar[k],
+                                        DataTypes.CHAR_SIZE);
+                            } catch (AddressErrorException e) {
+                                errors.add(new ErrorMessage(token.getSourceProgram(), token
+                                        .getSourceLine(), token.getStartPos(), "\""
+                                        + this.dataAddress.get() + "\" is not a valid data segment address"));
+                            }
+                            this.dataAddress.increment(DataTypes.CHAR_SIZE);
+                        }
+                    } catch (UnsupportedEncodingException e) {
+                        //happens when the getBytes method uses an encoding type that is not supported by the JVM
+                        System.out.println("Unsupported character set");
                     }
-                    this.dataAddress.increment(DataTypes.CHAR_SIZE);
                 }
                 if (direct == Directives.ASCIZ || direct == Directives.STRING) {
                     try {
