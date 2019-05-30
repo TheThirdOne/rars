@@ -71,7 +71,7 @@ public class ElfRISCVprogramTest {
 		RISCVprogram p = new ElfRISCVprogram();
 		
 		try {
-			p.readSource(ElfRISCVprogramTest.class.getResource("/rars/program/ElfRISCVprogramTest.elf").getPath());
+			p.readSource(ElfRISCVprogramTest.class.getResource("ElfRISCVprogramTest.elf").getPath());
 		}
 		catch(AssemblyException e) {
 			System.err.println(e.errors().generateErrorAndWarningReport());

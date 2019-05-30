@@ -10,7 +10,7 @@ import org.junit.Test;
 public class BasicTest {
 
 	private ElfFile parseFile(String name) throws ElfException, FileNotFoundException, IOException {
-		return ElfFile.fromStream(BasicTest.class.getResourceAsStream("/" + name));
+		return ElfFile.fromStream(BasicTest.class.getResourceAsStream(name));
 	}
 
 	private static void assertSectionNames(ElfFile file, String... expectedSectionNames) throws IOException {
@@ -27,7 +27,7 @@ public class BasicTest {
 
 	@Test
 	public void testAndroidArmBinTset() throws ElfException, FileNotFoundException, IOException {
-		ElfFile file = parseFile("rars/program/elf/android_arm_tset");
+		ElfFile file = parseFile("android_arm_tset");
 		Assert.assertEquals(ElfFile.CLASS_32, file.objectSize);
 		Assert.assertEquals(ElfFile.DATA_LSB, file.encoding);
 		Assert.assertEquals(ElfFile.FT_EXEC, file.file_type);
@@ -96,7 +96,7 @@ public class BasicTest {
 
 	@Test
 	public void testAndroidArmLibNcurses() throws ElfException, FileNotFoundException, IOException {
-		ElfFile file = parseFile("rars/program/elf/android_arm_libncurses");
+		ElfFile file = parseFile("android_arm_libncurses");
 		Assert.assertEquals(ElfFile.CLASS_32, file.objectSize);
 		Assert.assertEquals(ElfFile.DATA_LSB, file.encoding);
 		Assert.assertEquals(ElfFile.FT_DYN, file.file_type);
@@ -106,7 +106,7 @@ public class BasicTest {
 
 	@Test
 	public void testLinxAmd64BinDash() throws ElfException, FileNotFoundException, IOException {
-		ElfFile file = parseFile("rars/program/elf/linux_amd64_bindash");
+		ElfFile file = parseFile("linux_amd64_bindash");
 		Assert.assertEquals(ElfFile.CLASS_64, file.objectSize);
 		Assert.assertEquals(ElfFile.DATA_LSB, file.encoding);
 		Assert.assertEquals(ElfFile.FT_DYN, file.file_type);
