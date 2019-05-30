@@ -4,7 +4,7 @@ jdk:
 
 script:
   - sh build-jar.sh
-  - sh test.sh
+  - sh src/test/resources/test.sh
 
 after_success:
   - wget -c https://github.com/probonopd/uploadtool/raw/master/upload.sh

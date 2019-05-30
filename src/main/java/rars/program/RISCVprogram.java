@@ -205,6 +205,7 @@ public abstract class RISCVprogram {
      * It is GUI responsibility to assure that source edits are written to file
      * when user selects compile or run/step options.
      *
+     * @return Returns an ArrayList of strings where each string is a line of the source file
      * @throws AssemblyException Will throw exception if there is any problem reading the file.
      **/
     public abstract ArrayList<String> readSourceHelper() throws AssemblyException;

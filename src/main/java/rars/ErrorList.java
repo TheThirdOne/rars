@@ -29,7 +29,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 (MIT license, http://www.opensource.org/licenses/mit-license.html)
  */
 
-import rars.program.AsmRISCVprogram;
+import rars.program.RISCVprogram;
 
 /**
  * Maintains list of generated error messages, regardless of source (tokenizing, parsing,
@@ -40,7 +40,7 @@ import rars.program.AsmRISCVprogram;
  **/
 
 public class ErrorList {
-    private ArrayList<AsmErrorMessage> messages;
+    private ArrayList<ErrorMessage> messages;
     private int errorCount;
     private int warningCount;
     public static final String ERROR_MESSAGE_PREFIX = "Error";
@@ -66,7 +66,7 @@ public class ErrorList {
      *
      * @return ArrayList of ErrorMessage objects
      */
-    public ArrayList<AsmErrorMessage> getErrorMessages() {
+    public ArrayList<ErrorMessage> getErrorMessages() {
         return messages;
     }
 
@@ -93,7 +93,7 @@ public class ErrorList {
      *
      * @param mess ErrorMessage object to be added to end of error list.
      **/
-    public void add(AsmErrorMessage mess) {
+    public void add(ErrorMessage mess) {
         add(mess, messages.size());
     }
 
@@ -103,12 +103,12 @@ public class ErrorList {
      * @param mess  ErrorMessage object to be added to end of error list.
      * @param index position in error list
      **/
-    public void add(AsmErrorMessage mess, int index) {
+    public void add(ErrorMessage mess, int index) {
         if (errorCount > getErrorLimit()) {
             return;
         }
         if (errorCount == getErrorLimit()) {
-            messages.add(new AsmErrorMessage((AsmRISCVprogram) null, mess.getLine(), mess.getPosition(), "Error Limit of " + getErrorLimit() + " exceeded."));
+            messages.add(new ErrorMessage((RISCVprogram) null, "Error Limit of " + getErrorLimit() + " exceeded."));
             errorCount++; // subsequent errors will not be added; see if statement above
             return;
         }
@@ -192,7 +192,7 @@ public class ErrorList {
     // Produces either error or warning report.
     private String generateReport(boolean isWarning) {
         StringBuilder report = new StringBuilder("");
-        for (AsmErrorMessage m : messages) {
+        for (ErrorMessage m : messages) {
             if ((isWarning && m.isWarning()) || (!isWarning && !m.isWarning())) {
                 report.append(m.generateReport());
             }
