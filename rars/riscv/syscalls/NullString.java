@@ -72,7 +72,7 @@ public class NullString {
 
         int size = utf8BytesList.size();
         byte[] utf8Bytes = new byte[size];
-        for (int i=0; i<size; i++){
+        for (int i=0; i < (size - 1); i++){ //size - 1 so we dont include the null terminator in the utf8Bytes array
             utf8Bytes[i] = utf8BytesList.get(i);
         }
 
