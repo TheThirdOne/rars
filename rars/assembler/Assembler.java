@@ -1032,6 +1032,7 @@ public class Assembler {
             } else {
                 String quote = token.getValue();
                 char theChar;
+                boolean lastCharEscape = false;
                 for (int j = 1; j < quote.length() - 1; j++) {
                     theChar = quote.charAt(j);
                     String strOfChar = "";
@@ -1055,6 +1056,11 @@ public class Assembler {
                                 break;
                             case '"':
                                 theChar = '"';
+                                //if the string directive ends in \ then the double quote which ends the string directive 
+                                //would be saved to memory without the following 3 lines of code which is unintended behaviour
+                                if (j == quote.length() - 1){
+                                    lastCharEscape = true;
+                                }
                                 break;
                             case 'b':
                                 theChar = '\b';
@@ -1066,12 +1072,20 @@ public class Assembler {
                                 theChar = '\0';
                                 break;
                             case 'u':
-                                String codePoint = quote.substring(j+1, j+5); //get the UTF-8 codepoint following that follows the unicode escape sequence
+                                String codePoint = "";
                                 try{
+                                    codePoint = quote.substring(j+1, j+5); //get the UTF-8 codepoint following the unicode escape sequence
                                     theChar = Character.toChars(Integer.parseInt(codePoint, 16))[0]; //converts the codepoint to single character
-                                } catch(NumberFormatException e){
+                                } catch(StringIndexOutOfBoundsException | NumberFormatException e){
+                                    String invalidCodePoint = "";
+                                    int endOfCP = j + 5;    //a UTF8 codepoint is 4 bytes long 
+                                    char ch[] = {quote.charAt(++j)};
+                                    while (ch[0] != '"' & j != endOfCP){  //grab all characters after the \ u until end of string or end of codepoint
+                                        invalidCodePoint = invalidCodePoint.concat(new String(ch)); //parameter to String constructor is a char[] array
+                                        ch[0] = quote.charAt(++j);
+                                    }
                                     errors.add(new ErrorMessage(token.getSourceProgram(), token
-                                        .getSourceLine(), token.getStartPos(), "illegal unicode escape: \"\\u" + codePoint + "\""));
+                                        .getSourceLine(), token.getStartPos(), "illegal unicode escape: \"\\u" + invalidCodePoint + "\""));
                                 }
                                 j = j + 4; //skip past the codepoint for next iteration
                                 break;
@@ -1082,25 +1096,28 @@ public class Assembler {
                             // codes...
                         }
                     }
-                    strOfChar = String.valueOf(theChar); //gets the string representation of the char for use with getBytes
-                    try{
-                        byte[] bytesOfChar = strOfChar.getBytes("UTF-8");
-                        int lenOfArray = bytesOfChar.length;
-                        for (int k = 0; k < lenOfArray; k++){
-                            try {
-                                Globals.memory.set(this.dataAddress.get(), bytesOfChar[k],
-                                        DataTypes.CHAR_SIZE);
-                            } catch (AddressErrorException e) {
-                                errors.add(new ErrorMessage(token.getSourceProgram(), token
-                                        .getSourceLine(), token.getStartPos(), "\""
-                                        + this.dataAddress.get() + "\" is not a valid data segment address"));
+                    if (!lastCharEscape){
+                        strOfChar = String.valueOf(theChar); //gets the string representation of the char for use with getBytes
+                        try{
+                            byte[] bytesOfChar = strOfChar.getBytes("UTF-8");
+                            int lenOfArray = bytesOfChar.length;
+                            for (int k = 0; k < lenOfArray; k++){
+                                try {
+                                    Globals.memory.set(this.dataAddress.get(), bytesOfChar[k],
+                                            DataTypes.CHAR_SIZE);
+                                } catch (AddressErrorException e) {
+                                    errors.add(new ErrorMessage(token.getSourceProgram(), token
+                                            .getSourceLine(), token.getStartPos(), "\""
+                                            + this.dataAddress.get() + "\" is not a valid data segment address"));
+                                }
+                                this.dataAddress.increment(DataTypes.CHAR_SIZE);
                             }
-                            this.dataAddress.increment(DataTypes.CHAR_SIZE);
+                        } catch (UnsupportedEncodingException e) {
+                            //happens when the getBytes method uses an encoding type that is not supported by the JVM
+                            System.out.println("Unsupported character set");
                         }
-                    } catch (UnsupportedEncodingException e) {
-                        //happens when the getBytes method uses an encoding type that is not supported by the JVM
-                        System.out.println("Unsupported character set");
                     }
+                    lastCharEscape = false;
                 }
                 if (direct == Directives.ASCIZ || direct == Directives.STRING) {
                     try {
