@@ -70,9 +70,9 @@ public class NullString {
             throw new ExitingException(statement, e);
         }
 
-        int size = utf8BytesList.size();
-        byte[] utf8Bytes = new byte[size];
-        for (int i=0; i < (size - 1); i++){ //size - 1 so we dont include the null terminator in the utf8Bytes array
+        int size = utf8BytesList.size() - 1;    //size - 1 so we dont include the null terminator in the utf8Bytes array
+        byte[] utf8Bytes = new byte[size];  
+        for (int i = 0; i < size; i++){ 
             utf8Bytes[i] = utf8BytesList.get(i);
         }
 
