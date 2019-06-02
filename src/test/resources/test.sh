@@ -1,6 +1,12 @@
 #!/bin/bash
-RUN="java -jar -ea ./rars.jar"
+
+# Change to current files directory
+cd "${0%/*}"
+
+# Get jar
+RUN="java -jar -ea ../../../rars.jar"
 ERRORS=""
+
 for f in ./asm/*.s ./asm/riscv-tests/*.s
 do	
 	$RUN $f > /dev/null
