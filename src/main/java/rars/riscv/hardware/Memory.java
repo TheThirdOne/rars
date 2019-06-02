@@ -94,7 +94,7 @@ public class Memory extends Observable {
      **/
     public static int memoryMapBaseAddress = MemoryConfigurations.getDefaultMemoryMapBaseAddress(); //0xffff0000;
     /**
-     * highest address acessible in kernel mode.
+     * highest address accessible in kernel mode.
      **/
     public static int kernelHighAddress = MemoryConfigurations.getDefaultKernelHighAddress(); //0xffffffff;
 

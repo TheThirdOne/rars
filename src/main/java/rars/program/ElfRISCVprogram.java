@@ -10,11 +10,8 @@ import rars.ErrorMessage;
 
 /**
  * Internal structure of a program based on an ELF file
- * 
- * @author James Berry
  */
 public class ElfRISCVprogram extends RISCVprogram {
-
 	@Override
 	protected ErrorList assembleHelper(ArrayList<? extends RISCVprogram> programsToAssemble, boolean warningsAreErrors)
 			throws AssemblyException {
@@ -25,8 +22,23 @@ public class ElfRISCVprogram extends RISCVprogram {
 			err.add(errMsg);
 			return err;
 		}
+		else if(programsToAssemble.size() > 1) {
+			ErrorMessage errMsg = new ErrorMessage(null, "Too many source files. Only one source executable is allowed");
+			err.add(errMsg);
+			return err;
+		}
 		
+		RISCVprogram p = programsToAssemble.get(0);
+		ElfRISCVprogram program;
+		if(!(p instanceof ElfRISCVprogram)) {
+			ErrorMessage errMsg = new ErrorMessage(p, "Program instance is not compatible with ELF format");
+			err.add(errMsg);
+			return err;
+		}
 		
+		/*
+		 * 	TODO: Implement ELF parsing and loading
+		 */
 		
 		return err;
 	}
