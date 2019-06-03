@@ -5,6 +5,7 @@ import rars.Settings;
 
 import java.io.*;
 import java.nio.channels.FileChannel;
+import java.nio.charset.StandardCharsets;
 
 	/*
 Copyright (c) 2003-2013,  Pete Sanderson and Kenneth Vollmar
@@ -262,9 +263,16 @@ public class SystemIO {
         /////////////// DPS 8-Jan-2013  ////////////////////////////////////////////////////
         /// Write to STDOUT or STDERR file descriptor while using IDE - write to Messages pane.
         if ((fd == STDOUT || fd == STDERR) && Globals.getGui() != null) {
-            String data = new String(myBuffer);
-            Globals.getGui().getMessagesPane().postRunMessage(data);
-            return data.length();
+            String charset = "UTF8";
+            try{
+                String data = new String(myBuffer, charset); //decode the bytes using UTF-8 charset
+                Globals.getGui().getMessagesPane().postRunMessage(data);
+                return data.length();
+            } catch (UnsupportedEncodingException e){
+                //thrown only if the given Charset is not supported by your JVM
+                System.out.println("Error: " + charset + " charset is not supported by the JVM");
+                System.exit(0);
+            }           
         }
         ///////////////////////////////////////////////////////////////////////////////////
         //// When running in command mode, code below works for either regular file or STDOUT/STDERR

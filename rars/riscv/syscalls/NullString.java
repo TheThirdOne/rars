@@ -78,10 +78,13 @@ public class NullString {
 
         //construct the string using UTF8 encoding
         String message = "";
+        String charset = "UTF8";
         try {
-            message = new String(utf8Bytes, "UTF8");
+            message = new String(utf8Bytes, charset);
         } catch (UnsupportedEncodingException e) {
-            System.out.println("Unsupported character set");
+            //thrown only if the given Charset is not supported by your JVM
+            System.out.println("Error: " + charset + " charset is not supported by the JVM");
+            System.exit(0);
         }
         
         return message;
