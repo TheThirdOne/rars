@@ -1091,8 +1091,9 @@ public class Assembler {
                         }
                     }
                     strOfChar = String.valueOf(theChar); //gets the string representation of the char for use with getBytes
+                    String charset = "UTF8";
                     try{
-                        byte[] bytesOfChar = strOfChar.getBytes("UTF-8");
+                        byte[] bytesOfChar = strOfChar.getBytes(charset);
                         int lenOfArray = bytesOfChar.length;
                         for (int k = 0; k < lenOfArray; k++){
                             try {
@@ -1106,8 +1107,9 @@ public class Assembler {
                             this.dataAddress.increment(DataTypes.CHAR_SIZE);
                         }
                     } catch (UnsupportedEncodingException e) {
-                        //happens when the getBytes method uses an encoding type that is not supported by the JVM
-                        System.out.println("Unsupported character set");
+                        //thrown only if the given Charset is not Supported by your JVM
+                        System.out.println("Error: " + charset + " charset is not supported by the JVM");
+                        System.exit(0);
                     }
                     
                 }
