@@ -1032,7 +1032,6 @@ public class Assembler {
             } else {
                 String quote = token.getValue();
                 char theChar;
-                boolean lastCharEscape = false;
                 for (int j = 1; j < quote.length() - 1; j++) {
                     theChar = quote.charAt(j);
                     String strOfChar = "";
@@ -1056,11 +1055,6 @@ public class Assembler {
                                 break;
                             case '"':
                                 theChar = '"';
-                                //if the string directive ends in \ then the double quote which ends the string directive 
-                                //would be saved to memory without the following 3 lines of code which is unintended behaviour
-                                if (j == quote.length() - 1){
-                                    lastCharEscape = true;
-                                }
                                 break;
                             case 'b':
                                 theChar = '\b';
@@ -1096,28 +1090,26 @@ public class Assembler {
                             // codes...
                         }
                     }
-                    if (!lastCharEscape){
-                        strOfChar = String.valueOf(theChar); //gets the string representation of the char for use with getBytes
-                        try{
-                            byte[] bytesOfChar = strOfChar.getBytes("UTF-8");
-                            int lenOfArray = bytesOfChar.length;
-                            for (int k = 0; k < lenOfArray; k++){
-                                try {
-                                    Globals.memory.set(this.dataAddress.get(), bytesOfChar[k],
-                                            DataTypes.CHAR_SIZE);
-                                } catch (AddressErrorException e) {
-                                    errors.add(new ErrorMessage(token.getSourceProgram(), token
-                                            .getSourceLine(), token.getStartPos(), "\""
-                                            + this.dataAddress.get() + "\" is not a valid data segment address"));
-                                }
-                                this.dataAddress.increment(DataTypes.CHAR_SIZE);
+                    strOfChar = String.valueOf(theChar); //gets the string representation of the char for use with getBytes
+                    try{
+                        byte[] bytesOfChar = strOfChar.getBytes("UTF-8");
+                        int lenOfArray = bytesOfChar.length;
+                        for (int k = 0; k < lenOfArray; k++){
+                            try {
+                                Globals.memory.set(this.dataAddress.get(), bytesOfChar[k],
+                                        DataTypes.CHAR_SIZE);
+                            } catch (AddressErrorException e) {
+                                errors.add(new ErrorMessage(token.getSourceProgram(), token
+                                        .getSourceLine(), token.getStartPos(), "\""
+                                        + this.dataAddress.get() + "\" is not a valid data segment address"));
                             }
-                        } catch (UnsupportedEncodingException e) {
-                            //happens when the getBytes method uses an encoding type that is not supported by the JVM
-                            System.out.println("Unsupported character set");
+                            this.dataAddress.increment(DataTypes.CHAR_SIZE);
                         }
+                    } catch (UnsupportedEncodingException e) {
+                        //happens when the getBytes method uses an encoding type that is not supported by the JVM
+                        System.out.println("Unsupported character set");
                     }
-                    lastCharEscape = false;
+                    
                 }
                 if (direct == Directives.ASCIZ || direct == Directives.STRING) {
                     try {
