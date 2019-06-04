@@ -5,6 +5,7 @@ import rars.Settings;
 
 import java.io.*;
 import java.nio.channels.FileChannel;
+import java.nio.charset.StandardCharsets;
 
 	/*
 Copyright (c) 2003-2013,  Pete Sanderson and Kenneth Vollmar
@@ -262,9 +263,9 @@ public class SystemIO {
         /////////////// DPS 8-Jan-2013  ////////////////////////////////////////////////////
         /// Write to STDOUT or STDERR file descriptor while using IDE - write to Messages pane.
         if ((fd == STDOUT || fd == STDERR) && Globals.getGui() != null) {
-            String data = new String(myBuffer);
+            String data = new String(myBuffer, StandardCharsets.UTF_8); //decode the bytes using UTF-8 charset
             Globals.getGui().getMessagesPane().postRunMessage(data);
-            return data.length();
+            return myBuffer.length; // data.length would not count multi-byte characters
         }
         ///////////////////////////////////////////////////////////////////////////////////
         //// When running in command mode, code below works for either regular file or STDOUT/STDERR
