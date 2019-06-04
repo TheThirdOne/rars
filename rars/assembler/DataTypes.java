@@ -143,8 +143,9 @@ public final class DataTypes {
      * by the given directive (.word, .half, .byte), <tt>false</tt> otherwise.
      **/
     public static boolean outOfRange(Directives direct, int value) {
-        return (direct == Directives.HALF && (value < MIN_HALF_VALUE || value > MAX_HALF_VALUE)) ||
-                (direct == Directives.BYTE && (value < MIN_BYTE_VALUE || value > MAX_BYTE_VALUE));
+        // Hex values used here rather than constants because there aren't constants for unsigned max
+        return (direct == Directives.HALF && (value < MIN_HALF_VALUE || value > 0xFFFF)) ||
+                (direct == Directives.BYTE && (value < MIN_BYTE_VALUE || value > 0xFF));
     }
 
     /**

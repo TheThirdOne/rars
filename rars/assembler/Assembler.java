@@ -909,8 +909,8 @@ public class Assembler {
 
             if (DataTypes.outOfRange(directive, fullvalue)) {
                 errors.add(new ErrorMessage(ErrorMessage.WARNING, token.getSourceProgram(), token.getSourceLine(),
-                        token.getStartPos(), "\"" + token.getValue()
-                        + "\" is out-of-range for a signed value and possibly truncated"));
+                        token.getStartPos(), "value " + Binary.intToHexString(fullvalue)
+                        + " is out-of-range and truncated to " + Binary.intToHexString(value)));
             }
             if (this.inDataSegment) {
                 writeToDataSegment(value, lengthInBytes, token, errors);
