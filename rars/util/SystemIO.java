@@ -263,16 +263,9 @@ public class SystemIO {
         /////////////// DPS 8-Jan-2013  ////////////////////////////////////////////////////
         /// Write to STDOUT or STDERR file descriptor while using IDE - write to Messages pane.
         if ((fd == STDOUT || fd == STDERR) && Globals.getGui() != null) {
-            String charset = "UTF8";
-            try{
-                String data = new String(myBuffer, charset); //decode the bytes using UTF-8 charset
-                Globals.getGui().getMessagesPane().postRunMessage(data);
-                return data.length();
-            } catch (UnsupportedEncodingException e){
-                //thrown only if the given Charset is not supported by your JVM
-                System.out.println("Error: " + charset + " charset is not supported by the JVM");
-                System.exit(0);
-            }           
+            String data = new String(myBuffer, StandardCharsets.UTF_8); //decode the bytes using UTF-8 charset
+            Globals.getGui().getMessagesPane().postRunMessage(data);
+            return myBuffer.length; // data.length would not count multi-byte characters
         }
         ///////////////////////////////////////////////////////////////////////////////////
         //// When running in command mode, code below works for either regular file or STDOUT/STDERR
