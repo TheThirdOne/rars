@@ -1101,7 +1101,6 @@ public class Assembler {
                                 .getSourceLine(), token.getStartPos(), "\""
                                 + this.dataAddress.get() + "\" is not a valid data segment address"));
                     }
-                    this.dataAddress.increment(DataTypes.CHAR_SIZE);
                 }
                 if (direct == Directives.ASCIZ || direct == Directives.STRING) {
                     try {
