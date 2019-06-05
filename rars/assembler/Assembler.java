@@ -10,8 +10,10 @@ import rars.riscv.Instruction;
 import rars.util.Binary;
 import rars.util.SystemIO;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
+
 
 /*
  Copyright (c) 2003-2012,  Pete Sanderson and Kenneth Vollmar
@@ -1063,6 +1065,23 @@ public class Assembler {
                             case '0':
                                 theChar = '\0';
                                 break;
+                            case 'u':
+                                String codePoint = "";
+                                try{
+                                    codePoint = quote.substring(j+1, j+5); //get the UTF-8 codepoint following the unicode escape sequence
+                                    theChar = Character.toChars(Integer.parseInt(codePoint, 16))[0]; //converts the codepoint to single character
+                                } catch(StringIndexOutOfBoundsException e){
+                                    String invalidCodePoint = quote.substring(j+1);
+                                    errors.add(new ErrorMessage(token.getSourceProgram(), token
+                                        .getSourceLine(), token.getStartPos(), "unicode escape \"\\u" +
+                                            invalidCodePoint + "\" is incomplete. Only escapes with 4 digits are valid."));
+                                } catch(NumberFormatException e){
+                                    errors.add(new ErrorMessage(token.getSourceProgram(), token
+                                            .getSourceLine(), token.getStartPos(), "illegal unicode escape: \"\\u" + codePoint + "\""));
+                                }
+                                j = j + 4; //skip past the codepoint for next iteration
+                                break;
+
                             // Not implemented: \ n = octal character (n is number)
                             // \ x n = hex character (n is number)
                             // \ u n = unicode character (n is number)
@@ -1070,9 +1089,13 @@ public class Assembler {
                             // codes...
                         }
                     }
+                    byte[] bytesOfChar = String.valueOf(theChar).getBytes(StandardCharsets.UTF_8);
                     try {
-                        Globals.memory.set(this.dataAddress.get(), (int) theChar,
-                                DataTypes.CHAR_SIZE);
+                        for (byte b : bytesOfChar) {
+                            Globals.memory.set(this.dataAddress.get(), b,
+                                    DataTypes.CHAR_SIZE);
+                            this.dataAddress.increment(DataTypes.CHAR_SIZE);
+                        }
                     } catch (AddressErrorException e) {
                         errors.add(new AsmErrorMessage(token.getSourceProgram(), token
                                 .getSourceLine(), token.getStartPos(), "\""

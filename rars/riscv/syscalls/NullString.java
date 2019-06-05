@@ -6,8 +6,11 @@ import rars.ProgramStatement;
 import rars.riscv.hardware.AddressErrorException;
 import rars.riscv.hardware.RegisterFile;
 
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+
 /*
-Copyright (c) 2003-20017,  Pete Sanderson,Benjamin Landers and Kenneth Vollmar
+Copyright (c) 2003-2017,  Pete Sanderson,Benjamin Landers and Kenneth Vollmar
 
 Developed by Pete Sanderson (psanderson@otterbein.edu),
 Benjamin Landers (benjaminrlanders@gmail.com),
@@ -55,20 +58,25 @@ public class NullString {
      * @throws ExitingException if it hits a #AddressErrorException
      */
     public static String get(ProgramStatement statement, String reg) throws ExitingException {
-        String message = "";
         int byteAddress = RegisterFile.getValue(reg);
-        char ch[] = {' '}; // Need an array to convert to String
+        ArrayList<Byte> utf8BytesList = new ArrayList<>(); // Need an array to hold bytes
         try {
-            ch[0] = (char) Globals.memory.getByte(byteAddress);
-            while (ch[0] != 0) // only uses single location ch[0]
+            utf8BytesList.add((byte) Globals.memory.getByte(byteAddress));
+            while (utf8BytesList.get(utf8BytesList.size() - 1) != 0) // until null terminator
             {
-                message = message.concat(new String(ch)); // parameter to String constructor is a char[] array
                 byteAddress++;
-                ch[0] = (char) Globals.memory.getByte(byteAddress);
+                utf8BytesList.add((byte) Globals.memory.getByte(byteAddress));
             }
         } catch (AddressErrorException e) {
             throw new ExitingException(statement, e);
         }
-        return message;
+
+        int size = utf8BytesList.size() - 1;    //size - 1 so we dont include the null terminator in the utf8Bytes array
+        byte[] utf8Bytes = new byte[size];  
+        for (int i = 0; i < size; i++){ 
+            utf8Bytes[i] = utf8BytesList.get(i);
+        }
+
+        return new String(utf8Bytes, StandardCharsets.UTF_8);
     }
 }

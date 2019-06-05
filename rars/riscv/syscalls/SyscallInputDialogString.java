@@ -77,6 +77,7 @@ public class SyscallInputDialogString extends AbstractSyscall {
             {
                 RegisterFile.updateRegister("a1", -3);
             } else {
+                // TODO: update this to allow for utf-8 encoded characters
                 // The buffer will contain characters, a '\n' character, and the null character
                 // Copy the input data to buffer as space permits
                 for (int index = 0; (index < inputString.length()) && (index < maxLength - 1); index++) {
