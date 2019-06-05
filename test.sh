@@ -1,13 +1,7 @@
 #!/bin/bash
-
-# Change to current files directory
-cd "${0%/*}"
-
-# Get jar
-RUN="java -jar -ea ../../../rars.jar"
+RUN="java -jar -ea ./rars.jar"
 ERRORS=""
-
-for f in ./asm/*.s ./asm/riscv-tests/*.s
+for f in ./test/*.s ./test/riscv-tests/*.s
 do	
 	$RUN $f > /dev/null
 	if [ $? -eq 42 ]
