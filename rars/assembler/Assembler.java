@@ -1072,11 +1072,11 @@ public class Assembler {
                                     theChar = Character.toChars(Integer.parseInt(codePoint, 16))[0]; //converts the codepoint to single character
                                 } catch(StringIndexOutOfBoundsException e){
                                     String invalidCodePoint = quote.substring(j+1);
-                                    errors.add(new ErrorMessage(token.getSourceProgram(), token
+                                    errors.add(new AsmErrorMessage(token.getSourceProgram(), token
                                         .getSourceLine(), token.getStartPos(), "unicode escape \"\\u" +
                                             invalidCodePoint + "\" is incomplete. Only escapes with 4 digits are valid."));
                                 } catch(NumberFormatException e){
-                                    errors.add(new ErrorMessage(token.getSourceProgram(), token
+                                    errors.add(new AsmErrorMessage(token.getSourceProgram(), token
                                             .getSourceLine(), token.getStartPos(), "illegal unicode escape: \"\\u" + codePoint + "\""));
                                 }
                                 j = j + 4; //skip past the codepoint for next iteration

@@ -1,4 +1,4 @@
-package rars.program;
+package test.java.rars.program;
 
 import java.util.ArrayList;
 
@@ -6,6 +6,8 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import rars.AssemblyException;
+import rars.program.ElfRISCVprogram;
+import rars.program.RISCVprogram;
 
 public class ElfRISCVprogramTest {
 	
