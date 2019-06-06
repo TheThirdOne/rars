@@ -34,7 +34,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 public class LUI extends BasicInstruction {
     public LUI() {
-        super("lui t1,-100000", "Load upper immediate: set t1 to 20-bit followed by 12 0s",
+        super("lui t1,100000", "Load upper immediate: set t1 to 20-bit followed by 12 0s",
                 BasicInstructionFormat.U_FORMAT, "ssssssssssssssssssss fffff 0110111");
     }
 

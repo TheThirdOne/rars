@@ -88,11 +88,11 @@ public final class DataTypes {
     /**
      * Maximum value that can be stored in a 20 bit immediate is 2<sup>19</sup>-1
      **/
-    public static final int MAX_UPPER_VALUE = 0x0007FFFF;
+    public static final int MAX_UPPER_VALUE = 0x000FFFFF;
     /**
      * Lowest value that can be stored in a 20 bit immediate is -2<sup>19</sup>
      **/
-    public static final int MIN_UPPER_VALUE = 0xFFF80000;
+    public static final int MIN_UPPER_VALUE = 0x00000000;
     /**
      * Maximum value that can be stored in a byte is 2<sup>7</sup>-1
      **/

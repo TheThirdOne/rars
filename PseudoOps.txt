@@ -162,12 +162,12 @@ lbu t1,label	;auipc RG1, PCH2 ;lbu RG1, PCL2(RG1) ;#Load Byte Unsigned : Set t1 
 # load and store pseudo-instructions for floating point (coprocessor 1) registers
 flw f1,(t2)     ;flw RG1,0(RG3)  ;#Load Word Coprocessor 1 : Set f1 to 32-bit value from effective memory word address
 flw f1,-100     ;flw RG1, VL2(x0);#Load Word Coprocessor 1 : Set f1 to 32-bit value from effective memory word address
-flw f1,100000,t3;lui RG3, VH2    ;flw RG1, VL2(RG3) ;#Load Word Coprocessor 1 : Set f1 to 32-bit value from effective memory word address using t3 as a temporary
+flw f1,10000000,t3;lui RG3, VH2    ;flw RG1, VL2(RG3) ;#Load Word Coprocessor 1 : Set f1 to 32-bit value from effective memory word address using t3 as a temporary
 flw f1,label, t3;auipc RG3, PCH2 ;flw RG1, PCL2(RG3);#Load Word Coprocessor 1 : Set f1 to 32-bit value from effective memory word address using t3 as a temporary
 
 fsw f1,(t2)     ;fsw RG1,0(RG3)  #Store Word Coprocessor 1 : Store 32-bit value from f1 to effective memory word address
 fsw f1,-100     ;fsw RG1, VL2(x0);#Store Word Coprocessor 1 : Store 32-bit value from f1 to effective memory word address
-fsw f1,100000,t3;lui RG3, VH2    ;fsw RG1, VL2(RG3) ;#Store Word Coprocessor 1 : Store 32-bit value from f1 to effective memory word address using t3 as a temporary
+fsw f1,10000000,t3;lui RG3, VH2    ;fsw RG1, VL2(RG3) ;#Store Word Coprocessor 1 : Store 32-bit value from f1 to effective memory word address using t3 as a temporary
 fsw f1,label, t3;auipc RG3, PCH2 ;fsw RG1, PCL2(RG3);#Store Word Coprocessor 1 : Store 32-bit value from f1 to effective memory word address using t3 as a temporary
 
 
