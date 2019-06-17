@@ -18,7 +18,7 @@ an effective development environment for people getting started with RISC-V.
 
 RARS is distributed as an executable jar. You will need at least Java 8 to run it. 
 
-The latest release can be found on the [releases page](https://github.com/TheThirdOne/rars/releases).
+The latest stable release can be found [here](https://github.com/TheThirdOne/rars/releases/latest), a release with the latest developments can be found on the [continuous release](https://github.com/TheThirdOne/rars/releases/tag/continuous), and the [releases page](https://github.com/TheThirdOne/rars/releases) contains all previous stable releases with patch notes.
 
 ## Screenshot
 
