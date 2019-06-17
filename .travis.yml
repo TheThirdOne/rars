@@ -10,3 +10,10 @@ after_success:
   - wget -c https://github.com/probonopd/uploadtool/raw/master/upload.sh
   - mv rars.jar rars_`git rev-parse --short HEAD`.jar
   - bash upload.sh rars_`git rev-parse --short HEAD`.jar
+
+branches:
+  except:
+    - # Do not build tags that we create when we upload to GitHub Releases
+    - /^(?i:continuous)$/
+    - # Do not build over any releases
+    - /^v.*/
