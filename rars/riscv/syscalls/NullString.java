@@ -11,6 +11,9 @@ import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+
 /*
 Copyright (c) 2003-2017,  Pete Sanderson,Benjamin Landers and Kenneth Vollmar
 
