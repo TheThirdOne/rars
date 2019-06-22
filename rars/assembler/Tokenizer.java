@@ -436,6 +436,10 @@ public class Tokenizer {
             linePos++;
         }  // while
         if (tokenPos > 0) {
+            if(insideQuotedString){
+                errors.add(new ErrorMessage(program, lineNum, tokenStartPos,
+                        "String is not terminated."));
+            }
             this.processCandidateToken(token, program, lineNum, theLine, tokenPos, tokenStartPos, result);
             tokenPos = 0;
         }

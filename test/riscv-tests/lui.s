@@ -12,7 +12,7 @@ test_2:
 
 
 test_3:
- lui x1, 0xffffffff
+ lui x1, 0xfffff
  srai x1,x1,1
  li x29, 0xfffff800
  li gp, 3
@@ -28,7 +28,7 @@ test_4:
 
 
 test_5:
- lui x1, 0xfff80000
+ lui x1, 0x80000
  srai x1,x1,20
  li x29, 0xfffff800
  li gp, 5
@@ -37,7 +37,7 @@ test_5:
 
 
 test_6:
- lui x0, 0xfff80000
+ lui x0, 0x80000
  li x29, 0
  li gp, 6
  bne x0, x29, fail

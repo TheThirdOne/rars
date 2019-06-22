@@ -1,5 +1,6 @@
 package rars;
 
+import rars.api.Program;
 import rars.riscv.dump.DumpFormat;
 import rars.riscv.dump.DumpFormatLoader;
 import rars.riscv.hardware.*;
@@ -9,6 +10,7 @@ import rars.util.Binary;
 import rars.util.FilenameFinder;
 import rars.util.MemoryDump;
 import rars.venus.VenusUI;
+import rars.api.Options;
 
 import javax.swing.*;
 import java.io.File;
@@ -105,16 +107,12 @@ public class Launch {
      * made available to the program at runtime.<br>
      **/
 
-
+    private Options options;
     private boolean simulate;
     private int displayFormat;
     private boolean verbose;  // display register name or address along with contents
     private boolean assembleProject; // assemble only the given file or all files in its directory
-    private boolean pseudo;  // pseudo instructions allowed in source code or not.
-    private boolean warningsAreErrors; // Whether assembler warnings should be considered errors.
-    private boolean startAtMain; // Whether to start execution at statement labeled 'main'
     private boolean countInstructions; // Whether to count and report number of instructions executed
-    private boolean selfModifyingCode; // Whether to allow self-modifying code (e.g. write to text segment)
     private static final String rangeSeparator = "-";
     private static final int memoryWordsPerLine = 4; // display 4 memory words, tab separated, per line
     private static final int DECIMAL = 0; // memory and register display format
@@ -123,8 +121,6 @@ public class Launch {
     private ArrayList<String> registerDisplayList;
     private ArrayList<String> memoryDisplayList;
     private ArrayList<String> filenameList;
-    private RISCVprogram code;
-    private int maxSteps;
     private int instructionCount;
     private PrintStream out; // stream for display of command line output
     private ArrayList<String[]> dumpTriples = null; // each element holds 3 arguments for dump option
@@ -143,15 +139,12 @@ public class Launch {
         } else { // running from command line.
             // assure command mode works in headless environment (generates exception if not)
             System.setProperty("java.awt.headless", "true");
+            options = new Options();
             simulate = true;
             displayFormat = HEXADECIMAL;
             verbose = true;
             assembleProject = false;
-            pseudo = true;
-            warningsAreErrors = false;
-            startAtMain = false;
             countInstructions = false;
-            selfModifyingCode = false;
             instructionCount = 0;
             assembleErrorExitCode = 0;
             simulateErrorExitCode = 0;
@@ -159,9 +152,6 @@ public class Launch {
             memoryDisplayList = new ArrayList<>();
             filenameList = new ArrayList<>();
             MemoryConfigurations.setCurrentConfiguration(MemoryConfigurations.getDefaultConfiguration());
-            // do NOT use Globals.program for command line RARS -- it triggers 'backstep' log.
-            code = new RISCVprogram();
-            maxSteps = -1;
             out = System.out;
             if (parseCommandArgs(args)) {
                 runCommand();
@@ -371,19 +361,19 @@ public class Launch {
                 continue;
             }
             if (args[i].toLowerCase().equals("np") || args[i].toLowerCase().equals("ne")) {
-                pseudo = false;
+                options.pseudo = false;
                 continue;
             }
             if (args[i].toLowerCase().equals("we")) { // added 14-July-2008 DPS
-                warningsAreErrors = true;
+                options.warningsAreErrors = true;
                 continue;
             }
             if (args[i].toLowerCase().equals("sm")) { // added 17-Dec-2009 DPS
-                startAtMain = true;
+                options.startAtMain = true;
                 continue;
             }
             if (args[i].toLowerCase().equals("smc")) { // added 5-Jul-2013 DPS
-                selfModifyingCode = true;
+                options.selfModifyingCode = true;
                 continue;
             }
             if (args[i].toLowerCase().equals("ic")) { // added 19-Jul-2012 DPS
@@ -414,7 +404,7 @@ public class Launch {
             // Check for stand-alone integer, which is the max execution steps option
             try {
                 Integer.decode(args[i]);
-                maxSteps = Integer.decode(args[i]); // if we got here, it has to be OK
+                options.maxSteps = Integer.decode(args[i]); // if we got here, it has to be OK
                 continue;
             } catch (NumberFormatException nfe) {
             }
@@ -447,7 +437,6 @@ public class Launch {
             return;
         }
 
-        Globals.getSettings().setBooleanSettingNonPersistent(Settings.Bool.SELF_MODIFYING_CODE_ENABLED, selfModifyingCode);
         File mainFile = new File(filenameList.get(0)).getAbsoluteFile();// First file is "main" file
         ArrayList<String> filesToAssemble;
         if (assembleProject) {
@@ -472,17 +461,12 @@ public class Launch {
         } else {
             filesToAssemble = FilenameFinder.getFilenameList(filenameList, FilenameFinder.MATCH_ALL_EXTENSIONS);
         }
+        Program program = new Program(options);
         try {
             if (Globals.debug) {
-                out.println("--------  TOKENIZING BEGINS  -----------");
+                out.println("---  TOKENIZING & ASSEMBLY BEGINS  ---");
             }
-            ArrayList<RISCVprogram> programsToAssemble =
-                    code.prepareFilesForAssembly(filesToAssemble, mainFile.getAbsolutePath(), null);
-            if (Globals.debug) {
-                out.println("--------  ASSEMBLY BEGINS  -----------");
-            }
-            // Added logic to check for warnings and print if any. DPS 11/28/06
-            ErrorList warnings = code.assemble(programsToAssemble, pseudo, warningsAreErrors);
+            ErrorList warnings = program.assemble(filesToAssemble, mainFile.getAbsolutePath());
             if (warnings != null && warnings.warningsOccurred()) {
                 out.println(warnings.generateWarningReport());
             }
@@ -493,10 +477,7 @@ public class Launch {
             return;
         }
         if (simulate) {
-            RegisterFile.initializeProgramCounter(startAtMain); // DPS 3/9/09
-
-            // store program args (if any) in memory
-            new ProgramArgumentList(programArgumentList).storeProgramArguments();
+            program.setup(programArgumentList,null);
             // establish observer if specified
             establishObserver();
             if (Globals.debug) {
@@ -504,9 +485,9 @@ public class Launch {
             }
             try {
                 while (true) {
-                    Simulator.Reason done = code.simulate(maxSteps);
+                    Simulator.Reason done = program.simulate();
                     if (done == Simulator.Reason.MAX_STEPS) {
-                        out.println("\nProgram terminated when maximum step limit " + maxSteps + " reached.");
+                        out.println("\nProgram terminated when maximum step limit " + options.maxSteps + " reached.");
                         break;
                     } else if (done == Simulator.Reason.CLIFF_TERMINATION) {
                         out.println("\nProgram terminated by dropping off the bottom.");

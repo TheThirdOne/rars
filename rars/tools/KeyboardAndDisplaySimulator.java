@@ -146,7 +146,7 @@ public class KeyboardAndDisplaySimulator extends AbstractToolAndApplication {
      * Simple constructor, likely used by the RARS Tools menu mechanism
      */
     public KeyboardAndDisplaySimulator() {
-        super(heading + ", " + version, heading);
+        this(heading + ", " + version, heading);
     }
 
     /**

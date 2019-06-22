@@ -222,8 +222,55 @@ public class Memory extends Observable {
     /*
      * Private constructor for Memory.  Separate data structures for text and data segments. 
      **/
-    private Memory() {
+    public Memory() {
         initialize();
+    }
+
+    public boolean copyFrom(Memory other){
+        if(textBlockTable.length != other.textBlockTable.length ||
+                dataBlockTable.length != other.dataBlockTable.length ||
+                stackBlockTable.length != other.stackBlockTable.length ||
+                memoryMapBlockTable.length != other.memoryMapBlockTable.length){
+            // The memory configurations don't match up
+            return false;
+        }
+
+        for(int i = 0; i < textBlockTable.length; i++){
+            if(other.textBlockTable[i] != null){
+                textBlockTable[i] = other.textBlockTable[i].clone(); // TODO: potentially make ProgramStatement clonable
+            }else{
+                textBlockTable[i] = null;
+            }
+        }
+        for(int i = 0; i < dataBlockTable.length; i++){
+            if(other.dataBlockTable[i] != null){
+                dataBlockTable[i] = other.dataBlockTable[i].clone();
+            }else{
+                dataBlockTable[i] = null;
+            }
+        }
+        for(int i = 0; i < stackBlockTable.length; i++){
+            if(other.stackBlockTable[i] != null){
+                stackBlockTable[i] = other.stackBlockTable[i].clone();
+            }else{
+                stackBlockTable[i] = null;
+            }
+        }
+        for(int i = 0; i < memoryMapBlockTable.length; i++){
+            if(other.memoryMapBlockTable[i] != null){
+                memoryMapBlockTable[i] = other.memoryMapBlockTable[i].clone();
+            }else{
+                memoryMapBlockTable[i] = null;
+            }
+        }
+        return true;
+    }
+
+    public static Memory swapInstance(Memory mem){
+        Memory temp = uniqueMemoryInstance;
+        uniqueMemoryInstance = mem;
+        Globals.memory = mem;
+        return temp;
     }
 
     /**

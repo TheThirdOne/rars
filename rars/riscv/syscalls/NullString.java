@@ -8,6 +8,12 @@ import rars.riscv.hardware.RegisterFile;
 import java.util.ArrayList;
 import java.io.UnsupportedEncodingException;
 
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+
 /*
 Copyright (c) 2003-2017,  Pete Sanderson,Benjamin Landers and Kenneth Vollmar
 
@@ -58,7 +64,7 @@ public class NullString {
      */
     public static String get(ProgramStatement statement, String reg) throws ExitingException {
         int byteAddress = RegisterFile.getValue(reg);
-        ArrayList<Byte> utf8BytesList = new ArrayList<Byte>(); // Need an array to hold bytes
+        ArrayList<Byte> utf8BytesList = new ArrayList<>(); // Need an array to hold bytes
         try {
             utf8BytesList.add((byte) Globals.memory.getByte(byteAddress));
             while (utf8BytesList.get(utf8BytesList.size() - 1) != 0) // until null terminator
@@ -76,17 +82,6 @@ public class NullString {
             utf8Bytes[i] = utf8BytesList.get(i);
         }
 
-        //construct the string using UTF8 encoding
-        String message = "";
-        String charset = "UTF8";
-        try {
-            message = new String(utf8Bytes, charset);
-        } catch (UnsupportedEncodingException e) {
-            //thrown only if the given Charset is not supported by your JVM
-            System.out.println("Error: " + charset + " charset is not supported by the JVM");
-            System.exit(0);
-        }
-        
-        return message;
+        return new String(utf8Bytes, StandardCharsets.UTF_8);
     }
 }

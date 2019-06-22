@@ -110,7 +110,8 @@ public abstract class RegisterBlockWindow extends JPanel implements Observer {
         Object[][] tableData = new Object[registers.length][3];
         for (int i = 0; i < registers.length; i++) {
             tableData[i][0] = registers[i].getName();
-            tableData[i][1] = registers[i].getNumber();
+            int temp = registers[i].getNumber();
+            tableData[i][1] = temp == -1 ? "" : temp;
             tableData[i][2] = formatRegister(registers[i],
                     NumberDisplayBaseChooser.getBase(settings.getBooleanSetting(Settings.Bool.DISPLAY_VALUES_IN_HEX)));
         }
