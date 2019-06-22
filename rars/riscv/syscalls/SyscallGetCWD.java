@@ -51,6 +51,7 @@ public class SyscallGetCWD extends AbstractSyscall {
             RegisterFile.updateRegister("a0",-1);
             return;
         }
+        //TODO: update this to allow for utf-8 encoded directories
         try {
             for (int index = 0; index < path.length(); index++) {
                 Globals.memory.setByte(buf + index,

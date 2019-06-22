@@ -263,16 +263,9 @@ public class SystemIO {
         /////////////// DPS 8-Jan-2013  ////////////////////////////////////////////////////
         /// Write to STDOUT or STDERR file descriptor while using IDE - write to Messages pane.
         if ((fd == STDOUT || fd == STDERR) && Globals.getGui() != null) {
-            String charset = "UTF8";
-            try{
-                String data = new String(myBuffer, charset); //decode the bytes using UTF-8 charset
-                Globals.getGui().getMessagesPane().postRunMessage(data);
-                return data.length();
-            } catch (UnsupportedEncodingException e){
-                //thrown only if the given Charset is not supported by your JVM
-                System.out.println("Error: " + charset + " charset is not supported by the JVM");
-                System.exit(0);
-            }           
+            String data = new String(myBuffer, StandardCharsets.UTF_8); //decode the bytes using UTF-8 charset
+            Globals.getGui().getMessagesPane().postRunMessage(data);
+            return myBuffer.length; // data.length would not count multi-byte characters
         }
         ///////////////////////////////////////////////////////////////////////////////////
         //// When running in command mode, code below works for either regular file or STDOUT/STDERR
@@ -501,6 +494,38 @@ public class SystemIO {
         return inputReader;
     }
 
+    public static Data swapData(Data in){
+        Data temp = new Data(false);
+        temp.fileNames = FileIOData.fileNames;
+        temp.fileFlags = FileIOData.fileFlags;
+        temp.streams = FileIOData.streams;
+        FileIOData.fileNames = in.fileNames;
+        FileIOData.fileFlags = in.fileFlags;
+        FileIOData.streams = in.streams;
+        return temp;
+    }
+
+    public static class Data {
+        private String[] fileNames; // The filenames in use. Null if file descriptor i is not in use.
+        private int[] fileFlags; // The flags of this file, 0=READ, 1=WRITE. Invalid if this file descriptor is not in use.
+        public Closeable[] streams;
+        public Data(boolean generate){
+            if(generate) {
+                fileNames = new String[SYSCALL_MAXFILES];
+                fileFlags = new int[SYSCALL_MAXFILES];
+                streams = new Closeable[SYSCALL_MAXFILES];
+                fileNames[STDIN] = "STDIN";
+                fileNames[STDOUT] = "STDOUT";
+                fileNames[STDERR] = "STDERR";
+                fileFlags[STDIN] = SystemIO.O_RDONLY;
+                fileFlags[STDOUT] = SystemIO.O_WRONLY;
+                fileFlags[STDERR] = SystemIO.O_WRONLY;
+                streams[STDIN] = System.in;
+                streams[STDOUT] = System.out;
+                streams[STDERR] = System.err;
+            }
+        }
+    }
 
     // //////////////////////////////////////////////////////////////////////////////
     // Maintain information on files in use. The index to the arrays is the "file descriptor."
@@ -509,7 +534,8 @@ public class SystemIO {
     private static class FileIOData {
         private static String[] fileNames = new String[SYSCALL_MAXFILES]; // The filenames in use. Null if file descriptor i is not in use.
         private static int[] fileFlags = new int[SYSCALL_MAXFILES]; // The flags of this file, 0=READ, 1=WRITE. Invalid if this file descriptor is not in use.
-        private static Object[] streams = new Object[SYSCALL_MAXFILES]; // The streams in use, associated with the filenames
+        private static Closeable[] streams = new Closeable[SYSCALL_MAXFILES]; // The streams in use, associated with the filenames
+
 
         // Reset all file information. Closes any open files and resets the arrays
         private static void resetFiles() {
@@ -535,13 +561,13 @@ public class SystemIO {
         }
 
         // Preserve a stream that is in use
-        private static void setStreamInUse(int fd, Object s) {
+        private static void setStreamInUse(int fd, Closeable s) {
             streams[fd] = s;
 
         }
 
         // Retrieve a stream for use
-        private static Object getStreamInUse(int fd) {
+        private static Closeable getStreamInUse(int fd) {
             return streams[fd];
 
         }

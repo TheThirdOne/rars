@@ -9,10 +9,10 @@ import rars.riscv.Instruction;
 import rars.util.Binary;
 import rars.util.SystemIO;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import java.io.UnsupportedEncodingException;
 
 /*
  Copyright (c) 2003-2012,  Pete Sanderson and Kenneth Vollmar
@@ -911,8 +911,8 @@ public class Assembler {
 
             if (DataTypes.outOfRange(directive, fullvalue)) {
                 errors.add(new ErrorMessage(ErrorMessage.WARNING, token.getSourceProgram(), token.getSourceLine(),
-                        token.getStartPos(), "\"" + token.getValue()
-                        + "\" is out-of-range for a signed value and possibly truncated"));
+                        token.getStartPos(), "value " + Binary.intToHexString(fullvalue)
+                        + " is out-of-range and truncated to " + Binary.intToHexString(value)));
             }
             if (this.inDataSegment) {
                 writeToDataSegment(value, lengthInBytes, token, errors);
@@ -1070,16 +1070,14 @@ public class Assembler {
                                 try{
                                     codePoint = quote.substring(j+1, j+5); //get the UTF-8 codepoint following the unicode escape sequence
                                     theChar = Character.toChars(Integer.parseInt(codePoint, 16))[0]; //converts the codepoint to single character
-                                } catch(StringIndexOutOfBoundsException | NumberFormatException e){
-                                    String invalidCodePoint = "";
-                                    int endOfCP = j + 5;    //a UTF8 codepoint is 4 bytes long 
-                                    char ch[] = {quote.charAt(++j)};
-                                    while (ch[0] != '"' & j != endOfCP){  //grab all characters after the \ u until end of string or end of codepoint
-                                        invalidCodePoint = invalidCodePoint.concat(new String(ch)); //parameter to String constructor is a char[] array
-                                        ch[0] = quote.charAt(++j);
-                                    }
+                                } catch(StringIndexOutOfBoundsException e){
+                                    String invalidCodePoint = quote.substring(j+1);
                                     errors.add(new ErrorMessage(token.getSourceProgram(), token
-                                        .getSourceLine(), token.getStartPos(), "illegal unicode escape: \"\\u" + invalidCodePoint + "\""));
+                                        .getSourceLine(), token.getStartPos(), "unicode escape \"\\u" +
+                                            invalidCodePoint + "\" is incomplete. Only escapes with 4 digits are valid."));
+                                } catch(NumberFormatException e){
+                                    errors.add(new ErrorMessage(token.getSourceProgram(), token
+                                            .getSourceLine(), token.getStartPos(), "illegal unicode escape: \"\\u" + codePoint + "\""));
                                 }
                                 j = j + 4; //skip past the codepoint for next iteration
                                 break;
@@ -1090,26 +1088,17 @@ public class Assembler {
                             // codes...
                         }
                     }
-                    strOfChar = String.valueOf(theChar); //gets the string representation of the char for use with getBytes
-                    String charset = "UTF8";
-                    try{
-                        byte[] bytesOfChar = strOfChar.getBytes(charset);
-                        int lenOfArray = bytesOfChar.length;
-                        for (int k = 0; k < lenOfArray; k++){
-                            try {
-                                Globals.memory.set(this.dataAddress.get(), bytesOfChar[k],
-                                        DataTypes.CHAR_SIZE);
-                            } catch (AddressErrorException e) {
-                                errors.add(new ErrorMessage(token.getSourceProgram(), token
-                                        .getSourceLine(), token.getStartPos(), "\""
-                                        + this.dataAddress.get() + "\" is not a valid data segment address"));
-                            }
+                    byte[] bytesOfChar = String.valueOf(theChar).getBytes(StandardCharsets.UTF_8);
+                    try {
+                        for (byte b : bytesOfChar) {
+                            Globals.memory.set(this.dataAddress.get(), b,
+                                    DataTypes.CHAR_SIZE);
                             this.dataAddress.increment(DataTypes.CHAR_SIZE);
                         }
-                    } catch (UnsupportedEncodingException e) {
-                        //thrown only if the given Charset is not Supported by your JVM
-                        System.out.println("Error: " + charset + " charset is not supported by the JVM");
-                        System.exit(0);
+                    } catch (AddressErrorException e) {
+                        errors.add(new ErrorMessage(token.getSourceProgram(), token
+                                .getSourceLine(), token.getStartPos(), "\""
+                                + this.dataAddress.get() + "\" is not a valid data segment address"));
                     }
                     
                 }

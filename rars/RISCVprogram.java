@@ -8,6 +8,7 @@ import rars.simulator.Simulator;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /*
 Copyright (c) 2003-2006,  Pete Sanderson and Kenneth Vollmar
@@ -210,6 +211,16 @@ public class RISCVprogram {
             return null;
     }
 
+
+    /**
+     * Reads RISCV source code from a string into structure.
+     *
+     * @param source String containing the RISCV source code.
+     **/
+    public void fromString(String source){
+        this.filename = source;
+        this.sourceList = new ArrayList<>(Arrays.asList(source.split( "\n")));
+    }
 
     /**
      * Reads RISCV source code from file into structure.  Will always read from file.

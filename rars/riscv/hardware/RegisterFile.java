@@ -66,7 +66,7 @@ public class RegisterFile {
             new Register("t5", 30, 0), new Register("t6", 31, 0)
     });
 
-    private static Register programCounter = new Register("pc", 32, Memory.textBaseAddress);
+    private static Register programCounter = new Register("pc", -1, Memory.textBaseAddress);
 
     /**
      * This method updates the register value who's number is num.  Also handles the lo and hi registers

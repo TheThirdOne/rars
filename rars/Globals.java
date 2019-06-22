@@ -99,7 +99,7 @@ public class Globals {
     /**
      * The current version number. Can't wait for "initialize()" call to get it.
      */
-    public static final String version = "1.2";
+    public static final String version = "1.3";
     /**
      * List of accepted file extensions for RISCV assembly source files.
      */

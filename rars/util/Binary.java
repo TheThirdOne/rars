@@ -384,11 +384,16 @@ public class Binary {
         if(s.length() == 0) return null;
         char first = s.charAt(0);
         if(!(('0' <= first && first <= '9') || first == '-')) return null;
+
         int result = 0;
+        int i = 0;
+        if(first == '-') i=1;
+
         // Not doing s = s.lowercase() because it is slightly slower
-        if(s.length() > 2 && first == '0' && (s.charAt(1) == 'x' || s.charAt(1) == 'X')) { // Hex case
-            if(s.length() > 10) return null; // This must overflow or contain invalid characters
-            for(int i = 2; i < s.length(); i++) {
+        if(s.length() > 2+i && s.charAt(i) == '0' && (s.charAt(i+1) == 'x' || s.charAt(i+1) == 'X')) { // Hex case
+            if(s.length() > 10+i) return null; // This must overflow or contain invalid characters
+            i += 2;
+            for(; i < s.length(); i++) {
                 char c = s.charAt(i);
                 result *= 16;
                 if ('0' <= c && c <= '9') {
@@ -402,7 +407,7 @@ public class Binary {
                 }
             }
         }else if (first == '0'){ // Octal case
-            for(int i = 0; i < s.length(); i++){
+            for(; i < s.length(); i++){
                 char c = s.charAt(i);
                 if ('0' <= c && c <= '7') {
                     result *= 8;
@@ -413,8 +418,6 @@ public class Binary {
             }
             if(result < 0)return null;
         } else {
-            int i = 0;
-            if(first == '-') i=1;
             for(; i < s.length(); i++){
                 char c = s.charAt(i);
                 if ('0' <= c && c <= '9') {
@@ -424,12 +427,12 @@ public class Binary {
                     return null;
                 }
             }
-            // Overflowing to min and negating keeps the value at min
-            if(result == Integer.MIN_VALUE && first == '-') return Integer.MIN_VALUE;
-            // Don't allow overflow and negation as that produces unexpected values.
-            if(result < 0 && first == '-') return null;
-            if(first == '-') result*=-1;
         }
+        // Overflowing to min and negating keeps the value at min
+        if(result == Integer.MIN_VALUE && first == '-') return Integer.MIN_VALUE;
+        // Don't allow overflow and negation as that produces unexpected values.
+        if(result < 0 && first == '-') return null;
+        if(first == '-') result*=-1;
         return result;
     }
     /**

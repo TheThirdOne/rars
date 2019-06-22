@@ -62,6 +62,7 @@ public class SyscallReadString extends AbstractSyscall {
             addNullByte = false;
         }
         inputString = SystemIO.readString(this.getNumber(), maxLength);
+        // TODO: allow for utf-8 encoded strings
         int stringLength = Math.min(maxLength, inputString.length());
         try {
             for (int index = 0; index < stringLength; index++) {
