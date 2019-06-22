@@ -5,11 +5,6 @@ import rars.Globals;
 import rars.ProgramStatement;
 import rars.riscv.hardware.AddressErrorException;
 import rars.riscv.hardware.RegisterFile;
-import java.util.ArrayList;
-import java.io.UnsupportedEncodingException;
-
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;

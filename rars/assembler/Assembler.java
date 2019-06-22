@@ -1034,7 +1034,6 @@ public class Assembler {
                 char theChar;
                 for (int j = 1; j < quote.length() - 1; j++) {
                     theChar = quote.charAt(j);
-                    String strOfChar = "";
                     if (theChar == '\\') {
                         theChar = quote.charAt(++j);
                         switch (theChar) {

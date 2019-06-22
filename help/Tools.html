@@ -47,7 +47,7 @@ value; when any of them is modified the other two are updated as well.
 System calls (<tt>ecall</tt> instruction) are implemented using
 a technique similar to that for tools.  This permits anyone to add a new syscall by defining
 a new class that meets these requirements:
-<li>
+<ol>
     <li>It extends the <tt>rars.riscv.AbstractSyscall</tt> class.</li>
     <li>It is part of the <tt>rars.riscv.syscalls</tt> package.</li>
     <li>It compiles cleanly into a ".class" file, stored in the

@@ -66,7 +66,7 @@ public abstract class AbstractSyscall implements Comparable<AbstractSyscall> {
 
     /**
      * @param name service name which may be used for reference independent of number
-     * @param descr a hort description of what the system calll does
+     * @param descr a short description of what the system call does
      * @param in    a description of what registers should be set to before the system call
      * @param out   a description of what registers are set to after the system call
      */
@@ -79,7 +79,7 @@ public abstract class AbstractSyscall implements Comparable<AbstractSyscall> {
     }
 
     /**
-     * Return the name you have chosen for this syscall.  This can be used by a MARS
+     * Return the name you have chosen for this syscall.  This can be used by a RARS
      * user to refer to the service when choosing to override its default service
      * number in the configuration file.
      *
