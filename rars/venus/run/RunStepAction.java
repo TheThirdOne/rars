@@ -1,5 +1,6 @@
 package rars.venus.run;
 
+import com.sun.javafx.event.EventUtil;
 import rars.Globals;
 import rars.Settings;
 import rars.SimulationException;
@@ -13,6 +14,7 @@ import rars.venus.GuiAction;
 import rars.venus.VenusUI;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.Observable;
 import java.util.Observer;
@@ -80,7 +82,7 @@ public class RunStepAction extends GuiAction {
                         public void update(Observable o, Object simulator) {
                             SimulatorNotice notice = ((SimulatorNotice) simulator);
                             if (notice.getAction() != SimulatorNotice.SIMULATOR_STOP) return;
-                            stepped(notice.getDone(), notice.getReason(), notice.getException());
+                            EventQueue.invokeLater(() -> stepped(notice.getDone(), notice.getReason(), notice.getException()));
                             o.deleteObserver(this);
                         }
                     };
