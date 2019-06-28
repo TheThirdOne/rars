@@ -14,6 +14,7 @@ import rars.venus.GuiAction;
 import rars.venus.VenusUI;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.Observable;
 import java.util.Observer;
@@ -93,9 +94,9 @@ public class RunGoAction extends GuiAction {
                                 if (notice.getAction() != SimulatorNotice.SIMULATOR_STOP) return;
                                 Simulator.Reason reason = notice.getReason();
                                 if (reason == Simulator.Reason.PAUSE || reason == Simulator.Reason.BREAKPOINT) {
-                                    paused(notice.getDone(), reason, notice.getException());
+                                    EventQueue.invokeLater(()->paused(notice.getDone(), reason, notice.getException()));
                                 } else {
-                                    stopped(notice.getException(), reason);
+                                    EventQueue.invokeLater(()->stopped(notice.getException(), reason));
                                 }
                                 o.deleteObserver(this);
                             }
