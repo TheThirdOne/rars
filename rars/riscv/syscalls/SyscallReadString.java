@@ -8,6 +8,8 @@ import rars.riscv.hardware.AddressErrorException;
 import rars.riscv.hardware.RegisterFile;
 import rars.util.SystemIO;
 
+import java.nio.charset.StandardCharsets;
+
 /*
 Copyright (c) 2003-2006,  Pete Sanderson and Kenneth Vollmar
 
@@ -62,12 +64,14 @@ public class SyscallReadString extends AbstractSyscall {
             addNullByte = false;
         }
         inputString = SystemIO.readString(this.getNumber(), maxLength);
+
+        byte[] utf8BytesList = inputString.getBytes(StandardCharsets.UTF_8);
         // TODO: allow for utf-8 encoded strings
-        int stringLength = Math.min(maxLength, inputString.length());
+        int stringLength = Math.min(maxLength, utf8BytesList.length);
         try {
             for (int index = 0; index < stringLength; index++) {
                 Globals.memory.setByte(buf + index,
-                        inputString.charAt(index));
+                        utf8BytesList[index]);
             }
             if (stringLength < maxLength) {
                 Globals.memory.setByte(buf + stringLength, '\n');

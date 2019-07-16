@@ -8,6 +8,7 @@ import rars.riscv.hardware.RegisterFile;
 import rars.riscv.AbstractSyscall;
 
 import javax.swing.*;
+import java.nio.charset.StandardCharsets;
 
 /*
 Copyright (c) 2003-2008,  Pete Sanderson and Kenneth Vollmar
@@ -77,19 +78,21 @@ public class SyscallInputDialogString extends AbstractSyscall {
             {
                 RegisterFile.updateRegister("a1", -3);
             } else {
-                // TODO: update this to allow for utf-8 encoded characters
+                byte[] utf8BytesList = inputString.getBytes(StandardCharsets.UTF_8);
                 // The buffer will contain characters, a '\n' character, and the null character
                 // Copy the input data to buffer as space permits
-                for (int index = 0; (index < inputString.length()) && (index < maxLength - 1); index++) {
-                    Globals.memory.setByte(byteAddress + index,
-                            inputString.charAt(index));
+                int stringLength = Math.min(maxLength-1, utf8BytesList.length);
+                for (int index = 0; index < stringLength; index++) {
+                    Globals.memory.setByte(byteAddress+ index,
+                            utf8BytesList[index]);
                 }
-                if (inputString.length() < maxLength - 1) {
-                    Globals.memory.setByte(byteAddress + Math.min(inputString.length(), maxLength - 2), '\n');  // newline at string end
+                if (stringLength < maxLength-1) {
+                    Globals.memory.setByte(byteAddress + stringLength, '\n');
+                    stringLength++;
                 }
-                Globals.memory.setByte(byteAddress + Math.min((inputString.length() + 1), maxLength - 1), 0);  // null char to end string
+                Globals.memory.setByte(byteAddress + stringLength, 0);
 
-                if (inputString.length() > maxLength - 1) {
+                if (utf8BytesList.length > maxLength - 1) {
                     //  length of the input string exceeded the specified maximum
                     RegisterFile.updateRegister("a1", -4);
                 } else {

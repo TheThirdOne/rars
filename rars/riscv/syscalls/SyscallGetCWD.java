@@ -7,6 +7,8 @@ import rars.riscv.AbstractSyscall;
 import rars.riscv.hardware.AddressErrorException;
 import rars.riscv.hardware.RegisterFile;
 
+import java.nio.charset.StandardCharsets;
+
 /*
 Copyright (c) 20017,  Benjamin Landers
 
@@ -45,19 +47,20 @@ public class SyscallGetCWD extends AbstractSyscall {
         String path = System.getProperty("user.dir");
         int buf = RegisterFile.getValue("a0");
         int length = RegisterFile.getValue("a1");
-        if(length < path.length()+1){
+
+        byte[] utf8BytesList = path.getBytes(StandardCharsets.UTF_8);
+        if(length < utf8BytesList.length+1){
             // This should be -34 (ERANGE) for compatability with spike, but until other syscalls are ready with compatable
             // error codes, lets keep internal consitency.
             RegisterFile.updateRegister("a0",-1);
             return;
         }
-        //TODO: update this to allow for utf-8 encoded directories
         try {
-            for (int index = 0; index < path.length(); index++) {
+            for (int index = 0; index < utf8BytesList.length; index++) {
                 Globals.memory.setByte(buf + index,
-                        path.charAt(index));
+                        utf8BytesList[index]);
             }
-            Globals.memory.setByte(buf + path.length(), 0);
+            Globals.memory.setByte(buf + utf8BytesList.length, 0);
         } catch (AddressErrorException e) {
             throw new ExitingException(statement, e);
         }
