@@ -1,6 +1,5 @@
 package rars.venus.run;
 
-import com.sun.javafx.event.EventUtil;
 import rars.Globals;
 import rars.Settings;
 import rars.SimulationException;
