@@ -55,7 +55,8 @@ public enum TokenTypes {
     INTEGER_5, INTEGER_12, INTEGER_20, INTEGER_32, REAL_NUMBER,
     QUOTED_STRING,
     PLUS, MINUS, COLON,
-    ERROR, MACRO_PARAMETER;
+    ERROR, MACRO_PARAMETER,
+    HI, LO;
 
     public static final String TOKEN_DELIMITERS = "\t ,()";
 
@@ -100,6 +101,13 @@ public enum TokenTypes {
                 case '-':
                     return TokenTypes.MINUS;
             }
+        }
+
+        if(value.equals("%hi")){
+            return TokenTypes.HI;
+        }
+        if(value.equals("%lo")){
+            return TokenTypes.LO;
         }
 
         // See if it is a macro parameter

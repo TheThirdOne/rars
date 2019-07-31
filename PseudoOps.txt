@@ -199,3 +199,9 @@ fsflags t1, t2  ; csrrw RG1, 0x003, RG2 ;#Swap FP exception flags
 fsflags t1      ; csrrs  x0, 0x003, RG1 ;#Write FP exception flags
 fsflagsi t1, 100 ; csrrwi RG1, 0x003, RG2 ;#Swap FP exception flags, immediate
 fsflagsi 100     ; csrrsi  x0, 0x003, RG1 ;#Write FP exception flags, immediate
+
+### GCC compatability
+lui t1,%hi(label)     ;lui RG1,LH4      ;#Load Upper Address : Set t1 to upper 20-bit label's address
+addi t1,t2,%lo(label) ;addi RG1,RG2,LL5 ;#Load Lower Address : Set t1 to t2 + lower 12-bit label's address
+lw t1,%lo(label)(t2)  ;lw RG1,LL4(RG7)  ;#Load from Address
+flw f1,%lo(label)(t2) ;flw RG1,LL4(RG7) ;#Load from Address
