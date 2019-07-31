@@ -64,7 +64,7 @@ public final class Directives {
     public static final Directives END_MACRO = new Directives(".end_macro", "End macro definition.  See .macro");
     /*  INCLUDE added by DPS 11 Jan 2013 */
     public static final Directives INCLUDE = new Directives(".include", "Insert the contents of the specified file.  Put filename in quotes.");
-
+    public static final Directives SECTION = new Directives(".section", "Allows specifying sections without .text or .data directives. Included for gcc comparability");
 
     private String descriptor;
     private String description; // help text

@@ -642,6 +642,27 @@ public class Assembler {
             if (tokens.size() > 1 && TokenTypes.isIntegerTokenType(tokens.get(1).getType())) {
                 this.textAddress.set(Binary.stringToInt(tokens.get(1).getValue())); // KENV 1/6/05
             }
+        } else if (direct == Directives.SECTION){
+            if(tokens.size() >= 2){
+                Token section = tokens.get(1);
+                if(section.getType() != TokenTypes.IDENTIFIER){
+                    errors.add(new ErrorMessage(token.getSourceProgram(),token.getSourceLine(),token.getStartPos(),
+                            ".section must be followed by a section name "));
+                }else{
+                    String str = section.getValue();
+                    if(str.startsWith(".data") || str.startsWith(".rodata")){
+                        this.inDataSegment = true;
+                    }else if(str.startsWith(".text")){
+                        this.inDataSegment = false;
+                    }else{
+                        errors.add(new ErrorMessage(true,token.getSourceProgram(),token.getSourceLine(),token.getStartPos(),
+                                "section name \""+str+"\" is ignored"));
+                    }
+                }
+            }else{
+                errors.add(new ErrorMessage(true,token.getSourceProgram(),token.getSourceLine(),token.getStartPos(),
+                        ".section without arguments is ignored"));
+            }
         } else if (direct == Directives.WORD || direct == Directives.HALF
                 || direct == Directives.BYTE || direct == Directives.FLOAT
                 || direct == Directives.DOUBLE) {
@@ -656,27 +677,28 @@ public class Assembler {
                 storeStrings(tokens, direct, errors);
             }
         } else if (direct == Directives.ALIGN) {
-            if (passesDataSegmentCheck(token)) {
-                if (tokens.size() != 2) {
-                    errors.add(new ErrorMessage(token.getSourceProgram(),
-                            token.getSourceLine(), token.getStartPos(), "\"" + token.getValue()
-                            + "\" requires one operand"));
-                    return;
-                }
-                if (!TokenTypes.isIntegerTokenType(tokens.get(1).getType())
-                        || Binary.stringToInt(tokens.get(1).getValue()) < 0) {
-                    errors.add(new ErrorMessage(token.getSourceProgram(),
-                            token.getSourceLine(), token.getStartPos(), "\"" + token.getValue()
-                            + "\" requires a non-negative integer"));
-                    return;
-                }
-                int value = Binary.stringToInt(tokens.get(1).getValue()); // KENV 1/6/05
-                if (value == 0) {
-                    this.autoAlign = false;
-                } else {
-                    this.dataAddress.set(this.alignToBoundary(this.dataAddress.get(),
-                            (int) Math.pow(2, value)));
-                }
+            if (tokens.size() != 2) {
+                errors.add(new ErrorMessage(token.getSourceProgram(),
+                        token.getSourceLine(), token.getStartPos(), "\"" + token.getValue()
+                        + "\" requires one operand"));
+                return;
+            }
+            if (!TokenTypes.isIntegerTokenType(tokens.get(1).getType())
+                    || Binary.stringToInt(tokens.get(1).getValue()) < 0) {
+                errors.add(new ErrorMessage(token.getSourceProgram(),
+                        token.getSourceLine(), token.getStartPos(), "\"" + token.getValue()
+                        + "\" requires a non-negative integer"));
+                return;
+            }
+            int value = Binary.stringToInt(tokens.get(1).getValue()); // KENV 1/6/05
+            if(value < 2 && !this.inDataSegment) {
+                errors.add(new ErrorMessage(true,token.getSourceProgram(),token.getSourceLine(),token.getStartPos(),
+                        "Alignments less than 4 bytes are not supported in the text section. The alignment has been rounded up to 4 bytes."));
+                this.dataAddress.set(this.alignToBoundary(this.dataAddress.get(),4));
+            } else if (value == 0) {
+                this.autoAlign = false;
+            } else {
+                this.dataAddress.set(this.alignToBoundary(this.dataAddress.get(),(int)Math.pow(2,value)));
             }
         } else if (direct == Directives.SPACE) {
             // TODO: add a fill type option

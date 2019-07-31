@@ -56,7 +56,8 @@ public enum TokenTypes {
     QUOTED_STRING,
     PLUS, MINUS, COLON,
     ERROR, MACRO_PARAMETER,
-    HI, LO;
+    HI, LO,
+    TAG;
 
     public static final String TOKEN_DELIMITERS = "\t ,()";
 
@@ -86,6 +87,9 @@ public enum TokenTypes {
         // See if it is a comment
         if (value.charAt(0) == '#')
             return TokenTypes.COMMENT;
+
+        if (value.charAt(0) == '@')
+            return TokenTypes.TAG;
 
         // See if it is one of the simple tokens
         if (value.length() == 1) {
