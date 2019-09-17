@@ -463,11 +463,12 @@ public class BitmapDisplay extends AbstractToolAndApplication {
     // Given memory address, update color for the corresponding grid element.
     private void updateColorForAddress(MemoryAccessNotice notice) {
         int address = notice.getAddress();
-        int value = notice.getValue();
         int offset = (address - baseAddress) / Memory.WORD_LENGTH_BYTES;
+
         try {
-            theGrid.setElement(offset / theGrid.getColumns(), offset % theGrid.getColumns(), value);
-        } catch (IndexOutOfBoundsException e) {
+            theGrid.setElement(offset / theGrid.getColumns(), offset % theGrid.getColumns(),
+                    Memory.getInstance().getWord(address / Memory.WORD_LENGTH_BYTES * Memory.WORD_LENGTH_BYTES));
+        } catch (Exception e) {
             // If address is out of range for display, do nothing.
         }
     }
