@@ -150,19 +150,19 @@ public class Settings extends Observable {
         SELF_MODIFYING_CODE_ENABLED("SelfModifyingCode", false);
 
         // TODO: add option for turning off user trap handling and interrupts
-        String name;
-        boolean value;
+        private String name;
+        private boolean value;
 
         Bool(String n, boolean v) {
             name = n;
             value = v;
         }
 
-        boolean getValue() {
+        boolean getDefault() {
             return value;
         }
 
-        void resetDefault(boolean v) {
+        void setDefault(boolean v) {
             value = v;
         }
 
@@ -913,7 +913,7 @@ public class Settings extends Observable {
     // Default values.  Will be replaced if available from property file or Preferences object.
     private void applyDefaultSettings() {
         for (Bool setting : Bool.values()) {
-            booleanSettingsValues.put(setting, setting.getValue());
+            booleanSettingsValues.put(setting, setting.getDefault());
         }
         for (int i = 0; i < stringSettingsValues.length; i++) {
             stringSettingsValues[i] = defaultStringSettingsValues[i];
@@ -933,7 +933,7 @@ public class Settings extends Observable {
     private void internalSetBooleanSetting(Bool setting, boolean value) {
         if (value != booleanSettingsValues.get(setting)) {
             booleanSettingsValues.put(setting, value);
-            saveBooleanSetting(setting);
+            saveBooleanSetting(setting.getName(),value);
             setChanged();
             notifyObservers();
         }
@@ -999,7 +999,7 @@ public class Settings extends Observable {
                 settingValue = Globals.getPropertyEntry(filename, setting.getName());
                 if (settingValue != null) {
                     boolean value = Boolean.valueOf(settingValue);
-                    setting.resetDefault(value);
+                    setting.setDefault(value);
                     booleanSettingsValues.put(setting, value);
                 }
             }
@@ -1057,9 +1057,9 @@ public class Settings extends Observable {
 
 
     // Save the key-value pair in the Properties object and assure it is written to persisent storage.
-    private void saveBooleanSetting(Bool setting) {
+    private void saveBooleanSetting(String name,boolean value) {
         try {
-            preferences.putBoolean(setting.getName(), setting.getValue());
+            preferences.putBoolean(name, value);
             preferences.flush();
         } catch (SecurityException se) {
             // cannot write to persistent storage for security reasons
