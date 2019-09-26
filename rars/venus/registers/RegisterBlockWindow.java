@@ -306,8 +306,11 @@ public abstract class RegisterBlockWindow extends JPanel implements Observer {
             }
             //  Assures that if changed during program execution, the update will
             //  occur only between instructions.
-            synchronized (Globals.memoryAndRegistersLock) {
+            Globals.memoryAndRegistersLock.lock();
+            try {
                 registers[row].setValue(val);
+            } finally {
+                Globals.memoryAndRegistersLock.unlock();
             }
             int valueBase = Globals.getGui().getMainPane().getExecutePane().getValueDisplayBase();
             data[row][col] = NumberDisplayBaseChooser.formatNumber(val, valueBase);

@@ -353,12 +353,19 @@ public class MessagesPane extends JTabbedPane {
      */
     public String getInputString(String prompt) {
         String input;
+        boolean lock = Globals.memoryAndRegistersLock.isHeldByCurrentThread();
+        if (lock) {
+            Globals.memoryAndRegistersLock.unlock();
+        }
         JOptionPane pane = new JOptionPane(prompt, JOptionPane.QUESTION_MESSAGE, JOptionPane.DEFAULT_OPTION);
         pane.setWantsInput(true);
         JDialog dialog = pane.createDialog(Globals.getGui(), "Keyboard Input");
         dialog.setVisible(true);
         input = (String) pane.getInputValue();
         this.postRunMessage(Globals.userInputAlert + input + "\n");
+        if (lock) {
+            Globals.memoryAndRegistersLock.lock();
+        }
         return input;
     }
 
@@ -376,8 +383,16 @@ public class MessagesPane extends JTabbedPane {
      * @return User input.
      */
     public String getInputString(int maxLen) {
+        boolean lock = Globals.memoryAndRegistersLock.isHeldByCurrentThread();
+        if (lock) {
+            Globals.memoryAndRegistersLock.unlock();
+        }
         Asker asker = new Asker(maxLen); // Asker defined immediately below.
-        return asker.response();
+        String out = asker.response();
+        if (lock) {
+            Globals.memoryAndRegistersLock.lock();
+        }
+        return out;
     }
 
     ////////////////////////////////////////////////////////////////////////////

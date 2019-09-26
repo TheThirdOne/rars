@@ -677,7 +677,8 @@ public class KeyboardAndDisplaySimulator extends AbstractToolAndApplication {
     // NOTE: last argument TRUE means update only the MMIO Control register; FALSE means update both Control and Data.
     private synchronized void updateMMIOControlAndData(int controlAddr, int controlValue, int dataAddr, int dataValue, boolean controlOnly) {
         if (!this.isBeingUsedAsATool || (this.isBeingUsedAsATool && connectButton.isConnected())) {
-            synchronized (Globals.memoryAndRegistersLock) {
+            Globals.memoryAndRegistersLock.lock();
+            try {
                 try {
                     Globals.memory.setRawWord(controlAddr, controlValue);
                     if (!controlOnly) Globals.memory.setRawWord(dataAddr, dataValue);
@@ -685,6 +686,8 @@ public class KeyboardAndDisplaySimulator extends AbstractToolAndApplication {
                     System.out.println("Tool author specified incorrect MMIO address!" + aee);
                     System.exit(0);
                 }
+            } finally {
+                Globals.memoryAndRegistersLock.unlock();
             }
             // HERE'S A HACK!!  Want to immediately display the updated memory value in MARS
             // but that code was not written for event-driven update (e.g. Observer) --

@@ -390,7 +390,8 @@ public class Simulator extends Observable {
                 // to access memory and registers only through synchronized blocks on same
                 // lock variable, then full (albeit heavy-handed) protection of memory and
                 // registers is assured.  Not as critical for reading from those resources.
-                synchronized (Globals.memoryAndRegistersLock) {
+                Globals.memoryAndRegistersLock.lock();
+                try {
                     // Handle pending interupts and traps first
                     int uip = ControlAndStatusRegisterFile.getValueNoNotify("uip"), uie = ControlAndStatusRegisterFile.getValueNoNotify("uie");
                     boolean IE = (ControlAndStatusRegisterFile.getValueNoNotify("ustatus") & ControlAndStatusRegisterFile.INTERRUPT_ENABLE) != 0;
@@ -514,7 +515,9 @@ public class Simulator extends Observable {
                             return;
                         }
                     }
-                }// end synchronized block
+                } finally {
+                    Globals.memoryAndRegistersLock.unlock();
+                }
 
                 // Update cycle(h) and instret(h)
                 int cycle = ControlAndStatusRegisterFile.getValueNoNotify("cycle"),

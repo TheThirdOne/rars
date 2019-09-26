@@ -653,15 +653,21 @@ public abstract class AbstractToolAndApplication extends JFrame implements Tool,
 
         public void connect() {
             observing = true;
-            synchronized (Globals.memoryAndRegistersLock) {// DPS 23 July 2008
+            Globals.memoryAndRegistersLock.lock();
+            try {
                 addAsObserver();
+            } finally {
+                Globals.memoryAndRegistersLock.unlock();
             }
             setText(disconnectText);
         }
 
         public void disconnect() {
-            synchronized (Globals.memoryAndRegistersLock) {// DPS 23 July 2008
+            Globals.memoryAndRegistersLock.lock();
+            try {
                 deleteAsObserver();
+            } finally {
+                Globals.memoryAndRegistersLock.unlock();
             }
             observing = false;
             setText(connectText);

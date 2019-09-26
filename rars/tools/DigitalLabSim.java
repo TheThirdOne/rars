@@ -108,13 +108,16 @@ public class DigitalLabSim extends AbstractToolAndApplication {
 
     private synchronized void updateMMIOControlAndData(int dataAddr, int dataValue) {
         if (!this.isBeingUsedAsATool || (this.isBeingUsedAsATool && connectButton.isConnected())) {
-            synchronized (Globals.memoryAndRegistersLock) {
+            Globals.memoryAndRegistersLock.lock();
+            try {
                 try {
                     Globals.memory.setByte(dataAddr, dataValue);
                 } catch (AddressErrorException aee) {
                     System.out.println("Tool author specified incorrect MMIO address!" + aee);
                     System.exit(0);
                 }
+            } finally {
+                Globals.memoryAndRegistersLock.unlock();
             }
             if (Globals.getGui() != null && Globals.getGui().getMainPane().getExecutePane().getTextSegmentWindow().getCodeHighlighting()) {
                 Globals.getGui().getMainPane().getExecutePane().getDataSegmentWindow().updateValues();

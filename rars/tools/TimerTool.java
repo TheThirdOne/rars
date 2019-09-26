@@ -277,13 +277,16 @@ public class TimerTool extends AbstractToolAndApplication {
 
     // Writes a word to a virtual memory address
     private synchronized void updateMMIOControlAndData(int dataAddr, int dataValue) {
-        synchronized (Globals.memoryAndRegistersLock) {
+        Globals.memoryAndRegistersLock.lock();
+        try {
             try {
                 Globals.memory.setRawWord(dataAddr, dataValue);
             } catch (AddressErrorException aee) {
                 System.out.println("Tool author specified incorrect MMIO address!" + aee);
                 System.exit(0);
             }
+        } finally {
+            Globals.memoryAndRegistersLock.unlock();
         }
     }
 

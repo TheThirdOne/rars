@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Properties;
 import java.util.StringTokenizer;
+import java.util.concurrent.locks.ReentrantLock;
 
 /*
 Copyright (c) 2003-2008,  Pete Sanderson and Kenneth Vollmar
@@ -70,7 +71,7 @@ public class Globals {
     /**
      * Lock variable used at head of synchronized block to guard memory and registers
      **/
-    public static final Object memoryAndRegistersLock = new Object();
+    public static final ReentrantLock memoryAndRegistersLock = new ReentrantLock();
     /**
      * Flag to determine whether or not to produce internal debugging information.
      **/

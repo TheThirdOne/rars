@@ -937,7 +937,8 @@ public class DataSegmentWindow extends JInternalFrame implements Observer {
             }
             //  Assures that if changed during MIPS program execution, the update will
             //  occur only between instructions.
-            synchronized (Globals.memoryAndRegistersLock) {
+            Globals.memoryAndRegistersLock.lock();
+            try {
                 try {
                     Globals.memory.setRawWord(address, val);
                 }
@@ -946,6 +947,8 @@ public class DataSegmentWindow extends JInternalFrame implements Observer {
                 catch (AddressErrorException aee) {
                     return;
                 }
+            } finally {
+                Globals.memoryAndRegistersLock.unlock();
             }// end synchronized block
             int valueBase = Globals.getGui().getMainPane().getExecutePane().getValueDisplayBase();
             data[row][col] = NumberDisplayBaseChooser.formatNumber(val, valueBase);
