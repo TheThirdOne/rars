@@ -89,7 +89,13 @@ public class SystemIO {
      */
 
     public static int readInteger(int serviceNumber) {
-        String input = "0";
+        String input = readStringInternal("0", "Enter an integer value (syscall " + serviceNumber + ")", -1);
+        // Client is responsible for catching NumberFormatException
+        return Integer.parseInt(input.trim());
+    }
+
+    private static String readStringInternal(String init, String prompt, int maxlength) {
+        String input = init;
         if (Globals.getGui() == null) {
             try {
                 input = getInputReader().readLine();
@@ -97,17 +103,13 @@ public class SystemIO {
             }
         } else {
             if (Globals.getSettings().getBooleanSetting(Settings.Bool.POPUP_SYSCALL_INPUT)) {
-                input = Globals.getGui().getMessagesPane().getInputString(
-                        "Enter an integer value (syscall " + serviceNumber + ")");
+                input = Globals.getGui().getMessagesPane().getInputString(prompt);
             } else {
-                input = Globals.getGui().getMessagesPane().getInputString(-1);
+                input = Globals.getGui().getMessagesPane().getInputString(maxlength);
             }
         }
-
-        // Client is responsible for catching NumberFormatException
-        return Integer.parseInt(input.trim());
+        return input;
     }
-
 
     /**
      * Implements syscall to read a float value.
@@ -118,51 +120,9 @@ public class SystemIO {
      * Feb 14 2005 Ken Vollmar
      */
     public static float readFloat(int serviceNumber) {
-        String input = "0";
-        if (Globals.getGui() == null) {
-            try {
-                input = getInputReader().readLine();
-            } catch (IOException e) {
-            }
-        } else {
-            if (Globals.getSettings().getBooleanSetting(Settings.Bool.POPUP_SYSCALL_INPUT)) {
-                input = Globals.getGui().getMessagesPane().getInputString(
-                        "Enter a float value (syscall " + serviceNumber + ")");
-            } else {
-                input = Globals.getGui().getMessagesPane().getInputString(-1);
-            }
-        }
+        String input = readStringInternal("0", "Enter a float value (syscall " + serviceNumber + ")", -1);
         return Float.parseFloat(input.trim());
     }
-
-
-    /**
-     * Implements syscall to read a double value.
-     * Client is responsible for catching NumberFormatException.
-     *
-     * @param serviceNumber the number assigned to Read Double syscall (default 7)
-     * @return double value corresponding to user input
-     * 1 Aug 2005 DPS, based on Ken Vollmar's readFloat
-     */
-    public static double readDouble(int serviceNumber) {
-        String input = "0";
-        if (Globals.getGui() == null) {
-            try {
-                input = getInputReader().readLine();
-            } catch (IOException e) {
-            }
-        } else {
-            if (Globals.getSettings().getBooleanSetting(Settings.Bool.POPUP_SYSCALL_INPUT)) {
-                input = Globals.getGui().getMessagesPane().getInputString(
-                        "Enter a double value (syscall " + serviceNumber + ")");
-            } else {
-                input = Globals.getGui().getMessagesPane().getInputString(-1);
-            }
-        }
-        return Double.parseDouble(input.trim());
-
-    }
-
 
     /**
      * Implements syscall having 4 in $v0, to print a string.
@@ -185,25 +145,11 @@ public class SystemIO {
      * @return the entered string, truncated to maximum length if necessary
      */
     public static String readString(int serviceNumber, int maxLength) {
-        String input = "";
-        if (Globals.getGui() == null) {
-            try {
-                input = getInputReader().readLine();
-            } catch (IOException e) {
-            }
-        } else {
-            if (Globals.getSettings().getBooleanSetting(Settings.Bool.POPUP_SYSCALL_INPUT)) {
-                input = Globals.getGui().getMessagesPane().getInputString(
-                        "Enter a string of maximum length " + maxLength
-                                + " (syscall " + serviceNumber + ")");
-            } else {
-                input = Globals.getGui().getMessagesPane().getInputString(maxLength);
-                if (input.endsWith("\n")) {
-                    input = input.substring(0, input.length() - 1);
-                }
-            }
+        String input = readStringInternal("", "Enter a string of maximum length " + maxLength
+                + " (syscall " + serviceNumber + ")", maxLength);
+        if (input.endsWith("\n")) {
+            input = input.substring(0, input.length() - 1);
         }
-
         if (input.length() > maxLength) {
             // Modified DPS 13-July-2011.  Originally: return input.substring(0, maxLength);
             return (maxLength <= 0) ? "" : input.substring(0, maxLength);
@@ -220,21 +166,9 @@ public class SystemIO {
      * @return int value with lowest byte corresponding to user input
      */
     public static int readChar(int serviceNumber) {
-        String input = "0";
         int returnValue = 0;
-        if (Globals.getGui() == null) {
-            try {
-                input = getInputReader().readLine();
-            } catch (IOException e) {
-            }
-        } else {
-            if (Globals.getSettings().getBooleanSetting(Settings.Bool.POPUP_SYSCALL_INPUT)) {
-                input = Globals.getGui().getMessagesPane().getInputString(
-                        "Enter a character value (syscall " + serviceNumber + ")");
-            } else {
-                input = Globals.getGui().getMessagesPane().getInputString(1);
-            }
-        }
+
+        String input = readStringInternal("0", "Enter a character value (syscall " + serviceNumber + ")", 1);
         // The whole try-catch is not really necessary in this case since I'm
         // just propagating the runtime exception (the default behavior), but
         // I want to make it explicit.  The client needs to catch it.
