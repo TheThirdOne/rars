@@ -65,7 +65,7 @@ public class ControlAndStatusRegisterFile {
                 new ReadOnlyRegister("cycle", 0xC00, 0, -1),
                 new ReadOnlyRegister("instret",0xC02, 0, -1),
                 new ReadOnlyRegister("cycleh", 0xC80, 0, -1),
-                new ReadOnlyRegister("instreth",0xC81, 0, -1),
+                new ReadOnlyRegister("instreth",0xC82, 0, -1),
         };
         tmp[1] = new LinkedRegister("fflags", 0x001, tmp[3], 0x1F);
         tmp[2] = new LinkedRegister("frm", 0x002, tmp[3], 0xE0);
