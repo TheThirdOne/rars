@@ -35,7 +35,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 public class CSRRCI extends BasicInstruction {
     public CSRRCI() {
-        super("csrrci t0, 0xFF, 10", "Atomic Read/Clear CSR Immediate: read from the CSR into t0 and clear bits of the CSR according to a constant",
+        super("csrrci t0, 0xFFF, 10", "Atomic Read/Clear CSR Immediate: read from the CSR into t0 and clear bits of the CSR according to a constant",
                 BasicInstructionFormat.I_FORMAT, "ssssssssssss ttttt 111 fffff 1110011");
     }
 
