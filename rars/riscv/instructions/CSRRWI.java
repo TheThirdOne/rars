@@ -43,7 +43,9 @@ public class CSRRWI extends BasicInstruction {
         int[] operands = statement.getOperands();
         try {
             int csr = ControlAndStatusRegisterFile.getValue(operands[1]);
-            ControlAndStatusRegisterFile.updateRegister(operands[1], operands[2]);
+            if(ControlAndStatusRegisterFile.updateRegister(operands[1], operands[2])){
+                throw new SimulationException(statement, "Attempt to write to read-only CSR", SimulationException.ILLEGAL_INSTRUCTION);
+            }
             RegisterFile.updateRegister(operands[0], csr);
         } catch (NullPointerException e) {
             throw new SimulationException(statement, "Attempt to access unavailable CSR", SimulationException.ILLEGAL_INSTRUCTION);
