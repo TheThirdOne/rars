@@ -154,25 +154,24 @@ public class Launch {
             MemoryConfigurations.setCurrentConfiguration(MemoryConfigurations.getDefaultConfiguration());
             out = System.out;
             if (parseCommandArgs(args)) {
-                runCommand();
-                dumpSegments();
+                dumpSegments(runCommand());
             }
             System.exit(Globals.exitCode);
         }
     }
 
-    private void displayAllPostMortem() {
-        displayMiscellaneousPostMortem();
-        displayRegistersPostMortem();
-        displayMemoryPostMortem();
+    private void displayAllPostMortem(Program program) {
+        displayMiscellaneousPostMortem(program);
+        displayRegistersPostMortem(program);
+        displayMemoryPostMortem(program.getMemory());
     }
     /////////////////////////////////////////////////////////////
     // Perform any specified dump operations.  See "dump" option.
     //
 
-    private void dumpSegments() {
-
-        if (dumpTriples == null)
+    private void dumpSegments(Program program) {
+        // TODO: make dump segments work on api.Program
+        if (dumpTriples == null || program == null)
             return;
 
         for (String[] triple : dumpTriples) {
@@ -432,9 +431,9 @@ public class Launch {
     // Carry out the rars command: assemble then optionally run
     // Returns false if no simulation (run) occurs, true otherwise.
 
-    private void runCommand() {
+    private Program runCommand() {
         if (filenameList.size() == 0) {
-            return;
+            return null;
         }
 
         File mainFile = new File(filenameList.get(0)).getAbsoluteFile();// First file is "main" file
@@ -474,12 +473,10 @@ public class Launch {
             Globals.exitCode = assembleErrorExitCode;
             out.println(e.errors().generateErrorAndWarningReport());
             out.println("Processing terminated due to errors.");
-            return;
+            return null;
         }
         if (simulate) {
             program.setup(programArgumentList,null);
-            // establish observer if specified
-            establishObserver();
             if (Globals.debug) {
                 out.println("--------  SIMULATION BEGINS  -----------");
             }
@@ -497,7 +494,7 @@ public class Launch {
                         break;
                     }
                     assert done == Simulator.Reason.BREAKPOINT : "Internal error: All cases other than breakpoints should be handled already";
-                    displayAllPostMortem(); // print registers if we hit a breakpoint, then continue
+                    displayAllPostMortem(program); // print registers if we hit a breakpoint, then continue
                 }
 
             } catch (SimulationException e) {
@@ -505,11 +502,12 @@ public class Launch {
                 out.println(e.error().generateReport());
                 out.println("Simulation terminated due to errors.");
             }
-            displayAllPostMortem();
+            displayAllPostMortem(program);
         }
         if (Globals.debug) {
             out.println("\n--------  ALL PROCESSING COMPLETE  -----------");
         }
+        return program;
     }
 
 
@@ -538,45 +536,12 @@ public class Launch {
         return memoryRange;
     }
 
-    /////////////////////////////////////////////////////////////////
-    // Required for counting instructions executed, if that option is specified.
-    // DPS 19 July 2012
-    private void establishObserver() {
-        if (countInstructions) {
-            Observer instructionCounter =
-                    new Observer() {
-                        private int lastAddress = 0;
-
-                        public void update(Observable o, Object obj) {
-                            if (obj instanceof AccessNotice) {
-                                AccessNotice notice = (AccessNotice) obj;
-                                if (!notice.accessIsFromRISCV())
-                                    return;
-                                if (notice.getAccessType() != AccessNotice.READ)
-                                    return;
-                                MemoryAccessNotice m = (MemoryAccessNotice) notice;
-                                int a = m.getAddress();
-                                if (a == lastAddress)
-                                    return;
-                                lastAddress = a;
-                                instructionCount++;
-                            }
-                        }
-                    };
-            try {
-                Globals.memory.addObserver(instructionCounter, Memory.textBaseAddress, Memory.textLimitAddress);
-            } catch (AddressErrorException aee) {
-                out.println("Internal error: Launch uses incorrect text segment address for instruction observer");
-            }
-        }
-    }
-
     //////////////////////////////////////////////////////////////////////
     // Displays any specified runtime properties. Initially just instruction count
     // DPS 19 July 2012
-    private void displayMiscellaneousPostMortem() {
+    private void displayMiscellaneousPostMortem(Program program) {
         if (countInstructions) {
-            out.println("\n" + instructionCount);
+            out.println("\n" + program.getRegisterValue("cycle"));
         }
     }
 
@@ -584,26 +549,19 @@ public class Launch {
     //////////////////////////////////////////////////////////////////////
     // Displays requested register or registers
 
-    private void displayRegistersPostMortem() {
+    private void displayRegistersPostMortem(Program program) {
         // Display requested register contents
         for (String reg : registerDisplayList) {
-            if (RegisterFile.getRegister(reg) != null) {
-                // integer register
-                if (verbose)
-                    out.print(reg + "\t");
-                out.println(formatIntForDisplay(RegisterFile.getRegister(reg).getValue()));
-            } else {
+            if(FloatingPointRegisterFile.getRegister(reg) != null){
                 // floating point register
-                float fvalue = FloatingPointRegisterFile.getFloatFromRegister(reg);
-                int ivalue = FloatingPointRegisterFile.getValue(reg);
+                int ivalue = program.getRegisterValue(reg);
+                float fvalue = Float.intBitsToFloat(ivalue);
                 if (verbose) {
                     out.print(reg + "\t");
                 }
                 if (displayFormat == HEXADECIMAL) {
                     // display float (and double, if applicable) in hex
-                    out.println(
-                            Binary.binaryStringToHexString(
-                                    Binary.intToBinaryString(ivalue)));
+                    out.println(Binary.intToHexString(ivalue));
 
                 } else if (displayFormat == DECIMAL) {
                     // display float (and double, if applicable) in decimal
@@ -612,6 +570,10 @@ public class Launch {
                 } else { // displayFormat == ASCII
                     out.println(Binary.intToAscii(ivalue));
                 }
+            } else { // Integer register or CSR
+                if (verbose)
+                    out.print(reg + "\t");
+                out.println(formatIntForDisplay(RegisterFile.getRegister(reg).getValue()));
             }
         }
     }
@@ -639,7 +601,7 @@ public class Launch {
     //////////////////////////////////////////////////////////////////////
     // Displays requested memory range or ranges
 
-    private void displayMemoryPostMortem() {
+    private void displayMemoryPostMortem(Memory memory) {
         int value;
         // Display requested memory range contents
         Iterator<String> memIter = memoryDisplayList.iterator();
@@ -663,10 +625,10 @@ public class Launch {
                 try {
                     // Allow display of binary text segment (machine code) DPS 14-July-2008
                     if (Memory.inTextSegment(addr)) {
-                        Integer iValue = Globals.memory.getRawWordOrNull(addr);
+                        Integer iValue = memory.getRawWordOrNull(addr);
                         value = (iValue == null) ? 0 : iValue;
                     } else {
-                        value = Globals.memory.getWord(addr);
+                        value = memory.getWord(addr);
                     }
                     out.print(formatIntForDisplay(value) + "\t");
                 } catch (AddressErrorException aee) {
