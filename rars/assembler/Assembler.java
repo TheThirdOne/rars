@@ -645,12 +645,9 @@ public class Assembler {
         } else if (direct == Directives.SECTION){
             if(tokens.size() >= 2){
                 Token section = tokens.get(1);
-                if(section.getType() != TokenTypes.IDENTIFIER){
-                    errors.add(new ErrorMessage(token.getSourceProgram(),token.getSourceLine(),token.getStartPos(),
-                            ".section must be followed by a section name "));
-                }else{
+                if(section.getType() == TokenTypes.QUOTED_STRING || section.getType() == TokenTypes.IDENTIFIER){
                     String str = section.getValue();
-                    if(str.startsWith(".data") || str.startsWith(".rodata")){
+                    if(str.startsWith(".data") || str.startsWith(".rodata") || str.startsWith(".sdata")){
                         this.inDataSegment = true;
                     }else if(str.startsWith(".text")){
                         this.inDataSegment = false;
@@ -658,6 +655,9 @@ public class Assembler {
                         errors.add(new ErrorMessage(true,token.getSourceProgram(),token.getSourceLine(),token.getStartPos(),
                                 "section name \""+str+"\" is ignored"));
                     }
+                } else {
+                    errors.add(new ErrorMessage(token.getSourceProgram(),token.getSourceLine(),token.getStartPos(),
+                            ".section must be followed by a section name "));
                 }
             }else{
                 errors.add(new ErrorMessage(true,token.getSourceProgram(),token.getSourceLine(),token.getStartPos(),
