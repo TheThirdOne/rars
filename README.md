@@ -14,6 +14,10 @@ an effective development environment for people getting started with RISC-V.
     intermediate steps
   - Multifile assembly using either files open or a directory
 
+## Documentation
+
+Documentation for supported [instructions](https://github.com/TheThirdOne/rars/wiki/Supported-Instructions), [system calls](https://github.com/TheThirdOne/rars/wiki/Environment-Calls), [assembler directives](https://github.com/TheThirdOne/rars/wiki/Assembler-Directives) and more can be found on the [wiki](https://github.com/TheThirdOne/rars/wiki). Documentation included in the download can be accessed via the help menu. 
+
 ## Download
 
 RARS is distributed as an executable jar. You will need at least Java 8 to run it. 
@@ -38,12 +42,3 @@ there are several general changes worth noting.
   - Removed the print feature
   - Added a testing framework to verify compatability with the RISC-V specification
   - Significant internal restructuring and refactoring.
-
-## Future improvements
-
-RARS is currently a useful tool, but there is definitely still room for improvement.
-  - Support assembling to and simulating from the ELF format
-  - Support more standard extensions (such as Doubles or Atomics)
-  - Support more Linux system calls and have directly compatible behaviour with Spike
-  - Eliminate known bugs
-
