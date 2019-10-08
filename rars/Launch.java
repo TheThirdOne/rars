@@ -170,7 +170,6 @@ public class Launch {
     //
 
     private void dumpSegments(Program program) {
-        // TODO: make dump segments work on api.Program
         if (dumpTriples == null || program == null)
             return;
 
@@ -200,12 +199,12 @@ public class Launch {
                 continue;
             }
             try {
-                int highAddress = Globals.memory.getAddressOfFirstNull(segInfo[0], segInfo[1]) - Memory.WORD_LENGTH_BYTES;
+                int highAddress = program.getMemory().getAddressOfFirstNull(segInfo[0], segInfo[1]) - Memory.WORD_LENGTH_BYTES;
                 if (highAddress < segInfo[0]) {
                     out.println("This segment has not been written to, there is nothing to dump.");
                     continue;
                 }
-                format.dumpMemoryRange(file, segInfo[0], highAddress);
+                format.dumpMemoryRange(file, segInfo[0], highAddress, program.getMemory());
             } catch (FileNotFoundException e) {
                 out.println("Error while attempting to save dump, file " + file + " was not found!");
             } catch (AddressErrorException e) {
@@ -475,8 +474,9 @@ public class Launch {
             out.println("Processing terminated due to errors.");
             return null;
         }
+        // Setup for program simulation even if just assembling to prepare memory dumps
+        program.setup(programArgumentList,null);
         if (simulate) {
-            program.setup(programArgumentList,null);
             if (Globals.debug) {
                 out.println("--------  SIMULATION BEGINS  -----------");
             }

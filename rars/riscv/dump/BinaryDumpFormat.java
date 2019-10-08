@@ -1,6 +1,5 @@
 package rars.riscv.dump;
 
-import rars.Globals;
 import rars.riscv.hardware.AddressErrorException;
 import rars.riscv.hardware.Memory;
 
@@ -63,12 +62,12 @@ public class BinaryDumpFormat extends AbstractDumpFormat {
      *
      * @see AbstractDumpFormat
      */
-    public void dumpMemoryRange(File file, int firstAddress, int lastAddress)
+    public void dumpMemoryRange(File file, int firstAddress, int lastAddress, Memory memory)
             throws AddressErrorException, IOException {
         PrintStream out = new PrintStream(new FileOutputStream(file));
         try {
             for (int address = firstAddress; address <= lastAddress; address += Memory.WORD_LENGTH_BYTES) {
-                Integer temp = Globals.memory.getRawWordOrNull(address);
+                Integer temp = memory.getRawWordOrNull(address);
                 if (temp == null)
                     break;
                 int word = temp;

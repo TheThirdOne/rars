@@ -76,11 +76,12 @@ public class SegmentWindowDumpFormat extends AbstractDumpFormat {
      *
      * @see AbstractDumpFormat
      */
-    public void dumpMemoryRange(File file, int firstAddress, int lastAddress)
+    public void dumpMemoryRange(File file, int firstAddress, int lastAddress, Memory memory)
             throws AddressErrorException, IOException {
 
         PrintStream out = new PrintStream(new FileOutputStream(file));
 
+        // TODO: check if these settings work right
         boolean hexAddresses = Globals.getSettings().getBooleanSetting(Settings.Bool.DISPLAY_ADDRESSES_IN_HEX);
 
         // If address in data segment, print in same format as Data Segment Window
@@ -94,7 +95,7 @@ public class SegmentWindowDumpFormat extends AbstractDumpFormat {
                         string = ((hexAddresses) ? Binary.intToHexString(address) : Binary.unsignedIntToIntString(address)) + "    ";
                     }
                     offset++;
-                    Integer temp = Globals.memory.getRawWordOrNull(address);
+                    Integer temp = memory.getRawWordOrNull(address);
                     if (temp == null)
                         break;
                     string += ((hexValues)
@@ -124,12 +125,12 @@ public class SegmentWindowDumpFormat extends AbstractDumpFormat {
         try {
             for (int address = firstAddress; address <= lastAddress; address += Memory.WORD_LENGTH_BYTES) {
                 string = ((hexAddresses) ? Binary.intToHexString(address) : Binary.unsignedIntToIntString(address)) + "  ";
-                Integer temp = Globals.memory.getRawWordOrNull(address);
+                Integer temp = memory.getRawWordOrNull(address);
                 if (temp == null)
                     break;
                 string += Binary.intToHexString(temp) + "  ";
                 try {
-                    ProgramStatement ps = Globals.memory.getStatement(address);
+                    ProgramStatement ps = memory.getStatement(address);
                     string += (ps.getPrintableBasicAssemblyStatement() + "                      ").substring(0, 22);
                     string += (((ps.getSource() == "") ? "" : Integer.toString(ps.getSourceLine())) + "     ").substring(0, 5);
                     string += ps.getSource();

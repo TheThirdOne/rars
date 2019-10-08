@@ -1,6 +1,7 @@
 package rars.riscv.dump;
 
 import rars.riscv.hardware.AddressErrorException;
+import rars.riscv.hardware.Memory;
 
 import java.io.File;
 import java.io.IOException;
@@ -114,10 +115,11 @@ public abstract class AbstractDumpFormat implements DumpFormat {
      *                     must be on word boundary.
      * @param lastAddress  last (highest) memory address to dump.  In bytes but
      *                     must be on word boundary.  Will dump the word that starts at this address.
+     * @param memory
      * @throws AddressErrorException if firstAddress is invalid or not on a word boundary.
      * @throws IOException           if error occurs during file output.
      */
-    public abstract void dumpMemoryRange(File file, int firstAddress, int lastAddress)
+    public abstract void dumpMemoryRange(File file, int firstAddress, int lastAddress, Memory memory)
             throws AddressErrorException, IOException;
 
 }

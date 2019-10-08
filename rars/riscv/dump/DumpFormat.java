@@ -1,6 +1,7 @@
 package rars.riscv.dump;
 
 import rars.riscv.hardware.AddressErrorException;
+import rars.riscv.hardware.Memory;
 
 import java.io.File;
 import java.io.IOException;
@@ -90,7 +91,7 @@ public interface DumpFormat {
      * @throws AddressErrorException if firstAddress is invalid or not on a word boundary.
      * @throws IOException           if error occurs during file output.
      */
-    void dumpMemoryRange(File file, int firstAddress, int lastAddress)
+    void dumpMemoryRange(File file, int firstAddress, int lastAddress, Memory memory)
             throws AddressErrorException, IOException;
 
 }
