@@ -39,12 +39,10 @@ public class DIV extends Arithmetic {
     public int compute(int value, int value2) {
         // Signal illegal division with -1
         if (value2 == 0) {
-            ControlAndStatusRegisterFile.orRegister("fcsr", 0x8); // Set Divide by Zero flag
             return -1;
         }
         // Overflow
         if (value == Integer.MIN_VALUE && value2 == -1) {
-            ControlAndStatusRegisterFile.orRegister("fcsr", 0x4); // Set Overflow flag
             return value;
         }
         return value / value2;

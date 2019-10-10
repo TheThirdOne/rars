@@ -37,13 +37,12 @@ public class REM extends Arithmetic {
     }
 
     public int compute(int value, int value2) {
+        // Division by 0
         if (value2 == 0) {
-            ControlAndStatusRegisterFile.orRegister("fcsr", 0x8); // Set Divide by Zero flag
             return value;
         }
         // Overflow
         if (value == Integer.MIN_VALUE && value2 == -1) {
-            ControlAndStatusRegisterFile.orRegister("fcsr", 0x4); // Set Overflow flag
             return 0;
         }
         return value % value2;

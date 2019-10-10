@@ -38,7 +38,6 @@ public class REMU extends Arithmetic {
 
     public int compute(int value, int value2) {
         if (value2 == 0) {
-            ControlAndStatusRegisterFile.orRegister("fcsr", 0x8); // Set Divide by Zero flag
             return value;
         }
         return Integer.remainderUnsigned(value, value2);
