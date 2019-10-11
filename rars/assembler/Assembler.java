@@ -782,6 +782,8 @@ public class Assembler {
                 errors.add(new ErrorMessage(fileCurrentlyBeingAssembled, label.getSourceLine(),
                         label.getStartPos(), "\"" + label.getValue()
                         + "\" declared global label but not defined."));
+                // TODO: allow this case, but check later to see if all requested globals are actually implemented in other files
+                // GCC outputs assembly that uses this
             } else {
                 if (Globals.symbolTable.getAddress(label.getValue()) != SymbolTable.NOT_FOUND) {
                     errors.add(new ErrorMessage(fileCurrentlyBeingAssembled, label.getSourceLine(),

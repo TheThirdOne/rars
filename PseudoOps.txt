@@ -211,3 +211,6 @@ lui t1,%hi(label)     ;lui RG1,LH4      ;#Load Upper Address : Set t1 to upper 2
 addi t1,t2,%lo(label) ;addi RG1,RG2,LL5 ;#Load Lower Address : Set t1 to t2 + lower 12-bit label's address
 lw t1,%lo(label)(t2)  ;lw RG1,LL4(RG7)  ;#Load from Address
 flw f1,%lo(label)(t2) ;flw RG1,LL4(RG7) ;#Load from Address
+
+fgt.s t1, f2, f3      ;fle.s t1, f3, f2 ;#Floating Greater Than: if f1 > f2, set t1 to 1, else set t1 to 0
+fge.s t1, f2, f3      ;flt.s t1, f3, f2 ;#Floating Greater Than or Equal: if f1 >= f2, set t1 to 1, else set t1 to 0
