@@ -222,7 +222,7 @@ public class Program {
     }
 
     /**
-     * Gets the value of a normal, floating-point or control and status register.
+     * Sets the value of a normal, floating-point or control and status register.
      *
      * @param name Either the common usage (t0, a0, ft0), explicit numbering (x2, x3, f0), or CSR name (ustatus)
      * @param value The value of the register as an int (floats are encoded as IEEE-754)
