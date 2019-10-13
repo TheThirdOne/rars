@@ -27,13 +27,15 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 (MIT license, http://www.opensource.org/licenses/mit-license.html)
  */
 
+import jsoftfloat.Environment;
+import jsoftfloat.types.Float32;
+
 public class FMINS extends Floating {
     public FMINS() {
         super("fmin.s", "Floating MINimum: assigns f1 to the smaller of f1 and f3", "0010100", "000");
     }
 
-    public float compute(float f1, float f2) {
-        // TODO: handle NaNs properly
-        return Math.min(f1, f2);
+    public Float32 compute(Float32 f1, Float32 f2, Environment env) {
+        return jsoftfloat.operations.Comparisons.minimumNumber(f1,f2,env);
     }
 }
