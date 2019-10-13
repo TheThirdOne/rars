@@ -188,6 +188,10 @@ frcsr t1     ; csrrs RG1, 0x003, x0  ;#Read FP control/status register
 fscsr t1, t2 ; csrrw RG1, 0x003, RG2 ;#Swap FP control/status register
 fscsr t1     ; csrrs  x0, 0x003, RG1 ;#Write FP control/status register
 
+frsr t1     ; csrrs RG1, 0x003, x0  ;#Alias for frcsr t1
+fssr t1, t2 ; csrrw RG1, 0x003, RG2 ;#Alias for fscsr t1, t2
+fssr t1     ; csrrs  x0, 0x003, RG1 ;#Alias for fscsr t1 
+
 frrm t1      ; csrrs RG1, 0x003, x0  ;#Read FP rounding mode
 fsrm t1, t2  ; csrrw RG1, 0x003, RG2 ;#Swap FP rounding mode
 fsrm t1      ; csrrs  x0, 0x003, RG1 ;#Write FP rounding mode
