@@ -30,7 +30,7 @@
  fsflags a1, x0
  li a2, 1
  bne a0, a3, fail
-   # TODO: inexact flag bne a1, a2, fail
+ bne a1, a2, fail
  
   test_4: li gp, 4
  la a0, test_4_data 
@@ -70,7 +70,7 @@
  fsflags a1, x0
  li a2, 1
  bne a0, a3, fail
-   # TODO: inexact flag bne a1, a2, fail
+ bne a1, a2, fail
 
   test_7: li gp, 7
  la a0, test_7_data 
@@ -110,7 +110,7 @@
  fsflags a1, x0
  li a2, 1
  bne a0, a3, fail
-   # TODO: inexact flag bne a1, a2, fail
+ bne a1, a2, fail
  
   test_10: li gp, 10
  la a0, test_10_data 
@@ -150,7 +150,7 @@
  fsflags a1, x0
  li a2, 1
  bne a0, a3, fail
-# TODO: inexact flag bne a1, a2, fail
+ bne a1, a2, fail
 
   test_13: li gp, 13
  la a0, test_13_data 

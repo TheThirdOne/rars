@@ -1,5 +1,7 @@
 package rars.riscv.instructions;
 
+import jsoftfloat.Environment;
+import jsoftfloat.types.Float32;
 import rars.riscv.hardware.ControlAndStatusRegisterFile;
 
 /*
@@ -34,8 +36,8 @@ public class FDIVS extends Floating {
         super("fdiv.s", "Floating DIVide: assigns f1 to f2 / f3", "0001100");
     }
 
-    public float compute(float f1, float f2) {
-        if (f2 == 0.0f) ControlAndStatusRegisterFile.orRegister("fcsr", 0x8); // Set Divide by zero flag
-        return f1 / f2;
+    @Override
+    public Float32 compute(Float32 f1, Float32 f2, Environment e) {
+        return jsoftfloat.operations.Arithmetic.division(f1,f2,e);
     }
 }
