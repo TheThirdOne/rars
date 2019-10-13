@@ -111,6 +111,7 @@ public class OperandFormat {
 
             // added 2-July-2010 DPS
             // Not an error if spec calls for identifier and candidate is operator, since operator names can be used as labels.
+            // TODO: maybe add more cases in here
             if (specType == TokenTypes.IDENTIFIER && candType == TokenTypes.OPERATOR) {
                 Token replacement = new Token(TokenTypes.IDENTIFIER, candToken.getValue(), candToken.getSourceProgram(), candToken.getSourceLine(), candToken.getStartPos());
                 cand.set(i, replacement);
@@ -124,6 +125,11 @@ public class OperandFormat {
             }
             if (specType == TokenTypes.REGISTER_NAME &&
                     candType == TokenTypes.REGISTER_NUMBER)
+                continue;
+            // TODO: this shouldn't really accept INTEGER_20, only unsigned 12 is ok
+            if(specType == TokenTypes.CSR_NAME &&
+                    (candType==TokenTypes.INTEGER_5 || candType == TokenTypes.INTEGER_12
+                            || candType ==TokenTypes.INTEGER_20 || candType == TokenTypes.CSR_NAME))
                 continue;
             if ((specType == TokenTypes.INTEGER_12 && candType == TokenTypes.INTEGER_5) ||
                     (specType == TokenTypes.INTEGER_20 && candType == TokenTypes.INTEGER_5) ||

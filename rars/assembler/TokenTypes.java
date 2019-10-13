@@ -1,6 +1,7 @@
 package rars.assembler;
 
 import rars.Globals;
+import rars.riscv.hardware.ControlAndStatusRegisterFile;
 import rars.riscv.hardware.FloatingPointRegisterFile;
 import rars.riscv.hardware.Register;
 import rars.riscv.hardware.RegisterFile;
@@ -49,8 +50,7 @@ public enum TokenTypes {
      * of basic assembler.
      **/
     // TODO: merge REGISTER_NUMBER and REGISTER_NAME
-    // TODO: maybe add CSR register_name
-    REGISTER_NAME, REGISTER_NUMBER, FP_REGISTER_NAME,
+    REGISTER_NAME, REGISTER_NUMBER, FP_REGISTER_NAME, CSR_NAME,
     IDENTIFIER, LEFT_PAREN, RIGHT_PAREN,
     INTEGER_5, INTEGER_12, INTEGER_20, INTEGER_32, REAL_NUMBER,
     QUOTED_STRING,
@@ -132,6 +132,12 @@ public enum TokenTypes {
         if (reg != null)
             return TokenTypes.FP_REGISTER_NAME;
 
+        // Little bit of a hack because CSRFile doesn't supoprt getRegister(strinug)
+        Register[] regs = ControlAndStatusRegisterFile.getRegisters();
+        for(Register r : regs){
+            if (r.getName().equals(value))
+                return TokenTypes.CSR_NAME;
+        }
         // See if it is an immediate (constant) integer value
         // Classify based on # bits needed to represent in binary
         // This is needed because most immediate operands limited to 16 bits

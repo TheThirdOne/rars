@@ -35,7 +35,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 public class CSRRS extends BasicInstruction {
     public CSRRS() {
-        super("csrrs t0, 0xFFF, t1", "Atomic Read/Set CSR: read from the CSR into t0 and logical or t1 into the CSR",
+        super("csrrs t0, fcsr, t1", "Atomic Read/Set CSR: read from the CSR into t0 and logical or t1 into the CSR",
                 BasicInstructionFormat.I_FORMAT, "ssssssssssss ttttt 010 fffff 1110011");
     }
 

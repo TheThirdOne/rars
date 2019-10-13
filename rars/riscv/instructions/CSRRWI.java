@@ -35,7 +35,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 public class CSRRWI extends BasicInstruction {
     public CSRRWI() {
-        super("csrrwi t0, 0xFFF, 10", "Atomic Read/Write CSR Immediate: read from the CSR into t0 and write a constant into the CSR",
+        super("csrrwi t0, fcsr, 10", "Atomic Read/Write CSR Immediate: read from the CSR into t0 and write a constant into the CSR",
                 BasicInstructionFormat.I_FORMAT, "ssssssssssss ttttt 101 fffff 1110011");
     }
 

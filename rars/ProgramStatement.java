@@ -4,7 +4,9 @@ import rars.assembler.SymbolTable;
 import rars.assembler.Token;
 import rars.assembler.TokenList;
 import rars.assembler.TokenTypes;
+import rars.riscv.hardware.ControlAndStatusRegisterFile;
 import rars.riscv.hardware.FloatingPointRegisterFile;
+import rars.riscv.hardware.Register;
 import rars.riscv.hardware.RegisterFile;
 import rars.riscv.BasicInstruction;
 import rars.riscv.BasicInstructionFormat;
@@ -205,6 +207,24 @@ public class ProgramStatement implements Comparable<ProgramStatement> {
                     errors.add(new ErrorMessage(this.sourceProgram, token.getSourceLine(), token.getStartPos(), "invalid register name"));
                     return;
                 }
+                this.operands[this.numOperands++] = registerNumber;
+            } else if (tokenType == TokenTypes.CSR_NAME) {
+                // Little bit of a hack because CSRFile doesn't supoprt getRegister(strinug)
+                Register[] regs = ControlAndStatusRegisterFile.getRegisters();
+                registerNumber = -1;
+                for(Register r : regs){
+                    if (r.getName().equals(tokenValue)){
+                        registerNumber = r.getNumber();
+                        break;
+                    }
+                }
+                if (registerNumber < 0) {
+                    // should never happen; should be caught before now...
+                    errors.add(new ErrorMessage(this.sourceProgram, token.getSourceLine(), token.getStartPos(), "invalid CSR name"));
+                    return;
+                }
+                basic += registerNumber;
+                basicStatementList.addString(""+registerNumber);
                 this.operands[this.numOperands++] = registerNumber;
             } else if (tokenType == TokenTypes.FP_REGISTER_NAME) {
                 registerNumber = FloatingPointRegisterFile.getRegister(tokenValue).getNumber();

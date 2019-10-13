@@ -5,7 +5,8 @@
   test_2:
  csrwi fcsr, 1
  li a0, 0x1234
- fssr a1, a0 li x29, 1
+ fssr a1, a0
+ li x29, 1
  li gp, 2
  bne a1, x29, fail
 
