@@ -192,17 +192,17 @@ frsr t1     ; csrrs RG1, 0x003, x0  ;#Alias for frcsr t1
 fssr t1, t2 ; csrrw RG1, 0x003, RG2 ;#Alias for fscsr t1, t2
 fssr t1     ; csrrs  x0, 0x003, RG1 ;#Alias for fscsr t1 
 
-frrm t1      ; csrrs RG1, 0x003, x0  ;#Read FP rounding mode
-fsrm t1, t2  ; csrrw RG1, 0x003, RG2 ;#Swap FP rounding mode
-fsrm t1      ; csrrs  x0, 0x003, RG1 ;#Write FP rounding mode
-fsrmi t1, 100 ; csrrwi RG1, 0x003, RG2 ;#Swap FP rounding mode, immediate
-fsrmi 100     ; csrrsi  x0, 0x003, RG1 ;#Write FP rounding mode, immediate
+frrm t1      ; csrrs RG1, 0x002, x0  ;#Read FP rounding mode
+fsrm t1, t2  ; csrrw RG1, 0x002, RG2 ;#Swap FP rounding mode
+fsrm t1      ; csrrs  x0, 0x002, RG1 ;#Write FP rounding mode
+fsrmi t1, 100 ; csrrwi RG1, 0x002, RG2 ;#Swap FP rounding mode, immediate
+fsrmi 100     ; csrrsi  x0, 0x002, RG1 ;#Write FP rounding mode, immediate
 
-frflags t1      ; csrrs RG1, 0x003, x0  ;#Read FP exception flags
-fsflags t1, t2  ; csrrw RG1, 0x003, RG2 ;#Swap FP exception flags
-fsflags t1      ; csrrs  x0, 0x003, RG1 ;#Write FP exception flags
-fsflagsi t1, 100 ; csrrwi RG1, 0x003, RG2 ;#Swap FP exception flags, immediate
-fsflagsi 100     ; csrrsi  x0, 0x003, RG1 ;#Write FP exception flags, immediate
+frflags t1      ; csrrs RG1, 0x001, x0  ;#Read FP exception flags
+fsflags t1, t2  ; csrrw RG1, 0x001, RG2 ;#Swap FP exception flags
+fsflags t1      ; csrrs  x0, 0x001, RG1 ;#Write FP exception flags
+fsflagsi t1, 100 ; csrrwi RG1, 0x001, RG2 ;#Swap FP exception flags, immediate
+fsflagsi 100     ; csrrsi  x0, 0x001, RG1 ;#Write FP exception flags, immediate
 
 rdcycle t1    ; csrrs rd, 0xC00, x0 ;# Read from cycle
 rdinstret t1  ; csrrs rd, 0xC02, x0 ;# Read from instret

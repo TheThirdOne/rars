@@ -40,7 +40,7 @@ public class FSGNJNS extends BasicInstruction {
 
     public void simulate(ProgramStatement statement) {
         int[] operands = statement.getOperands();
-        int result = (FloatingPointRegisterFile.getValue(operands[1]) & 0x7FFFFFFF) | ((~FloatingPointRegisterFile.getValue(operands[1])) & 0x80000000);
+        int result = (FloatingPointRegisterFile.getValue(operands[1]) & 0x7FFFFFFF) | ((~FloatingPointRegisterFile.getValue(operands[2])) & 0x80000000);
         FloatingPointRegisterFile.updateRegister(operands[0], result);
     }
 }

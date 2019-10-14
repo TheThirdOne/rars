@@ -40,7 +40,7 @@ public class FSGNJXS extends BasicInstruction {
 
     public void simulate(ProgramStatement statement) {
         int[] operands = statement.getOperands();
-        int f2 = FloatingPointRegisterFile.getValue(operands[1]), f3 = FloatingPointRegisterFile.getValue(operands[1]);
+        int f2 = FloatingPointRegisterFile.getValue(operands[1]), f3 = FloatingPointRegisterFile.getValue(operands[2]);
         int result = (f2 & 0x7FFFFFFF) | ((f2 ^ f3) & 0x80000000);
         FloatingPointRegisterFile.updateRegister(operands[0], result);
     }

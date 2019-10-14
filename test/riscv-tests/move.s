@@ -47,8 +47,8 @@
  bne a0, x29, fail
 
 # 34 "rv32uf/../rv64uf/move.S"
-  test_10:
- li a1, 0x12345678
+ 
+  test_10: li a1, 0x12345678
  li a2, 0
  fmv.s.x f1, a1
  fmv.s.x f2, a2
@@ -58,19 +58,17 @@
  li gp, 10
  bne a0, x29, fail
 
-  test_11:
- li a1, 0x12345678
+  test_11: li a1, 0x12345678
  li a2, -1
  fmv.s.x f1, a1
  fmv.s.x f2, a2
  fsgnj.s f0, f1, f2
  fmv.x.s a0, f0
- li x29, 0x12345678
+ li x29, 0x92345678
  li gp, 11
  bne a0, x29, fail
 
-  test_12:
- li a1, 0x12345678
+  test_12: li a1, 0x92345678
  li a2, 0
  fmv.s.x f1, a1
  fmv.s.x f2, a2
@@ -80,31 +78,28 @@
  li gp, 12
  bne a0, x29, fail
 
-  test_13:
- li a1, 0x12345678
+  test_13: li a1, 0x92345678
  li a2, -1
  fmv.s.x f1, a1
  fmv.s.x f2, a2
  fsgnj.s f0, f1, f2
  fmv.x.s a0, f0
- li x29, 0x12345678
+ li x29, 0x92345678
  li gp, 13
  bne a0, x29, fail
 
 
-  test_20:
- li a1, 0x12345678
+  test_20: li a1, 0x12345678
  li a2, 0
  fmv.s.x f1, a1
  fmv.s.x f2, a2
  fsgnjn.s f0, f1, f2
  fmv.x.s a0, f0
- li x29, 0x12345678
+ li x29, 0x92345678
  li gp, 20
  bne a0, x29, fail
 
-  test_21:
- li a1, 0x12345678
+  test_21: li a1, 0x12345678
  li a2, -1
  fmv.s.x f1, a1
  fmv.s.x f2, a2
@@ -114,19 +109,17 @@
  li gp, 21
  bne a0, x29, fail
 
-  test_22:
- li a1, 0x12345678
+  test_22: li a1, 0x92345678
  li a2, 0
  fmv.s.x f1, a1
  fmv.s.x f2, a2
  fsgnjn.s f0, f1, f2
  fmv.x.s a0, f0
- li x29, 0x12345678
+ li x29, 0x92345678
  li gp, 22
  bne a0, x29, fail
 
-  test_23:
- li a1, 0x12345678
+  test_23: li a1, 0x92345678
  li a2, -1
  fmv.s.x f1, a1
  fmv.s.x f2, a2
@@ -137,8 +130,7 @@
  bne a0, x29, fail
 
 
-  test_30:
- li a1, 0x12345678
+  test_30: li a1, 0x12345678
  li a2, 0
  fmv.s.x f1, a1
  fmv.s.x f2, a2
@@ -148,30 +140,27 @@
  li gp, 30
  bne a0, x29, fail
 
-  test_31:
- li a1, 0x12345678
+  test_31: li a1, 0x12345678
  li a2, -1
  fmv.s.x f1, a1
  fmv.s.x f2, a2
  fsgnjx.s f0, f1, f2
  fmv.x.s a0, f0
- li x29, 0x12345678
+ li x29, 0x92345678
  li gp, 31
  bne a0, x29, fail
 
-  test_32:
- li a1, 0x12345678
+  test_32: li a1, 0x92345678
  li a2, 0
  fmv.s.x f1, a1
  fmv.s.x f2, a2
  fsgnjx.s f0, f1, f2
  fmv.x.s a0, f0
- li x29, 0x12345678
+ li x29, 0x92345678
  li gp, 32
  bne a0, x29, fail
 
-  test_33:
- li a1, 0x12345678
+  test_33: li a1, 0x92345678
  li a2, -1
  fmv.s.x f1, a1
  fmv.s.x f2, a2
@@ -181,8 +170,7 @@
  li gp, 33
  bne a0, x29, fail
 
-
-  bne x0, gp, pass
+ bne x0, gp, pass
  fail: li a0, 0
  li a7, 93
  ecall
