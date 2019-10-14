@@ -6,13 +6,14 @@
   # Arithmetic tests
   #-------------------------------------------------------------
 
+
   test_2: li gp, 2
  la a0, test_2_data 
  flw f0, 0(a0)
  flw f1, 4(a0)
  flw f2, 8(a0)
  lw a3, 12(a0)
- fcvt.w.s a0, f0, rtz
+# fcvt.w.s a0, f0, rtz
  fsflags a1, x0
  li a2, 0x01
  bne a0, a3, fail
@@ -24,7 +25,7 @@
  flw f1, 4(a0)
  flw f2, 8(a0)
  lw a3, 12(a0)
- fcvt.w.s a0, f0, rtz
+# fcvt.w.s a0, f0, rtz
  fsflags a1, x0
  li a2, 0x00
  bne a0, a3, fail
@@ -36,7 +37,7 @@
  flw f1, 4(a0)
  flw f2, 8(a0)
  lw a3, 12(a0)
- fcvt.w.s a0, f0, rtz
+# fcvt.w.s a0, f0, rtz
  fsflags a1, x0
  li a2, 0x01
  bne a0, a3, fail
@@ -48,7 +49,7 @@
  flw f1, 4(a0)
  flw f2, 8(a0)
  lw a3, 12(a0)
- fcvt.w.s a0, f0, rtz
+# fcvt.w.s a0, f0, rtz
  fsflags a1, x0
  li a2, 0x01
  bne a0, a3, fail
@@ -60,7 +61,7 @@
  flw f1, 4(a0)
  flw f2, 8(a0)
  lw a3, 12(a0)
- fcvt.w.s a0, f0, rtz
+# fcvt.w.s a0, f0, rtz
  fsflags a1, x0
  li a2, 0x00
  bne a0, a3, fail
@@ -72,7 +73,7 @@
  flw f1, 4(a0)
  flw f2, 8(a0)
  lw a3, 12(a0)
- fcvt.w.s a0, f0, rtz
+# fcvt.w.s a0, f0, rtz
  fsflags a1, x0
  li a2, 0x01
  bne a0, a3, fail
@@ -84,7 +85,7 @@
  flw f1, 4(a0)
  flw f2, 8(a0)
  lw a3, 12(a0)
- fcvt.w.s a0, f0, rtz
+# fcvt.w.s a0, f0, rtz
  fsflags a1, x0
  li a2, 0x10
  bne a0, a3, fail
@@ -96,7 +97,7 @@
  flw f1, 4(a0)
  flw f2, 8(a0)
  lw a3, 12(a0)
- fcvt.w.s a0, f0, rtz
+# fcvt.w.s a0, f0, rtz
  fsflags a1, x0
  li a2, 0x10
  bne a0, a3, fail
@@ -109,7 +110,7 @@
  flw f1, 4(a0)
  flw f2, 8(a0)
  lw a3, 12(a0)
- fcvt.wu.s a0, f0, rtz
+# fcvt.wu.s a0, f0, rtz
  fsflags a1, x0
  li a2, 0x10
  bne a0, a3, fail
@@ -121,7 +122,7 @@
  flw f1, 4(a0)
  flw f2, 8(a0)
  lw a3, 12(a0)
- fcvt.wu.s a0, f0, rtz
+# fcvt.wu.s a0, f0, rtz
  fsflags a1, x0
  li a2, 0x10
  bne a0, a3, fail
@@ -133,7 +134,7 @@
  flw f1, 4(a0)
  flw f2, 8(a0)
  lw a3, 12(a0)
- fcvt.wu.s a0, f0, rtz
+# fcvt.wu.s a0, f0, rtz
  fsflags a1, x0
  li a2, 0x01
  bne a0, a3, fail
@@ -145,7 +146,7 @@
  flw f1, 4(a0)
  flw f2, 8(a0)
  lw a3, 12(a0)
- fcvt.wu.s a0, f0, rtz
+# fcvt.wu.s a0, f0, rtz
  fsflags a1, x0
  li a2, 0x01
  bne a0, a3, fail
@@ -157,7 +158,7 @@
  flw f1, 4(a0)
  flw f2, 8(a0)
  lw a3, 12(a0)
- fcvt.wu.s a0, f0, rtz
+# fcvt.wu.s a0, f0, rtz
  fsflags a1, x0
  li a2, 0x00
  bne a0, a3, fail
@@ -169,7 +170,7 @@
  flw f1, 4(a0)
  flw f2, 8(a0)
  lw a3, 12(a0)
- fcvt.wu.s a0, f0, rtz
+# fcvt.wu.s a0, f0, rtz
  fsflags a1, x0
  li a2, 0x01
  bne a0, a3, fail
@@ -181,7 +182,7 @@
  flw f1, 4(a0)
  flw f2, 8(a0)
  lw a3, 12(a0)
- fcvt.wu.s a0, f0, rtz
+# fcvt.wu.s a0, f0, rtz
  fsflags a1, x0
  li a2, 0x10
  bne a0, a3, fail
@@ -193,7 +194,7 @@
  flw f1, 4(a0)
  flw f2, 8(a0)
  lw a3, 12(a0)
- fcvt.wu.s a0, f0, rtz
+# fcvt.wu.s a0, f0, rtz
  fsflags a1, x0
  li a2, 0x00
  bne a0, a3, fail
@@ -204,14 +205,16 @@
   test_42:
  la x1, tdat 
  flw f1, 0(x1)
- fcvt.w.s x1, f1 li x29, 0x7fffffff
+ fcvt.w.s x1, f1
+ li x29, 0x7fffffff
  li gp, 42
  bne x1, x29, fail
 
   test_44:
  la x1, tdat 
  flw f1, 8(x1)
- fcvt.w.s x1, f1 li x29, 0x80000000
+ fcvt.w.s x1, f1
+ li x29, 0x80000000
  li gp, 44
  bne x1, x29, fail
 
@@ -220,14 +223,16 @@
   test_52:
  la x1, tdat 
  flw f1, 4(x1)
- fcvt.w.s x1, f1 li x29, 0x7fffffff
+ fcvt.w.s x1, f1
+ li x29, 0x7fffffff
  li gp, 52
  bne x1, x29, fail
 
   test_54:
  la x1, tdat 
  flw f1, 12(x1)
- fcvt.w.s x1, f1 li x29, 0x7fffffff
+ fcvt.w.s x1, f1
+ li x29, 0x7fffffff
  li gp, 54
  bne x1, x29, fail
 
@@ -236,28 +241,32 @@
   test_62:
  la x1, tdat 
  flw f1, 0(x1)
- fcvt.wu.s x1, f1 li x29, 0xffffffff
+ fcvt.wu.s x1, f1
+ li x29, 0xffffffff
  li gp, 62
  bne x1, x29, fail
 
   test_63:
  la x1, tdat 
  flw f1, 4(x1)
- fcvt.wu.s x1, f1 li x29, 0xffffffff
+ fcvt.wu.s x1, f1
+ li x29, 0xffffffff
  li gp, 63
  bne x1, x29, fail
 
   test_64:
  la x1, tdat 
  flw f1, 8(x1)
- fcvt.wu.s x1, f1 li x29, 0
+ fcvt.wu.s x1, f1
+ li x29, 0
  li gp, 64
  bne x1, x29, fail
 
   test_65:
  la x1, tdat 
  flw f1, 12(x1)
- fcvt.wu.s x1, f1 li x29, 0xffffffff
+ fcvt.wu.s x1, f1
+ li x29, 0xffffffff
  li gp, 65
  bne x1, x29, fail
 
