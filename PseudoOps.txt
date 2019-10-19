@@ -209,6 +209,23 @@ rdinstret t1  ; csrrs rd, 0xC02, x0 ;# Read from instret
 rdcycleh t1   ; csrrs rd, 0xC00, x0 ;# Read from cycleh
 rdinstreth t1 ; csrrs rd, 0xC02, x0 ;# Read from instreth
 
+# Floating point rounding mode removal
+
+fsqrt.s   f1, f2         ; fsqrt.s   RG1, RG2, dyn         ;#Floating SQuare RooT: Assigns f1 to the square root of f2
+fsub.s    f1, f2, f3     ; fsub.s    RG1, RG2, RG3, dyn     ;#Floating SUBtract: assigns f1 to f2 - f3
+fadd.s    f1, f2, f3     ; fadd.s    RG1, RG2, RG3, dyn     ;#Floating ADD: assigns f1 to f2 + f3
+fmul.s    f1, f2, f3     ; fmul.s    RG1, RG2, RG3, dyn     ;#Floating MULtiply: assigns f1 to f2 * f3
+fdiv.s    f1, f2, f3     ; fdiv.s    RG1, RG2, RG3, dyn     ;#Floating DIVide: assigns f1 to f2 / f3
+fmadd.s   f1, f2, f3, f4 ; fmadd.s   RG1, RG2, RG3, RG4, dyn ;#Fused Multiply Add: Assigns f2*f3+f4 to f1
+fnmadd.s  f1, f2, f3, f4 ; fnmadd.s  RG1, RG2, RG3, RG4, dyn ;#Fused Negate Multiply Add: Assigns -(f2*f3+f4) to f1
+fmsub.s   f1, f2, f3, f4 ; fmsub.s   RG1, RG2, RG3, RG4, dyn ;#Fused Multiply Subatract: Assigns f2*f3-f4 to f1
+fnmsub.s  f1, f2, f3, f4 ; fnmsub.s  RG1, RG2, RG3, RG4, dyn ;#Fused Negated Multiply Subatract: Assigns -(f2*f3-f4) to f1
+fcvt.s.wu f1, t1         ; fcvt.s.wu RG1, RG2, dyn         ;#Convert float from unsigned integer: Assigns the value of t1 to f1
+fcvt.s.w  f1, t1         ; fcvt.s.w  RG1, RG2, dyn         ;#Convert float from signed integer: Assigns the value of t1 to f1
+fcvt.w.s  t1, f1         ; fcvt.w.s  RG1, RG2, dyn         ;#Convert signed integer from float: Assigns the value of f1 (rounded) to t1
+fcvt.wu.s t1, f1         ; fcvt.wu.s RG1, RG2, dyn         ;#Convert unsigned integer from float: Assigns the value of f1 (rounded) to t1
+
+
 
 ### GCC compatability
 lui t1,%hi(label)     ;lui RG1,LH4      ;#Load Upper Address : Set t1 to upper 20-bit label's address

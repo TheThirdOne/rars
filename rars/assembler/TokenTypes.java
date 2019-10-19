@@ -50,7 +50,7 @@ public enum TokenTypes {
      * of basic assembler.
      **/
     // TODO: merge REGISTER_NUMBER and REGISTER_NAME
-    REGISTER_NAME, REGISTER_NUMBER, FP_REGISTER_NAME, CSR_NAME,
+    REGISTER_NAME, REGISTER_NUMBER, FP_REGISTER_NAME, CSR_NAME, ROUNDING_MODE,
     IDENTIFIER, LEFT_PAREN, RIGHT_PAREN,
     INTEGER_5, INTEGER_12, INTEGER_20, INTEGER_32, REAL_NUMBER,
     QUOTED_STRING,
@@ -112,6 +112,9 @@ public enum TokenTypes {
         }
         if(value.equals("%lo")){
             return TokenTypes.LO;
+        }
+        if(value.equals("rne") || value.equals("rtz") || value.equals("rdn") || value.equals("rup") || value.equals("rmm") || value.equals("dyn")){
+            return TokenTypes.ROUNDING_MODE;
         }
 
         // See if it is a macro parameter

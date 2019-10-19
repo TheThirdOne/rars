@@ -13,7 +13,7 @@
  flw f1, 4(a0)
  flw f2, 8(a0)
  lw a3, 12(a0)
-# fcvt.w.s a0, f0, rtz
+ fcvt.w.s a0, f0, rtz
  fsflags a1, x0
  li a2, 0x01
  bne a0, a3, fail
@@ -25,7 +25,7 @@
  flw f1, 4(a0)
  flw f2, 8(a0)
  lw a3, 12(a0)
-# fcvt.w.s a0, f0, rtz
+ fcvt.w.s a0, f0, rtz
  fsflags a1, x0
  li a2, 0x00
  bne a0, a3, fail
@@ -37,7 +37,7 @@
  flw f1, 4(a0)
  flw f2, 8(a0)
  lw a3, 12(a0)
-# fcvt.w.s a0, f0, rtz
+ fcvt.w.s a0, f0, rtz
  fsflags a1, x0
  li a2, 0x01
  bne a0, a3, fail
@@ -49,7 +49,7 @@
  flw f1, 4(a0)
  flw f2, 8(a0)
  lw a3, 12(a0)
-# fcvt.w.s a0, f0, rtz
+ fcvt.w.s a0, f0, rtz
  fsflags a1, x0
  li a2, 0x01
  bne a0, a3, fail
@@ -61,7 +61,7 @@
  flw f1, 4(a0)
  flw f2, 8(a0)
  lw a3, 12(a0)
-# fcvt.w.s a0, f0, rtz
+ fcvt.w.s a0, f0, rtz
  fsflags a1, x0
  li a2, 0x00
  bne a0, a3, fail
@@ -73,7 +73,7 @@
  flw f1, 4(a0)
  flw f2, 8(a0)
  lw a3, 12(a0)
-# fcvt.w.s a0, f0, rtz
+ fcvt.w.s a0, f0, rtz
  fsflags a1, x0
  li a2, 0x01
  bne a0, a3, fail
@@ -85,7 +85,7 @@
  flw f1, 4(a0)
  flw f2, 8(a0)
  lw a3, 12(a0)
-# fcvt.w.s a0, f0, rtz
+ fcvt.w.s a0, f0, rtz
  fsflags a1, x0
  li a2, 0x10
  bne a0, a3, fail
@@ -97,7 +97,7 @@
  flw f1, 4(a0)
  flw f2, 8(a0)
  lw a3, 12(a0)
-# fcvt.w.s a0, f0, rtz
+ fcvt.w.s a0, f0, rtz
  fsflags a1, x0
  li a2, 0x10
  bne a0, a3, fail
@@ -110,7 +110,7 @@
  flw f1, 4(a0)
  flw f2, 8(a0)
  lw a3, 12(a0)
-# fcvt.wu.s a0, f0, rtz
+ fcvt.wu.s a0, f0, rtz
  fsflags a1, x0
  li a2, 0x10
  bne a0, a3, fail
@@ -122,7 +122,7 @@
  flw f1, 4(a0)
  flw f2, 8(a0)
  lw a3, 12(a0)
-# fcvt.wu.s a0, f0, rtz
+ fcvt.wu.s a0, f0, rtz
  fsflags a1, x0
  li a2, 0x10
  bne a0, a3, fail
@@ -134,7 +134,7 @@
  flw f1, 4(a0)
  flw f2, 8(a0)
  lw a3, 12(a0)
-# fcvt.wu.s a0, f0, rtz
+ fcvt.wu.s a0, f0, rtz
  fsflags a1, x0
  li a2, 0x01
  bne a0, a3, fail
@@ -146,7 +146,7 @@
  flw f1, 4(a0)
  flw f2, 8(a0)
  lw a3, 12(a0)
-# fcvt.wu.s a0, f0, rtz
+ fcvt.wu.s a0, f0, rtz
  fsflags a1, x0
  li a2, 0x01
  bne a0, a3, fail
@@ -158,7 +158,7 @@
  flw f1, 4(a0)
  flw f2, 8(a0)
  lw a3, 12(a0)
-# fcvt.wu.s a0, f0, rtz
+ fcvt.wu.s a0, f0, rtz
  fsflags a1, x0
  li a2, 0x00
  bne a0, a3, fail
@@ -170,7 +170,7 @@
  flw f1, 4(a0)
  flw f2, 8(a0)
  lw a3, 12(a0)
-# fcvt.wu.s a0, f0, rtz
+ fcvt.wu.s a0, f0, rtz
  fsflags a1, x0
  li a2, 0x01
  bne a0, a3, fail
@@ -182,7 +182,7 @@
  flw f1, 4(a0)
  flw f2, 8(a0)
  lw a3, 12(a0)
-# fcvt.wu.s a0, f0, rtz
+ fcvt.wu.s a0, f0, rtz
  fsflags a1, x0
  li a2, 0x10
  bne a0, a3, fail
@@ -194,7 +194,7 @@
  flw f1, 4(a0)
  flw f2, 8(a0)
  lw a3, 12(a0)
-# fcvt.wu.s a0, f0, rtz
+ fcvt.wu.s a0, f0, rtz
  fsflags a1, x0
  li a2, 0x00
  bne a0, a3, fail

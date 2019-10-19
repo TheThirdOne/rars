@@ -50,9 +50,9 @@ public abstract class Instruction {
     public static final int INSTRUCTION_LENGTH_BITS = 32;
     /**
      * Characters used in instruction mask to indicate bit positions
-     * for 'f'irst, 's'econd, and 't'hird operands.
+     * for 'f'irst, 's'econd, 't'hird, 'q'uad, and 'p'enta operands .
      **/
-    public static char[] operandMask = {'f', 's', 't', 'q'};
+    public static char[] operandMask = {'f', 's', 't', 'q', 'p'};
     /**
      * The instruction name.
      **/

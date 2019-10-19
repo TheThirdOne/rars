@@ -88,7 +88,7 @@ public class ProgramStatement implements Comparable<ProgramStatement> {
         this.source = source;
         this.originalTokenList = origTokenList;
         this.strippedTokenList = strippedTokenList;
-        this.operands = new int[4];
+        this.operands = new int[5];
         this.numOperands = 0;
         this.instruction = inst;
         this.textAddress = textAddress;
@@ -144,7 +144,7 @@ public class ProgramStatement implements Comparable<ProgramStatement> {
                 this.operands[2] = fromBranchImmediate(this.readBinaryCode(mask, Instruction.operandMask[2], binaryStatement));
                 this.numOperands = 3;
             } else {  // Everything else is normal
-                for (int i = 0; i < 4; i++) {
+                for (int i = 0; i < 5; i++) {
                     if (mask.indexOf(Instruction.operandMask[i]) != -1) {
                         this.operands[i] = this.readBinaryCode(mask, Instruction.operandMask[i], binaryStatement);
                         this.numOperands++;
@@ -237,7 +237,30 @@ public class ProgramStatement implements Comparable<ProgramStatement> {
                     return;
                 }
                 this.operands[this.numOperands++] = registerNumber;
+            } else if(tokenType == TokenTypes.ROUNDING_MODE){
+                int rounding_mode = -1;
+                if(tokenValue.equals("rne")){
+                    rounding_mode = 0;
+                }else if ( tokenValue.equals("rtz")){
+                    rounding_mode = 1;
+                }else if (tokenValue.equals("rdn")) {
+                    rounding_mode = 2;
+                } else if (tokenValue.equals("rup")) {
+                    rounding_mode = 3;
+                } else if (tokenValue.equals("rmm")) {
+                    rounding_mode = 4;
+                } else if (tokenValue.equals("dyn")){
+                    rounding_mode = 7;
+                }
+                if (rounding_mode == -1){
+                    errors.add(new ErrorMessage(this.sourceProgram, token.getSourceLine(), token.getStartPos(), "invalid rounding mode"));
+                    return;
+                }
+                basic += tokenValue;
+                basicStatementList.addString(tokenValue);
+                this.operands[this.numOperands++] = rounding_mode;
             } else if (tokenType == TokenTypes.IDENTIFIER) {
+
                 int address = this.sourceProgram.getLocalSymbolTable().getAddressLocalOrGlobal(tokenValue);
                 if (address == SymbolTable.NOT_FOUND) { // symbol used without being defined
                     errors.add(new ErrorMessage(this.sourceProgram, token.getSourceLine(), token.getStartPos(),

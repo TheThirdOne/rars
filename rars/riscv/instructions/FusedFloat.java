@@ -38,8 +38,8 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 public abstract class FusedFloat extends BasicInstruction {
     public FusedFloat(String usage, String description, String op) {
-        super(usage, description, BasicInstructionFormat.R4_FORMAT,
-                "qqqqq 00 ttttt sssss " + Floating.ROUNDING_MODE + " fffff 100" + op + "11");
+        super(usage+", dyn", description, BasicInstructionFormat.R4_FORMAT,
+                "qqqqq 00 ttttt sssss " + "ppp" + " fffff 100" + op + "11");
     }
 
     public void simulate(ProgramStatement statement) {

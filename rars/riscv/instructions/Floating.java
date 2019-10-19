@@ -40,10 +40,10 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * @version June 2017
  */
 public abstract class Floating extends BasicInstruction {
-    public static final String ROUNDING_MODE = "111";
+    public static final String ROUNDING_MODE = "qqq";
 
     protected Floating(String name, String description, String funct) {
-        this(name, description, funct, ROUNDING_MODE);
+        super(name + " f1, f2, f3, dyn", description, BasicInstructionFormat.R_FORMAT, funct + "ttttt sssss qqq fffff 1010011");
     }
 
     protected Floating(String name, String description, String funct, String rm) {

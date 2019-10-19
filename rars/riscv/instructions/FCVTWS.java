@@ -37,8 +37,8 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 public class FCVTWS extends BasicInstruction {
     public FCVTWS() {
-        super("fcvt.w.s t1, f1", "Convert integer from float: Assigns the value of f1 (rounded) to t1",
-                BasicInstructionFormat.I_FORMAT, "1100000 00000 sssss " + Floating.ROUNDING_MODE + " fffff 1010011");
+        super("fcvt.w.s t1, f1, dyn", "Convert integer from float: Assigns the value of f1 (rounded) to t1",
+                BasicInstructionFormat.I_FORMAT, "1100000 00000 sssss ttt fffff 1010011");
     }
 
     public void simulate(ProgramStatement statement) {

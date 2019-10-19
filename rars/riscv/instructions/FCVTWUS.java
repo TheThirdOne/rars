@@ -37,8 +37,8 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 public class FCVTWUS extends BasicInstruction {
     public FCVTWUS() {
-        super("fcvt.wu.s t1, f1", "Convert unsinged integer from float: Assigns the value of f1 (rounded) to t1",
-                BasicInstructionFormat.I_FORMAT, "1100000 00001 sssss " + Floating.ROUNDING_MODE + " fffff 1010011");
+        super("fcvt.wu.s t1, f1, dyn", "Convert unsinged integer from float: Assigns the value of f1 (rounded) to t1",
+                BasicInstructionFormat.I_FORMAT, "1100000 00001 sssss ttt fffff 1010011");
     }
 
     public void simulate(ProgramStatement statement) {
