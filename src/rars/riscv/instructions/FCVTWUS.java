@@ -1,6 +1,9 @@
 package rars.riscv.instructions;
 
+import jsoftfloat.Environment;
+import jsoftfloat.types.Float32;
 import rars.ProgramStatement;
+import rars.SimulationException;
 import rars.assembler.DataTypes;
 import rars.riscv.hardware.ControlAndStatusRegisterFile;
 import rars.riscv.hardware.FloatingPointRegisterFile;
@@ -41,23 +44,13 @@ public class FCVTWUS extends BasicInstruction {
                 BasicInstructionFormat.I_FORMAT, "1100000 00001 sssss ttt fffff 1010011");
     }
 
-    public void simulate(ProgramStatement statement) {
+    public void simulate(ProgramStatement statement) throws SimulationException {
         int[] operands = statement.getOperands();
-        float in = FloatingPointRegisterFile.getFloatFromRegister(operands[1]);
-        if (Float.isNaN(in)) {
-            ControlAndStatusRegisterFile.orRegister("fcsr", 0x10); // Set invalid flag
-            RegisterFile.updateRegister(operands[0], DataTypes.MAX_WORD_VALUE);
-        } else if (in < 0) {
-            ControlAndStatusRegisterFile.orRegister("fcsr", 0x10); // Set invalid flag
-            RegisterFile.updateRegister(operands[0], 0);
-        } else if (in > (DataTypes.MIN_WORD_VALUE & 0xFFFFFFFFL)) {
-            ControlAndStatusRegisterFile.orRegister("fcsr", 0x10); // Set invalid flag
-            RegisterFile.updateRegister(operands[0], DataTypes.MIN_WORD_VALUE);
-        } else if (in < DataTypes.MAX_WORD_VALUE) {
-            RegisterFile.updateRegister(operands[0], Math.round(in));
-        } else {
-            in -= DataTypes.MAX_WORD_VALUE;
-            RegisterFile.updateRegister(operands[0], Math.round(in) + DataTypes.MAX_WORD_VALUE);
-        }
+        Environment e = new Environment();
+        e.mode = Floating.getRoundingMode(operands[2],statement);
+        Float32 in = new Float32(FloatingPointRegisterFile.getValue(operands[1]));
+        int out = jsoftfloat.operations.Conversions.convertToUnsignedInt(in,e,false);
+        Floating.setfflags(e);
+        RegisterFile.updateRegister(operands[0],out);
     }
 }
