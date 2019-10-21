@@ -316,7 +316,7 @@
  test_8_data: .float -3e9
  .float 0.0
  .float 0.0
- .word 0x800000
+ .word 0x80000000
  
  test_9_data: .float 3e9
  .float 0.0
