@@ -1,6 +1,9 @@
 package rars.riscv.instructions;
 
+import jsoftfloat.Environment;
+import jsoftfloat.types.Float32;
 import rars.ProgramStatement;
+import rars.SimulationException;
 import rars.riscv.hardware.ControlAndStatusRegisterFile;
 import rars.riscv.hardware.FloatingPointRegisterFile;
 import rars.riscv.BasicInstruction;
@@ -39,15 +42,12 @@ public class FSQRTS extends BasicInstruction {
                 BasicInstructionFormat.I_FORMAT, "0101100 00000 sssss ttt fffff 1010011");
     }
 
-    public void simulate(ProgramStatement statement) {
+    public void simulate(ProgramStatement statement) throws SimulationException {
         int[] operands = statement.getOperands();
-        float in = FloatingPointRegisterFile.getFloatFromRegister(operands[1]);
-        if (in < 0.0f) {
-            ControlAndStatusRegisterFile.orRegister("fcsr", 0x10); // Set invalid flag
-            FloatingPointRegisterFile.setRegisterToFloat(operands[0], Float.NaN);
-            return;
-        }
-        float result = (float) Math.sqrt(in);
-        FloatingPointRegisterFile.setRegisterToFloat(operands[0], result);
+        Environment e = new Environment();
+        e.mode = Floating.getRoundingMode(operands[2],statement);
+        Float32 result = jsoftfloat.operations.Arithmetic.squareRoot(new Float32(FloatingPointRegisterFile.getValue(operands[1])),e);
+        Floating.setfflags(e);
+        FloatingPointRegisterFile.updateRegister(operands[0],result.bits);
     }
 }
