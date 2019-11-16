@@ -164,7 +164,7 @@ public class InstructionMemoryDump extends AbstractToolAndApplication {
             }
         }
 
-        // is a in the text segment (program)?
+        // is a in the data segment?
         if ((a >= lowDataSegmentAddress) && (a < highDataSegmentAddress)) {
             if (notice.getAccessType() == AccessNotice.READ) log.append("L: ");
             if (notice.getAccessType() == AccessNotice.WRITE) log.append("S: ");
