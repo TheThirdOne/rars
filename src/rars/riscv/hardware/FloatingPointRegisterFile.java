@@ -84,7 +84,7 @@ public class FloatingPointRegisterFile {
      **/
 
     public static float getFloatFromRegister(int num) {
-        return Float.intBitsToFloat(instance.getValue(num));
+        return Float.intBitsToFloat(getValue(num));
     }
 
 
@@ -96,7 +96,7 @@ public class FloatingPointRegisterFile {
      **/
 
     public static float getFloatFromRegister(String name) {
-        return Float.intBitsToFloat(instance.getValue(name));
+        return Float.intBitsToFloat(getValue(name));
     }
 
     /**
@@ -108,12 +108,23 @@ public class FloatingPointRegisterFile {
      * @param val The desired int value for the register.
      **/
 
-    public static int updateRegister(int num, int val) {
-        return (Globals.getSettings().getBackSteppingEnabled())
-                ? Globals.program.getBackStepper().addFloatingPointRestore(num, instance.updateRegister(num, val))
-                : instance.updateRegister(num, val);
+    public static void updateRegister(int num, int val) {
+        // TODO: box it
+        if ((Globals.getSettings().getBackSteppingEnabled())) {
+            Globals.program.getBackStepper().addFloatingPointRestore(num, instance.updateRegister(num, val));
+        } else {
+            instance.updateRegister(num, val);
+        }
     }
 
+    public static void updateRegisterLong(int num, long val) {
+        // TODO: box it
+        if ((Globals.getSettings().getBackSteppingEnabled())) {
+            Globals.program.getBackStepper().addFloatingPointRestore(num, instance.updateRegister(num, val));
+        } else {
+            instance.updateRegister(num, val);
+        }
+    }
     /**
      * Gets the raw int value actually stored in a Register.  If you need a
      * float, use Float.intBitsToFloat() to get the equivent float.
@@ -123,7 +134,8 @@ public class FloatingPointRegisterFile {
      **/
 
     public static int getValue(int num) {
-        return instance.getValue(num);
+        // TODO: check boxing
+        return (int)instance.getValue(num);
     }
 
     /**
@@ -135,7 +147,8 @@ public class FloatingPointRegisterFile {
      **/
 
     public static int getValue(String name) {
-        return instance.getValue(name);
+        // TODO: check boxing
+        return (int)instance.getValue(name);
     }
 
     /**

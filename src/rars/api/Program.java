@@ -217,7 +217,7 @@ public class Program {
         if(r == null){
             return ControlAndStatusRegisterFile.getValue(name);
         }else{
-            return r.getValue();
+            return (int)r.getValue();
         }
     }
 

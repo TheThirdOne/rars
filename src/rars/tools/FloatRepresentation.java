@@ -170,7 +170,7 @@ public class FloatRepresentation extends AbstractToolAndApplication {
      */
     public void update(Observable register, Object accessNotice) {
         if (((AccessNotice) accessNotice).getAccessType() == AccessNotice.WRITE) {
-            updateDisplays(new FlavorsOfFloat().buildOneFromInt(attachedRegister.getValue()));
+            updateDisplays(new FlavorsOfFloat().buildOneFromInt((int)attachedRegister.getValue()));
         }
     }
 
@@ -365,7 +365,7 @@ public class FloatRepresentation extends AbstractToolAndApplication {
                             instructions.setText("The program is not attached to any floating point registers.");
                         } else {
                             attachedRegister = fpRegisters[selectedIndex - 1];
-                            updateDisplays(new FlavorsOfFloat().buildOneFromInt(attachedRegister.getValue()));
+                            updateDisplays(new FlavorsOfFloat().buildOneFromInt((int)attachedRegister.getValue()));
                             if (isObserving()) {
                                 addAsObserver();
                             }

@@ -48,7 +48,7 @@ public class FloatingPointWindow extends RegisterBlockWindow {
     }
 
     protected String formatRegister(Register value, int base) {
-        return NumberDisplayBaseChooser.formatFloatNumber(value.getValue(), base);
+        return NumberDisplayBaseChooser.formatFloatNumber((int)value.getValue(), base);
     }
 
     protected void beginObserving() {

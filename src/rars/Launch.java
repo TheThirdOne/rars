@@ -573,7 +573,7 @@ public class Launch {
             } else { // Integer register or CSR
                 if (verbose)
                     out.print(reg + "\t");
-                out.println(formatIntForDisplay(RegisterFile.getRegister(reg).getValue()));
+                out.println(formatIntForDisplay((int)RegisterFile.getRegister(reg).getValue()));
             }
         }
     }

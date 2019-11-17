@@ -39,12 +39,13 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 public class Register extends Observable {
     private String name;
-    private int number, resetValue;
+    private int number;
+    private long resetValue;
     // volatile should be enough to allow safe multi-threaded access
     // w/o the use of synchronized methods.  getValue and setValue
     // are the only methods here used by the register collection
     // (RegisterFile, ControlAndStatusRegisterFile, FloatingPointRegisterFile) methods.
-    private volatile int value;
+    private volatile long value;
 
     /**
      * Creates a new register with specified name, number, and value.
@@ -54,7 +55,7 @@ public class Register extends Observable {
      * @param val The inital (and reset) value of the register.
      */
 
-    public Register(String n, int num, int val) {
+    public Register(String n, int num, long val) {
         name = n;
         number = num;
         value = val;
@@ -78,7 +79,7 @@ public class Register extends Observable {
      * @return value The value of the Register.
      */
 
-    public synchronized int getValue() {
+    public synchronized long getValue() {
         notifyAnyObservers(AccessNotice.READ);
         return value;
     }
@@ -91,7 +92,7 @@ public class Register extends Observable {
      * @return value The value of the Register.
      */
 
-    public synchronized int getValueNoNotify() {
+    public synchronized long getValueNoNotify() {
         return value;
     }
 
@@ -102,7 +103,7 @@ public class Register extends Observable {
      * @return The reset (initial) value of the Register.
      */
 
-    public int getResetValue() {
+    public long getResetValue() {
         return resetValue;
     }
 
@@ -124,8 +125,8 @@ public class Register extends Observable {
      * @return previous value of register
      */
 
-    public synchronized int setValue(int val) {
-        int old = value;
+    public synchronized long setValue(long val) {
+        long old = value;
         value = val;
         notifyAnyObservers(AccessNotice.WRITE);
         return old;
@@ -139,8 +140,8 @@ public class Register extends Observable {
      * @return previous value of register
      */
 
-    public synchronized int setValueBackdoor(int val) {
-        int old = value;
+    public synchronized long setValueBackdoor(long val) {
+        long old = value;
         value = val;
         return old;
     }
@@ -160,7 +161,7 @@ public class Register extends Observable {
      * set when <tt>resetValue()</tt> is called.
      */
 
-    public synchronized void changeResetValue(int reset) {
+    public synchronized void changeResetValue(long reset) {
         resetValue = reset;
     }
 

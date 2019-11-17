@@ -32,7 +32,8 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 public class LinkedRegister extends Register {
     private Register base;
-    private int mask, shift;
+    private long mask;
+    private int shift;
 
     /**
      * @param name the name to assign
@@ -40,7 +41,7 @@ public class LinkedRegister extends Register {
      * @param base the register to alias
      * @param mask the bits to use
      */
-    public LinkedRegister(String name, int num, Register base, int mask) {
+    public LinkedRegister(String name, int num, Register base, long mask) {
         super(name, num, 0); // reset value does not matter
         this.base = base;
         this.mask = mask;
@@ -53,17 +54,17 @@ public class LinkedRegister extends Register {
         }
     }
 
-    public synchronized int getValue() {
+    public synchronized long getValue() {
         super.getValue(); // to notify observers
         return getValueNoNotify();
     }
 
-    public synchronized int getValueNoNotify() {
+    public synchronized long getValueNoNotify() {
         return (base.getValueNoNotify() & mask) >>> shift;
     }
 
-    public synchronized int setValue(int val) {
-        int old = base.getValueNoNotify();
+    public synchronized long setValue(long val) {
+        long old = base.getValueNoNotify();
         base.setValue(((val << shift) & mask) | (old & ~mask));
         super.setValue(0); //value doesn't matter just notify
         return (old & mask) >>> shift;

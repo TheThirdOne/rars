@@ -136,28 +136,28 @@ public class BackStepper {
                 try {
                     switch (step.action) {
                         case MEMORY_RESTORE_RAW_WORD:
-                            Globals.memory.setRawWord(step.param1, step.param2);
+                            Globals.memory.setRawWord(step.param1, (int)step.param2);
                             break;
                         case MEMORY_RESTORE_WORD:
-                            Globals.memory.setWord(step.param1, step.param2);
+                            Globals.memory.setWord(step.param1, (int)step.param2);
                             break;
                         case MEMORY_RESTORE_HALF:
-                            Globals.memory.setHalf(step.param1, step.param2);
+                            Globals.memory.setHalf(step.param1, (int)step.param2);
                             break;
                         case MEMORY_RESTORE_BYTE:
-                            Globals.memory.setByte(step.param1, step.param2);
+                            Globals.memory.setByte(step.param1, (int)step.param2);
                             break;
                         case REGISTER_RESTORE:
-                            RegisterFile.updateRegister(step.param1, step.param2);
+                            RegisterFile.updateRegister(step.param1, (int)step.param2);
                             break;
                         case FLOATING_POINT_REGISTER_RESTORE:
-                            FloatingPointRegisterFile.updateRegister(step.param1,step.param2);
+                            FloatingPointRegisterFile.updateRegisterLong(step.param1,step.param2);
                             break;
                         case CONTROL_AND_STATUS_REGISTER_RESTORE:
-                            ControlAndStatusRegisterFile.updateRegister(step.param1,step.param2);
+                            ControlAndStatusRegisterFile.updateRegister(step.param1,(int)step.param2);
                             break;
                         case CONTROL_AND_STATUS_REGISTER_BACKDOOR:
-                            ControlAndStatusRegisterFile.updateRegisterBackdoor(step.param1,step.param2);
+                            ControlAndStatusRegisterFile.updateRegisterBackdoor(step.param1,(int)step.param2);
                             break;
                         case PC_RESTORE:
                             RegisterFile.setProgramCounter(step.param1);
@@ -245,7 +245,7 @@ public class BackStepper {
      * @param value    The "restore" value to be stored there.
      * @return the argument value
      */
-    public int addRegisterFileRestore(int register, int value) {
+    public long addRegisterFileRestore(int register, long value) {
         backSteps.push(Action.REGISTER_RESTORE, pc(), register, value);
         return value;
     }
@@ -274,7 +274,7 @@ public class BackStepper {
      * @param value    The "restore" value to be stored there.
      * @return the argument value
      */
-    public int addControlAndStatusRestore(int register, int value) {
+    public long addControlAndStatusRestore(int register, long value) {
         backSteps.push(Action.CONTROL_AND_STATUS_REGISTER_RESTORE, pc(), register, value);
         return value;
     }
@@ -289,7 +289,7 @@ public class BackStepper {
      * @param value    The "restore" value to be stored there.
      * @return the argument value
      */
-    public int addControlAndStatusBackdoor(int register, int value) {
+    public long addControlAndStatusBackdoor(int register, long value) {
         backSteps.push(Action.CONTROL_AND_STATUS_REGISTER_BACKDOOR, pc(), register, value);
         return value;
     }
@@ -302,7 +302,7 @@ public class BackStepper {
      * @param value    The "restore" value to be stored there.
      * @return the argument value
      */
-    public int addFloatingPointRestore(int register, int value) {
+    public long addFloatingPointRestore(int register, long value) {
         backSteps.push(Action.FLOATING_POINT_REGISTER_RESTORE, pc(), register, value);
         return value;
     }
@@ -326,12 +326,12 @@ public class BackStepper {
         private int pc;      // program counter value when original step occurred
         private ProgramStatement ps;   // statement whose action is being "undone" here
         private int param1;  // first parameter required by that action
-        private int param2;  // optional second parameter required by that action
+        private long param2;  // optional second parameter required by that action
 
         // it is critical that BackStep object get its values by calling this method
         // rather than assigning to individual members, because of the technique used
         // to set its ps member (and possibly pc).
-        private void assign(Action act, int programCounter, int parm1, int parm2) {
+        private void assign(Action act, int programCounter, int parm1, long parm2) {
             action = act;
             pc = programCounter;
             try {
@@ -395,7 +395,7 @@ public class BackStepper {
             return size == 0;
         }
 
-        private synchronized void push(Action act, int programCounter, int parm1, int parm2) {
+        private synchronized void push(Action act, int programCounter, int parm1, long parm2) {
             if (size == 0) {
                 top = 0;
                 size++;

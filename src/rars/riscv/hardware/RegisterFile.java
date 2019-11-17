@@ -75,13 +75,15 @@ public class RegisterFile {
      * @param val The desired value for the register.
      **/
 
-    public static int updateRegister(int num, int val) {
+    public static void updateRegister(int num, int val) {
         if (num == 0) {
-            return 0;
+            ;
         } else {
-            return (Globals.getSettings().getBackSteppingEnabled())
-                    ? Globals.program.getBackStepper().addRegisterFileRestore(num, instance.updateRegister(num, val))
-                    : instance.updateRegister(num, val);
+            if ((Globals.getSettings().getBackSteppingEnabled())) {
+                Globals.program.getBackStepper().addRegisterFileRestore(num, instance.updateRegister(num, val));
+            } else {
+                instance.updateRegister(num, val);
+            }
         }
     }
 
@@ -104,7 +106,7 @@ public class RegisterFile {
      **/
 
     public static int getValue(int num) {
-        return instance.getValue(num);
+        return (int) instance.getValue(num);
 
     }
 
@@ -116,7 +118,7 @@ public class RegisterFile {
      **/
 
     public static int getValue(String name) {
-        return instance.getValue(name);
+        return (int) instance.getValue(name);
     }
 
     /**
@@ -149,7 +151,7 @@ public class RegisterFile {
      **/
 
     public static void initializeProgramCounter(int value) {
-        programCounter.setValue(value);
+        programCounter.setValue((long)value);
     }
 
     /**
@@ -167,7 +169,7 @@ public class RegisterFile {
         if (startAtMain && mainAddr != SymbolTable.NOT_FOUND && Memory.inTextSegment(mainAddr)) {
             initializeProgramCounter(mainAddr);
         } else {
-            initializeProgramCounter(programCounter.getResetValue());
+            initializeProgramCounter((int)programCounter.getResetValue());
         }
     }
 
@@ -180,7 +182,7 @@ public class RegisterFile {
      **/
 
     public static int setProgramCounter(int value) {
-        int old = programCounter.getValue();
+        int old = (int)programCounter.getValue();
         programCounter.setValue(value);
         if (Globals.getSettings().getBackSteppingEnabled()) {
             Globals.program.getBackStepper().addPCRestore(old);
@@ -195,7 +197,7 @@ public class RegisterFile {
      **/
 
     public static int getProgramCounter() {
-        return programCounter.getValue();
+        return (int)programCounter.getValue();
     }
 
     /**
@@ -214,7 +216,7 @@ public class RegisterFile {
      **/
 
     public static int getInitialProgramCounter() {
-        return programCounter.getResetValue();
+        return (int)programCounter.getResetValue();
     }
 
     /**
