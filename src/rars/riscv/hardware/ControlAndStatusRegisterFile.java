@@ -50,6 +50,7 @@ public class ControlAndStatusRegisterFile {
     private static final RegisterBlock instance;
 
     static {
+        // TODO: consider making time, cycle and instret 64 bit registers which then are linked to by *h
         Register[] tmp = {
                 new MaskedRegister("ustatus", 0x000, 0,~0x11),
                 null, // fflags
@@ -63,8 +64,10 @@ public class ControlAndStatusRegisterFile {
                 new Register("utval", 0x043, 0),
                 new Register("uip", 0x044, 0),
                 new ReadOnlyRegister("cycle", 0xC00, 0),
+                new ReadOnlyRegister("time", 0xC01, 0),
                 new ReadOnlyRegister("instret",0xC02, 0),
                 new ReadOnlyRegister("cycleh", 0xC80, 0),
+                new ReadOnlyRegister("timeh", 0xC81, 0),
                 new ReadOnlyRegister("instreth",0xC82, 0),
         };
         tmp[1] = new LinkedRegister("fflags", 0x001, tmp[3], 0x1F);

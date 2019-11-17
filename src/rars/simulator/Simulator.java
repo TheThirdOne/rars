@@ -533,7 +533,9 @@ public class Simulator extends Observable {
                     int instreth = ControlAndStatusRegisterFile.getValueNoNotify("instreth");
                     ControlAndStatusRegisterFile.updateRegisterBackdoor("instreth",instreth+1);
                 }
-
+                long time = System.currentTimeMillis();
+                ControlAndStatusRegisterFile.updateRegisterBackdoor("time",(int)time);
+                ControlAndStatusRegisterFile.updateRegisterBackdoor("timeh",(int)(time>>32));
 
                 //     Return if we've reached a breakpoint.
                 if (ebreak || (breakPoints != null) &&
