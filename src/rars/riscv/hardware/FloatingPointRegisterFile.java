@@ -109,16 +109,15 @@ public class FloatingPointRegisterFile {
      **/
 
     public static void updateRegister(int num, int val) {
-        // TODO: box it
+        long lval = val | 0xFFFFFFFF_00000000L; // NAN box if used as float
         if ((Globals.getSettings().getBackSteppingEnabled())) {
-            Globals.program.getBackStepper().addFloatingPointRestore(num, instance.updateRegister(num, val));
+            Globals.program.getBackStepper().addFloatingPointRestore(num, instance.updateRegister(num, lval));
         } else {
-            instance.updateRegister(num, val);
+            instance.updateRegister(num, lval);
         }
     }
 
     public static void updateRegisterLong(int num, long val) {
-        // TODO: box it
         if ((Globals.getSettings().getBackSteppingEnabled())) {
             Globals.program.getBackStepper().addFloatingPointRestore(num, instance.updateRegister(num, val));
         } else {
@@ -134,8 +133,12 @@ public class FloatingPointRegisterFile {
      **/
 
     public static int getValue(int num) {
-        // TODO: check boxing
-        return (int)instance.getValue(num);
+        long lval = instance.getValue(num);
+        if((lval & 0xFFFFFFFF_00000000L) == 0xFFFFFFFF_00000000L){
+            return (int)lval; // If NaN-Boxed return value
+        }else{
+            return 0x7FC00000; // Otherwise NaN
+        }
     }
 
     /**
@@ -147,8 +150,12 @@ public class FloatingPointRegisterFile {
      **/
 
     public static int getValue(String name) {
-        // TODO: check boxing
-        return (int)instance.getValue(name);
+        long lval = instance.getValue(name);
+        if((lval & 0xFFFFFFFF_00000000L) == 0xFFFFFFFF_00000000L){
+            return (int)lval;
+        }else{
+            return 0x7FC00000;
+        }
     }
 
     /**
