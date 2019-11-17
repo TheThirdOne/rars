@@ -227,7 +227,9 @@ fcvt.s.w  f1, t1         ; fcvt.s.w  RG1, RG2, dyn         ;#Convert float from 
 fcvt.w.s  t1, f1         ; fcvt.w.s  RG1, RG2, dyn         ;#Convert signed integer from float: Assigns the value of f1 (rounded) to t1
 fcvt.wu.s t1, f1         ; fcvt.wu.s RG1, RG2, dyn         ;#Convert unsigned integer from float: Assigns the value of f1 (rounded) to t1
 
-
+### TODO: maybe it makes sense to rename the instructions and flip these pseudo-instructions
+fmv.x.w t1, f1 ; fmv.x.s RG1, RG2  ;#Move float (New mnemonic): move bits representing a float to an integer register
+fmv.w.x t1, f1 ; fmv.s.x RG1, RG2  ;#Move float (New mnemonic): move bits representing a float from an integer register
 
 ### GCC compatability
 lui t1,%hi(label)     ;lui RG1,LH4      ;#Load Upper Address : Set t1 to upper 20-bit label's address
