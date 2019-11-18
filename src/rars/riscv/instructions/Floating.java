@@ -94,13 +94,7 @@ public abstract class Floating extends BasicInstruction {
 
     public abstract Float32 compute(Float32 f1, Float32 f2, Environment e);
 
-    public static boolean subnormal(float f) {
-        int bits = Float.floatToRawIntBits(f);
-        return (bits & 0x7F800000) == 0 && (bits & 0x007FFFFF) > 0; // Exponent is minimum and the faction is non-zero
+    public static Float32 getFloat(int num){
+        return new Float32(FloatingPointRegisterFile.getValue(num));
     }
-
-    public static boolean signallingNaN(float f) {
-        return Float.isNaN(f) && (Float.floatToRawIntBits(f) & 0x00400000) == 0;
-    }
-
 }

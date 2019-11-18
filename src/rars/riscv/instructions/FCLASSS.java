@@ -1,5 +1,6 @@
 package rars.riscv.instructions;
 
+import jsoftfloat.types.Float32;
 import rars.ProgramStatement;
 import rars.riscv.hardware.FloatingPointRegisterFile;
 import rars.riscv.hardware.RegisterFile;
@@ -53,17 +54,17 @@ public class FCLASSS extends BasicInstruction {
      */
     public void simulate(ProgramStatement statement) {
         int[] operands = statement.getOperands();
-        float in = FloatingPointRegisterFile.getFloatFromRegister(operands[1]);
+        Float32 in = new Float32(FloatingPointRegisterFile.getValue(operands[0]));
 
-        if (Float.isNaN(in)) {
-            RegisterFile.updateRegister(operands[0], Floating.signallingNaN(in) ? 0x100 : 0x200);
+        if (in.isNaN()) {
+            RegisterFile.updateRegister(operands[0], in.isSignalling() ? 0x100 : 0x200);
         } else {
-            boolean negative = Float.floatToRawIntBits(in) >>> 31 == 1;
-            if (Float.isInfinite(in)) {
+            boolean negative = in.isSignMinus();
+            if (in.isInfinite()) {
                 RegisterFile.updateRegister(operands[0], negative ? 0x001 : 0x080);
-            } else if (in == 0.0f) {
+            } else if (in.isZero()) {
                 RegisterFile.updateRegister(operands[0], negative ? 0x008 : 0x010);
-            } else if (Floating.subnormal(in)) {
+            } else if (in.isSubnormal()) {
                 RegisterFile.updateRegister(operands[0], negative ? 0x004 : 0x020);
             } else {
                 RegisterFile.updateRegister(operands[0], negative ? 0x002 : 0x040);

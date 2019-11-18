@@ -79,18 +79,6 @@ public class FloatingPointRegisterFile {
     /**
      * Gets the float value stored in the given FPU register.
      *
-     * @param num Register to get the value of.
-     * @return The  float value stored by that register.
-     **/
-
-    public static float getFloatFromRegister(int num) {
-        return Float.intBitsToFloat(getValue(num));
-    }
-
-
-    /**
-     * Gets the float value stored in the given FPU register.
-     *
      * @param name Register to get the value of.
      * @return The  float value stored by that register.
      **/
