@@ -54,20 +54,23 @@ public class FCLASSS extends BasicInstruction {
      */
     public void simulate(ProgramStatement statement) {
         int[] operands = statement.getOperands();
-        Float32 in = new Float32(FloatingPointRegisterFile.getValue(operands[0]));
+        Float32 in = new Float32(FloatingPointRegisterFile.getValue(operands[1]));
+        fclass(in,operands[0]);
+    }
 
+    public static <T extends jsoftfloat.types.Floating<T>> void fclass(T in, int out){
         if (in.isNaN()) {
-            RegisterFile.updateRegister(operands[0], in.isSignalling() ? 0x100 : 0x200);
+            RegisterFile.updateRegister(out, in.isSignalling() ? 0x100 : 0x200);
         } else {
             boolean negative = in.isSignMinus();
             if (in.isInfinite()) {
-                RegisterFile.updateRegister(operands[0], negative ? 0x001 : 0x080);
+                RegisterFile.updateRegister(out, negative ? 0x001 : 0x080);
             } else if (in.isZero()) {
-                RegisterFile.updateRegister(operands[0], negative ? 0x008 : 0x010);
+                RegisterFile.updateRegister(out, negative ? 0x008 : 0x010);
             } else if (in.isSubnormal()) {
-                RegisterFile.updateRegister(operands[0], negative ? 0x004 : 0x020);
+                RegisterFile.updateRegister(out, negative ? 0x004 : 0x020);
             } else {
-                RegisterFile.updateRegister(operands[0], negative ? 0x002 : 0x040);
+                RegisterFile.updateRegister(out, negative ? 0x002 : 0x040);
             }
         }
     }
