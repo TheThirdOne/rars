@@ -45,14 +45,12 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * @version June 2017
  */
 public abstract class Floating extends BasicInstruction {
-    public static final String ROUNDING_MODE = "qqq";
-
     protected Floating(String name, String description, String funct) {
         super(name + " f1, f2, f3, dyn", description, BasicInstructionFormat.R_FORMAT, funct + "ttttt sssss qqq fffff 1010011");
     }
 
     protected Floating(String name, String description, String funct, String rm) {
-        super(name + " f1, f2, f3", description, BasicInstructionFormat.R_FORMAT, funct + "ttttt sssss " + rm + "fffff 1010011");
+        super(name + " f1, f2, f3", description, BasicInstructionFormat.R_FORMAT, funct + "ttttt sssss " + rm + " fffff 1010011");
     }
     public void simulate(ProgramStatement statement) throws SimulationException{
         int[] operands = statement.getOperands();

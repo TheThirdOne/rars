@@ -129,6 +129,10 @@ public class FloatingPointRegisterFile {
         }
     }
 
+    public static long getValueLong(int num) {
+        return instance.getValue(num);
+    }
+
     /**
      * Gets the raw int value actually stored in a Register.  If you need a
      * float, use Float.intBitsToFloat() to get the equivent float.
