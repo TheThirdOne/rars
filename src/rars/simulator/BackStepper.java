@@ -45,6 +45,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 public class BackStepper {
     private enum Action {
         MEMORY_RESTORE_RAW_WORD,
+        MEMORY_RESTORE_DOUBLE_WORD,
         MEMORY_RESTORE_WORD,
         MEMORY_RESTORE_HALF,
         MEMORY_RESTORE_BYTE,
@@ -138,6 +139,9 @@ public class BackStepper {
                         case MEMORY_RESTORE_RAW_WORD:
                             Globals.memory.setRawWord(step.param1, (int)step.param2);
                             break;
+                        case MEMORY_RESTORE_DOUBLE_WORD:
+                            Globals.memory.setDoubleWord(step.param1, step.param2);
+                            break;
                         case MEMORY_RESTORE_WORD:
                             Globals.memory.setWord(step.param1, (int)step.param2);
                             break;
@@ -208,6 +212,11 @@ public class BackStepper {
      */
     public int addMemoryRestoreWord(int address, int value) {
         backSteps.push(Action.MEMORY_RESTORE_WORD, pc(), address, value);
+        return value;
+    }
+
+    public long addMemoryRestoreDoubleWord(int address, long value) {
+        backSteps.push(Action.MEMORY_RESTORE_DOUBLE_WORD, pc(), address, value);
         return value;
     }
 

@@ -526,6 +526,26 @@ public class Memory extends Observable {
                 : set(address, value, 1);
     }
 
+
+    /**
+     * Writes 64 bit doubleword value starting at specified Memory address.  Note that
+     * high-order 32 bits are stored in higher (second) memory word regardless
+     * of "endianness".
+     *
+     * @param address Starting address of Memory address to be set.
+     * @param value   Value to be stored at that address.
+     * @return old value that was replaced by setDouble operation.
+     **/
+    public long setDoubleWord(int address, long value) throws AddressErrorException {
+        int oldHighOrder, oldLowOrder;
+        oldHighOrder = set(address + 4, (int) (value >> 32), 4);
+        oldLowOrder = set(address, (int) value, 4);
+        long old = ((long)oldHighOrder << 32) | (oldHighOrder & 0xFFFFFFFFL);
+        return (Globals.getSettings().getBackSteppingEnabled())
+                ? Globals.program.getBackStepper().addMemoryRestoreDoubleWord(address, old)
+                : old;
+    }
+
     ///////////////////////////////////////////////////////////////////////////////////////
 
     /**
@@ -540,9 +560,7 @@ public class Memory extends Observable {
     public double setDouble(int address, double value) throws AddressErrorException {
         int oldHighOrder, oldLowOrder;
         long longValue = Double.doubleToLongBits(value);
-        oldHighOrder = set(address + 4, Binary.highOrderLongToInt(longValue), 4);
-        oldLowOrder = set(address, Binary.lowOrderLongToInt(longValue), 4);
-        return Double.longBitsToDouble(Binary.twoIntsToLong(oldHighOrder, oldLowOrder));
+        return Double.longBitsToDouble(setDoubleWord(address,longValue));
     }
 
 
