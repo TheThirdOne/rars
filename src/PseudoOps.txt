@@ -80,6 +80,9 @@ neg t1,t2 ;sub RG1, x0, RG2  ;#NEGate : Set t1 to negation of t2
 fmv.s  f1, f2 ;fsgnj.s  RG1, RG2, RG2;# Move the value of f2 to f1
 fabs.s f1, f2 ;fsgnjx.s RG1, RG2, RG2;# Set f1 to the absolute value of f2
 fneg.s f1, f2 ;fsgnjn.s RG1, RG2, RG2;# Set f1 to the negation of f2
+fmv.d  f1, f2 ;fsgnj.d  RG1, RG2, RG2;# Move the value of f2 to f1 (64 bit)
+fabs.d f1, f2 ;fsgnjx.d RG1, RG2, RG2;# Set f1 to the absolute value of f2 (64 bit)
+fneg.d f1, f2 ;fsgnjn.d RG1, RG2, RG2;# Set f1 to the negation of f2 (64 bit)
 
 sgt  t1,t2,t3 ;slt  RG1, RG3, RG2 ;#Set Greater Than : if t2 greater than t3 then set t1 to 1 else 0
 sgtu t1,t2,t3 ;sltu RG1, RG3, RG2 ;#Set Greater Than Unsigned : if t2 greater than t3 (unsigned compare) then set t1 to 1 else 0
@@ -167,10 +170,20 @@ flw f1,-100     ;flw RG1, VL2(x0);#Load Word Coprocessor 1 : Set f1 to 32-bit va
 flw f1,10000000,t3;lui RG3, VH2    ;flw RG1, VL2(RG3) ;#Load Word Coprocessor 1 : Set f1 to 32-bit value from effective memory word address using t3 as a temporary
 flw f1,label, t3;auipc RG3, PCH2 ;flw RG1, PCL2(RG3);#Load Word Coprocessor 1 : Set f1 to 32-bit value from effective memory word address using t3 as a temporary
 
-fsw f1,(t2)     ;fsw RG1,0(RG3)  #Store Word Coprocessor 1 : Store 32-bit value from f1 to effective memory word address
-fsw f1,-100     ;fsw RG1, VL2(x0);#Store Word Coprocessor 1 : Store 32-bit value from f1 to effective memory word address
+fsw f1,(t2)       ;fsw RG1,0(RG3)  ;#Store Word Coprocessor 1 : Store 32-bit value from f1 to effective memory word address
+fsw f1,-100       ;fsw RG1, VL2(x0);#Store Word Coprocessor 1 : Store 32-bit value from f1 to effective memory word address
 fsw f1,10000000,t3;lui RG3, VH2    ;fsw RG1, VL2(RG3) ;#Store Word Coprocessor 1 : Store 32-bit value from f1 to effective memory word address using t3 as a temporary
-fsw f1,label, t3;auipc RG3, PCH2 ;fsw RG1, PCL2(RG3);#Store Word Coprocessor 1 : Store 32-bit value from f1 to effective memory word address using t3 as a temporary
+fsw f1,label, t3  ;auipc RG3, PCH2 ;fsw RG1, PCL2(RG3);#Store Word Coprocessor 1 : Store 32-bit value from f1 to effective memory word address using t3 as a temporary
+
+fld f1,(t2)       ;fld RG1,0(RG3)  ;#Load Word: Set f1 to 64-bit value from effective memory word address
+fld f1,-100       ;fld RG1, VL2(x0);#Load Word: Set f1 to 64-bit value from effective memory word address
+fld f1,10000000,t3;lui RG3, VH2    ;fld RG1, VL2(RG3) ;#Load Word: Set f1 to 64-bit value from effective memory word address using t3 as a temporary
+fld f1,label, t3  ;auipc RG3, PCH2 ;fld RG1, PCL2(RG3);#Load Word: Set f1 to 64-bit value from effective memory word address using t3 as a temporary
+
+fsd f1,(t2)       ;fsd RG1,0(RG3)  ;#Store Word: Store 64-bit value from f1 to effective memory word address
+fsd f1,-100       ;fsd RG1, VL2(x0);#Store Word: Store 64-bit value from f1 to effective memory word address
+fsd f1,10000000,t3;lui RG3, VH2    ;fsd RG1, VL2(RG3) ;#Store Word: Store 64-bit value from f1 to effective memory word address using t3 as a temporary
+fsd f1,label, t3  ;auipc RG3, PCH2 ;fsd RG1, PCL2(RG3);#Store Word: Store 64-bit value from f1 to effective memory word address using t3 as a temporary
 
 
 #######################  CSR pseudo-ops #####################
@@ -211,7 +224,7 @@ rdinstreth t1 ; csrrs rd, 0xC02, x0 ;# Read from instreth
 
 # Floating point rounding mode removal
 
-fsqrt.s   f1, f2         ; fsqrt.s   RG1, RG2, dyn         ;#Floating SQuare RooT: Assigns f1 to the square root of f2
+fsqrt.s   f1, f2         ; fsqrt.s   RG1, RG2, dyn          ;#Floating SQuare RooT: Assigns f1 to the square root of f2
 fsub.s    f1, f2, f3     ; fsub.s    RG1, RG2, RG3, dyn     ;#Floating SUBtract: assigns f1 to f2 - f3
 fadd.s    f1, f2, f3     ; fadd.s    RG1, RG2, RG3, dyn     ;#Floating ADD: assigns f1 to f2 + f3
 fmul.s    f1, f2, f3     ; fmul.s    RG1, RG2, RG3, dyn     ;#Floating MULtiply: assigns f1 to f2 * f3
@@ -225,6 +238,19 @@ fcvt.s.w  f1, t1         ; fcvt.s.w  RG1, RG2, dyn         ;#Convert float from 
 fcvt.w.s  t1, f1         ; fcvt.w.s  RG1, RG2, dyn         ;#Convert signed integer from float: Assigns the value of f1 (rounded) to t1
 fcvt.wu.s t1, f1         ; fcvt.wu.s RG1, RG2, dyn         ;#Convert unsigned integer from float: Assigns the value of f1 (rounded) to t1
 
+fsqrt.d   f1, f2         ; fsqrt.d   RG1, RG2, dyn          ;#Floating SQuare RooT (64 bit): Assigns f1 to the square root of f2
+fsub.d    f1, f2, f3     ; fsub.d    RG1, RG2, RG3, dyn     ;#Floating SUBtract (64 bit): assigns f1 to f2 - f3
+fadd.d    f1, f2, f3     ; fadd.d    RG1, RG2, RG3, dyn     ;#Floating ADD (64 bit): assigns f1 to f2 + f3
+fmul.d    f1, f2, f3     ; fmul.d    RG1, RG2, RG3, dyn     ;#Floating MULtiply (64 bit): assigns f1 to f2 * f3
+fdiv.d    f1, f2, f3     ; fdiv.d    RG1, RG2, RG3, dyn     ;#Floating DIVide (64 bit): assigns f1 to f2 / f3
+fmadd.d   f1, f2, f3, f4 ; fmadd.d   RG1, RG2, RG3, RG4, dyn ;#Fused Multiply Add (64 bit): Assigns f2*f3+f4 to f1
+fnmadd.d  f1, f2, f3, f4 ; fnmadd.d  RG1, RG2, RG3, RG4, dyn ;#Fused Negate Multiply Add (64 bit): Assigns -(f2*f3+f4) to f1
+fmsub.d   f1, f2, f3, f4 ; fmsub.d   RG1, RG2, RG3, RG4, dyn ;#Fused Multiply Subatract (64 bit): Assigns f2*f3-f4 to f1
+fnmsub.d  f1, f2, f3, f4 ; fnmsub.d  RG1, RG2, RG3, RG4, dyn ;#Fused Negated Multiply Subatract (64 bit): Assigns -(f2*f3-f4) to f1
+fcvt.d.wu f1, t1         ; fcvt.d.wu RG1, RG2, dyn         ;#Convert double from unsigned integer: Assigns the value of t1 to f1
+fcvt.d.w  f1, t1         ; fcvt.d.w  RG1, RG2, dyn         ;#Convert double from signed integer: Assigns the value of t1 to f1
+fcvt.w.d  t1, f1         ; fcvt.w.d  RG1, RG2, dyn         ;#Convert signed integer from double: Assigns the value of f1 (rounded) to t1
+fcvt.wu.d t1, f1         ; fcvt.wu.d RG1, RG2, dyn         ;#Convert unsigned integer from double: Assigns the value of f1 (rounded) to t1
 
 
 ### GCC compatability
@@ -232,6 +258,9 @@ lui t1,%hi(label)     ;lui RG1,LH4      ;#Load Upper Address : Set t1 to upper 2
 addi t1,t2,%lo(label) ;addi RG1,RG2,LL5 ;#Load Lower Address : Set t1 to t2 + lower 12-bit label's address
 lw t1,%lo(label)(t2)  ;lw RG1,LL4(RG7)  ;#Load from Address
 flw f1,%lo(label)(t2) ;flw RG1,LL4(RG7) ;#Load from Address
+flwdf1,%lo(label)(t2) ;fld RG1,LL4(RG7) ;#Load from Address
 
 fgt.s t1, f2, f3      ;fle.s t1, f3, f2 ;#Floating Greater Than: if f1 > f2, set t1 to 1, else set t1 to 0
 fge.s t1, f2, f3      ;flt.s t1, f3, f2 ;#Floating Greater Than or Equal: if f1 >= f2, set t1 to 1, else set t1 to 0
+fgt.d t1, f2, f3      ;fle.d t1, f3, f2 ;#Floating Greater Than (64 bit): if f1 > f2, set t1 to 1, else set t1 to 0
+fge.d t1, f2, f3      ;flt.d t1, f3, f2 ;#Floating Greater Than or Equal (64 bit): if f1 >= f2, set t1 to 1, else set t1 to 0
