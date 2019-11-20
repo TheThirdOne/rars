@@ -20,7 +20,7 @@ public abstract class Double extends BasicInstruction {
         int[] operands = statement.getOperands();
         Environment e = new Environment();
         e.mode = Floating.getRoundingMode(operands[3],statement);
-        Float64 result = compute(new Float64(FloatingPointRegisterFile.getValue(operands[1])),new Float64(FloatingPointRegisterFile.getValueLong(operands[2])),e);
+        Float64 result = compute(new Float64(FloatingPointRegisterFile.getValueLong(operands[1])),new Float64(FloatingPointRegisterFile.getValueLong(operands[2])),e);
         Floating.setfflags(e);
         FloatingPointRegisterFile.updateRegisterLong(operands[0], result.bits);
     }
