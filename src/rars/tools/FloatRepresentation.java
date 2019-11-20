@@ -390,7 +390,7 @@ public class FloatRepresentation extends AbstractToolAndApplication {
         if (attachedRegister != null) {
             Globals.memoryAndRegistersLock.lock();
             try {
-                attachedRegister.setValue(intValue);
+                attachedRegister.setValue(intValue | 0xFFFFFFFF_00000000L); // NaN box 32 bit value
             } finally {
                 Globals.memoryAndRegistersLock.unlock();
             }

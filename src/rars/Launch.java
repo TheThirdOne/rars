@@ -553,6 +553,8 @@ public class Launch {
         // Display requested register contents
         for (String reg : registerDisplayList) {
             if(FloatingPointRegisterFile.getRegister(reg) != null){
+                //TODO: do something for double vs float
+                // It isn't clear to me what the best behaviour is
                 // floating point register
                 int ivalue = program.getRegisterValue(reg);
                 float fvalue = Float.intBitsToFloat(ivalue);
