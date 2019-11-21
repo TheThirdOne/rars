@@ -28,7 +28,7 @@ public class ControlAndStatusWindow extends RegisterBlockWindow {
     }
 
     protected String formatRegister(Register value, int base) {
-        return NumberDisplayBaseChooser.formatNumber(value.getValue(), base); // Perhaps make this always in hex
+        return NumberDisplayBaseChooser.formatNumber((int)value.getValue(), base); // Perhaps make this always in hex
     }
 
     protected void beginObserving() {

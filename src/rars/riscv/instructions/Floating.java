@@ -45,14 +45,12 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * @version June 2017
  */
 public abstract class Floating extends BasicInstruction {
-    public static final String ROUNDING_MODE = "qqq";
-
     protected Floating(String name, String description, String funct) {
         super(name + " f1, f2, f3, dyn", description, BasicInstructionFormat.R_FORMAT, funct + "ttttt sssss qqq fffff 1010011");
     }
 
     protected Floating(String name, String description, String funct, String rm) {
-        super(name + " f1, f2, f3", description, BasicInstructionFormat.R_FORMAT, funct + "ttttt sssss " + rm + "fffff 1010011");
+        super(name + " f1, f2, f3", description, BasicInstructionFormat.R_FORMAT, funct + "ttttt sssss " + rm + " fffff 1010011");
     }
     public void simulate(ProgramStatement statement) throws SimulationException{
         int[] operands = statement.getOperands();
@@ -94,13 +92,7 @@ public abstract class Floating extends BasicInstruction {
 
     public abstract Float32 compute(Float32 f1, Float32 f2, Environment e);
 
-    public static boolean subnormal(float f) {
-        int bits = Float.floatToRawIntBits(f);
-        return (bits & 0x7F800000) == 0 && (bits & 0x007FFFFF) > 0; // Exponent is minimum and the faction is non-zero
+    public static Float32 getFloat(int num){
+        return new Float32(FloatingPointRegisterFile.getValue(num));
     }
-
-    public static boolean signallingNaN(float f) {
-        return Float.isNaN(f) && (Float.floatToRawIntBits(f) & 0x00400000) == 0;
-    }
-
 }

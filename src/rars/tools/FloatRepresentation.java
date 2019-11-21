@@ -170,7 +170,7 @@ public class FloatRepresentation extends AbstractToolAndApplication {
      */
     public void update(Observable register, Object accessNotice) {
         if (((AccessNotice) accessNotice).getAccessType() == AccessNotice.WRITE) {
-            updateDisplays(new FlavorsOfFloat().buildOneFromInt(attachedRegister.getValue()));
+            updateDisplays(new FlavorsOfFloat().buildOneFromInt((int)attachedRegister.getValue()));
         }
     }
 
@@ -365,7 +365,7 @@ public class FloatRepresentation extends AbstractToolAndApplication {
                             instructions.setText("The program is not attached to any floating point registers.");
                         } else {
                             attachedRegister = fpRegisters[selectedIndex - 1];
-                            updateDisplays(new FlavorsOfFloat().buildOneFromInt(attachedRegister.getValue()));
+                            updateDisplays(new FlavorsOfFloat().buildOneFromInt((int)attachedRegister.getValue()));
                             if (isObserving()) {
                                 addAsObserver();
                             }
@@ -390,7 +390,7 @@ public class FloatRepresentation extends AbstractToolAndApplication {
         if (attachedRegister != null) {
             Globals.memoryAndRegistersLock.lock();
             try {
-                attachedRegister.setValue(intValue);
+                attachedRegister.setValue(intValue | 0xFFFFFFFF_00000000L); // NaN box 32 bit value
             } finally {
                 Globals.memoryAndRegistersLock.unlock();
             }

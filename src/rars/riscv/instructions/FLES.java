@@ -1,5 +1,7 @@
 package rars.riscv.instructions;
 
+import jsoftfloat.Environment;
+import jsoftfloat.types.Float32;
 import rars.ProgramStatement;
 import rars.riscv.hardware.ControlAndStatusRegisterFile;
 import rars.riscv.hardware.FloatingPointRegisterFile;
@@ -42,10 +44,10 @@ public class FLES extends BasicInstruction {
 
     public void simulate(ProgramStatement statement) {
         int[] operands = statement.getOperands();
-        float f1 = FloatingPointRegisterFile.getFloatFromRegister(operands[1]), f2 = FloatingPointRegisterFile.getFloatFromRegister(operands[2]);
-        if (Float.isNaN(f1) || Float.isNaN(f2))
-            ControlAndStatusRegisterFile.orRegister("fcsr", 0x10); // Set invalid flag if either input is NaN
-        boolean result = f1 <= f2;
+        Float32 f1 = Floating.getFloat(operands[1]), f2 = Floating.getFloat(operands[2]);
+        Environment e = new Environment();
+        boolean result = jsoftfloat.operations.Comparisons.compareSignalingLessThanEqual(f1,f2,e);
+        Floating.setfflags(e);
         RegisterFile.updateRegister(operands[0], result ? 1 : 0);
     }
 }

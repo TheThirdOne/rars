@@ -553,6 +553,8 @@ public class Launch {
         // Display requested register contents
         for (String reg : registerDisplayList) {
             if(FloatingPointRegisterFile.getRegister(reg) != null){
+                //TODO: do something for double vs float
+                // It isn't clear to me what the best behaviour is
                 // floating point register
                 int ivalue = program.getRegisterValue(reg);
                 float fvalue = Float.intBitsToFloat(ivalue);
@@ -573,7 +575,7 @@ public class Launch {
             } else { // Integer register or CSR
                 if (verbose)
                     out.print(reg + "\t");
-                out.println(formatIntForDisplay(RegisterFile.getRegister(reg).getValue()));
+                out.println(formatIntForDisplay((int)RegisterFile.getRegister(reg).getValue()));
             }
         }
     }

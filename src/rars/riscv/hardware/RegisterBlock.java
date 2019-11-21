@@ -68,16 +68,16 @@ public class RegisterBlock {
      * @param r   Register to set the value of.
      * @param val The desired value for the register.
      **/
-    public int updateRegister(Register r, int val) {
+    public long updateRegister(Register r, long val) {
         if (r == null) return 0;
         return r.setValue(val);
     }
 
-    public int updateRegister(int num, int val) {
+    public long updateRegister(int num, long val) {
         return updateRegister(getRegister(num), val);
     }
 
-    public int updateRegister(String name, int val) {
+    public long updateRegister(String name, long val) {
         return updateRegister(getRegister(name), val);
     }
 
@@ -87,7 +87,7 @@ public class RegisterBlock {
      * @param num The register's number.
      * @return The value of the given register.
      **/
-    public int getValue(int num) {
+    public long getValue(int num) {
         return getRegister(num).getValue();
     }
 
@@ -97,7 +97,7 @@ public class RegisterBlock {
      * @param name The register's name.
      * @return The value of the given register.
      **/
-    public int getValue(String name) {
+    public long getValue(String name) {
         return getRegister(name).getValue();
     }
 

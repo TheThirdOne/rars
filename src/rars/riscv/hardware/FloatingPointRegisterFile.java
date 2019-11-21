@@ -79,24 +79,12 @@ public class FloatingPointRegisterFile {
     /**
      * Gets the float value stored in the given FPU register.
      *
-     * @param num Register to get the value of.
-     * @return The  float value stored by that register.
-     **/
-
-    public static float getFloatFromRegister(int num) {
-        return Float.intBitsToFloat(instance.getValue(num));
-    }
-
-
-    /**
-     * Gets the float value stored in the given FPU register.
-     *
      * @param name Register to get the value of.
      * @return The  float value stored by that register.
      **/
 
     public static float getFloatFromRegister(String name) {
-        return Float.intBitsToFloat(instance.getValue(name));
+        return Float.intBitsToFloat(getValue(name));
     }
 
     /**
@@ -108,12 +96,22 @@ public class FloatingPointRegisterFile {
      * @param val The desired int value for the register.
      **/
 
-    public static int updateRegister(int num, int val) {
-        return (Globals.getSettings().getBackSteppingEnabled())
-                ? Globals.program.getBackStepper().addFloatingPointRestore(num, instance.updateRegister(num, val))
-                : instance.updateRegister(num, val);
+    public static void updateRegister(int num, int val) {
+        long lval = val | 0xFFFFFFFF_00000000L; // NAN box if used as float
+        if ((Globals.getSettings().getBackSteppingEnabled())) {
+            Globals.program.getBackStepper().addFloatingPointRestore(num, instance.updateRegister(num, lval));
+        } else {
+            instance.updateRegister(num, lval);
+        }
     }
 
+    public static void updateRegisterLong(int num, long val) {
+        if ((Globals.getSettings().getBackSteppingEnabled())) {
+            Globals.program.getBackStepper().addFloatingPointRestore(num, instance.updateRegister(num, val));
+        } else {
+            instance.updateRegister(num, val);
+        }
+    }
     /**
      * Gets the raw int value actually stored in a Register.  If you need a
      * float, use Float.intBitsToFloat() to get the equivent float.
@@ -123,6 +121,15 @@ public class FloatingPointRegisterFile {
      **/
 
     public static int getValue(int num) {
+        long lval = instance.getValue(num);
+        if((lval & 0xFFFFFFFF_00000000L) == 0xFFFFFFFF_00000000L){
+            return (int)lval; // If NaN-Boxed return value
+        }else{
+            return 0x7FC00000; // Otherwise NaN
+        }
+    }
+
+    public static long getValueLong(int num) {
         return instance.getValue(num);
     }
 
@@ -135,7 +142,12 @@ public class FloatingPointRegisterFile {
      **/
 
     public static int getValue(String name) {
-        return instance.getValue(name);
+        long lval = instance.getValue(name);
+        if((lval & 0xFFFFFFFF_00000000L) == 0xFFFFFFFF_00000000L){
+            return (int)lval;
+        }else{
+            return 0x7FC00000;
+        }
     }
 
     /**

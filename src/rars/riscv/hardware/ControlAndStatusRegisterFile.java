@@ -101,8 +101,8 @@ public class ControlAndStatusRegisterFile {
      * @param val  The desired value for the register.
      * @return old value in register prior to update
      **/
-    public static boolean updateRegister(String name, int val) {
-        return updateRegister(instance.getRegister(name).getNumber(), val);
+    public static void updateRegister(String name, int val) {
+        updateRegister(instance.getRegister(name).getNumber(), val);
     }
 
     /**
@@ -112,10 +112,12 @@ public class ControlAndStatusRegisterFile {
      * @param val  The desired value for the register.
      * @return old value in register prior to update
      **/
-    public static int updateRegisterBackdoor(int num, int val) {
-        return (Globals.getSettings().getBackSteppingEnabled())
-                ? Globals.program.getBackStepper().addControlAndStatusBackdoor(num, instance.getRegister(num).setValueBackdoor(val))
-                : instance.getRegister(num).setValueBackdoor(val);
+    public static void updateRegisterBackdoor(int num, int val) {
+        if ((Globals.getSettings().getBackSteppingEnabled())) {
+            Globals.program.getBackStepper().addControlAndStatusBackdoor(num, instance.getRegister(num).setValueBackdoor(val));
+        } else {
+            instance.getRegister(num).setValueBackdoor(val);
+        }
     }
 
     /**
@@ -125,8 +127,8 @@ public class ControlAndStatusRegisterFile {
      * @param val  The desired value for the register.
      * @return old value in register prior to update
      **/
-    public static int updateRegisterBackdoor(String name, int val) {
-        return updateRegisterBackdoor(instance.getRegister(name).getNumber(), val);
+    public static void updateRegisterBackdoor(String name, int val) {
+        updateRegisterBackdoor(instance.getRegister(name).getNumber(), val);
     }
 
     /**
@@ -136,7 +138,7 @@ public class ControlAndStatusRegisterFile {
      * @param val The value to OR with
      **/
     public static boolean orRegister(int num, int val) {
-        return updateRegister(num, instance.getValue(num) | val);
+        return updateRegister(num, (int)instance.getValue(num) | val);
     }
 
     /**
@@ -145,8 +147,8 @@ public class ControlAndStatusRegisterFile {
      * @param name Name of register to change
      * @param val  The value to OR with
      **/
-    public static boolean orRegister(String name, int val) {
-        return updateRegister(name, instance.getValue(name) | val);
+    public static void orRegister(String name, int val) {
+        updateRegister(name, (int)instance.getValue(name) | val);
     }
 
     /**
@@ -156,7 +158,7 @@ public class ControlAndStatusRegisterFile {
      * @param val The value to clear by
      **/
     public static boolean clearRegister(int num, int val) {
-        return updateRegister(num, instance.getValue(num) & ~val);
+        return updateRegister(num, (int)instance.getValue(num) & ~val);
     }
 
     /**
@@ -165,8 +167,8 @@ public class ControlAndStatusRegisterFile {
      * @param name Name of register to change
      * @param val  The value to clear by
      **/
-    public static boolean clearRegister(String name, int val) {
-        return updateRegister(name, instance.getValue(name) & ~val);
+    public static void clearRegister(String name, int val) {
+        updateRegister(name, (int)instance.getValue(name) & ~val);
     }
 
     /**
@@ -177,7 +179,7 @@ public class ControlAndStatusRegisterFile {
      **/
 
     public static int getValue(int num) {
-        return instance.getValue(num);
+        return (int)instance.getValue(num);
     }
 
     /**
@@ -188,7 +190,7 @@ public class ControlAndStatusRegisterFile {
      **/
 
     public static int getValue(String name) {
-        return instance.getValue(name);
+        return (int)instance.getValue(name);
     }
 
     /**
@@ -199,7 +201,7 @@ public class ControlAndStatusRegisterFile {
      **/
 
     public static int getValueNoNotify(String name) {
-        return instance.getRegister(name).getValueNoNotify();
+        return (int)instance.getRegister(name).getValueNoNotify();
     }
 
     /**
