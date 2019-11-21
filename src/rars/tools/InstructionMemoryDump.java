@@ -152,9 +152,12 @@ public class InstructionMemoryDump extends AbstractToolAndApplication {
                 if (stmt != null) {
                     BasicInstruction instr = (BasicInstruction) stmt.getInstruction();
                     BasicInstructionFormat format = instr.getInstructionFormat();
-
-                    // First, dump the instruction, prefixed by "I:"
+                    // First dump the instruction address, prefixed by "I:"
                     log.append("I: 0x"
+                               + Integer.toUnsignedString(a, 16)
+                               + "\n");
+                    // Then dump the instruction, prefixed by "i:"
+                    log.append("i: 0x"
                                + Integer.toUnsignedString(stmt.getBinaryStatement(), 16)
                                + "\n");
                 }
@@ -166,8 +169,8 @@ public class InstructionMemoryDump extends AbstractToolAndApplication {
 
         // is a in the data segment?
         if ((a >= lowDataSegmentAddress) && (a < highDataSegmentAddress)) {
-            if (notice.getAccessType() == AccessNotice.READ) log.append("L: ");
-            if (notice.getAccessType() == AccessNotice.WRITE) log.append("S: ");
+            if (notice.getAccessType() == AccessNotice.READ) log.append("L: 0x");
+            if (notice.getAccessType() == AccessNotice.WRITE) log.append("S: 0x");
             log.append(Integer.toUnsignedString(a, 16) + "\n");
         }
 
