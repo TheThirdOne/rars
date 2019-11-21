@@ -172,7 +172,6 @@ fsw f1,-100     ;fsw RG1, VL2(x0);#Store Word Coprocessor 1 : Store 32-bit value
 fsw f1,10000000,t3;lui RG3, VH2    ;fsw RG1, VL2(RG3) ;#Store Word Coprocessor 1 : Store 32-bit value from f1 to effective memory word address using t3 as a temporary
 fsw f1,label, t3;auipc RG3, PCH2 ;fsw RG1, PCL2(RG3);#Store Word Coprocessor 1 : Store 32-bit value from f1 to effective memory word address using t3 as a temporary
 
-
 #######################  CSR pseudo-ops #####################
 
 csrr t1, fcsr ;csrrs RG1, RG2, x0 ;#Read control and status register
@@ -204,12 +203,12 @@ fsflags t1      ; csrrs  x0, 0x001, RG1 ;#Write FP exception flags
 fsflagsi t1, 100 ; csrrwi RG1, 0x001, RG2 ;#Swap FP exception flags, immediate
 fsflagsi 100     ; csrrsi  x0, 0x001, RG1 ;#Write FP exception flags, immediate
 
-rdcycle t1    ; csrrs rd, 0xC00, x0 ;# Read from cycle
-rdtime t1     ; csrrs rd, 0xC01, x0 ;# Read from time
-rdinstret t1  ; csrrs rd, 0xC02, x0 ;# Read from instret
-rdcycleh t1   ; csrrs rd, 0xC80, x0 ;# Read from cycleh
-rdtimeh t1    ; csrrs rd, 0xC81, x0 ;# Read from timeh
-rdinstreth t1 ; csrrs rd, 0xC82, x0 ;# Read from instreth
+rdcycle t1    ; csrrs RG1, 0xC00, x0 ;# Read from cycle
+rdtime t1     ; csrrs RG1, 0xC01, x0 ;# Read from time
+rdinstret t1  ; csrrs RG1, 0xC02, x0 ;# Read from instret
+rdcycleh t1   ; csrrs RG1, 0xC80, x0 ;# Read from cycleh
+rdtimeh t1    ; csrrs RG1, 0xC81, x0 ;# Read from timeh
+rdinstreth t1 ; csrrs RG1, 0xC82, x0 ;# Read from instreth
 
 # Floating point rounding mode removal
 
