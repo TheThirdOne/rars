@@ -1,9 +1,9 @@
-import rars.AssemblyException;
-import rars.ErrorList;
-import rars.ErrorMessage;
-import rars.SimulationException;
+import rars.*;
 import rars.api.Options;
 import rars.api.Program;
+import rars.riscv.BasicInstruction;
+import rars.riscv.BasicInstructionFormat;
+import rars.riscv.Instruction;
 import rars.simulator.Simulator;
 
 import java.io.*;
@@ -49,6 +49,7 @@ public class Test {
             }
         }
         System.out.println(total);
+        checkBinary();
     }
     public static String run(String path, Program p){
         int[] errorlines = null;
@@ -118,6 +119,73 @@ public class Test {
             return "";
         } catch (SimulationException se){
             return "Crashed while executing " + path;
+        }
+    }
+
+    public static void checkBinary(){
+        Options opt = new Options();
+        opt.startAtMain = true;
+        opt.maxSteps = 500;
+        opt.selfModifyingCode = true;
+        Program p = new Program(opt);
+        Globals.getSettings().setBooleanSettingNonPersistent(Settings.Bool.SELF_MODIFYING_CODE_ENABLED, true);
+
+        ArrayList<Instruction> insts = Globals.instructionSet.getInstructionList();
+        for(Instruction inst : insts){
+            if(inst instanceof BasicInstruction){
+                BasicInstruction binst = (BasicInstruction) inst;
+                if(binst.getInstructionFormat() == BasicInstructionFormat.B_FORMAT ||
+                        binst.getInstructionFormat() == BasicInstructionFormat.J_FORMAT)
+                    continue;
+
+                String program = inst.getExampleFormat();
+                try {
+                    p.assembleString(program);
+                    p.setup(null,"");
+                    int word = p.getMemory().getWord(0x400000);
+                    ProgramStatement ps = new ProgramStatement(word,0x400000);
+                    if (ps.getInstruction() == null) {
+                        System.out.println("Error 1 on: " + program);
+                        continue;
+                    }
+                    if (ps.getPrintableBasicAssemblyStatement().contains("invalid")) {
+                        System.out.println("Error 2 on: " + program);
+                        continue;
+                    }
+                    String decompiled = ps.getPrintableBasicAssemblyStatement();
+
+                    p.assembleString(program);
+                    p.setup(null,"");
+                    int word2 = p.getMemory().getWord(0x400000);
+                    if (word != word2) {
+                        System.out.println("Error 3 on: " + program);
+                    }
+
+
+                    if(!ps.getInstruction().equals(binst)){
+                        System.out.println("Error 4 on: " + program);
+                    }
+                    /*
+                    // Not currently used
+                    // Do a bit of trial and error to test out variations
+                    decompiled = decompiled.replaceAll("x6","t1").replaceAll("x7","t2").replaceAll("x28","t3").trim();
+                    String spaced_out = decompiled.replaceAll(",",", ");
+                    if(!program.equals(decompiled) && !program.equals(spaced_out)){
+                        Globals.getSettings().setBooleanSetting(Settings.Bool.DISPLAY_VALUES_IN_HEX,false);
+                        decompiled = ps.getPrintableBasicAssemblyStatement();
+                        String decompiled2 = decompiled.replaceAll("x6","t1").replaceAll("x7","t2").replaceAll("x28","t3").trim();
+                        String spaced_out2 = decompiled2.replaceAll(",",", ");
+                        if(!program.equals(decompiled2) && !program.equals(spaced_out2)) {
+                            System.out.println("Error 5 on: " + program;
+                        }
+
+                        Globals.getSettings().setBooleanSetting(Settings.Bool.DISPLAY_VALUES_IN_HEX,true);
+                    }
+                    */
+                } catch (Exception e) {
+                    System.out.println("Error 5 on: " + program);
+                }
+            }
         }
     }
 }

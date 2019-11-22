@@ -129,7 +129,7 @@ public class ProgramStatement implements Comparable<ProgramStatement> {
                     ? Globals.instructionSet.matchOperator("nop").get(0)
                     : null;
         } else {
-            this.operands = new int[4];
+            this.operands = new int[5];
             this.numOperands = 0;
             this.instruction = instr;
             String mask = instr.getOperationMask();
@@ -761,6 +761,17 @@ public class ProgramStatement implements Comparable<ProgramStatement> {
                 } else if (tokenType.toString().contains("REGISTER")) {
                     String marker = (tokenType.toString().contains("FP_REGISTER")) ? "f" : "x";
                     statementList.addString(marker + operands[i]);
+                    notOperand = false;
+                } else if (tokenType.equals(TokenTypes.INTEGER_12)) {
+                    statementList.addValue((operands[i]<<20)>>20);
+                    notOperand = false;
+                } else if(tokenType.equals(TokenTypes.ROUNDING_MODE)) {
+                    String[] modes = new String[]{"rne","rtz","rdn","rup","rmm","invalid","invalid","dyn"};
+                    String value = "invalid";
+                    if(operands[i] >=0 && operands[i] < 8){
+                        value = modes[operands[i]];
+                    }
+                    statementList.addString(value);
                     notOperand = false;
                 } else {
                     statementList.addValue(operands[i]);
