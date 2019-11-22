@@ -7,7 +7,7 @@ import rars.riscv.hardware.FloatingPointRegisterFile;
 
 public class FSGNJD extends BasicInstruction {
     public FSGNJD() {
-        super("fsgnjn.d f1, f2, f3", "Floating point sign injection (64 bit): replace the sign bit of f2 with the sign bit of f3 and assign it to f1",
+        super("fsgnj.d f1, f2, f3", "Floating point sign injection (64 bit): replace the sign bit of f2 with the sign bit of f3 and assign it to f1",
                 BasicInstructionFormat.R_FORMAT, "0010001 ttttt sssss 000 fffff 1010011");
     }
 
