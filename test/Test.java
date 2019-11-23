@@ -3,6 +3,7 @@ import rars.api.Options;
 import rars.api.Program;
 import rars.riscv.BasicInstruction;
 import rars.riscv.BasicInstructionFormat;
+import rars.riscv.ExtendedInstruction;
 import rars.riscv.Instruction;
 import rars.simulator.Simulator;
 
@@ -50,6 +51,7 @@ public class Test {
         }
         System.out.println(total);
         checkBinary();
+        checkPsuedo();
     }
     public static String run(String path, Program p){
         int[] errorlines = null;
@@ -187,5 +189,55 @@ public class Test {
                 }
             }
         }
+    }
+    public static void checkPsuedo(){
+        Options opt = new Options();
+        opt.startAtMain = true;
+        opt.maxSteps = 500;
+        opt.selfModifyingCode = true;
+        Program p = new Program(opt);
+        Globals.getSettings().setBooleanSettingNonPersistent(Settings.Bool.SELF_MODIFYING_CODE_ENABLED, true);
+
+        ArrayList<Instruction> insts = Globals.instructionSet.getInstructionList();
+        int skips = 0;
+        for(Instruction inst : insts){
+            if(inst instanceof ExtendedInstruction){
+                String program = "label:"+inst.getExampleFormat();
+                try {
+                    p.assembleString(program);
+                    p.setup(null,"");
+                    int first = p.getMemory().getWord(0x400000);
+                    int second = p.getMemory().getWord(0x400004);
+                    ProgramStatement ps = new ProgramStatement(first,0x400000);
+                    if (ps.getInstruction() == null) {
+                        System.out.println("Error 11 on: " + program);
+                        continue;
+                    }
+                    if (ps.getPrintableBasicAssemblyStatement().contains("invalid")) {
+                        System.out.println("Error 12 on: " + program);
+                        continue;
+                    }
+                    if(program.contains("t0") || program.contains("t1") ||program.contains("t2") ||program.contains("f1")) {
+                        // TODO: test that each register individually is meaningful and test every register.
+                        // Currently this covers all instructions and is an alert if I made a trivial mistake.
+                        String register_substitute = program.replaceAll("t0", "x0").replaceAll("t1", "x0").replaceAll("t2", "x0").replaceAll("f1", "f0");
+                        p.assembleString(register_substitute);
+                        p.setup(null, "");
+                        int word1 = p.getMemory().getWord(0x400000);
+                        int word2 = p.getMemory().getWord(0x400004);
+                        if (word1 == first && word2 == second) {
+                            System.out.println("Error 13 on: " + program);
+                        }
+                    }else{
+                        skips++;
+                    }
+                } catch (Exception e) {
+                    System.out.println("Error 14 on: " + program);
+                }
+            }
+        }
+        // 12 was the value when this test was written, if instructions are added that intentionally
+        // don't have those registers in them add to the register list above or add to the count.
+        if(skips != 12) System.out.println("Unexpected number of psuedo-instructions skipped.");
     }
 }
