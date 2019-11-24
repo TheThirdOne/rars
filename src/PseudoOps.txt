@@ -252,6 +252,8 @@ fcvt.d.wu f1, t1         ; fcvt.d.wu RG1, RG2, dyn         ;#Convert double from
 fcvt.d.w  f1, t1         ; fcvt.d.w  RG1, RG2, dyn         ;#Convert double from signed integer: Assigns the value of t1 to f1
 fcvt.w.d  t1, f1         ; fcvt.w.d  RG1, RG2, dyn         ;#Convert signed integer from double: Assigns the value of f1 (rounded) to t1
 fcvt.wu.d t1, f1         ; fcvt.wu.d RG1, RG2, dyn         ;#Convert unsigned integer from double: Assigns the value of f1 (rounded) to t1
+fcvt.s.d f1, f2          ; fcvt.s.d RG1, RG2, dyn          ;#Convert double to float: Assigned the value of f2 to f1
+fcvt.d.s f1, f2          ; fcvt.d.s RG1, RG2 , dyn         ;#Convert float to double: Assigned the value of f2 to f1
 
 ### TODO: maybe it makes sense to rename the instructions and flip these pseudo-instructions
 fmv.x.w t1, f1 ; fmv.x.s RG1, RG2  ;#Move float (New mnemonic): move bits representing a float to an integer register

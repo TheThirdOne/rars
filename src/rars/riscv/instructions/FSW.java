@@ -45,7 +45,7 @@ public class FSW extends BasicInstruction {
     public void simulate(ProgramStatement statement) throws SimulationException {
         int[] operands = statement.getOperands();
         try {
-            Globals.memory.setWord(RegisterFile.getValue(operands[2]) + operands[1], FloatingPointRegisterFile.getValue(operands[0]));
+            Globals.memory.setWord(RegisterFile.getValue(operands[2]) + operands[1], (int)FloatingPointRegisterFile.getValueLong(operands[0]));
         } catch (AddressErrorException e) {
             throw new SimulationException(statement, e);
         }
