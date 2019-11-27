@@ -7,7 +7,7 @@ an effective development environment for people getting started with RISC-V.
 
 ## Features
 
-  - RV32IMF ISA with some support for user level interrupts.
+  - RV32IMFDN ISA
   - Several system calls that match behaviour from MARS or SPIKE.
   - Support for debugging using breakpoints and/or `ebreak`
   - Side by side comparison from psuedo-instruction to machine code with
