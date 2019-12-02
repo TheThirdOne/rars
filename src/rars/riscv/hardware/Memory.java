@@ -104,17 +104,6 @@ public class Memory extends Observable {
     // NOTE:  Much of the code is hardwired for 4 byte words.  Refactoring this is low priority.
     public static final int WORD_LENGTH_BYTES = 4;
 
-    // TODO: remove this as RISCV is little endian and it is only used in like one spot
-    /**
-     * Constant representing byte order of each memory word.  Little-endian means lowest
-     * numbered byte is right most [3][2][1][0].
-     */
-    public static final boolean LITTLE_ENDIAN = true;
-    /**
-     * Current setting for endian (default LITTLE_ENDIAN)
-     **/
-    private static boolean byteOrder = LITTLE_ENDIAN;
-
     public static int heapAddress;
 
     // Memory will maintain a collection of observables.  Each one is associated
@@ -442,45 +431,7 @@ public class Memory extends Observable {
      * @throws AddressErrorException If address is not on word boundary.
      **/
     public int setRawWord(int address, int value) throws AddressErrorException {
-        int relative, oldValue = 0;
-        checkStoreWordAligned(address);
-        if (inDataSegment(address)) {
-            // in data segment
-            relative = (address - dataSegmentBaseAddress) >> 2; // convert byte address to words
-            oldValue = storeWordInTable(dataBlockTable, relative, value);
-        } else if (address > stackLimitAddress && address <= stackBaseAddress) {
-            // in stack.  Handle similarly to data segment write, except relative
-            // address calculated "backward" because stack addresses grow down from base.
-            relative = (stackBaseAddress - address) >> 2; // convert byte address to words
-            oldValue = storeWordInTable(stackBlockTable, relative, value);
-        } else if (inTextSegment(address)) {
-            // Burch Mod (Jan 2013): replace throw with call to setStatement
-            // DPS adaptation 5-Jul-2013: either throw or call, depending on setting
-            if (Globals.getSettings().getBooleanSetting(Settings.Bool.SELF_MODIFYING_CODE_ENABLED)) {
-                ProgramStatement oldStatement = getStatementNoNotify(address);
-                if (oldStatement != null) {
-                    oldValue = oldStatement.getBinaryStatement();
-                }
-                setStatement(address, new ProgramStatement(value, address));
-            } else {
-                throw new AddressErrorException(
-                        "Cannot write directly to text segment!",
-                        SimulationException.STORE_ACCESS_FAULT, address);
-            }
-        } else if (address >= memoryMapBaseAddress && address < memoryMapLimitAddress) {
-            // memory mapped I/O.
-            relative = (address - memoryMapBaseAddress) >> 2; // convert byte address to word
-            oldValue = storeWordInTable(memoryMapBlockTable, relative, value);
-        } else {
-            // falls outside addressing range
-            throw new AddressErrorException("store address out of range ",
-                    SimulationException.STORE_ACCESS_FAULT, address);
-        }
-        notifyAnyObservers(AccessNotice.WRITE, address, WORD_LENGTH_BYTES, value);
-        if (Globals.getSettings().getBackSteppingEnabled()) {
-            Globals.program.getBackStepper().addMemoryRestoreRawWord(address, oldValue);
-        }
-        return oldValue;
+        return setWord(address,Integer.reverseBytes(value));
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////
@@ -541,9 +492,7 @@ public class Memory extends Observable {
 
 
     /**
-     * Writes 64 bit doubleword value starting at specified Memory address.  Note that
-     * high-order 32 bits are stored in higher (second) memory word regardless
-     * of "endianness".
+     * Writes 64 bit doubleword value starting at specified Memory address.
      *
      * @param address Starting address of Memory address to be set.
      * @param value   Value to be stored at that address.
@@ -562,9 +511,7 @@ public class Memory extends Observable {
     ///////////////////////////////////////////////////////////////////////////////////////
 
     /**
-     * Writes 64 bit double value starting at specified Memory address.  Note that
-     * high-order 32 bits are stored in higher (second) memory word regardless
-     * of "endianness".
+     * Writes 64 bit double value starting at specified Memory address.
      *
      * @param address Starting address of Memory address to be set.
      * @param value   Value to be stored at that address.
@@ -682,39 +629,7 @@ public class Memory extends Observable {
     // Doing so would be detrimental to simulation runtime performance, so
     // I decided to keep the duplicate logic.
     public int getRawWord(int address) throws AddressErrorException {
-        int value = 0;
-        int relative;
-        checkLoadWordAligned(address);
-        if (inDataSegment(address)) {
-            // in data segment
-            relative = (address - dataSegmentBaseAddress) >> 2; // convert byte address to words
-            value = fetchWordFromTable(dataBlockTable, relative);
-        } else if (address > stackLimitAddress && address <= stackBaseAddress) {
-            // in stack. Similar to data, except relative address computed "backward"
-            relative = (stackBaseAddress - address) >> 2; // convert byte address to words
-            value = fetchWordFromTable(stackBlockTable, relative);
-        } else if (address >= memoryMapBaseAddress && address < memoryMapLimitAddress) {
-            // memory mapped I/O.
-            relative = (address - memoryMapBaseAddress) >> 2;
-            value = fetchWordFromTable(memoryMapBlockTable, relative);
-        } else if (inTextSegment(address)) {
-            // Burch Mod (Jan 2013): replace throw with calls to getStatementNoNotify & getBinaryStatement
-            // DPS adaptation 5-Jul-2013: either throw or call, depending on setting
-            if (Globals.getSettings().getBooleanSetting(Settings.Bool.SELF_MODIFYING_CODE_ENABLED)) {
-                ProgramStatement stmt = getStatementNoNotify(address);
-                value = stmt == null ? 0 : stmt.getBinaryStatement();
-            } else {
-                throw new AddressErrorException(
-                        "Cannot read directly from text segment!",
-                        SimulationException.LOAD_ACCESS_FAULT, address);
-            }
-        } else {
-            // falls outside addressing range
-            throw new AddressErrorException("address out of range ",
-                    SimulationException.LOAD_ACCESS_FAULT, address);
-        }
-        notifyAnyObservers(AccessNotice.READ, address, Memory.WORD_LENGTH_BYTES, value);
-        return value;
+        return Integer.reverseBytes(getWord(address));
     }
 
     /////////////////////////////////////////////////////////////////////////
@@ -1210,7 +1125,7 @@ public class Memory extends Observable {
                 else
                     return 0;
             }
-            if (byteOrder == LITTLE_ENDIAN) bytePositionInMemory = 3 - bytePositionInMemory;
+            bytePositionInMemory = 3 - bytePositionInMemory;
             if (op == STORE) {
                 oldValue = replaceByte(blockTable[block][offset], bytePositionInMemory,
                         oldValue, bytePositionInValue);
