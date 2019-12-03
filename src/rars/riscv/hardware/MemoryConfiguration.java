@@ -28,6 +28,9 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 (MIT license, http://www.opensource.org/licenses/mit-license.html)
  */
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Models the memory configuration for the simulated MIPS machine.
  * "configuration" refers to the starting memory addresses for
@@ -41,19 +44,27 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
 public class MemoryConfiguration {
-    // TODO: remove kernel mode maybe?
-    // TODO: move away from a multi-array approach to array of ranges approach
     // Identifier is used for saving setting; name is used for display
     private String configurationIdentifier, configurationName;
-    private String[] configurationItemNames;
-    private int[] configurationItemValues;
+
+    public final Range text, data, bss, stack, mmio, total;
+    public final Map<String, Range> sections;
+    public final int gp_offset, extern_size;
 
 
-    public MemoryConfiguration(String ident, String name, String[] items, int[] values) {
+    public MemoryConfiguration(String ident, String name, Map<String, Range> sections, int gp_offset, int extern_size){
         this.configurationIdentifier = ident;
         this.configurationName = name;
-        this.configurationItemNames = items;
-        this.configurationItemValues = values;
+        text  = sections.get(".text");
+        data  = sections.get(".data");
+        bss   = sections.get(".bss");
+        stack = sections.get("stack");
+        mmio  = sections.get("mmio");
+        total = sections.values().stream().reduce(text, Range::combine);
+        this.sections = new HashMap<>();
+        this.sections.putAll(sections);
+        this.gp_offset = gp_offset;
+        this.extern_size = extern_size;
     }
 
     public String getConfigurationIdentifier() {
@@ -65,75 +76,51 @@ public class MemoryConfiguration {
     }
 
     public int[] getConfigurationItemValues() {
-        return configurationItemValues;
+        return null;
     }
 
     public String[] getConfigurationItemNames() {
-        return configurationItemNames;
+        return null;
     }
 
     public int getTextBaseAddress() {
-        return configurationItemValues[0];
+        return text.low;
     }
 
     public int getDataSegmentBaseAddress() {
-        return configurationItemValues[1];
+        return data.low;
     }
 
     public int getExternBaseAddress() {
-        return configurationItemValues[2];
+        return data.low;
     }
 
     public int getGlobalPointer() {
-        return configurationItemValues[3];
+        return data.low+gp_offset;
     }
 
     public int getDataBaseAddress() {
-        return configurationItemValues[4];
+        return data.low+extern_size;
     }
 
     public int getHeapBaseAddress() {
-        return configurationItemValues[5];
-    }
-
-    public int getStackPointer() {
-        return configurationItemValues[6];
+        return bss.low;
     }
 
     public int getStackBaseAddress() {
-        return configurationItemValues[7];
-    }
-
-    public int getUserHighAddress() {
-        return configurationItemValues[8];
-    }
-
-    public int getKernelBaseAddress() {
-        return configurationItemValues[9];
+        return stack.high;
     }
 
     public int getMemoryMapBaseAddress() {
-        return configurationItemValues[10];
-    }
-
-    public int getKernelHighAddress() {
-        return configurationItemValues[11];
+        return mmio.low;
     }
 
     public int getDataSegmentLimitAddress() {
-        return configurationItemValues[12];
+        return bss.high;
     }
 
     public int getTextLimitAddress() {
-        return configurationItemValues[13];
-    }
-
-    public int getStackLimitAddress() {
-        return configurationItemValues[14];
-    }
-
-    public int getMemoryMapLimitAddress() {
-        return configurationItemValues[15];
+        return text.high;
     }
 
 }
