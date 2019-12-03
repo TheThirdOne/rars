@@ -112,9 +112,9 @@ public class Assembler {
 
         if (tokenizedProgramFiles == null || tokenizedProgramFiles.size() == 0)
             return null;
-        textAddress = new AddressSpace(Memory.textBaseAddress);
-        dataAddress = new AddressSpace(Memory.dataBaseAddress);
-        externAddress = Memory.externBaseAddress;
+        textAddress = new AddressSpace(Memory.configuration.getTextBaseAddress());
+        dataAddress = new AddressSpace(Memory.configuration.getDataBaseAddress());
+        externAddress = Memory.configuration.getExternBaseAddress();
         currentFileDataSegmentForwardReferences = new DataSegmentForwardReferences();
         accumulatedDataSegmentForwardReferences = new DataSegmentForwardReferences();
         Globals.symbolTable.clear();
