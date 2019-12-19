@@ -24,6 +24,38 @@
 
   (MIT license, http://www.opensource.org/licenses/mit-license.html)
 */
+
+/**
+ * Instructions for use
+ *
+ * This tool allows you to generate a trace by doing the following:
+ *
+ * Open your source file in RARS.
+ * Tools menu, Instruction/Memory Dump.
+ * Change filename to a filename of your choice.
+ * Click button: Connect to Program
+ * Run, Assemble.
+ * Run, Go.
+ * Go back to Instruction/Memory Dump window: click "Dump Log". This
+ *   saves the dump to the file you specified in step 3.
+ *
+ * These steps are pretty brittle (i.e., do them in this exact order)
+ *   because the author doesn’t know how to use Swing very well.
+ *
+ * The file you generate has one line per datum. The four kinds of
+ *   data you will see in the trace are:
+ *
+ * ‘I”: The address of an access into instruction memory
+ * ‘i’: A 32-bit RISC-V instruction (the trace first dumps the address then
+ *      the instruction)
+ * ‘L’: The address of a memory load into data memory
+ * ‘S’: The address of a memory store into data memory (the contents of the
+ *      memory load/store aren’t in the trace)
+ *
+ * The trace is in "text" mode for readability reasons, but for reducing
+ *   trace size, it would be possible to instead store it in a "binary" mode.
+ */
+
 package rars.tools;
 
 import rars.ProgramStatement;
@@ -76,10 +108,12 @@ public class InstructionMemoryDump extends AbstractToolAndApplication {
     private JTextField dumpLogFilename;
 
     /**
-     * Simple constructor, likely used to run a stand-alone memory reference visualizer.
+     * Simple constructor, likely used to run a stand-alone memory
+     * reference visualizer.
      *
      * @param title   String containing title for title bar
-     * @param heading String containing text for heading shown in upper part of window.
+     * @param heading String containing text for heading shown in
+     * upper part of window.
      */
     public InstructionMemoryDump(String title, String heading) {
         super(title, heading);
