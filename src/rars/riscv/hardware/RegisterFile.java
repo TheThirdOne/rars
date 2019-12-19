@@ -139,6 +139,9 @@ public class RegisterFile {
      **/
 
     public static Register getRegister(String name) {
+        if(name.equals("fp")){
+            return instance.getRegister("s0");
+        }
         return instance.getRegister(name);
     }
 

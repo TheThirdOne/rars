@@ -124,11 +124,10 @@ public enum TokenTypes {
         // See if it is a register
         Register reg = RegisterFile.getRegister(value);
         if (reg != null)
-            if (reg.getName().equals(value))
-                return TokenTypes.REGISTER_NAME;
-            else
+            if (value.startsWith("x"))
                 return TokenTypes.REGISTER_NUMBER;
-
+            else
+                return TokenTypes.REGISTER_NAME;
         // See if it is a floating point register
 
         reg = FloatingPointRegisterFile.getRegister(value);

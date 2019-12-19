@@ -439,6 +439,9 @@ public class RISCVTokenMarker extends TokenMarker {
                 cKeywords.add(r.getName(), Token.KEYWORD3);
                 cKeywords.add("x" + r.getNumber(), Token.KEYWORD3);  // also recognize x0, x1, x2, etc
             }
+
+            cKeywords.add("fp", Token.KEYWORD3);
+
             // add floating point register file
             for (Register r : FloatingPointRegisterFile.getRegisters()) {
                 cKeywords.add(r.getName(), Token.KEYWORD3);
