@@ -48,6 +48,7 @@ public abstract class Load extends BasicInstruction {
 
     public void simulate(ProgramStatement statement) throws SimulationException {
         int[] operands = statement.getOperands();
+        operands[1] = (operands[1] << 20) >> 20;
         try {
             RegisterFile.updateRegister(operands[0], load(RegisterFile.getValue(operands[2]) + operands[1]));
         } catch (AddressErrorException e) {

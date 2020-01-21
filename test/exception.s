@@ -4,7 +4,7 @@ main:
  	la t0,handler
  	csrrw zero, 5, t0 # set utvec
  	csrrsi zero, 0, 1 # set interrupt enable
- 	lw zero, 0        # trigger trap
+ 	lw zero, 0(zero)        # trigger trap
 failure:
 	li a0, 0
 	li a7, 93

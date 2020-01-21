@@ -17,6 +17,7 @@ public class FSD extends BasicInstruction {
 
     public void simulate(ProgramStatement statement) throws SimulationException {
         int[] operands = statement.getOperands();
+        operands[1] = (operands[1] << 20) >> 20;
         try {
             Globals.memory.setDoubleWord(RegisterFile.getValue(operands[2]) + operands[1], FloatingPointRegisterFile.getValueLong(operands[0]));
         } catch (AddressErrorException e) {
