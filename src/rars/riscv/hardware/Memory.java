@@ -392,12 +392,25 @@ public class Memory extends Observable {
             // DPS adaptation 5-Jul-2013: either throw or call, depending on setting
 
             if (Globals.getSettings().getBooleanSetting(Settings.Bool.SELF_MODIFYING_CODE_ENABLED)) {
-                ProgramStatement oldStatement = getStatementNoNotify(address);
+                if(address%4+length > 4){
+                    // TODO: add checks for halfword load not aligned to halfword boundary
+                    throw new AddressErrorException(
+                            "Load address crosses word boundary",
+                            SimulationException.LOAD_ADDRESS_MISALIGNED, address);
+                }
+                ProgramStatement oldStatement = getStatementNoNotify((address/4)*4);
                 if (oldStatement != null) {
                     oldValue = oldStatement.getBinaryStatement();
                 }
-                // TODO: move decoding to just before the statement is executed (makes illegal instruction exceptions more accurate
-                setStatement(address, new ProgramStatement(value, address));
+
+                // These manipulations set the bits in oldvalue to be like value was placed at address.
+                // TODO: like below, make this more clear
+                value <<= (address%4)*8;
+                int mask = length == 4 ? -1 : ((1<<(8*length))-1);
+                mask <<= (address%4)*8;
+                value = (value&mask) | (oldValue&~mask);
+                oldValue = (oldValue&mask) >> (address%4);
+                setStatement((address/4)*4, new ProgramStatement(value, (address/4)*4));
             } else {
                 throw new AddressErrorException(
                         "Cannot write directly to text segment!",
@@ -626,8 +639,16 @@ public class Memory extends Observable {
             // Burch Mod (Jan 2013): replace throw with calls to getStatementNoNotify & getBinaryStatement
             // DPS adaptation 5-Jul-2013: either throw or call, depending on setting
             if (Globals.getSettings().getBooleanSetting(Settings.Bool.SELF_MODIFYING_CODE_ENABLED)) {
-                ProgramStatement stmt = getStatementNoNotify(address);
-                value = stmt == null ? 0 : stmt.getBinaryStatement();
+                if(address%4+length > 4){
+                    // TODO: add checks for halfword load not aligned to halfword boundary
+                    throw new AddressErrorException(
+                            "Load address not aligned to word boundary ",
+                            SimulationException.LOAD_ADDRESS_MISALIGNED, address);
+                }
+                ProgramStatement stmt = getStatementNoNotify((address/4)*4);
+                // TODO: maybe find a way to make the bit manipulation more clear
+                // It just selects the right bytes from the word loaded
+                value = stmt == null ? 0 : length == 4 ? stmt.getBinaryStatement() : stmt.getBinaryStatement()>>(8*(address%4))&((1<<length*8)-1);
             } else {
                 throw new AddressErrorException(
                         "Cannot read directly from text segment!",
