@@ -121,6 +121,9 @@ public class Program {
         return warnings;
     }
 
+    public void setEntryPoint(int address){
+        startPC = address;
+    }
     /**
      * Prepares the simulator for execution. Clears registers, loads arguments
      * into memory and initializes the String backed STDIO
