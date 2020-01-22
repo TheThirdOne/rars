@@ -1,5 +1,5 @@
 .text
-
+main:
   la s0, tdat
   test_2: fld f2, 0(s0)
  fsd f2, 16(s0)

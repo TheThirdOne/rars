@@ -4,6 +4,7 @@ test1:
 .string "© █ \u0054 \u2605 \n"
 
 .text
+main:
 	li a7, 64
 	li a0, 1
 	la a1, test1

@@ -1,5 +1,5 @@
 .text
-
+main:
   # Make sure infinities with different mantissas compare as equal.
   fld f0, minf, a0
   fld f1, three, a0
