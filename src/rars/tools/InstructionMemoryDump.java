@@ -106,6 +106,7 @@ public class InstructionMemoryDump extends AbstractToolAndApplication {
      * Filename when we dump the log
      */
     private JTextField dumpLogFilename;
+    private JLabel logSuccess;
 
     /**
      * Simple constructor, likely used to run a stand-alone memory
@@ -128,7 +129,7 @@ public class InstructionMemoryDump extends AbstractToolAndApplication {
 
     @Override
     protected JComponent buildMainDisplayArea() {
-        JPanel panel = new JPanel(new GridBagLayout());
+        JPanel panel = new JPanel(new FlowLayout());
 
         // Adds a "Dump Log" button, which, not surprisingly, dumps the log to a file
         JButton dumpLogButton = new JButton("Dump Log");
@@ -146,6 +147,11 @@ public class InstructionMemoryDump extends AbstractToolAndApplication {
         panel.add(dumpLogButton);
         panel.add(dumpLogFilename);
 
+        logSuccess = new JLabel("");
+        logSuccess.setFont(new Font("Monospaced", Font.PLAIN, 12));
+        logSuccess.setFocusable(false);
+        logSuccess.setBackground(panel.getBackground());
+        panel.add(logSuccess);
         return panel;
     }
 
@@ -168,7 +174,6 @@ public class InstructionMemoryDump extends AbstractToolAndApplication {
     @Override
     protected void processRISCVUpdate(Observable resource, AccessNotice notice) {
         if (!notice.accessIsFromRISCV()) return;
-
         // we've got two kinds of access here: instructions and data
         MemoryAccessNotice m = (MemoryAccessNotice) notice;
         int a = m.getAddress();
@@ -216,26 +221,56 @@ public class InstructionMemoryDump extends AbstractToolAndApplication {
     }
 
     public void dumpLog() {
+        // TODO: handle ressizing the window if the logSuccess label is not visible
         try {
             String filename = dumpLogFilename.getText();
-            if (filename == "") return;
+            if (filename.equals("")){
+                logSuccess.setText("Enter a filename before trying to dump log");
+                return;
+            }
             File file = new File(filename);
+            String fullpath = file.getCanonicalPath();
             BufferedWriter bwr = new BufferedWriter(new FileWriter(file));
             bwr.write(log.toString());
             bwr.flush();
             bwr.close();
+            logSuccess.setText("Successfully dumped to " + fullpath);
         } catch (IOException e) {
-            e.printStackTrace();
+            logSuccess.setText("Failed to successfully dump. Cause: " + e.getMessage());
         }
     }
 
     @Override
     protected void reset() {
         lastAddress = -1;
+        logSuccess.setText("");
         updateDisplay();
     }
 
     @Override
     protected void updateDisplay() {
+    }
+
+    protected JComponent getHelpComponent() {
+        final String helpContent =
+                " Generates a trace, to be stored in a file specified by the user, with one line per datum. The four kinds of data in the trace are: \n" +
+                        "  - I: The address of an access into instruction memory \n" +
+                        "  - i: A 32-bit RISC-V instruction (the trace first dumps the address then the instruction)\n" +
+                        "  - L: The address of a memory load into data memory\n" +
+                        "  - S: The address of a memory store into data memory (the contents of the memory load/store aren’t in the trace)\n";
+        JButton help = new JButton("Help");
+        help.addActionListener(
+                new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        JTextArea ja = new JTextArea(helpContent);
+                        ja.setRows(20);
+                        ja.setColumns(60);
+                        ja.setLineWrap(true);
+                        ja.setWrapStyleWord(true);
+                        JOptionPane.showMessageDialog(theWindow, new JScrollPane(ja),
+                                "Log format", JOptionPane.INFORMATION_MESSAGE);
+                    }
+                });
+        return help;
     }
 }
