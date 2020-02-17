@@ -13,11 +13,6 @@ import java.awt.event.MouseListener;
 import java.util.Observable;
 
 @SuppressWarnings("serial")
-/* Add these two lines in exceptions.java file
- * public static final int EXTERNAL_INTERRUPT_TIMER = 0x00000100; //Add for digital Lab Sim
- * public static final int EXTERNAL_INTERRUPT_HEXA_KEYBOARD = 0x00000200;// Add for digital Lab Sim
-*/
-
 /*
  * Didier Teifreto LIFC Universit� de franche-Comt� www.lifc.univ-fcomte.fr/~teifreto
  * didier.teifreto@univ-fcomte.fr
@@ -25,14 +20,11 @@ import java.util.Observable;
 public class DigitalLabSim extends AbstractToolAndApplication {
     private static String heading = "Digital Lab Sim";
     private static String version = " Version 1.0 (Didier Teifreto)";
-    private static final int IN_ADRESS_DISPLAY_1 = Memory.memoryMapBaseAddress + 0x10;
-    private static final int IN_ADRESS_DISPLAY_2 = Memory.memoryMapBaseAddress + 0x11;
-    private static final int IN_ADRESS_HEXA_KEYBOARD = Memory.memoryMapBaseAddress + 0x12;
-    private static final int IN_ADRESS_COUNTER = Memory.memoryMapBaseAddress + 0x13;
-    private static final int OUT_ADRESS_HEXA_KEYBOARD = Memory.memoryMapBaseAddress + 0x14;
 
-    public static final int EXTERNAL_INTERRUPT_TIMER = 0x00000100; //Add for digital Lab Sim
-    public static final int EXTERNAL_INTERRUPT_HEXA_KEYBOARD = 0x00000200;// Add for digital Lab Sim
+    // Used to be static final variables now they are regenerated per instance
+    private final int IN_ADRESS_DISPLAY_1, IN_ADRESS_DISPLAY_2, IN_ADRESS_HEXA_KEYBOARD, IN_ADRESS_COUNTER, OUT_ADRESS_HEXA_KEYBOARD;
+    public static final int EXTERNAL_INTERRUPT_TIMER = 0x00000100;
+    public static final int EXTERNAL_INTERRUPT_HEXA_KEYBOARD = 0x00000200;
 
     // GUI Interface.
     private static JPanel panelTools;
@@ -50,10 +42,16 @@ public class DigitalLabSim extends AbstractToolAndApplication {
 
     public DigitalLabSim(String title, String heading) {
         super(title, heading);
+
+        IN_ADRESS_DISPLAY_1 = Memory.memoryMapBaseAddress + 0x10;
+        IN_ADRESS_DISPLAY_2 = Memory.memoryMapBaseAddress + 0x11;
+        IN_ADRESS_HEXA_KEYBOARD = Memory.memoryMapBaseAddress + 0x12;
+        IN_ADRESS_COUNTER = Memory.memoryMapBaseAddress + 0x13;
+        OUT_ADRESS_HEXA_KEYBOARD = Memory.memoryMapBaseAddress + 0x14;
     }
 
     public DigitalLabSim() {
-        super(heading + ", " + version, heading);
+        this(heading + ", " + version, heading);
     }
 
     public static void main(String[] args) {
