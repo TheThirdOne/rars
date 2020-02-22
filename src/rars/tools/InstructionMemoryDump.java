@@ -238,6 +238,7 @@ public class InstructionMemoryDump extends AbstractToolAndApplication {
         } catch (IOException e) {
             logSuccess.setText("Failed to successfully dump. Cause: " + e.getMessage());
         }
+        theWindow.pack();
     }
 
     @Override
