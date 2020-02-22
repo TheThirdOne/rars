@@ -88,7 +88,6 @@ public class DataSegmentWindow extends JInternalFrame implements Observer {
 
     private int firstAddress;
     private int homeAddress;
-    private boolean userOrKernelMode;
 
     // The combo box replaced the row of buttons when number of buttons expanded to 7!
     // We'll keep the button objects however and manually invoke their action listeners
@@ -116,7 +115,6 @@ public class DataSegmentWindow extends JInternalFrame implements Observer {
 
         homeAddress = Memory.configuration.getDataBaseAddress();  // address for Home button
         firstAddress = homeAddress;  // first address to display at any given time
-        userOrKernelMode = USER_MODE;
         addressHighlighting = false;
         contentPane = this.getContentPane();
         tablePanel = new JPanel(new GridLayout(1, 2, 10, 0));
@@ -681,7 +679,6 @@ public class DataSegmentWindow extends JInternalFrame implements Observer {
         globButton.addActionListener(
                 new ActionListener() {
                     public void actionPerformed(ActionEvent ae) {
-                        userOrKernelMode = USER_MODE;
                         // get $gp global pointer, but guard against it having value below data segment
                         firstAddress = Math.max(
 Memory.configuration.getDataSegmentBaseAddress(), RegisterFile.getValue(RegisterFile.GLOBAL_POINTER_REGISTER));
@@ -698,7 +695,6 @@ Memory.configuration.getDataSegmentBaseAddress(), RegisterFile.getValue(Register
         stakButton.addActionListener(
                 new ActionListener() {
                     public void actionPerformed(ActionEvent ae) {
-                        userOrKernelMode = USER_MODE;
                         // get $sp stack pointer, but guard against it having value below data segment
                         firstAddress = Math.max(Memory.configuration.getDataSegmentBaseAddress(), RegisterFile.getValue(RegisterFile.STACK_POINTER_REGISTER));
                         // See comment above for gloButton...
@@ -712,8 +708,7 @@ Memory.configuration.getDataSegmentBaseAddress(), RegisterFile.getValue(Register
         heapButton.addActionListener(
                 new ActionListener() {
                     public void actionPerformed(ActionEvent ae) {
-                        userOrKernelMode = USER_MODE;
-                        homeAddress =Memory.configuration.getHeapBaseAddress();
+                        homeAddress = Memory.configuration.getHeapBaseAddress();
                         firstAddress = setFirstAddressAndPrevNextButtonEnableStatus(homeAddress);
                         updateModelForMemoryRange(firstAddress);
                     }
@@ -722,7 +717,6 @@ Memory.configuration.getDataSegmentBaseAddress(), RegisterFile.getValue(Register
         extnButton.addActionListener(
                 new ActionListener() {
                     public void actionPerformed(ActionEvent ae) {
-                        userOrKernelMode = USER_MODE;
                         homeAddress = Memory.configuration.getExternBaseAddress();
                         firstAddress = setFirstAddressAndPrevNextButtonEnableStatus(homeAddress);
                         updateModelForMemoryRange(firstAddress);
@@ -732,7 +726,6 @@ Memory.configuration.getDataSegmentBaseAddress(), RegisterFile.getValue(Register
         mmioButton.addActionListener(
                 new ActionListener() {
                     public void actionPerformed(ActionEvent ae) {
-                        userOrKernelMode = KERNEL_MODE;
                         homeAddress = Memory.configuration.getMemoryMapBaseAddress();
                         firstAddress = homeAddress;
                         firstAddress = setFirstAddressAndPrevNextButtonEnableStatus(firstAddress);
@@ -743,7 +736,6 @@ Memory.configuration.getDataSegmentBaseAddress(), RegisterFile.getValue(Register
         textButton.addActionListener(
                 new ActionListener() {
                     public void actionPerformed(ActionEvent ae) {
-                        userOrKernelMode = USER_MODE;
                         homeAddress = Memory.configuration.getTextBaseAddress();
                         firstAddress = homeAddress;
                         firstAddress = setFirstAddressAndPrevNextButtonEnableStatus(firstAddress);
@@ -754,8 +746,7 @@ Memory.configuration.getDataSegmentBaseAddress(), RegisterFile.getValue(Register
         dataButton.addActionListener(
                 new ActionListener() {
                     public void actionPerformed(ActionEvent ae) {
-                        userOrKernelMode = USER_MODE;
-                        homeAddress =Memory.configuration.getDataBaseAddress();
+                        homeAddress = Memory.configuration.getDataBaseAddress();
                         firstAddress = homeAddress;
                         firstAddress = setFirstAddressAndPrevNextButtonEnableStatus(firstAddress);
                         updateModelForMemoryRange(firstAddress);
