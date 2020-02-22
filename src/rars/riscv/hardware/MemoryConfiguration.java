@@ -75,14 +75,6 @@ public class MemoryConfiguration {
         return configurationName;
     }
 
-    public int[] getConfigurationItemValues() {
-        return null;
-    }
-
-    public String[] getConfigurationItemNames() {
-        return null;
-    }
-
     public int getTextBaseAddress() {
         return text.low;
     }

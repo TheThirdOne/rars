@@ -1,10 +1,9 @@
 package rars.riscv.hardware;
 
 import rars.Globals;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
+import rars.util.Binary;
+import java.io.InputStream;
+import java.util.*;
 
 /*
 Copyright (c) 2003-2009,  Pete Sanderson and Kenneth Vollmar
@@ -82,24 +81,10 @@ public class MemoryConfigurations {
             sections.put(".bss",  new Range(0x3000,0x3800)); //Heap and stack split in half (ideally they should overlap)
             sections.put("stack", new Range(0x3800,0x4000));
             sections.put("mmio",  new Range(0x7f00,0x8000));
-            configurations.add(new MemoryConfiguration("CompactDataAtZero", "Compact, Data at Address 0", sections,0x800,0x1000));
+            configurations.add(new MemoryConfiguration("CompactTextAtZero", "Compact, Text at Address 0", sections,0x800,0x1000));
 
             defaultConfiguration = configurations.get(0);
             currentConfiguration = defaultConfiguration;
-
-            // Get current config from settings
-            //String currentConfigurationIdentifier = Globals.getSettings().getMemoryConfiguration();
-
-            // TODO: MAYBE this should be left
-            //setCurrentConfiguration(getConfigurationByName(Globals.getSettings().getMemoryConfiguration()));
-
-            //	Iterator configurationsIterator = getConfigurationsIterator();
-            //	while (configurationsIterator.hasNext()) {
-            //  MemoryConfiguration config = (MemoryConfiguration)configurationsIterator.next();
-            //	  if (currentConfigurationIdentifier.equals(config.getConfigurationIdentifier())) {
-            //	     setCurrentConfiguration(config);
-            //			}
-            //	   }
         }
     }
 
@@ -109,6 +94,43 @@ public class MemoryConfigurations {
         }
         return configurations.iterator();
 
+    }
+
+    public static void addNewConfig(MemoryConfiguration mc){
+        configurations.add(mc);
+    }
+    public static MemoryConfiguration loadNewConfig(InputStream is) {
+        Properties f = new Properties();
+        try {
+            f.load(is);
+        } catch(Exception e){
+          return null;
+        }
+        Map<String,Range> ranges = new HashMap<>();
+        for(String name : f.stringPropertyNames()) {
+            String value = f.getProperty(name);
+            if (!value.contains("-")) continue;
+            String[] ends = value.split("-");
+            if (ends.length != 2) continue;
+            Integer first = Binary.stringToIntFast(ends[0]), second = Binary.stringToIntFast(ends[1]);
+            if (first == null || second == null) continue;
+            if (Integer.compareUnsigned(first, second) <= 0) {
+                ranges.put(name, new Range(first, second));
+            } else {
+                ranges.put(name, new Range(second, first));
+            }
+        }
+
+        String gp = f.getProperty("gp_offset"), extern = f.getProperty("extern_offset");
+        if(gp == null || extern == null) return null;
+
+
+        Integer gpint = Binary.stringToIntFast(gp), externint  = Binary.stringToIntFast(extern);
+        if(gpint == null || externint == null) return null;
+
+        String ident = f.getProperty("ident"), name = f.getProperty("name");
+        if(ident == null || name == null) return null;
+        return new MemoryConfiguration(ident,name,ranges,gpint,externint);
     }
 
     public static MemoryConfiguration getConfigurationByName(String name) {
