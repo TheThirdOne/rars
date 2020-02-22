@@ -324,8 +324,8 @@ public class DataSegmentWindow extends JInternalFrame implements Observer {
             Memory.configuration.getExternBaseAddress(),
             Memory.configuration.getDataBaseAddress(),
             Memory.configuration.getHeapBaseAddress(),
-            Memory.configuration.getGlobalPointer(),
-            Memory.configuration.getStackBaseAddress(),
+            -1, // GP
+            -1, // SP
             Memory.configuration.getTextBaseAddress(),
             Memory.configuration.getMemoryMapBaseAddress(),
     };
@@ -773,13 +773,14 @@ Memory.configuration.getDataSegmentBaseAddress(), RegisterFile.getValue(Register
     private int setFirstAddressAndPrevNextButtonEnableStatus(int lowAddress) {
         int lowLimit = Memory.configuration.total.low;
         int highLimit = Memory.configuration.total.high;
-        if (lowAddress <= lowLimit) {
+
+        if (Integer.compareUnsigned(lowAddress,lowLimit) <= 0) {
             lowAddress = lowLimit;
             prevButton.setEnabled(false);
         } else {
             prevButton.setEnabled(true);
         }
-        if (lowAddress >= highLimit - MEMORY_CHUNK_SIZE) {
+        if (Integer.compareUnsigned(lowAddress,highLimit - MEMORY_CHUNK_SIZE) >= 0) {
             lowAddress = highLimit - MEMORY_CHUNK_SIZE + 1;
             nextButton.setEnabled(false);
         } else {

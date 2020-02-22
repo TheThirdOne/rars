@@ -4,6 +4,7 @@ import rars.assembler.SymbolTable;
 import rars.riscv.hardware.Memory;
 import rars.riscv.InstructionSet;
 import rars.riscv.SyscallNumberOverride;
+import rars.riscv.hardware.MemoryConfigurations;
 import rars.util.PropertiesFile;
 import rars.venus.VenusUI;
 
@@ -173,6 +174,7 @@ public class Globals {
             settings = new Settings(gui);
             initialized = true;
             debug = false;
+            MemoryConfigurations.setCurrentConfiguration(MemoryConfigurations.getConfigurationByName(settings.getMemoryConfiguration()));
             memory.clear(); // will establish memory configuration from setting
         }
     }
