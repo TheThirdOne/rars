@@ -3,6 +3,7 @@ package rars.extras;
 import rars.Globals;
 import rars.assembler.Directives;
 import rars.riscv.*;
+import rars.riscv.hardware.Memory;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -17,8 +18,7 @@ import java.util.Comparator;
 public class Documentation {
 
     public static void main(String[] args){
-        Globals.instructionSet = new InstructionSet();
-        Globals.instructionSet.populate();
+        Globals.initialize(false);
         System.out.println(createDirectiveMarkdown());
         System.out.println(createSyscallMarkdown());
         System.out.println(createInstructionMarkdown(BasicInstruction.class));
