@@ -7,10 +7,7 @@ import rars.SimulationException;
 import rars.riscv.Instruction;
 import rars.util.Binary;
 
-import java.util.Collection;
-import java.util.Observable;
-import java.util.Observer;
-import java.util.Vector;
+import java.util.*;
 
 	/*
 Copyright (c) 2003-2009,  Pete Sanderson and Kenneth Vollmar
@@ -230,7 +227,17 @@ public class Memory extends Observable {
      */
 
     public static void setConfiguration() {
-        configuration = MemoryConfigurations.getCurrentConfiguration();
+        MemoryConfiguration t = MemoryConfigurations.getCurrentConfiguration();
+        HashMap<String, Range> sections = new HashMap<>();
+        // Default configuration comes from SPIM
+        sections.put(".text", t.text.limit(TEXT_BLOCK_LENGTH_WORDS * TEXT_BLOCK_TABLE_LENGTH * WORD_LENGTH_BYTES));
+        sections.put(".data", t.data.limit(BLOCK_LENGTH_WORDS * BLOCK_TABLE_LENGTH * WORD_LENGTH_BYTES));
+        sections.put(".bss",  t.bss);
+        sections.put("stack", t.stack.limitReverse(BLOCK_LENGTH_WORDS * BLOCK_TABLE_LENGTH * WORD_LENGTH_BYTES-1));
+        sections.put("mmio",  t.mmio.limit(BLOCK_LENGTH_WORDS * MMIO_TABLE_LENGTH * WORD_LENGTH_BYTES));
+        configuration =  new MemoryConfiguration(t.getConfigurationIdentifier(),t.getConfigurationName(), sections,t.gp_offset,t.extern_size);
+
+
         RegisterFile.getRegister("sp").changeResetValue(configuration.getStackBaseAddress());
         RegisterFile.getRegister("gp").changeResetValue(configuration.getGlobalPointer());
     }

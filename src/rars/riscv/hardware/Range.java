@@ -15,4 +15,18 @@ public class Range {
         int high = (Integer.compareUnsigned(this.high,other.high) > 0) ?this.high:other.high;
         return new Range(low,high);
     }
+    public Range limit(int size){
+        int tmp = low + size;
+        if(Integer.compareUnsigned(tmp,high) < 0 && Integer.compareUnsigned(tmp,low) > 0){
+            return new Range(low,tmp);
+        }
+        return this;
+    }
+    public Range limitReverse(int size){
+        int tmp = high - size;
+        if(Integer.compareUnsigned(tmp,low) > 0 && Integer.compareUnsigned(tmp,high) < 0){
+            return new Range(tmp,high);
+        }
+        return this;
+    }
 }
