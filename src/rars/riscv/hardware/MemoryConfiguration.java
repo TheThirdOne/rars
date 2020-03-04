@@ -28,6 +28,8 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 (MIT license, http://www.opensource.org/licenses/mit-license.html)
  */
 
+import rars.util.Binary;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -50,11 +52,15 @@ public class MemoryConfiguration {
     public final Range text, data, bss, stack, mmio, total;
     public final Map<String, Range> sections;
     public final int gp_offset, extern_size;
-
+    public final boolean builtin;
 
     public MemoryConfiguration(String ident, String name, Map<String, Range> sections, int gp_offset, int extern_size){
+        this(ident, name, sections, gp_offset,extern_size,true);
+    }
+    public MemoryConfiguration(String ident, String name, Map<String, Range> sections, int gp_offset, int extern_size, boolean builtin){
         this.configurationIdentifier = ident;
         this.configurationName = name;
+        this.builtin = builtin;
         text  = sections.get(".text");
         data  = sections.get(".data");
         bss   = sections.get(".bss");
@@ -115,4 +121,17 @@ public class MemoryConfiguration {
         return text.high;
     }
 
+    public String toPropertiesString(){
+        StringBuilder sb = new StringBuilder();
+        for(Map.Entry<String,Range> entry : sections.entrySet()){
+            sb.append(entry.getKey()).append(" = ");
+            sb.append(Binary.intToHexString(entry.getValue().low)).append('-');
+            sb.append(Binary.intToHexString(entry.getValue().high)).append('\n');
+        }
+        sb.append("name = ").append(configurationName).append('\n');
+        sb.append("ident = ").append(configurationIdentifier).append('\n');
+        sb.append("gp_offset = ").append(Binary.intToHexString(gp_offset)).append('\n');
+        sb.append("extern_offset = ").append(Binary.intToHexString(extern_size)).append('\n');
+        return sb.toString();
+    }
 }

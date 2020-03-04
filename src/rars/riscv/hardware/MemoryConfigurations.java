@@ -130,7 +130,7 @@ public class MemoryConfigurations {
 
         String ident = f.getProperty("ident"), name = f.getProperty("name");
         if(ident == null || name == null) return null;
-        return new MemoryConfiguration(ident,name,ranges,gpint,externint);
+        return new MemoryConfiguration(ident,name,ranges,gpint,externint,false);
     }
 
     public static MemoryConfiguration getConfigurationByName(String name) {
