@@ -700,7 +700,7 @@ public class Launch {
         out.println("            in specified format to specified file.  Option may be repeated.");
         out.println("            Dump occurs at the end of simulation unless 'a' option is used.");
         out.println("            Segment and format are case-sensitive and possible values are:");
-        out.println("            <segment> = " + segments);
+        out.println("            <segment> = " + segments+", or a range like 0x400000-0x10000000");
         out.println("            <format> = " + formats);
         out.println("      h  -- display this help.  Use by itself with no filename.");
         out.println("    hex  -- display memory or register contents in hexadecimal (default)");
