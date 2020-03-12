@@ -60,7 +60,7 @@ public class MemoryConfigurations {
             // Default configuration comes from SPIM
             sections.put(".text", new Range(  0x400000,0x10000000));
             sections.put(".data", new Range(0x10000000,0x10040000));
-            sections.put(".bss",  new Range(0x10040000,0x30000000));
+            sections.put("heap",  new Range(0x10040000,0x30000000));
             sections.put("stack", new Range(0x60000000,0x80000000));
             sections.put("mmio",  new Range(0xffff0000,0xffffffff));
             configurations.add(new MemoryConfiguration("Default","Default", sections,0x8000,0x10000));
@@ -69,7 +69,7 @@ public class MemoryConfigurations {
             // Compact allows 16 bit addressing, data segment starts at 0
             sections.put(".text", new Range(0x3000,0x4000));
             sections.put(".data", new Range(0x0000,0x2000));
-            sections.put(".bss",  new Range(0x2000,0x2800)); //Heap and stack split in half (ideally they should overlap)
+            sections.put("heap",  new Range(0x2000,0x2800)); //Heap and stack split in half (ideally they should overlap)
             sections.put("stack", new Range(0x2800,0x3000));
             sections.put("mmio",  new Range(0x7f00,0x8000));
             configurations.add(new MemoryConfiguration("CompactDataAtZero", "Compact, Data at Address 0", sections,0x1800,0x1000));
@@ -78,7 +78,7 @@ public class MemoryConfigurations {
             // Compact allows 16 bit addressing, text segment starts at 0
             sections.put(".text", new Range(0x0000,0x1000));
             sections.put(".data", new Range(0x1000,0x3000));
-            sections.put(".bss",  new Range(0x3000,0x3800)); //Heap and stack split in half (ideally they should overlap)
+            sections.put("heap",  new Range(0x3000,0x3800)); //Heap and stack split in half (ideally they should overlap)
             sections.put("stack", new Range(0x3800,0x4000));
             sections.put("mmio",  new Range(0x7f00,0x8000));
             configurations.add(new MemoryConfiguration("CompactTextAtZero", "Compact, Text at Address 0", sections,0x800,0x1000));

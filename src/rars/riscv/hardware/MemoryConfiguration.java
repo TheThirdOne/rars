@@ -49,7 +49,7 @@ public class MemoryConfiguration {
     // Identifier is used for saving setting; name is used for display
     private String configurationIdentifier, configurationName;
 
-    public final Range text, data, bss, stack, mmio, total;
+    public final Range text, data, heap, stack, mmio, total;
     public final Map<String, Range> sections;
     public final int gp_offset, extern_size;
     public final boolean builtin;
@@ -63,7 +63,7 @@ public class MemoryConfiguration {
         this.builtin = builtin;
         text  = sections.get(".text");
         data  = sections.get(".data");
-        bss   = sections.get(".bss");
+        heap = sections.get("heap");
         stack = sections.get("stack");
         mmio  = sections.get("mmio");
         total = sections.values().stream().reduce(text, Range::combine);
@@ -102,7 +102,7 @@ public class MemoryConfiguration {
     }
 
     public int getHeapBaseAddress() {
-        return bss.low;
+        return heap.low;
     }
 
     public int getStackBaseAddress() {
@@ -114,7 +114,7 @@ public class MemoryConfiguration {
     }
 
     public int getDataSegmentLimitAddress() {
-        return bss.high;
+        return heap.high;
     }
 
     public int getTextLimitAddress() {
