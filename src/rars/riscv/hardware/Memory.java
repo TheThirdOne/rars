@@ -5,7 +5,6 @@ import rars.ProgramStatement;
 import rars.Settings;
 import rars.SimulationException;
 import rars.riscv.Instruction;
-import rars.util.Binary;
 
 import java.util.*;
 
@@ -232,7 +231,7 @@ public class Memory extends Observable {
         // Default configuration comes from SPIM
         sections.put(".text", t.text.limit(TEXT_BLOCK_LENGTH_WORDS * TEXT_BLOCK_TABLE_LENGTH * WORD_LENGTH_BYTES));
         sections.put(".data", t.data.limit(BLOCK_LENGTH_WORDS * BLOCK_TABLE_LENGTH * WORD_LENGTH_BYTES));
-        sections.put(".bss",  t.bss);
+        sections.put("heap",  t.heap);
         sections.put("stack", t.stack.limitReverse(BLOCK_LENGTH_WORDS * BLOCK_TABLE_LENGTH * WORD_LENGTH_BYTES-1));
         sections.put("mmio",  t.mmio.limit(BLOCK_LENGTH_WORDS * MMIO_TABLE_LENGTH * WORD_LENGTH_BYTES));
         configuration =  new MemoryConfiguration(t.getConfigurationIdentifier(),t.getConfigurationName(), sections,t.gp_offset,t.extern_size);
@@ -271,7 +270,7 @@ public class Memory extends Observable {
         if (newHeapAddress % 4 != 0) {
             newHeapAddress = newHeapAddress + (4 - newHeapAddress % 4); // next higher multiple of 4
         }
-        if (newHeapAddress >= configuration.bss.high) {
+        if (newHeapAddress >= configuration.heap.high) {
             throw new IllegalArgumentException("request (" + numBytes + ") exceeds available heap storage");
         }
         heapAddress = newHeapAddress;
