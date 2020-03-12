@@ -11,10 +11,7 @@ import rars.venus.VenusUI;
 import rars.api.Options;
 
 import javax.swing.*;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.PrintStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -291,8 +288,17 @@ public class Launch {
                 String configName = args[++i];
                 MemoryConfiguration config = MemoryConfigurations.getConfigurationByName(configName);
                 if (config == null) {
-                    out.println("Invalid memory configuration: " + configName);
-                    argsOK = false;
+                    String error = "";
+                    try {
+                        config = MemoryConfigurations.loadNewConfig(new FileInputStream(new File(configName)));
+                        if (config == null) error = " does not define a well specified config";
+                    }catch(FileNotFoundException fe) {
+                        error = " is not the name of a known config or a valid file path";
+                    }
+                    if(config == null) {
+                        out.println("Invalid memory configuration: " + configName + error) ;
+                        argsOK = false;
+                    }
                 } else {
                     MemoryConfigurations.setCurrentConfiguration(config);
                 }
@@ -702,8 +708,9 @@ public class Launch {
         out.println("     mc <config>  -- set memory configuration.  Argument <config> is");
         out.println("            case-sensitive and possible values are: Default for the default");
         out.println("            32-bit address space, CompactDataAtZero for a 32KB memory with");
-        out.println("            data segment at address 0, or CompactTextAtZero for a 32KB");
-        out.println("            memory with text segment at address 0.");
+        out.println("            data segment at address 0, CompactTextAtZero for a 32KB");
+        out.println("            memory with text segment at address 0, the name of a custom");
+        out.println("            configuration, or a path to a config file.");
         out.println("     me  -- display RARS messages to standard err instead of standard out. ");
         out.println("            Can separate messages from program output using redirection");
         out.println("     nc  -- do not display copyright notice (for cleaner redirected/piped output).");
