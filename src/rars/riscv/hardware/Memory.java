@@ -299,16 +299,16 @@ public class Memory extends Observable {
         int oldValue = 0;
         if (Globals.debug) System.out.println("memory[" + address + "] set to " + value + "(" + length + " bytes)");
         int relativeByteAddress;
-        if (inDataSegment(address)) {
+        if (configuration.data.contains(address,length)) {
             // in data segment.  Will write one byte at a time, w/o regard to boundaries.
             relativeByteAddress = address - configuration.data.low; // relative to data segment start, in bytes
             oldValue = storeBytesInTable(dataBlockTable, relativeByteAddress, length, value);
-        } else if (configuration.stack.contains(address)) {
+        } else if (configuration.stack.contains(address,length)) {
             // in stack.  Handle similarly to data segment write, except relative byte
             // address calculated "backward" because stack addresses grow down from base.
             relativeByteAddress = configuration.stack.high - address;
             oldValue = storeBytesInTable(stackBlockTable, relativeByteAddress, length, value);
-        } else if (inTextSegment(address)) {
+        } else if (configuration.text.contains(address,length)) {
             // Burch Mod (Jan 2013): replace throw with call to setStatement
             // DPS adaptation 5-Jul-2013: either throw or call, depending on setting
 
@@ -337,7 +337,7 @@ public class Memory extends Observable {
                         "Cannot write directly to text segment!",
                         SimulationException.STORE_ACCESS_FAULT, address);
             }
-        } else if (configuration.mmio.contains(address)) {
+        } else if (configuration.mmio.contains(address,length)) {
             // memory mapped I/O.
             relativeByteAddress = address - configuration.mmio.low;
             oldValue = storeBytesInTable(memoryMapBlockTable, relativeByteAddress, length, value);
@@ -502,19 +502,19 @@ public class Memory extends Observable {
     private int get(int address, int length, boolean notify) throws AddressErrorException {
         int value = 0;
         int relativeByteAddress;
-        if (inDataSegment(address)) {
+        if (configuration.data.contains(address,length)) {
             // in data segment.  Will read one byte at a time, w/o regard to boundaries.
             relativeByteAddress = address - configuration.data.low; // relative to data segment start, in bytes
             value = fetchBytesFromTable(dataBlockTable, relativeByteAddress, length);
-        } else if (configuration.stack.contains(address)) {
+        } else if (configuration.stack.contains(address,length)) {
             // in stack. Similar to data, except relative address computed "backward"
             relativeByteAddress = configuration.stack.high - address;
             value = fetchBytesFromTable(stackBlockTable, relativeByteAddress, length);
-        } else if (configuration.mmio.contains(address)) {
+        } else if (configuration.mmio.contains(address,length)) {
             // memory mapped I/O.
             relativeByteAddress = address - configuration.mmio.low;
             value = fetchBytesFromTable(memoryMapBlockTable, relativeByteAddress, length);
-        } else if (inTextSegment(address)) {
+        } else if (configuration.text.contains(address,length)) {
             // Burch Mod (Jan 2013): replace throw with calls to getStatementNoNotify & getBinaryStatement
             // DPS adaptation 5-Jul-2013: either throw or call, depending on setting
             if (Globals.getSettings().getBooleanSetting(Settings.Bool.SELF_MODIFYING_CODE_ENABLED)) {
@@ -590,15 +590,15 @@ public class Memory extends Observable {
         Integer value = null;
         int relative;
         checkLoadWordAligned(address);
-        if (inDataSegment(address)) {
+        if (configuration.data.contains(address,4)) {
             // in data segment
             relative = (address - configuration.data.low) >> 2; // convert byte address to words
             value = fetchWordOrNullFromTable(dataBlockTable, relative);
-        } else if (configuration.stack.contains(address)) {
+        } else if (configuration.stack.contains(address,4)) {
             // in stack. Similar to data, except relative address computed "backward"
             relative = (configuration.stack.high - address) >> 2; // convert byte address to words
             value = fetchWordOrNullFromTable(stackBlockTable, relative);
-        } else if (inTextSegment(address)) {
+        } else if (configuration.text.contains(address,4)) {
             try {
                 value = (getStatementNoNotify(address) == null) ? null : getStatementNoNotify(address).getBinaryStatement();
             } catch (AddressErrorException aee) {
@@ -794,7 +794,7 @@ public class Memory extends Observable {
      * false otherwise.
      */
     public static boolean inTextSegment(int address) {
-        return configuration.text.contains(address);
+        return configuration.text.contains(address,4);
     }
 
     /**
@@ -806,7 +806,7 @@ public class Memory extends Observable {
      * false otherwise.
      */
     public static boolean inDataSegment(int address) {
-        return configuration.data.contains(address);
+        return configuration.data.contains(address,4);
     }
 
     /**
@@ -818,7 +818,7 @@ public class Memory extends Observable {
      * false otherwise.
      */
     public static boolean inMemoryMapSegment(int address) {
-        return configuration.mmio.contains(address);
+        return configuration.mmio.contains(address,4);
     }
 
 

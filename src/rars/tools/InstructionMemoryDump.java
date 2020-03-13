@@ -174,7 +174,7 @@ public class InstructionMemoryDump extends AbstractToolAndApplication {
         int a = m.getAddress();
 
         // is a in the text segment (program)?
-        if (Memory.configuration.text.contains(a)) {
+        if (Memory.configuration.text.contains(a,m.getLength())) {
             if (notice.getAccessType() != AccessNotice.READ) return;
             if (a == lastAddress) return;
             lastAddress = a;
