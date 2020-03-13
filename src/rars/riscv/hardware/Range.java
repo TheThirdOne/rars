@@ -7,8 +7,8 @@ public class Range {
         this.high = high;
         this.low = low;
     }
-    public boolean contains(int ptr){
-        return Integer.compareUnsigned(low,ptr) <= 0 && 0 <= Integer.compareUnsigned(high,ptr);
+    public boolean contains(int ptr, int size){
+        return Integer.compareUnsigned(low,ptr) <= 0 && 0 <= Integer.compareUnsigned(high,ptr+size);
     }
     public Range combine(Range other){
         int low = (Integer.compareUnsigned(this.low,other.low) < 0) ?this.low:other.low;
