@@ -1,14 +1,12 @@
 package rars.riscv.syscalls;
 
-import mars.Globals;
-import mars.ProcessingException;
-import mars.ProgramStatement;
-import mars.mips.hardware.AddressErrorException;
-import mars.mips.hardware.Coprocessor1;
-import mars.mips.hardware.InvalidRegisterAccessException;
-import mars.mips.hardware.RegisterFile;
-import mars.mips.instructions.AbstractSyscall;
-import mars.simulator.Exceptions;
+import rars.Globals;
+import rars.ExitingException;
+import rars.ProgramStatement;
+import rars.riscv.hardware.AddressErrorException;
+import rars.riscv.hardware.FloatingPointRegisterFile;
+import rars.riscv.hardware.RegisterFile;
+import rars.riscv.AbstractSyscall;
 
 import javax.swing.*;
 
@@ -43,22 +41,22 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 /**
  * Service to input data.
  */
-
+//TODO: Fill in desc, in and out for all input dialogs
 public class SyscallInputDialogDouble extends AbstractSyscall {
     /**
      * Build an instance of the syscall with its default service number and name.
      */
     public SyscallInputDialogDouble() {
-        super(53, "InputDialogDouble");
+        super("InputDialogDouble");
     }
 
     /**
      * System call to input data.
      */
-    public void simulate(ProgramStatement statement) throws ProcessingException {
+    public void simulate(ProgramStatement statement) throws ExitingException {
         // Input arguments: $a0 = address of null-terminated string that is the message to user
         // Outputs:
-        //    $f0 and $f1 contains value of double read. $f1 contains high order word of the double.
+        //    fa0 value of double read. $f1 contains high order word of the double.
         //    $a1 contains status value
         //       0: valid input data, correctly parsed
         //       -1: input data cannot be correctly parsed
@@ -78,7 +76,7 @@ public class SyscallInputDialogDouble extends AbstractSyscall {
                 ch[0] = (char) Globals.memory.getByte(byteAddress);
             }
         } catch (AddressErrorException e) {
-            throw new ProcessingException(statement, e);
+            throw new ExitingException(statement, e);
         }
 
         // Values returned by Java's InputDialog:
@@ -89,41 +87,24 @@ public class SyscallInputDialogDouble extends AbstractSyscall {
         inputValue = JOptionPane.showInputDialog(message);
 
         try {
-            Coprocessor1.setRegisterPairToDouble(0, 0.0);  // set $f0 to zero
+            FloatingPointRegisterFile.updateRegisterLong(0, 0); // set $f0 to zero
             if (inputValue == null)  // Cancel was chosen
             {
-                RegisterFile.updateRegister(5, -2);  // set $a1 to -2 flag
+                RegisterFile.updateRegister("a1", -2);  // set $a1 to -2 flag
             } else if (inputValue.length() == 0)  // OK was chosen but there was no input
             {
-                RegisterFile.updateRegister(5, -3);  // set $a1 to -3 flag
+                RegisterFile.updateRegister("a1", -3);  // set $a1 to -3 flag
             } else {
                 double doubleValue = Double.parseDouble(inputValue);
 
                 // Successful parse of valid input data
-                Coprocessor1.setRegisterPairToDouble(0, doubleValue);  // set $f0 to input data
-                RegisterFile.updateRegister(5, 0);  // set $a1 to valid flag
+                FloatingPointRegisterFile.updateRegisterLong(10, Double.doubleToRawLongBits(doubleValue));
+                RegisterFile.updateRegister("a1", 0);  // set $a1 to valid flag
 
             }
-
-        } // end try block
-
-        catch (InvalidRegisterAccessException e)   // register ID error in this method
+        }catch (NumberFormatException e)    // Unsuccessful parse of input data
         {
-            RegisterFile.updateRegister(5, -1);  // set $a1 to -1 flag
-            throw new ProcessingException(statement,
-                    "invalid int reg. access during double input (syscall " + this.getNumber() + ")",
-                    Exceptions.SYSCALL_EXCEPTION);
-        } catch (NumberFormatException e)    // Unsuccessful parse of input data
-        {
-            RegisterFile.updateRegister(5, -1);  // set $a1 to -1 flag
-                   /*  Don't throw exception because returning a status flag
-                   throw new ProcessingException(statement,
-                      "invalid float input (syscall "+this.getNumber()+")",
-						          Exceptions.SYSCALL_EXCEPTION);
-                   */
+            RegisterFile.updateRegister("a1", -1);  // set $a1 to -1 flag
         }
-
-
     }
-
 }

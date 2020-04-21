@@ -1,14 +1,12 @@
 package rars.riscv.syscalls;
 
-import mars.Globals;
-import mars.ProcessingException;
-import mars.ProgramStatement;
-import mars.mips.hardware.AddressErrorException;
-import mars.mips.hardware.Coprocessor1;
-import mars.mips.hardware.InvalidRegisterAccessException;
-import mars.mips.hardware.RegisterFile;
-import mars.mips.instructions.AbstractSyscall;
-import mars.simulator.Exceptions;
+import rars.ExitingException;
+import rars.Globals;
+import rars.ProgramStatement;
+import rars.riscv.hardware.AddressErrorException;
+import rars.riscv.hardware.FloatingPointRegisterFile;
+import rars.riscv.hardware.RegisterFile;
+import rars.riscv.AbstractSyscall;
 
 import javax.swing.*;
 
@@ -49,20 +47,17 @@ public class SyscallMessageDialogDouble extends AbstractSyscall {
      * Build an instance of the syscall with its default service number and name.
      */
     public SyscallMessageDialogDouble() {
-        super(58, "MessageDialogDouble");
+        super("MessageDialogDouble", "Service to display message followed by a double",
+                "a0 = address of null-terminated string that is the message to user <br> fa0 = the double","N/A");
     }
 
     /**
      * System call to display a message to user.
      */
-    public void simulate(ProgramStatement statement) throws ProcessingException {
-        // Input arguments:
-        //   $a0 = address of null-terminated string that is an information-type message to user
-        //   $f12 = double value to display in string form after the first message
-        // Output: none
-
+    public void simulate(ProgramStatement statement) throws ExitingException {
+        // TODO: maybe refactor this, other null strings are handled in a central place now
         String message = new String(); // = "";
-        int byteAddress = RegisterFile.getValue(4);
+        int byteAddress = RegisterFile.getValue("a0");
         char ch[] = {' '}; // Need an array to convert to String
         try {
             ch[0] = (char) Globals.memory.getByte(byteAddress);
@@ -73,24 +68,12 @@ public class SyscallMessageDialogDouble extends AbstractSyscall {
                 ch[0] = (char) Globals.memory.getByte(byteAddress);
             }
         } catch (AddressErrorException e) {
-            throw new ProcessingException(statement, e);
+            throw new ExitingException(statement, e);
         }
 
-
-        // Display the dialog.
-        try {
-            JOptionPane.showMessageDialog(null,
-                    message + Double.toString(Coprocessor1.getDoubleFromRegisterPair("$f12")),
-                    null,
-                    JOptionPane.INFORMATION_MESSAGE);
-        } catch (InvalidRegisterAccessException e)   // register ID error in this method
-        {
-            RegisterFile.updateRegister(5, -1);  // set $a1 to -1 flag
-            throw new ProcessingException(statement,
-                    "invalid int reg. access during double input (syscall " + this.getNumber() + ")",
-                    Exceptions.SYSCALL_EXCEPTION);
-        }
-
+        JOptionPane.showMessageDialog(null,
+                message + Double.longBitsToDouble(FloatingPointRegisterFile.getValueLong(10)),
+                null,
+                JOptionPane.INFORMATION_MESSAGE);
     }
-
 }

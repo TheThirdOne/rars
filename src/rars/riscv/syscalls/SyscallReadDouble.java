@@ -1,12 +1,10 @@
 package rars.riscv.syscalls;
 
-import mars.ProcessingException;
-import mars.ProgramStatement;
-import mars.mips.hardware.Coprocessor1;
-import mars.mips.instructions.AbstractSyscall;
-import mars.simulator.Exceptions;
-import mars.util.Binary;
-import mars.util.SystemIO;
+import rars.ExitingException;
+import rars.ProgramStatement;
+import rars.riscv.hardware.FloatingPointRegisterFile;
+import rars.riscv.AbstractSyscall;
+import rars.util.SystemIO;
 
 /*
 Copyright (c) 2003-2006,  Pete Sanderson and Kenneth Vollmar
@@ -48,24 +46,21 @@ public class SyscallReadDouble extends AbstractSyscall {
      * is 7 and name is "ReadDouble".
      */
     public SyscallReadDouble() {
-        super(7, "ReadDouble");
+        super("ReadDouble","Reads a double from input console", "N/A","fa0 = the double");
     }
 
     /**
      * Performs syscall function to read the bits of input double into $f0 and $f1.
      */
-    public void simulate(ProgramStatement statement) throws ProcessingException {
-        //  Higher numbered reg contains high order word so order is $f1 - $f0.
+    public void simulate(ProgramStatement statement) throws ExitingException {
         double doubleValue = 0;
         try {
             doubleValue = SystemIO.readDouble(this.getNumber());
         } catch (NumberFormatException e) {
-            throw new ProcessingException(statement,
-                    "invalid double input (syscall " + this.getNumber() + ")",
-                    Exceptions.SYSCALL_EXCEPTION);
+            throw new ExitingException(statement,
+                    "invalid double input (syscall " + this.getNumber() + ")");
         }
-        long longValue = Double.doubleToRawLongBits(doubleValue);
-        Coprocessor1.updateRegister(1, Binary.highOrderLongToInt(longValue));
-        Coprocessor1.updateRegister(0, Binary.lowOrderLongToInt(longValue));
+
+        FloatingPointRegisterFile.updateRegisterLong(10, Double.doubleToRawLongBits(doubleValue));
     }
 }

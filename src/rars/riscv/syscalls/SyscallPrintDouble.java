@@ -1,11 +1,11 @@
 package rars.riscv.syscalls;
 
-import mars.ProcessingException;
-import mars.ProgramStatement;
-import mars.mips.hardware.Coprocessor1;
-import mars.mips.instructions.AbstractSyscall;
-import mars.util.Binary;
-import mars.util.SystemIO;
+import rars.ExitingException;
+import rars.ProgramStatement;
+import rars.riscv.AbstractSyscall;
+import rars.riscv.hardware.FloatingPointRegisterFile;
+import rars.util.Binary;
+import rars.util.SystemIO;
 
 /*
 Copyright (c) 2003-2006,  Pete Sanderson and Kenneth Vollmar
@@ -35,28 +35,20 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 (MIT license, http://www.opensource.org/licenses/mit-license.html)
  */
 
-
-/**
- * Service to display double whose bits are stored in $f12 & $f13 onto the console.
- * $f13 contains high order word of the double.
- */
-
 public class SyscallPrintDouble extends AbstractSyscall {
     /**
      * Build an instance of the Print Double syscall.  Default service number
      * is 3 and name is "PrintDouble".
      */
     public SyscallPrintDouble() {
-        super(3, "PrintDouble");
+        super("PrintDouble","Prints a double precision floating point number","fa0 = double to print","N/A");
     }
 
     /**
-     * Performs syscall function to print double whose bits are stored in $f12 & $f13.
+     * Performs syscall function to print double whose bits are stored in fa0
      */
-    public void simulate(ProgramStatement statement) throws ProcessingException {
+    public void simulate(ProgramStatement statement) throws ExitingException {
         // Note: Higher numbered reg contains high order word so concat 13-12.
-        SystemIO.printString(Double.toString(Double.longBitsToDouble(
-                Binary.twoIntsToLong(Coprocessor1.getValue(13), Coprocessor1.getValue(12))
-        )));
+        SystemIO.printString(Double.toString(Double.longBitsToDouble(FloatingPointRegisterFile.getValueLong(10))));
     }
 }

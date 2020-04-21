@@ -125,6 +125,19 @@ public class SystemIO {
     }
 
     /**
+     * Implements syscall to read a double value.
+     * Client is responsible for catching NumberFormatException.
+     *
+     * @param serviceNumber the number assigned to Read Duoble syscall (default 7)
+     * @return double value corresponding to user input
+     * Feb 14 2005 Ken Vollmar
+     */
+    public static double readDouble(int serviceNumber) {
+        String input = readStringInternal("0", "Enter a Double value (syscall " + serviceNumber + ")", -1);
+        return Double.parseDouble(input.trim());
+    }
+
+    /**
      * Implements syscall having 4 in $v0, to print a string.
      */
     public static void printString(String string) {
