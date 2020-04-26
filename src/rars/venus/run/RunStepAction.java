@@ -116,8 +116,8 @@ public class RunStepAction extends GuiAction {
                             ((reason == Simulator.Reason.CLIFF_TERMINATION) ? "terminated due to null instruction."
                                     : "completed successfully.") + "\n\n");
             mainUI.getMessagesPane().postRunMessage(
-                    "\n-- program is finished running " +
-                            ((reason == Simulator.Reason.CLIFF_TERMINATION) ? "(dropped off bottom)" : "") + " --\n\n");
+                    "\n-- program is finished running" +
+                            ((reason == Simulator.Reason.CLIFF_TERMINATION) ? "(dropped off bottom)" : " (" + Globals.exitCode + ")") + " --\n\n");
             mainUI.getMessagesPane().selectRunMessageTab();
         }
         if (pe != null) {

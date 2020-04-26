@@ -173,7 +173,7 @@ public class RunGoAction extends GuiAction {
                 mainUI.getMessagesPane().postMessage(
                         "\n" + name + ": execution completed successfully.\n\n");
                 mainUI.getMessagesPane().postRunMessage(
-                        "\n-- program is finished running --\n\n");
+                        "\n-- program is finished running (" + Globals.exitCode + ") --\n\n");
                 mainUI.getMessagesPane().selectRunMessageTab();
                 break;
             case CLIFF_TERMINATION:
