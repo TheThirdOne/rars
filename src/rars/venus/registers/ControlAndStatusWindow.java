@@ -12,7 +12,7 @@ public class ControlAndStatusWindow extends RegisterBlockWindow {
     private static final String[] regToolTips = {
             /*ustatus"*/ "Interrupt status information (set the lowest bit to enable exceptions)",
             /*fflags*/ "The accumulated floating point flags",
-            /*frm*/    "Rounding mode for floating point operatations (currently ignored)",
+            /*frm*/    "Rounding mode for floating point operatations",
             /*fcsr*/   "Both frm and fflags",
             /*uie*/    "Finer control for which interrupts are enabled",
             /*utvec*/  "The base address of the interrupt handler",
@@ -20,7 +20,13 @@ public class ControlAndStatusWindow extends RegisterBlockWindow {
             /*uepc*/   "PC at the time the interrupt was triggered",
             /*ucause*/ "Cause of the interrupt (top bit is interrupt vs trap)",
             /*utval*/  "Value associated with the cause",
-            /*uip*/    "Shows if any interrupt is pending and what type"
+            /*uip*/    "Shows if any interrupt is pending and what type",
+            /*cycle*/  "Number of clock cycles executed",
+            /*time*/   "Time since some time in the past (Milliseconds since 1/1/1970 in RARS)",
+            /*instret*/"Instructions retired (same as cycle in RARS)",
+            /*cycleh*/ "High 32 bits of cycle",
+            /*timeh*/  "High 32 bits of time",
+            /*instreth*/ "High 32 bits of instret"
     };
 
     public ControlAndStatusWindow() {

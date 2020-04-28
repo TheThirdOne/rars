@@ -51,6 +51,7 @@ public class ControlAndStatusRegisterFile {
 
     static {
         // TODO: consider making time, cycle and instret 64 bit registers which then are linked to by *h
+        // Remember to update the window tooltips when adding a CSR
         Register[] tmp = {
                 new MaskedRegister("ustatus", 0x000, 0,~0x11),
                 null, // fflags
