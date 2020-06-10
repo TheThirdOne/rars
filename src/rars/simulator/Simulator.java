@@ -393,7 +393,7 @@ public class Simulator extends Observable {
                 Globals.memoryAndRegistersLock.lock();
                 try {
                     // Handle pending interupts and traps first
-                    int uip = ControlAndStatusRegisterFile.getValueNoNotify("uip"), uie = ControlAndStatusRegisterFile.getValueNoNotify("uie");
+                    long uip = ControlAndStatusRegisterFile.getValueNoNotify("uip"), uie = ControlAndStatusRegisterFile.getValueNoNotify("uie");
                     boolean IE = (ControlAndStatusRegisterFile.getValueNoNotify("ustatus") & ControlAndStatusRegisterFile.INTERRUPT_ENABLE) != 0;
                     // make sure no interrupts sneak in while we are processing them
                     pc = RegisterFile.getProgramCounter();
@@ -520,22 +520,12 @@ public class Simulator extends Observable {
                 }
 
                 // Update cycle(h) and instret(h)
-                int cycle = ControlAndStatusRegisterFile.getValueNoNotify("cycle"),
-                         instret = ControlAndStatusRegisterFile.getValueNoNotify("instret");
+                long cycle = ControlAndStatusRegisterFile.getValueNoNotify("cycle"),
+                         instret = ControlAndStatusRegisterFile.getValueNoNotify("instret"),
+                         time = System.currentTimeMillis();;
                 ControlAndStatusRegisterFile.updateRegisterBackdoor("cycle",cycle+1);
-                if(cycle == -1){
-                    int cycleh = ControlAndStatusRegisterFile.getValueNoNotify("cycleh");
-                    ControlAndStatusRegisterFile.updateRegisterBackdoor("cycleh",cycleh+1);
-                }
-
                 ControlAndStatusRegisterFile.updateRegisterBackdoor("instret",instret+1);
-                if(instret == -1){
-                    int instreth = ControlAndStatusRegisterFile.getValueNoNotify("instreth");
-                    ControlAndStatusRegisterFile.updateRegisterBackdoor("instreth",instreth+1);
-                }
-                long time = System.currentTimeMillis();
-                ControlAndStatusRegisterFile.updateRegisterBackdoor("time",(int)time);
-                ControlAndStatusRegisterFile.updateRegisterBackdoor("timeh",(int)(time>>32));
+                ControlAndStatusRegisterFile.updateRegisterBackdoor("time",time);
 
                 //     Return if we've reached a breakpoint.
                 if (ebreak || (breakPoints != null) &&

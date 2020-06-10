@@ -75,7 +75,7 @@ public class RegisterFile {
      * @param val The desired value for the register.
      **/
 
-    public static void updateRegister(int num, int val) {
+    public static void updateRegister(int num, long val) {
         if (num == 0) {
             ;
         } else {
@@ -94,7 +94,7 @@ public class RegisterFile {
      * @param val  The desired value for the register.
      **/
 
-    public static void updateRegister(String name, int val) {
+    public static void updateRegister(String name, long val) {
         updateRegister(instance.getRegister(name).getNumber(), val);
     }
 
@@ -107,6 +107,18 @@ public class RegisterFile {
 
     public static int getValue(int num) {
         return (int) instance.getValue(num);
+
+    }
+
+    /**
+     * Returns the value of the register.
+     *
+     * @param num The register number.
+     * @return The value of the given register.
+     **/
+
+    public static long getValueLong(int num) {
+        return instance.getValue(num);
 
     }
 
