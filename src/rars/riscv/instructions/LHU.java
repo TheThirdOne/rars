@@ -35,7 +35,7 @@ public class LHU extends Load {
         super("lhu t1, -100(t2)", "Set t1 to zero-extended 16-bit value from effective memory halfword address", "101");
     }
 
-    public int load(int address) throws AddressErrorException {
+    public long load(int address) throws AddressErrorException {
         return Globals.memory.getHalf(address) & 0x0000FFFF;
     }
 }

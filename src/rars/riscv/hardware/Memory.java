@@ -553,7 +553,7 @@ public class Memory extends Observable {
         int oldHighOrder, oldLowOrder;
         oldHighOrder = set(address + 4, (int) (value >> 32), 4);
         oldLowOrder = set(address, (int) value, 4);
-        long old = ((long)oldHighOrder << 32) | (oldHighOrder & 0xFFFFFFFFL);
+        long old = ((long)oldHighOrder << 32) | (oldLowOrder & 0xFFFFFFFFL);
         return (Globals.getSettings().getBackSteppingEnabled())
                 ? Globals.program.getBackStepper().addMemoryRestoreDoubleWord(address, old)
                 : old;
@@ -788,6 +788,20 @@ public class Memory extends Observable {
     }
 
 
+    /**
+     * Reads 64 bit doubleword value starting at specified Memory address.
+     *
+     * @param address Starting address of Memory address to be read
+     * @return Double Word (8-byte value) stored starting at that address.
+     * @throws AddressErrorException If address is not on word boundary.
+     **/
+    public long getDoubleWord(int address) throws AddressErrorException {
+        checkLoadWordAligned(address);
+        int oldHighOrder, oldLowOrder;
+        oldHighOrder = get(address + 4,4);
+        oldLowOrder = get(address,  4);
+        return ((long)oldHighOrder << 32) | (oldLowOrder & 0xFFFFFFFFL);
+    }
     ///////////////////////////////////////////////////////////////////////////////////////
 
     /**

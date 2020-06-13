@@ -35,8 +35,8 @@ public class SW extends Store {
         super("sw t1, -100(t2)", "Store word : Store contents of t1 into effective memory word address", "010");
     }
 
-    public void store(int address, int data) throws AddressErrorException {
-        Globals.memory.setWord(address, data);
+    public void store(int address, long data) throws AddressErrorException {
+        Globals.memory.setWord(address, (int) data);
     }
 }
 
