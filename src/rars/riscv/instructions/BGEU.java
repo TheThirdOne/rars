@@ -37,6 +37,6 @@ public class BGEU extends Branch {
 
     public boolean willBranch(ProgramStatement statement) {
         int[] operands = statement.getOperands();
-        return Integer.compareUnsigned(RegisterFile.getValue(operands[0]), RegisterFile.getValue(operands[1])) >= 0;
+        return Long.compareUnsigned(RegisterFile.getValueLong(operands[0]), RegisterFile.getValueLong(operands[1])) >= 0;
     }
 }

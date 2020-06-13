@@ -46,7 +46,8 @@ public abstract class Arithmetic extends BasicInstruction {
 
     public void simulate(ProgramStatement statement) {
         int[] operands = statement.getOperands();
-        RegisterFile.updateRegister(operands[0], compute(RegisterFile.getValue(operands[1]), RegisterFile.getValue(operands[2])));
+        // TODO switch based on mode
+        RegisterFile.updateRegister(operands[0], computeW(RegisterFile.getValue(operands[1]), RegisterFile.getValue(operands[2])));
     }
 
     /**
@@ -54,5 +55,15 @@ public abstract class Arithmetic extends BasicInstruction {
      * @param value2 the value from the second register
      * @return the result to be stored from the instruction
      */
-    protected abstract int compute(int value, int value2);
+    protected abstract long compute(long value, long value2);
+
+    /**
+     * A version for rv32 / W instructions in rv64, override if the default behaviour is not correct
+     * @param value  the value from the first register truncated to 32 bits
+     * @param value2 the value from the second register truncated to 32 bits
+     * @return the result to be stored from the instruction
+     */
+    protected int computeW(int value, int value2){
+        return (int) compute(value,value2);
+    }
 }
