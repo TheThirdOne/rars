@@ -39,9 +39,15 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * @version June 2017
  */
 public abstract class Arithmetic extends BasicInstruction {
+    boolean rv64;
     public Arithmetic(String usage, String description, String funct7, String funct3) {
         super(usage, description, BasicInstructionFormat.R_FORMAT,
                 funct7 + " ttttt sssss " + funct3 + " fffff 0110011");
+    }
+    public Arithmetic(String usage, String description, String funct7, String funct3, boolean rv64) {
+        super(usage, description, BasicInstructionFormat.R_FORMAT,
+                funct7 + " ttttt sssss " + funct3 + " fffff 0111011");
+        this.rv64 = rv64;
     }
 
     public void simulate(ProgramStatement statement) {
