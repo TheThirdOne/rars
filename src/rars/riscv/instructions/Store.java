@@ -45,6 +45,10 @@ public abstract class Store extends BasicInstruction {
         super(usage, description, BasicInstructionFormat.S_FORMAT,
                 "sssssss fffff ttttt " + funct + " sssss 0100011");
     }
+    public Store(String usage, String description, String funct, boolean rv64) {
+        super(usage, description, BasicInstructionFormat.S_FORMAT,
+                "sssssss fffff ttttt " + funct + " sssss 0100011",rv64);
+    }
 
     public void simulate(ProgramStatement statement) throws SimulationException {
         int[] operands = statement.getOperands();

@@ -6,7 +6,7 @@ import rars.riscv.hardware.AddressErrorException;
 // todo: update description
 public class LD extends Load {
     public LD() {
-        super("ld t1, -100(t2)", "Set t1 to contents of effective memory word address", "011");
+        super("ld t1, -100(t2)", "Set t1 to contents of effective memory word address", "011",true);
     }
 
     public long load(int address) throws AddressErrorException {

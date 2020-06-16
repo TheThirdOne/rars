@@ -43,6 +43,10 @@ public abstract class ImmediateInstruction extends BasicInstruction {
         super(usage, description, BasicInstructionFormat.I_FORMAT,
                 "tttttttttttt sssss " + funct + " fffff 0010011");
     }
+    public ImmediateInstruction(String usage, String description, String funct, boolean rv64) {
+        super(usage, description, BasicInstructionFormat.I_FORMAT,
+                "tttttttttttt sssss " + funct + " fffff 0011011",rv64);
+    }
 
     public void simulate(ProgramStatement statement) {
         int[] operands = statement.getOperands();
