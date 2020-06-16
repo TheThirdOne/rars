@@ -36,7 +36,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 public class SRLI extends BasicInstruction {
     public SRLI() {
         super("srli t1,t2,10", "Shift right logical : Set t1 to result of shifting t2 right by number of bits specified by immediate",
-                BasicInstructionFormat.R_FORMAT, "0000000 ttttt sssss 101 fffff 0010011");
+                BasicInstructionFormat.R_FORMAT, "0000000 ttttt sssss 101 fffff 0010011",false);
     }
 
     public void simulate(ProgramStatement statement) {
