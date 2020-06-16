@@ -2,6 +2,7 @@ package rars.venus;
 
 import rars.Globals;
 import rars.Settings;
+import rars.riscv.InstructionSet;
 import rars.riscv.dump.DumpFormatLoader;
 import rars.simulator.Simulator;
 import rars.venus.registers.ControlAndStatusWindow;
@@ -83,7 +84,7 @@ public class VenusUI extends JFrame {
     private JMenuItem runGo, runStep, runBackstep, runReset, runAssemble, runStop, runPause, runClearBreakpoints, runToggleBreakpoints;
     private JCheckBoxMenuItem settingsLabel, settingsPopupInput, settingsValueDisplayBase, settingsAddressDisplayBase,
             settingsExtended, settingsAssembleOnOpen, settingsAssembleAll, settingsAssembleOpen, settingsWarningsAreErrors,
-            settingsStartAtMain, settingsProgramArguments, settingsSelfModifyingCode;
+            settingsStartAtMain, settingsProgramArguments, settingsSelfModifyingCode,settingsRV64;
     private JMenuItem settingsExceptionHandler, settingsEditor, settingsHighlighting, settingsMemoryConfiguration;
     private JMenuItem helpHelp, helpAbout;
 
@@ -108,7 +109,7 @@ public class VenusUI extends JFrame {
             settingsExtendedAction, settingsAssembleOnOpenAction, settingsAssembleOpenAction, settingsAssembleAllAction,
             settingsWarningsAreErrorsAction, settingsStartAtMainAction, settingsProgramArgumentsAction,
             settingsExceptionHandlerAction, settingsEditorAction,
-            settingsHighlightingAction, settingsMemoryConfigurationAction, settingsSelfModifyingCodeAction;
+            settingsHighlightingAction, settingsMemoryConfigurationAction, settingsSelfModifyingCodeAction,settingsRV64Action;
     private Action helpHelpAction, helpAboutAction;
 
 
@@ -449,6 +450,18 @@ public class VenusUI extends JFrame {
                     "If set, the program can write and branch to both text and data segments.",
                     Settings.Bool.SELF_MODIFYING_CODE_ENABLED);
 
+            // TODO: review this
+            settingsRV64Action = new SettingsAction("64 bit",
+                    "If set, registers are 64 bits wide and new instructions are available",
+                    Settings.Bool.RV64_ENABLED) {
+                public void handler(boolean value) {
+                    InstructionSet.rv64 = value;
+                    Globals.instructionSet.populate();
+                }
+            };
+
+
+
             settingsEditorAction = new SettingsEditorAction("Editor...", null,
                     "View and modify text editor settings.", null, null
             );
@@ -598,6 +611,8 @@ public class VenusUI extends JFrame {
         settingsExtended.setSelected(Globals.getSettings().getBooleanSetting(Settings.Bool.EXTENDED_ASSEMBLER_ENABLED));
         settingsSelfModifyingCode = new JCheckBoxMenuItem(settingsSelfModifyingCodeAction);
         settingsSelfModifyingCode.setSelected(Globals.getSettings().getBooleanSetting(Settings.Bool.SELF_MODIFYING_CODE_ENABLED));
+        settingsRV64 = new JCheckBoxMenuItem(settingsRV64Action);
+        settingsRV64.setSelected(Globals.getSettings().getBooleanSetting(Settings.Bool.RV64_ENABLED));
         settingsAssembleOnOpen = new JCheckBoxMenuItem(settingsAssembleOnOpenAction);
         settingsAssembleOnOpen.setSelected(Globals.getSettings().getBooleanSetting(Settings.Bool.ASSEMBLE_ON_OPEN));
         settingsAssembleAll = new JCheckBoxMenuItem(settingsAssembleAllAction);
@@ -629,6 +644,7 @@ public class VenusUI extends JFrame {
         settings.addSeparator();
         settings.add(settingsExtended);
         settings.add(settingsSelfModifyingCode);
+        settings.add(settingsRV64);
         settings.addSeparator();
         settings.add(settingsEditor);
         settings.add(settingsHighlighting);
