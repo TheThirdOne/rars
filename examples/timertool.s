@@ -2,7 +2,7 @@
 loopStr:.asciz "Loop\n"
 hello:  .asciz "Hello\n"
 newLine:.asciz "\n"
-time:	.word 0xFFFF0018
+timeNow:.word 0xFFFF0018
 cmp:    .word 0xFFFF0020
 .text
 main:
@@ -21,7 +21,7 @@ main:
 loop:
 	# Output current time in loop
 	li	a7, 1
-	lw	a0, time
+	lw	a0, timeNow
 	lw	a0, 0(a0)
 	ecall
 	li	a7, 4
@@ -45,7 +45,7 @@ handle:
 	ecall
 	
 	# Set cmp to time + 5000
-	lw a0 time
+	lw a0 timeNow
 	lw t2 0(a0)
 	li t1 5000
 	add t1 t2 t1
