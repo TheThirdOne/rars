@@ -1,5 +1,7 @@
 package rars.venus.registers;
 
+import rars.Globals;
+import rars.Settings;
 import rars.riscv.hardware.ControlAndStatusRegisterFile;
 import rars.riscv.hardware.Register;
 import rars.venus.NumberDisplayBaseChooser;
@@ -34,7 +36,11 @@ public class ControlAndStatusWindow extends RegisterBlockWindow {
     }
 
     protected String formatRegister(Register value, int base) {
-        return NumberDisplayBaseChooser.formatNumber((int)value.getValue(), base); // Perhaps make this always in hex
+        if (Globals.getSettings().getBooleanSetting(Settings.Bool.RV64_ENABLED)){
+            return NumberDisplayBaseChooser.formatNumber(value.getValue(), base);
+        }else {
+            return NumberDisplayBaseChooser.formatNumber((int)value.getValue(), base);
+        }
     }
 
     protected void beginObserving() {

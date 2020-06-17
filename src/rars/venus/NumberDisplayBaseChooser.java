@@ -162,6 +162,13 @@ public class NumberDisplayBaseChooser extends JCheckBox {
         //          }
     }
 
+    public static String formatNumber(long value, int base) {
+        if (base == NumberDisplayBaseChooser.HEXADECIMAL) {
+            return Binary.longToHexString(value);
+        } else {
+            return Long.toString(value);
+        }
+    }
 
     /**
      * Produces a string form of a float given the value and the

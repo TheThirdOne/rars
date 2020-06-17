@@ -46,8 +46,8 @@ public class SettingsAction extends GuiAction {
     }
     public void actionPerformed(ActionEvent e) {
         boolean value = ((JCheckBoxMenuItem) e.getSource()).isSelected();
-        handler(value);
         Globals.getSettings().setBooleanSetting(setting, value);
+        handler(value);
     }
 
     public void handler(boolean value) {

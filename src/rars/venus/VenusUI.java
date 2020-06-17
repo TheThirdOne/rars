@@ -457,6 +457,8 @@ public class VenusUI extends JFrame {
                 public void handler(boolean value) {
                     InstructionSet.rv64 = value;
                     Globals.instructionSet.populate();
+                    registersTab.updateRegisters();
+                    csrTab.updateRegisters();
                 }
             };
 
