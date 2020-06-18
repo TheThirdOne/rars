@@ -379,7 +379,7 @@ public class Binary {
         if(res2 == null){
             // TODO: maybe speed this up
             long res3 = stringToLong(s);
-            if (res3 < Integer.MAX_VALUE && res3 > Integer.MIN_VALUE){
+            if (res3 <= Integer.MAX_VALUE && res3 >= Integer.MIN_VALUE){
                 return (int)res3;
             }
             throw new NumberFormatException();
