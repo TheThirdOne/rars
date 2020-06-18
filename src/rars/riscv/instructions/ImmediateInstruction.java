@@ -1,6 +1,7 @@
 package rars.riscv.instructions;
 
 import rars.ProgramStatement;
+import rars.riscv.InstructionSet;
 import rars.riscv.hardware.RegisterFile;
 import rars.riscv.BasicInstruction;
 import rars.riscv.BasicInstructionFormat;
@@ -50,8 +51,13 @@ public abstract class ImmediateInstruction extends BasicInstruction {
 
     public void simulate(ProgramStatement statement) {
         int[] operands = statement.getOperands();
-        RegisterFile.updateRegister(operands[0], computeW(RegisterFile.getValue(operands[1]),
-                (operands[2] << 20) >> 20)); // make sure the immediate is sign-extended
+        if (InstructionSet.rv64){
+            RegisterFile.updateRegister(operands[0], compute(RegisterFile.getValueLong(operands[1]),
+                    (operands[2] << 20) >> 20)); // make sure the immediate is sign-extended
+        }else {
+            RegisterFile.updateRegister(operands[0], computeW(RegisterFile.getValue(operands[1]),
+                    (operands[2] << 20) >> 20)); // make sure the immediate is sign-extended
+        }
     }
 
     /**

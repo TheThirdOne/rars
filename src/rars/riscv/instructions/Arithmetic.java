@@ -1,6 +1,7 @@
 package rars.riscv.instructions;
 
 import rars.ProgramStatement;
+import rars.riscv.InstructionSet;
 import rars.riscv.hardware.RegisterFile;
 import rars.riscv.BasicInstruction;
 import rars.riscv.BasicInstructionFormat;
@@ -51,8 +52,11 @@ public abstract class Arithmetic extends BasicInstruction {
 
     public void simulate(ProgramStatement statement) {
         int[] operands = statement.getOperands();
-        // TODO switch based on mode
-        RegisterFile.updateRegister(operands[0], computeW(RegisterFile.getValue(operands[1]), RegisterFile.getValue(operands[2])));
+        if (InstructionSet.rv64){
+            RegisterFile.updateRegister(operands[0], compute(RegisterFile.getValueLong(operands[1]),RegisterFile.getValueLong(operands[2])));
+        }else {
+            RegisterFile.updateRegister(operands[0], computeW(RegisterFile.getValue(operands[1]),RegisterFile.getValue(operands[2])));
+        }
     }
 
     /**
