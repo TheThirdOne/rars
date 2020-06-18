@@ -298,7 +298,7 @@ public class ProgramStatement implements Comparable<ProgramStatement> {
                     basicStatementList.addValue(address);
                 }
                 this.operands[this.numOperands++] = address;
-            } else if (tokenType == TokenTypes.INTEGER_5 || tokenType == TokenTypes.INTEGER_12 ||
+            } else if (tokenType == TokenTypes.INTEGER_5 || tokenType == TokenTypes.INTEGER_6 || tokenType == TokenTypes.INTEGER_12 ||
                     tokenType == TokenTypes.INTEGER_20 || tokenType == TokenTypes.INTEGER_32) {
 
                 int tempNumeric = Binary.stringToInt(tokenValue);
