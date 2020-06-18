@@ -665,7 +665,7 @@ public class Assembler {
             }
         } else if (direct == Directives.WORD || direct == Directives.HALF
                 || direct == Directives.BYTE || direct == Directives.FLOAT
-                || direct == Directives.DOUBLE) {
+                || direct == Directives.DOUBLE || direct == Directives.DWORD ) {
             this.dataDirective = direct;
             if (passesDataSegmentCheck(token) && tokens.size() > 1) { // DPS
                 // 11/20/06, added text segment prohibition
@@ -804,7 +804,7 @@ public class Assembler {
     private void executeDirectiveContinuation(TokenList tokens) {
         Directives direct = this.dataDirective;
         if (direct == Directives.WORD || direct == Directives.HALF || direct == Directives.BYTE
-                || direct == Directives.FLOAT || direct == Directives.DOUBLE) {
+                || direct == Directives.FLOAT || direct == Directives.DOUBLE || direct == Directives.DWORD ) {
             if (tokens.size() > 0) {
                 storeNumeric(tokens, direct, errors);
             }
@@ -921,7 +921,22 @@ public class Assembler {
     private void storeInteger(Token token, Directives directive, ErrorList errors) {
         int lengthInBytes = DataTypes.getLengthInBytes(directive);
         if (TokenTypes.isIntegerTokenType(token.getType())) {
-            int value = Binary.stringToInt(token.getValue());
+            int value;
+            if (TokenTypes.INTEGER_64 == token.getType()){
+                long tmp = Binary.stringToLong(token.getValue());
+                if (directive == Directives.DWORD){
+                    writeToDataSegment((int)tmp, 4, token, errors);
+                    writeToDataSegment((int)(tmp>>32), 4, token, errors);
+                    return;
+                } else {
+                    value = (int)tmp;
+                    errors.add(new ErrorMessage(ErrorMessage.WARNING, token.getSourceProgram(), token.getSourceLine(),
+                            token.getStartPos(), "value " + Binary.longToHexString(tmp)
+                            + " is out-of-range and truncated to " + Binary.intToHexString(value)));
+                }
+            } else {
+                value = Binary.stringToInt(token.getValue());
+            }
             int fullvalue = value;
             // DPS 4-Jan-2013.  Overriding 6-Jan-2005 KENV changes.
             // If value is out of range for the directive, will simply truncate
