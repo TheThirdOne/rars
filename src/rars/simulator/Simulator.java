@@ -289,11 +289,11 @@ public class Simulator extends Observable {
 
 
         private boolean handleInterrupt(int value, int cause, int pc) {
-            assert (cause & 0x10000000) != 0 : "Traps cannot be handled by the interupt handler";
+            assert (cause & 0x80000000) != 0 : "Traps cannot be handled by the interupt handler";
             int code = cause & 0x7FFFFFFF;
 
             // Don't handle cases where that interrupt isn't enabled
-            assert ((ControlAndStatusRegisterFile.getValue("ustatus") & 0x1) == 0 && (ControlAndStatusRegisterFile.getValue("uie") & (1 << code)) == 0) : "The interrupt handler must be enabled";
+            assert ((ControlAndStatusRegisterFile.getValue("ustatus") & 0x1) != 0 && (ControlAndStatusRegisterFile.getValue("uie") & (1 << code)) != 0) : "The interrupt handler must be enabled";
 
             // set the relevant CSRs
             ControlAndStatusRegisterFile.updateRegister("ucause", cause);
