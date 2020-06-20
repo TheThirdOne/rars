@@ -34,7 +34,7 @@ public class SRL extends Arithmetic {
                 "0000000", "101");
     }
     public long compute(long value, long value2) {
-        return value >>> (value2 & 0x00000013F); // Use the bottom 6 bits
+        return value >>> (value2 & 0x0000003F); // Use the bottom 6 bits
     }
     public int computeW(int value, int value2) {
         /// Use >>> to zero-fill

@@ -92,8 +92,11 @@ public class InstructionSet {
         addBasicInstructions();
 
         ////////////// READ PSEUDO-INSTRUCTION SPECS FROM DATA FILE AND ADD //////////////////////
-        addPseudoInstructions();
+        if(rv64) {
+            addPseudoInstructions("/PseudoOps-64.txt");
+        }
 
+        addPseudoInstructions("/PseudoOps.txt");
         // Initialization step.  Create token list for each instruction example.  This is
         // used by parser to determine user program correct syntax.
         for (Instruction inst : instructionList) {
@@ -163,12 +166,12 @@ public class InstructionSet {
     }
     /*  METHOD TO ADD PSEUDO-INSTRUCTIONS
     */
-    private void addPseudoInstructions() {
+    private void addPseudoInstructions(String file) {
         InputStream is = null;
         BufferedReader in = null;
         try {
             // leading "/" prevents package name being prepended to filepath.
-            is = this.getClass().getResourceAsStream("/PseudoOps.txt");
+            is = this.getClass().getResourceAsStream(file);
             in = new BufferedReader(new InputStreamReader(is));
         } catch (NullPointerException e) {
             System.out.println(

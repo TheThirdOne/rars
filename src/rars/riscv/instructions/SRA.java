@@ -34,9 +34,9 @@ public class SRA extends Arithmetic {
                 "0100000", "101");
     }
     public long compute(long value, long value2) {
-        return value >> (value2 & 0x00000013F); // Use the bottom 6 bits
+        return value >> (value2 & 0x0000003F); // Use the bottom 6 bits
     }
-    public int compute(int value, int value2) {
+    public int computeW(int value, int value2) {
         /// Use >> to sign-fill
         return value >> (value2 & 0x0000001F); // Only use the bottom 5 bits
     }
