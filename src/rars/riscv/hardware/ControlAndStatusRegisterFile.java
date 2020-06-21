@@ -1,7 +1,6 @@
 package rars.riscv.hardware;
 
 import rars.Globals;
-import sun.awt.image.ImageWatched;
 
 import java.util.Observer;
 
