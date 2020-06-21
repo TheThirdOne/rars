@@ -7,3 +7,13 @@ li t1,10000000 ;lui RG1, VH2 ;addiw RG1, RG1, VL2 ;#Load Immediate : Set t1 to 3
 # This is a pretty complex template, but it is actually simpler than what gcc uses. gcc seems to actually optimize it per immediate.
 li t1,1000000000000000 ;lui RG1, LIA2 ;addiw RG1, RG1, LIB2 ;slli RG1, RG1, 11 ;addi RG1, RG1, LIC2 ;slli RG1, RG1, 11 ;addi RG1, RG1, LID2 ;slli RG1, RG1, 10 ;addi RG1, RG1, LIE2 ;#Load Immediate : Set t1 to 64-bit immediate
 
+fcvt.s.lu f1, t1         ; fcvt.s.lu RG1, RG2, dyn         ;#Convert float from unsigned 64 bit integer: Assigns the value of t1 to f1
+fcvt.s.l  f1, t1         ; fcvt.s.l  RG1, RG2, dyn         ;#Convert float from signed 64 bit integer: Assigns the value of t1 to f1
+fcvt.l.s  t1, f1         ; fcvt.l.s  RG1, RG2, dyn         ;#Convert signed 64 bit integer from float: Assigns the value of f1 (rounded) to t1
+fcvt.lu.s t1, f1         ; fcvt.lu.s RG1, RG2, dyn         ;#Convert unsigned 64 bit integer from float: Assigns the value of f1 (rounded) to t1
+
+
+fcvt.d.lu f1, t1         ; fcvt.d.lu RG1, RG2, dyn         ;#Convert double from unsigned 64 bit integer: Assigns the value of t1 to f1
+fcvt.d.l  f1, t1         ; fcvt.d.l  RG1, RG2, dyn         ;#Convert double from signed 64 bit integer: Assigns the value of t1 to f1
+fcvt.l.d  t1, f1         ; fcvt.l.d  RG1, RG2, dyn         ;#Convert signed 64 bit integer from double: Assigns the value of f1 (rounded) to t1
+fcvt.lu.d t1, f1         ; fcvt.lu.d RG1, RG2, dyn         ;#Convert unsigned 64 bit integer from double: Assigns the value of f1 (rounded) to t1
