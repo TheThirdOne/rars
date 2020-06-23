@@ -922,21 +922,27 @@ public class Assembler {
         int lengthInBytes = DataTypes.getLengthInBytes(directive);
         if (TokenTypes.isIntegerTokenType(token.getType())) {
             int value;
-            if (TokenTypes.INTEGER_64 == token.getType()){
-                long tmp = Binary.stringToLong(token.getValue());
-                if (directive == Directives.DWORD){
-                    writeToDataSegment((int)tmp, 4, token, errors);
-                    writeToDataSegment((int)(tmp>>32), 4, token, errors);
-                    return;
-                } else {
-                    value = (int)tmp;
+            long longvalue;
+            if (TokenTypes.INTEGER_64 == token.getType()) {
+                longvalue = Binary.stringToLong(token.getValue());
+                value = (int)longvalue;
+                if (directive != Directives.DWORD){
                     errors.add(new ErrorMessage(ErrorMessage.WARNING, token.getSourceProgram(), token.getSourceLine(),
-                            token.getStartPos(), "value " + Binary.longToHexString(tmp)
+                            token.getStartPos(), "value " + Binary.longToHexString(longvalue)
                             + " is out-of-range and truncated to " + Binary.intToHexString(value)));
                 }
-            } else {
+            }else{
                 value = Binary.stringToInt(token.getValue());
+                longvalue = value;
             }
+
+            if (directive == Directives.DWORD){
+                writeToDataSegment((int)longvalue, 4, token, errors);
+                writeToDataSegment((int)(longvalue>>32), 4, token, errors);
+                return;
+            }
+
+
             int fullvalue = value;
             // DPS 4-Jan-2013.  Overriding 6-Jan-2005 KENV changes.
             // If value is out of range for the directive, will simply truncate
