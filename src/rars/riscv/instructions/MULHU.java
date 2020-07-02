@@ -36,7 +36,7 @@ public class MULHU extends Arithmetic {
                 "0000001", "011");
     }
     public long compute(long value, long value2) {
-        BigInteger unsigned = BigInteger.valueOf(value2);
+        BigInteger unsigned = BigInteger.valueOf(value);
         if (value < 0) {
             unsigned = unsigned.add(BigInteger.ONE.shiftLeft(64));
         }

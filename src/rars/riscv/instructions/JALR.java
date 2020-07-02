@@ -41,8 +41,9 @@ public class JALR extends BasicInstruction {
 
     public void simulate(ProgramStatement statement) {
         int[] operands = statement.getOperands();
+        int target = RegisterFile.getValue(operands[1]);
         InstructionSet.processReturnAddress(operands[0]);
         // Set PC = $t2 + immediate with the last bit set to 0
-        InstructionSet.processJump((RegisterFile.getValue(operands[1]) + operands[2]) & 0xFFFFFFFE);
+        InstructionSet.processJump((target + ((operands[2]<<20)>>20)) & 0xFFFFFFFE);
     }
 }
