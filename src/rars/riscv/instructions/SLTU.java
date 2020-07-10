@@ -36,9 +36,4 @@ public class SLTU extends Arithmetic {
     public long compute(long value, long value2) {
         return (Long.compareUnsigned(value, value2) < 0) ? 1 : 0;
     }
-     /* TODO make sure this is correct
-    public int computeW(int value, int value2) {
-        return (Integer.compareUnsigned(value, value2) < 0) ? 1 : 0;
-    }
-      */
 }

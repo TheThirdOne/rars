@@ -35,8 +35,4 @@ public class SLTIU extends ImmediateInstruction {
     public long compute(long value, long immediate) {
         return (Long.compareUnsigned(value, immediate) < 0) ? 1 : 0;
     }
-    /* TODO make sure this is correct
-    public int compute(int value, int immediate) {
-        return (Integer.compareUnsigned(value, immediate) < 0) ? 1 : 0;
-    }*/
 }

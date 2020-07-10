@@ -7,7 +7,7 @@ import rars.riscv.BasicInstructionFormat;
 
 public class SRLIW extends BasicInstruction {
     public SRLIW() {
-        super("srliw t1,t2,10", "Shift right logical : Set t1 to result of shifting t2 right by number of bits specified by immediate",
+        super("srliw t1,t2,10", "Shift right logical (32 bit): Set t1 to result of shifting t2 right by number of bits specified by immediate",
                 BasicInstructionFormat.R_FORMAT, "0000000 ttttt sssss 101 fffff 0011011",true);
     }
 
