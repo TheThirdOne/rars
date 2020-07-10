@@ -675,7 +675,7 @@ public class KeyboardAndDisplaySimulator extends AbstractToolAndApplication {
     /////////////////////////////////////////////////////////////////////////////////////////////////////
     // This one does the work: update the MMIO Control and optionally the Data register as well
     // NOTE: last argument TRUE means update only the MMIO Control register; FALSE means update both Control and Data.
-    private synchronized void updateMMIOControlAndData(int controlAddr, int controlValue, int dataAddr, int dataValue, boolean controlOnly) {
+    private void updateMMIOControlAndData(int controlAddr, int controlValue, int dataAddr, int dataValue, boolean controlOnly) {
         if (!this.isBeingUsedAsATool || (this.isBeingUsedAsATool && connectButton.isConnected())) {
             Globals.memoryAndRegistersLock.lock();
             try {
