@@ -34,7 +34,7 @@ public class SLT extends Arithmetic {
                 "0000000", "010");
     }
 
-    public int compute(int value, int value2) {
+    public long compute(long value, long value2) {
         return (value < value2) ? 1 : 0;
     }
 }

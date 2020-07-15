@@ -52,7 +52,7 @@ public enum TokenTypes {
     // TODO: merge REGISTER_NUMBER and REGISTER_NAME
     REGISTER_NAME, REGISTER_NUMBER, FP_REGISTER_NAME, CSR_NAME, ROUNDING_MODE,
     IDENTIFIER, LEFT_PAREN, RIGHT_PAREN,
-    INTEGER_5, INTEGER_12, INTEGER_20, INTEGER_32, REAL_NUMBER,
+    INTEGER_5, INTEGER_6, INTEGER_12, INTEGER_20, INTEGER_32, INTEGER_64, REAL_NUMBER,
     QUOTED_STRING,
     PLUS, MINUS, COLON,
     ERROR, MACRO_PARAMETER,
@@ -144,6 +144,7 @@ public enum TokenTypes {
         // Classify based on # bits needed to represent in binary
         // This is needed because most immediate operands limited to 16 bits
         // others limited to 5 bits unsigned (shift amounts) others 32 bits.
+
         try {
 
             int i = Binary.stringToInt(value);   // KENV 1/6/05
@@ -154,6 +155,9 @@ public enum TokenTypes {
             if (i >= 0 && i <= 31) {
                 return TokenTypes.INTEGER_5;
             }
+            if (i >= 0 && i <= 64) {
+                return TokenTypes.INTEGER_6;
+            }
             if (i >= DataTypes.MIN_IMMEDIATE_VALUE && i <= DataTypes.MAX_IMMEDIATE_VALUE) {
                 return TokenTypes.INTEGER_12;
             }
@@ -161,6 +165,13 @@ public enum TokenTypes {
                 return TokenTypes.INTEGER_20;
             }
             return TokenTypes.INTEGER_32;  // default when no other type is applicable
+        } catch (NumberFormatException e) {
+            // NO ACTION -- exception suppressed
+        }
+
+        try {
+            Binary.stringToLong(value);
+            return TokenTypes.INTEGER_64;
         } catch (NumberFormatException e) {
             // NO ACTION -- exception suppressed
         }
@@ -176,6 +187,7 @@ public enum TokenTypes {
                 // NO ACTION -- exception suppressed
             }
         }
+
 
 
         // See if it is a directive
@@ -209,8 +221,8 @@ public enum TokenTypes {
      * @return true if type is an integer type, false otherwise.
      **/
     public static boolean isIntegerTokenType(TokenTypes type) {
-        return type == TokenTypes.INTEGER_5 || type == TokenTypes.INTEGER_12 ||
-                type == TokenTypes.INTEGER_20 || type == TokenTypes.INTEGER_32;
+        return type == TokenTypes.INTEGER_5 ||  type == TokenTypes.INTEGER_6 || type == TokenTypes.INTEGER_12 ||
+                type == TokenTypes.INTEGER_20 || type == TokenTypes.INTEGER_32 || type == TokenTypes.INTEGER_64;
     }
 
 

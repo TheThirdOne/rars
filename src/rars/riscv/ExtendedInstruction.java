@@ -140,7 +140,27 @@ public class ExtendedInstruction extends Instruction {
             try {
                 val = Binary.stringToInt(strValue);    // KENV   1/6/05
             } catch (NumberFormatException e) {
+                long lval;
+                try {
+                    lval = Binary.stringToLong(strValue);
+                }catch(NumberFormatException nfe){
+                    continue;
+                }
+                val = (int)(lval >> 32);
+                int vall = (int)lval;
                 // this shouldn't happen if is is for LL .. VH
+                if (instruction.contains("LIA" + op)) {
+                    int extra = Binary.bitValue(val, 11); // add extra to compesate for sign extention
+                    instruction = substitute(instruction, "LIA" + op, String.valueOf((val >> 12) + extra));
+                }else if (instruction.contains("LIB" + op)) {
+                    instruction = substitute(instruction, "LIB" + op, String.valueOf(val << 20 >> 20));
+                }else if (instruction.contains("LIC" + op)) {
+                    instruction = substitute(instruction, "LIC" + op, String.valueOf((vall >> 21) & 0x7FF));
+                }else if (instruction.contains("LID" + op)) {
+                    instruction = substitute(instruction, "LID" + op, String.valueOf((vall >> 10) & 0x7FF));
+                }else if (instruction.contains("LIE" + op)) {
+                    instruction = substitute(instruction, "LIE" + op, String.valueOf(vall & 0x3FF));
+                }
                 continue;
             }
 

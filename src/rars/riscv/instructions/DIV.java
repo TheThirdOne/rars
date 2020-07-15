@@ -36,15 +36,12 @@ public class DIV extends Arithmetic {
                 "0000001", "100");
     }
 
-    public int compute(int value, int value2) {
+    public long compute(long value, long value2) {
         // Signal illegal division with -1
         if (value2 == 0) {
             return -1;
         }
-        // Overflow
-        if (value == Integer.MIN_VALUE && value2 == -1) {
-            return value;
-        }
+        // Overflow case should be correct just by Java division
         return value / value2;
     }
 }

@@ -376,7 +376,15 @@ public class Binary {
         // Profiling showed that the old method here using Integer.decode was slow
         // stringToIntFast should be input by input compatible
         Integer res2 = stringToIntFast(s);
-        if(res2 == null) throw new NumberFormatException();
+        if(res2 == null){
+            // TODO: maybe speed this up
+            long res3 = stringToLong(s);
+            if (res3 <= Integer.MAX_VALUE && res3 >= Integer.MIN_VALUE){
+                return (int)res3;
+            }
+            throw new NumberFormatException();
+
+        }
         return res2;
     }
 
@@ -407,6 +415,7 @@ public class Binary {
                 }
             }
         }else if (first == '0'){ // Octal case
+            if(s.length() > 12+i) return null; // This must overflow or contain invalid characters
             for(; i < s.length(); i++){
                 char c = s.charAt(i);
                 if ('0' <= c && c <= '7') {
@@ -418,6 +427,7 @@ public class Binary {
             }
             if(result < 0)return null;
         } else {
+            if(s.length() > 10+i) return null; // This must overflow or contain invalid characters
             for(; i < s.length(); i++){
                 char c = s.charAt(i);
                 if ('0' <= c && c <= '9') {
@@ -427,6 +437,7 @@ public class Binary {
                     return null;
                 }
             }
+            if(result < 0) return null;
         }
         // Overflowing to min and negating keeps the value at min
         if(result == Integer.MIN_VALUE && first == '-') return Integer.MIN_VALUE;

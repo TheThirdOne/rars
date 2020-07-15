@@ -122,7 +122,6 @@ tail label      ;auipc x6,PCH1     ;jalr x0, x6, PCL1;#TAIL call: tail call (cal
 
 li t1,-100     ;addi RG1, x0, VL2                ;#Load Immediate : Set t1 to 12-bit immediate (sign-extended)
 li t1,10000000 ;lui RG1, VH2 ;addi RG1, RG1, VL2 ;#Load Immediate : Set t1 to 32-bit immediate
-
 la t1,label  ;auipc RG1, PCH2 ; addi RG1, RG1, PCL2;#Load Address : Set t1 to label's address
 
 lw t1,(t2)     ;lw RG1,0(RG3)   ;#Load Word : Set t1 to contents of effective memory word address

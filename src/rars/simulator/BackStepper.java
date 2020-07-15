@@ -152,16 +152,16 @@ public class BackStepper {
                             Globals.memory.setByte(step.param1, (int)step.param2);
                             break;
                         case REGISTER_RESTORE:
-                            RegisterFile.updateRegister(step.param1, (int)step.param2);
+                            RegisterFile.updateRegister(step.param1, step.param2);
                             break;
                         case FLOATING_POINT_REGISTER_RESTORE:
                             FloatingPointRegisterFile.updateRegisterLong(step.param1,step.param2);
                             break;
                         case CONTROL_AND_STATUS_REGISTER_RESTORE:
-                            ControlAndStatusRegisterFile.updateRegister(step.param1,(int)step.param2);
+                            ControlAndStatusRegisterFile.updateRegister(step.param1,step.param2);
                             break;
                         case CONTROL_AND_STATUS_REGISTER_BACKDOOR:
-                            ControlAndStatusRegisterFile.updateRegisterBackdoor(step.param1,(int)step.param2);
+                            ControlAndStatusRegisterFile.updateRegisterBackdoor(step.param1,step.param2);
                             break;
                         case PC_RESTORE:
                             RegisterFile.setProgramCounter(step.param1);

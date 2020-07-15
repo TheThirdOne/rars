@@ -33,7 +33,7 @@ public class SUB extends Arithmetic {
                 "0100000", "000");
     }
 
-    public int compute(int value, int value2) {
+    public long compute(long value, long value2) {
         return value - value2;
     }
 }

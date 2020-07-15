@@ -35,7 +35,7 @@ public class LBU extends Load {
         super("lbu t1, -100(t2)", "Set t1 to zero-extended 8-bit value from effective memory byte address", "100");
     }
 
-    public int load(int address) throws AddressErrorException {
+    public long load(int address) throws AddressErrorException {
         return Globals.memory.getByte(address) & 0x000000FF;
     }
 }

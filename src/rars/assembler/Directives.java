@@ -46,6 +46,7 @@ public final class Directives {
     public static final Directives DATA = new Directives(".data", "Subsequent items stored in Data segment at next available address");
     public static final Directives TEXT = new Directives(".text", "Subsequent items (instructions) stored in Text segment at next available address");
     public static final Directives WORD = new Directives(".word", "Store the listed value(s) as 32 bit words on word boundary");
+    public static final Directives DWORD = new Directives(".dword", "Store the listed value(s) as 64 bit double-word on word boundary");
     public static final Directives ASCII = new Directives(".ascii", "Store the string in the Data segment but do not add null terminator");
     public static final Directives ASCIZ = new Directives(".asciz", "Store the string in the Data segment and add null terminator");
     public static final Directives STRING = new Directives(".string", "Alias for .asciz");
@@ -162,7 +163,8 @@ public final class Directives {
      * @return true if given directive is WORD, HALF, or BYTE, false otherwise
      **/
     public static boolean isIntegerDirective(Directives direct) {
-        return direct == Directives.WORD || direct == Directives.HALF || direct == Directives.BYTE;
+        return direct == Directives.DWORD || direct == Directives.WORD || direct == Directives.HALF || direct == Directives.BYTE;
+
     }
 
 

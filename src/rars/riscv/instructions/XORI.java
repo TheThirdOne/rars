@@ -32,7 +32,7 @@ public class XORI extends ImmediateInstruction {
         super("xori t1,t2,-100", "Bitwise XOR immediate : Set t1 to bitwise XOR of t2 and sign-extended 12-bit immediate", "100");
     }
 
-    public int compute(int value, int immediate) {
+    public long compute(long value, long immediate) {
         return value ^ immediate;
     }
 }

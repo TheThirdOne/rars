@@ -36,15 +36,12 @@ public class REM extends Arithmetic {
                 "0000001", "110");
     }
 
-    public int compute(int value, int value2) {
+    public long compute(long value, long value2) {
         // Division by 0
         if (value2 == 0) {
             return value;
         }
-        // Overflow
-        if (value == Integer.MIN_VALUE && value2 == -1) {
-            return 0;
-        }
+        // Overflow case should be correct just by Java modulus
         return value % value2;
     }
 }

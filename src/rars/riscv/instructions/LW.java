@@ -35,7 +35,7 @@ public class LW extends Load {
         super("lw t1, -100(t2)", "Set t1 to contents of effective memory word address", "010");
     }
 
-    public int load(int address) throws AddressErrorException {
+    public long load(int address) throws AddressErrorException {
         return Globals.memory.getWord(address);
     }
 }

@@ -84,6 +84,14 @@ public abstract class BasicInstruction extends Instruction {
         this.opcodeMatch = (int) Long.parseLong(this.operationMask.replaceAll("[^1]", "0"), 2);
     }
 
+    public BasicInstruction(String example, String description, BasicInstructionFormat instrFormat,
+                            String operMask, boolean onlyinrv64) {
+        this(example, description, instrFormat, operMask);
+        if (InstructionSet.rv64 != onlyinrv64) {
+            throw new NullPointerException("rv64");
+        }
+    }
+
     // Temporary constructor so that instructions without description yet will compile.
 
     public BasicInstruction(String example, BasicInstructionFormat instrFormat,

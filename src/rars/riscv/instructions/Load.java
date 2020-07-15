@@ -45,6 +45,12 @@ public abstract class Load extends BasicInstruction {
         super(usage, description, BasicInstructionFormat.I_FORMAT,
                 "ssssssssssss ttttt " + funct + " fffff 0000011");
     }
+    public Load(String usage, String description, String funct, boolean rv64) {
+        super(usage, description, BasicInstructionFormat.I_FORMAT,
+                "ssssssssssss ttttt " + funct + " fffff 0000011",rv64);
+
+    }
+
 
     public void simulate(ProgramStatement statement) throws SimulationException {
         int[] operands = statement.getOperands();
@@ -60,5 +66,5 @@ public abstract class Load extends BasicInstruction {
      * @param address the address to load from
      * @return The value to store to the register
      */
-    protected abstract int load(int address) throws AddressErrorException;
+    protected abstract long load(int address) throws AddressErrorException;
 }

@@ -33,7 +33,7 @@ public class SLTI extends ImmediateInstruction {
                 "010");
     }
 
-    public int compute(int value, int immediate) {
+    public long compute(long value, long immediate) {
         return (value < immediate) ? 1 : 0;
     }
 }

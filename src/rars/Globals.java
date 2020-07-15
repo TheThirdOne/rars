@@ -167,10 +167,10 @@ public class Globals {
     public static void initialize(boolean gui) {
         if (!initialized) {
             memory = Memory.getInstance();  //clients can use Memory.getInstance instead of Globals.memory
-            instructionSet = new InstructionSet();
-            instructionSet.populate();
             symbolTable = new SymbolTable("global");
             settings = new Settings(gui);
+            instructionSet = new InstructionSet();
+            instructionSet.populate();
             initialized = true;
             debug = false;
             memory.clear(); // will establish memory configuration from setting

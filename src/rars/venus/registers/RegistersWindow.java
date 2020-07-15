@@ -1,5 +1,7 @@
 package rars.venus.registers;
 
+import rars.Globals;
+import rars.Settings;
 import rars.riscv.hardware.Register;
 import rars.riscv.hardware.RegisterFile;
 import rars.venus.NumberDisplayBaseChooser;
@@ -61,7 +63,11 @@ public class RegistersWindow extends RegisterBlockWindow {
     }
 
     protected String formatRegister(Register value, int base) {
-        return NumberDisplayBaseChooser.formatNumber((int)value.getValue(), base);
+        if (Globals.getSettings().getBooleanSetting(Settings.Bool.RV64_ENABLED)){
+            return NumberDisplayBaseChooser.formatNumber(value.getValue(), base);
+        }else {
+            return NumberDisplayBaseChooser.formatNumber((int)value.getValue(), base);
+        }
     }
 
     protected void beginObserving() {

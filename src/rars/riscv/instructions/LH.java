@@ -35,7 +35,7 @@ public class LH extends Load {
         super("lh t1, -100(t2)", "Set t1 to sign-extended 16-bit value from effective memory halfword address", "001");
     }
 
-    public int load(int address) throws AddressErrorException {
+    public long load(int address) throws AddressErrorException {
         return (Globals.memory.getHalf(address) << 16) >> 16; // Shifting sign extends
     }
 }

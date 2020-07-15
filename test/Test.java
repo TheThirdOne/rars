@@ -1,10 +1,7 @@
 import rars.*;
 import rars.api.Options;
 import rars.api.Program;
-import rars.riscv.BasicInstruction;
-import rars.riscv.BasicInstructionFormat;
-import rars.riscv.ExtendedInstruction;
-import rars.riscv.Instruction;
+import rars.riscv.*;
 import rars.simulator.Simulator;
 
 import java.io.*;
@@ -13,11 +10,15 @@ import java.util.Iterator;
 
 public class Test {
     public static void main(String[] args){
+        Globals.initialize(false);
+        Globals.getSettings().setBooleanSettingNonPersistent(Settings.Bool.RV64_ENABLED,false);
+        InstructionSet.rv64 = false;
+        Globals.instructionSet.populate();
         Options opt = new Options();
         opt.startAtMain = true;
-        opt.maxSteps = 500;
+        opt.maxSteps = 1000;
         Program p = new Program(opt);
-        File[] tests = new File("./test").listFiles(), riscv_tests = new File("./test/riscv-tests").listFiles();
+        File[] tests = new File("./test").listFiles(), riscv_tests = new File("./test/riscv-tests").listFiles(), riscv_tests_64 = new File("./test/riscv-tests-64").listFiles();
         if(tests == null){
             System.out.println("./test doesn't exist");
             return;
@@ -40,6 +41,26 @@ public class Test {
         }
         for(File test : riscv_tests){
             if(test.isFile() && test.getName().endsWith(".s")){
+                String errors = run(test.getPath(),p);
+                if(errors.equals("")) {
+                    System.out.print('.');
+                }else{
+                    System.out.print('X');
+                    total.append(errors).append('\n');
+                }
+            }
+        }
+
+
+        if(riscv_tests_64 == null){
+            System.out.println("./test/riscv-tests-64 doesn't exist");
+            return;
+        }
+        Globals.getSettings().setBooleanSettingNonPersistent(Settings.Bool.RV64_ENABLED,true);
+        InstructionSet.rv64 = true;
+        Globals.instructionSet.populate();
+        for(File test : riscv_tests_64){
+            if(test.isFile() && test.getName().toLowerCase().endsWith(".s")){
                 String errors = run(test.getPath(),p);
                 if(errors.equals("")) {
                     System.out.print('.');
@@ -145,6 +166,7 @@ public class Test {
                     p.assembleString(program);
                     p.setup(null,"");
                     int word = p.getMemory().getWord(0x400000);
+                    ProgramStatement assembled = p.getMemory().getStatement(0x400000);
                     ProgramStatement ps = new ProgramStatement(word,0x400000);
                     if (ps.getInstruction() == null) {
                         System.out.println("Error 1 on: " + program);
@@ -167,6 +189,22 @@ public class Test {
                     if(!ps.getInstruction().equals(binst)){
                         System.out.println("Error 4 on: " + program);
                     }
+
+/*
+                    if (assembled.getInstruction() == null) {
+                        System.out.println("Error 5 on: " + program);
+                        continue;
+                    }
+                    if (assembled.getOperands().length != ps.getOperands().length){
+                        System.out.println("Error 6 on: " + program);
+                        continue;
+                    }
+                    for (int i = 0; i < assembled.getOperands().length; i++){
+                        if(assembled.getOperand(i) != ps.getOperand(i)){
+                            System.out.println("Error 7 on: " + program);
+                        }
+                    }*/
+
                     /*
                     // Not currently used
                     // Do a bit of trial and error to test out variations

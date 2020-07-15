@@ -34,7 +34,7 @@ public class MUL extends Arithmetic {
                 "0000001", "000");
     }
 
-    public int compute(int value, int value2) {
+    public long compute(long value, long value2) {
         // int*int is correct here
         // the upper 64 bits are just ignored and the result is is just the lower 32 bits
         return value * value2;

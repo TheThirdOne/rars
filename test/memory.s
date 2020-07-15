@@ -12,7 +12,7 @@ main:
 	sw t3, 4(t0)
 	addi t0, t0, 4
 	lw t4, 0(t0)
-	bne t3, t3, failure
+	bne t3, t4, failure
 	lw t5, -4(t0)
 	bne t5,t1, failure
 	li t1, 0xFF00F007

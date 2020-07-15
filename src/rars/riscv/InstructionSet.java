@@ -1,6 +1,8 @@
 package rars.riscv;
 
+import rars.Globals;
 import rars.ProgramStatement;
+import rars.Settings;
 import rars.SimulationException;
 import rars.riscv.hardware.RegisterFile;
 import rars.util.FilenameFinder;
@@ -53,7 +55,7 @@ public class InstructionSet {
     private static final String CLASS_PREFIX = "rars.riscv.instructions.";
     private static final String INSTRUCTIONS_DIRECTORY_PATH = "rars/riscv/instructions";
     private static final String CLASS_EXTENSION = "class";
-
+    public static boolean rv64 = Globals.getSettings().getBooleanSetting(Settings.Bool.RV64_ENABLED);
 
     private ArrayList<Instruction> instructionList;
     private ArrayList<MatchMap> opcodeMatchMaps;
@@ -84,14 +86,17 @@ public class InstructionSet {
      */
     public void populate() {
         /* Here is where the parade begins.  Every instruction is added to the set here.*/
-
+        instructionList.clear();
         // ////////////////////////////////////   BASIC INSTRUCTIONS START HERE ////////////////////////////////
 
         addBasicInstructions();
 
         ////////////// READ PSEUDO-INSTRUCTION SPECS FROM DATA FILE AND ADD //////////////////////
-        addPseudoInstructions();
+        if(rv64) {
+            addPseudoInstructions("/PseudoOps-64.txt");
+        }
 
+        addPseudoInstructions("/PseudoOps.txt");
         // Initialization step.  Create token list for each instruction example.  This is
         // used by parser to determine user program correct syntax.
         for (Instruction inst : instructionList) {
@@ -147,8 +152,12 @@ public class InstructionSet {
                         Modifier.isInterface(clas.getModifiers())) {
                     continue;
                 }
-                instructionList.add((BasicInstruction) clas.newInstance());
-
+                try {
+                    instructionList.add((BasicInstruction) clas.newInstance());
+                }catch (NullPointerException ne){
+                    if (ne.toString().contains("rv"))continue;
+                    throw ne;
+                }
             } catch (Exception e) {
                 System.out.println("Error instantiating Instruction from file " + file + ": " + e);
                 System.exit(0);
@@ -157,13 +166,12 @@ public class InstructionSet {
     }
     /*  METHOD TO ADD PSEUDO-INSTRUCTIONS
     */
-
-    private void addPseudoInstructions() {
+    private void addPseudoInstructions(String file) {
         InputStream is = null;
         BufferedReader in = null;
         try {
             // leading "/" prevents package name being prepended to filepath.
-            is = this.getClass().getResourceAsStream("/PseudoOps.txt");
+            is = this.getClass().getResourceAsStream(file);
             in = new BufferedReader(new InputStreamReader(is));
         } catch (NullPointerException e) {
             System.out.println(

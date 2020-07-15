@@ -34,7 +34,7 @@ public class ADD extends Arithmetic {
                 "0000000", "000");
     }
 
-    public int compute(int value, int value2) {
+    public long compute(long value, long value2) {
         return value + value2;
     }
 }

@@ -1,6 +1,7 @@
 package rars;
 
 import rars.api.Program;
+import rars.riscv.InstructionSet;
 import rars.riscv.dump.DumpFormat;
 import rars.riscv.dump.DumpFormatLoader;
 import rars.riscv.hardware.*;
@@ -109,6 +110,7 @@ public class Launch {
 
     private Options options;
     private boolean simulate;
+    private boolean rv64;
     private int displayFormat;
     private boolean verbose;  // display register name or address along with contents
     private boolean assembleProject; // assemble only the given file or all files in its directory
@@ -374,6 +376,10 @@ public class Launch {
                 options.selfModifyingCode = true;
                 continue;
             }
+            if (args[i].toLowerCase().equals("rv64")) {
+                rv64 = true;
+                continue;
+            }
             if (args[i].toLowerCase().equals("ic")) { // added 19-Jul-2012 DPS
                 countInstructions = true;
                 continue;
@@ -434,6 +440,10 @@ public class Launch {
         if (filenameList.size() == 0) {
             return null;
         }
+
+        Globals.getSettings().setBooleanSettingNonPersistent(Settings.Bool.RV64_ENABLED,rv64);
+        InstructionSet.rv64 = rv64;
+        Globals.instructionSet.populate();
 
         File mainFile = new File(filenameList.get(0)).getAbsoluteFile();// First file is "main" file
         ArrayList<String> filesToAssemble;
@@ -718,6 +728,7 @@ public class Launch {
         out.println("  se<n>  -- terminate RARS with integer exit code <n> if a simulation (run) error occurs.");
         out.println("     sm  -- start execution at statement with global label main, if defined");
         out.println("    smc  -- Self Modifying Code - Program can write and branch to either text or data segment");
+        out.println("    rv64 -- Enables 64 bit assembly and executables (Not fully compatible with rv32)");
         out.println("    <n>  -- where <n> is an integer maximum count of steps to simulate.");
         out.println("            If 0, negative or not specified, there is no maximum.");
         out.println(" x<reg>  -- where <reg> is number or name (e.g. 5, t3, f10) of register whose ");

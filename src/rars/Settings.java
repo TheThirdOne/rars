@@ -147,7 +147,11 @@ public class Settings extends Observable {
          * Flag to determine whether a program can write binary code to the text or data segment and
          * execute that code.
          */
-        SELF_MODIFYING_CODE_ENABLED("SelfModifyingCode", false);
+        SELF_MODIFYING_CODE_ENABLED("SelfModifyingCode", false),
+        /**
+         * Flag to determine whether a program uses rv64i instead of rv32i
+         */
+        RV64_ENABLED("rv64Enabled", false);;
 
         // TODO: add option for turning off user trap handling and interrupts
         private String name;

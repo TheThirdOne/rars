@@ -37,6 +37,6 @@ public class BEQ extends Branch {
 
     public boolean willBranch(ProgramStatement statement) {
         int[] operands = statement.getOperands();
-        return RegisterFile.getValue(operands[0]) == RegisterFile.getValue(operands[1]);
+        return RegisterFile.getValueLong(operands[0]) == RegisterFile.getValueLong(operands[1]);
     }
 }

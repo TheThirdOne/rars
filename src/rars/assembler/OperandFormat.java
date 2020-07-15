@@ -128,19 +128,27 @@ public class OperandFormat {
                 continue;
             // TODO: this shouldn't really accept INTEGER_20, only unsigned 12 is ok
             if(specType == TokenTypes.CSR_NAME &&
-                    (candType==TokenTypes.INTEGER_5 || candType == TokenTypes.INTEGER_12
+                    (candType==TokenTypes.INTEGER_5 || candType==TokenTypes.INTEGER_6 || candType == TokenTypes.INTEGER_12
                             || candType ==TokenTypes.INTEGER_20 || candType == TokenTypes.CSR_NAME))
                 continue;
-            if ((specType == TokenTypes.INTEGER_12 && candType == TokenTypes.INTEGER_5) ||
+            if ((specType == TokenTypes.INTEGER_6 && candType == TokenTypes.INTEGER_5) ||
+                    (specType == TokenTypes.INTEGER_12 && candType == TokenTypes.INTEGER_5) ||
                     (specType == TokenTypes.INTEGER_20 && candType == TokenTypes.INTEGER_5) ||
+                    (specType == TokenTypes.INTEGER_12 && candType == TokenTypes.INTEGER_6) ||
+                    (specType == TokenTypes.INTEGER_20 && candType == TokenTypes.INTEGER_6) ||
                     (specType == TokenTypes.INTEGER_20 && candType == TokenTypes.INTEGER_12) ||
                     (specType == TokenTypes.INTEGER_32 && candType == TokenTypes.INTEGER_5) ||
+                    (specType == TokenTypes.INTEGER_32 && candType == TokenTypes.INTEGER_6) ||
                     (specType == TokenTypes.INTEGER_32 && candType == TokenTypes.INTEGER_12) ||
                     (specType == TokenTypes.INTEGER_32 && candType == TokenTypes.INTEGER_20))
                 continue;
-            if ((specType == TokenTypes.INTEGER_5 && candType == TokenTypes.INTEGER_12) ||
+            if ((specType == TokenTypes.INTEGER_5 && candType == TokenTypes.INTEGER_6) ||
+                    (specType == TokenTypes.INTEGER_5 && candType == TokenTypes.INTEGER_12) ||
                     (specType == TokenTypes.INTEGER_5 && candType == TokenTypes.INTEGER_20) ||
                     (specType == TokenTypes.INTEGER_5 && candType == TokenTypes.INTEGER_32) ||
+                    (specType == TokenTypes.INTEGER_6 && candType == TokenTypes.INTEGER_12) ||
+                    (specType == TokenTypes.INTEGER_6 && candType == TokenTypes.INTEGER_20) ||
+                    (specType == TokenTypes.INTEGER_6 && candType == TokenTypes.INTEGER_32) ||
                     (specType == TokenTypes.INTEGER_12 && candType == TokenTypes.INTEGER_20) ||
                     (specType == TokenTypes.INTEGER_12 && candType == TokenTypes.INTEGER_32) ||
                     (specType == TokenTypes.INTEGER_20 && candType == TokenTypes.INTEGER_32)) {

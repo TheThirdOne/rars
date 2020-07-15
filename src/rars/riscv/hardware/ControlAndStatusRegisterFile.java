@@ -67,12 +67,16 @@ public class ControlAndStatusRegisterFile {
                 new ReadOnlyRegister("cycle", 0xC00, 0),
                 new ReadOnlyRegister("time", 0xC01, 0),
                 new ReadOnlyRegister("instret",0xC02, 0),
-                new ReadOnlyRegister("cycleh", 0xC80, 0),
-                new ReadOnlyRegister("timeh", 0xC81, 0),
-                new ReadOnlyRegister("instreth",0xC82, 0),
+                null, // cycleh
+                null, // timeh
+                null, // instreth
         };
         tmp[1] = new LinkedRegister("fflags", 0x001, tmp[3], 0x1F);
         tmp[2] = new LinkedRegister("frm", 0x002, tmp[3], 0xE0);
+
+        tmp[14] = new LinkedRegister("cycleh", 0xC80,tmp[11], 0xFFFFFFFF_00000000L);
+        tmp[15] = new LinkedRegister("timeh", 0xC81, tmp[12],0xFFFFFFFF_00000000L);
+        tmp[16] = new LinkedRegister("instreth",0xC82, tmp[13],0xFFFFFFFF_00000000L);
         instance = new RegisterBlock('_', tmp); // prefix not used
     }
 
@@ -83,8 +87,12 @@ public class ControlAndStatusRegisterFile {
      * @param val The desired value for the register.
      * @return old value in register prior to update
      **/
-    public static boolean updateRegister(int num, int val) {
+    public static boolean updateRegister(int num, long val) {
         if (instance.getRegister(num) instanceof ReadOnlyRegister) {
+            return true;
+        }
+        // TODO: do something to better handle the h csrs
+        if (num >= 0xC80 && num <= 0xC82) {
             return true;
         }
         if ((Globals.getSettings().getBackSteppingEnabled())) {
@@ -102,7 +110,7 @@ public class ControlAndStatusRegisterFile {
      * @param val  The desired value for the register.
      * @return old value in register prior to update
      **/
-    public static void updateRegister(String name, int val) {
+    public static void updateRegister(String name, long val) {
         updateRegister(instance.getRegister(name).getNumber(), val);
     }
 
@@ -113,7 +121,7 @@ public class ControlAndStatusRegisterFile {
      * @param val  The desired value for the register.
      * @return old value in register prior to update
      **/
-    public static void updateRegisterBackdoor(int num, int val) {
+    public static void updateRegisterBackdoor(int num, long val) {
         if ((Globals.getSettings().getBackSteppingEnabled())) {
             Globals.program.getBackStepper().addControlAndStatusBackdoor(num, instance.getRegister(num).setValueBackdoor(val));
         } else {
@@ -128,7 +136,7 @@ public class ControlAndStatusRegisterFile {
      * @param val  The desired value for the register.
      * @return old value in register prior to update
      **/
-    public static void updateRegisterBackdoor(String name, int val) {
+    public static void updateRegisterBackdoor(String name, long val) {
         updateRegisterBackdoor(instance.getRegister(name).getNumber(), val);
     }
 
@@ -138,8 +146,8 @@ public class ControlAndStatusRegisterFile {
      * @param num Number of register to change
      * @param val The value to OR with
      **/
-    public static boolean orRegister(int num, int val) {
-        return updateRegister(num, (int)instance.getValue(num) | val);
+    public static boolean orRegister(int num, long val) {
+        return updateRegister(num, instance.getValue(num) | val);
     }
 
     /**
@@ -148,8 +156,8 @@ public class ControlAndStatusRegisterFile {
      * @param name Name of register to change
      * @param val  The value to OR with
      **/
-    public static void orRegister(String name, int val) {
-        updateRegister(name, (int)instance.getValue(name) | val);
+    public static void orRegister(String name, long val) {
+        updateRegister(name, instance.getValue(name) | val);
     }
 
     /**
@@ -158,8 +166,8 @@ public class ControlAndStatusRegisterFile {
      * @param num Number of register to change
      * @param val The value to clear by
      **/
-    public static boolean clearRegister(int num, int val) {
-        return updateRegister(num, (int)instance.getValue(num) & ~val);
+    public static boolean clearRegister(int num, long val) {
+        return updateRegister(num, instance.getValue(num) & ~val);
     }
 
     /**
@@ -168,8 +176,8 @@ public class ControlAndStatusRegisterFile {
      * @param name Name of register to change
      * @param val  The value to clear by
      **/
-    public static void clearRegister(String name, int val) {
-        updateRegister(name, (int)instance.getValue(name) & ~val);
+    public static void clearRegister(String name, long val) {
+        updateRegister(name, instance.getValue(name) & ~val);
     }
 
     /**
@@ -183,6 +191,16 @@ public class ControlAndStatusRegisterFile {
         return (int)instance.getValue(num);
     }
 
+    /**
+     * Returns the full value of the register
+     *
+     * @param num The register number.
+     * @return The value of the given register.  0 for non-implemented registers
+     **/
+
+    public static long getValueLong(int num) {
+        return instance.getValue(num);
+    }
     /**
      * Returns the value of the register
      *
@@ -201,8 +219,8 @@ public class ControlAndStatusRegisterFile {
      * @return The value of the given register.  0 for non-implemented registers
      **/
 
-    public static int getValueNoNotify(String name) {
-        return (int)instance.getRegister(name).getValueNoNotify();
+    public static long getValueNoNotify(String name) {
+        return instance.getRegister(name).getValueNoNotify();
     }
 
     /**
