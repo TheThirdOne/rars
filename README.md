@@ -7,7 +7,7 @@ an effective development environment for people getting started with RISC-V.
 
 ## Features
 
-  - RV32IMFDN ISA
+  - RISC-V IMFDN Base (riscv32 and riscv64)
   - Several system calls that match behaviour from MARS or SPIKE.
   - Support for debugging using breakpoints and/or `ebreak`
   - Side by side comparison from psuedo-instruction to machine code with
