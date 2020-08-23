@@ -310,6 +310,7 @@ public class HelpHelpAction extends GuiAction {
                 loadFiletoStringBuilder(Globals.helpPath + "SyscallHelpPrelude.html") +
                         convertToHTMLTable(data, columnNames).toString() + loadFiletoStringBuilder(Globals.helpPath + "SyscallHelpConclusion.html"));
 
+        html.setCaretPosition(0); // this affects scroll position
         html.setEditable(false);
         return new JScrollPane(html, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
                 JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
