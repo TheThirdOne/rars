@@ -144,7 +144,7 @@ public class SystemIO {
         if (Globals.getGui() == null) {
             System.out.print(string);
         } else {
-            Globals.getGui().getMessagesPane().postRunMessage(string);
+            print2Gui(string);
         }
 
     }
@@ -211,7 +211,7 @@ public class SystemIO {
         /// Write to STDOUT or STDERR file descriptor while using IDE - write to Messages pane.
         if ((fd == STDOUT || fd == STDERR) && Globals.getGui() != null) {
             String data = new String(myBuffer, StandardCharsets.UTF_8); //decode the bytes using UTF-8 charset
-            Globals.getGui().getMessagesPane().postRunMessage(data);
+            print2Gui(data);
             return myBuffer.length; // data.length would not count multi-byte characters
         }
         ///////////////////////////////////////////////////////////////////////////////////
@@ -439,6 +439,19 @@ public class SystemIO {
             inputReader = new BufferedReader(new InputStreamReader(System.in));
         }
         return inputReader;
+    }
+
+    private static String buffer = "";
+    private static long lasttime = 0;
+    private static void print2Gui(String output){
+        long time = System.currentTimeMillis();
+        if (time > lasttime) {
+            Globals.getGui().getMessagesPane().postRunMessage(buffer+output);
+            buffer = "";
+            lasttime = time + 100;
+        } else {
+            buffer += output;
+        }
     }
 
     public static Data swapData(Data in){

@@ -26,7 +26,13 @@ loop:
 	ecall
 	li	a7, 4
 	la	a0, newLine
-	ecall	
+	ecall
+
+        # Sleep for 10 ms
+	li a0, 10
+	li a7, 32
+	ecall
+
 	j	loop
 
 
