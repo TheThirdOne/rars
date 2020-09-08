@@ -18,7 +18,7 @@ public class FCVTSD extends BasicInstruction {
     public void simulate(ProgramStatement statement) throws SimulationException {
         int[] operands = statement.getOperands();
         Environment e = new Environment();
-        e.mode = Floating.getRoundingMode(operands[3],statement);
+        e.mode = Floating.getRoundingMode(operands[2],statement);
         Float64 in = new Float64(FloatingPointRegisterFile.getValueLong(operands[1]));
         Float32 out = new Float32(0);
         out = convert(in,out,e);
