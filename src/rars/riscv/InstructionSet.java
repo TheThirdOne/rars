@@ -292,8 +292,7 @@ public class InstructionSet {
 
     public static void processBranch(int displacement) {
         // Decrement needed because PC has already been incremented
-        RegisterFile.setProgramCounter(RegisterFile.getProgramCounter() + (displacement << 1)
-                - Instruction.INSTRUCTION_LENGTH);
+        RegisterFile.setProgramCounter(RegisterFile.getProgramCounter() + displacement - Instruction.INSTRUCTION_LENGTH);
     }
 
    	/*

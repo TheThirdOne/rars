@@ -270,10 +270,8 @@ public class ProgramStatement implements Comparable<ProgramStatement> {
                 if (instruction instanceof BasicInstruction) {
                     BasicInstructionFormat format = ((BasicInstruction) instruction).getInstructionFormat();
                     if (format == BasicInstructionFormat.B_FORMAT) {
-                        //address = (address - (this.textAddress + Instruction.INSTRUCTION_LENGTH)) >> 2;
-                        address = (address - this.textAddress) >> 1;
-                        if (address >= (1 << 11) || address < -(1 << 11)) {
-                            // attempt to jump beyond 21-bit byte (20-bit word) address range.
+                        address -= this.textAddress;
+                        if (address >= (1 << 12) || address < -(1 << 12)) {
                             // SPIM flags as warning, I'll flag as error b/c RARS text segment not long enough for it to be OK.
                             errors.add(new ErrorMessage(this.sourceProgram, this.sourceLine, 0,
                                     "Branch target word address beyond 12-bit range"));
@@ -426,17 +424,18 @@ public class ProgramStatement implements Comparable<ProgramStatement> {
 
     private int toBranchImmediate(int address) {
         // trying to produce imm[12:1] where immediate = address[12|10:1|11]
+        address = address >> 1; // Shift it down one byte
         return (address & (1 << 11)) |         // keep the top bit in the same place
                 ((address & 0x3FF) << 1) |     // move address[10:1] to the right place
                 ((address & (1 << 10)) >> 10); // move address[11] to the right place
     }
 
     private int fromBranchImmediate(int immediate) {
-        // trying to produce address[12:1] where immediate = address[12|10:1|11]
+        // trying to produce address[12:0] where immediate = address[12|10:1|11]
         int tmp = (immediate & (1 << 11)) |  // keep the top bit in the same place
                 ((immediate & 0x7FE) >> 1) | // move address[10:1] to the right place
                 ((immediate & 1) << 10);     // move address[11] to the right place
-        return (tmp << 20) >> 20; // sign-extend
+        return (tmp << 20) >> 19; // sign-extend and add extra 0
     }
 
     /**
