@@ -11,7 +11,7 @@ import rars.riscv.hardware.FloatingPointRegisterFile;
 
 public class FCVTDS extends BasicInstruction {
     public FCVTDS() {
-        super("fcvt.d.s t1, f1, dyn", "Convert a float to a double: Assigned the value of f2 to f1",
+        super("fcvt.d.s f1, f2, dyn", "Convert a float to a double: Assigned the value of f2 to f1",
                 BasicInstructionFormat.R4_FORMAT,"0100001 00000 sssss ttt fffff 1010011");
     }
 
