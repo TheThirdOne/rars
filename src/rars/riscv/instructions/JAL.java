@@ -42,7 +42,7 @@ public class JAL extends BasicInstruction {
 
     public void simulate(ProgramStatement statement) {
         int[] operands = statement.getOperands();
-        InstructionSet.processReturnAddress(operands[0]);// RegisterFile.updateRegister(31, RegisterFile.getProgramCounter());
-        InstructionSet.processJump(RegisterFile.getProgramCounter() - Instruction.INSTRUCTION_LENGTH + (operands[1] << 1));
+        InstructionSet.processReturnAddress(operands[0]);
+        InstructionSet.processJump(RegisterFile.getProgramCounter() - Instruction.INSTRUCTION_LENGTH + operands[1]);
     }
 }

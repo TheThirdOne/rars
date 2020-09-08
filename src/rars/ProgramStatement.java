@@ -281,8 +281,8 @@ public class ProgramStatement implements Comparable<ProgramStatement> {
                         }
                         absoluteAddress = false;
                     } else if (format == BasicInstructionFormat.J_FORMAT) {
-                        address = (address - this.textAddress) >> 1;
-                        if (address >= (1 << 19) || address < -(1 << 19)) {
+                        address -= this.textAddress;
+                        if (address >= (1 << 20) || address < -(1 << 20)) {
                             errors.add(new ErrorMessage(this.sourceProgram, this.sourceLine, 0,
                                     "Jump target word address beyond 20-bit range"));
                             return;
@@ -408,7 +408,7 @@ public class ProgramStatement implements Comparable<ProgramStatement> {
 
     private int toJumpImmediate(int address) {
         // trying to produce immediate[20:1] where immediate = address[20|10:1|11|19:12]
-
+        address = address >> 1; // Shift it down one byte
         return (address & (1 << 19)) |         // keep the top bit in the same place
                 ((address & 0x3FF) << 9) |     // move address[10:1] to the right place
                 ((address & (1 << 10)) >> 2) | // move address[11] to the right place
@@ -416,13 +416,12 @@ public class ProgramStatement implements Comparable<ProgramStatement> {
     }
 
     private int fromJumpImmediate(int immediate) {
-        // trying to produce address[20:1] where immediate = address[20|10:1|11|19:12]
+        // trying to produce address[20:0] where immediate = address[20|10:1|11|19:12]
         int tmp = ((immediate) & (1 << 19)) |    // keep the top bit in the same place
                 ((immediate & 0x7FE00) >> 9) | // move address[10:1] to the right place
                 ((immediate & (1 << 8)) << 2) |// move address[11] to the right place
                 ((immediate & 0xFF) << 11);   // move address[19:12] to the right place
-        return (tmp << 12) >> 12; // sign-extend
-
+        return (tmp << 12) >> 11; // sign-extend and add extra 0
     }
 
     private int toBranchImmediate(int address) {
