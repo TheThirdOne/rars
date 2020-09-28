@@ -240,6 +240,7 @@ public class Simulator extends Observable {
         private void stopExecution(boolean done, Reason reason) {
             this.done = done;
             this.constructReturnReason = reason;
+            SystemIO.flush(true);
             if (done) SystemIO.resetFiles(); // close any files opened in the process of simulating
             Simulator.getInstance().notifyObserversOfExecution(new SimulatorNotice(SimulatorNotice.SIMULATOR_STOP,
                     maxSteps, (Globals.getGui() != null || Globals.runSpeedPanelExists)?RunSpeedPanel.getInstance().getRunSpeed():RunSpeedPanel.UNLIMITED_SPEED,
@@ -386,6 +387,7 @@ public class Simulator extends Observable {
             // Volatile variable initialized false but can be set true by the main thread.
             // Used to stop or pause a running program.  See stopSimulation() above.
             while (!stop) {
+                SystemIO.flush(false);
                 // Perform the RISCV instruction in synchronized block.  If external threads agree
                 // to access memory and registers only through synchronized blocks on same
                 // lock variable, then full (albeit heavy-handed) protection of memory and

@@ -441,6 +441,8 @@ public class SystemIO {
         return inputReader;
     }
 
+    // The GUI doesn't handle lots of small messages well so I added this hacky way of buffering
+    // Currently it checks to flush every instruction run
     private static String buffer = "";
     private static long lasttime = 0;
     private static void print2Gui(String output){
@@ -453,6 +455,19 @@ public class SystemIO {
             buffer += output;
         }
     }
+    /**
+     * Flush stdout cache
+     * Makes sure that messages don't get stuck in the print2Gui buffer for too long.
+     */
+    public static void flush(boolean force) {
+        long time = System.currentTimeMillis();
+        if (buffer != "" && (force || time > lasttime)){
+            Globals.getGui().getMessagesPane().postRunMessage(buffer);
+            buffer = "";
+            lasttime = time + 100;
+        }
+    }
+
 
     public static Data swapData(Data in){
         Data temp = new Data(false);
