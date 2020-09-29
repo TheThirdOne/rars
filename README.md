@@ -24,10 +24,13 @@ RARS is distributed as an executable jar. You will need at least Java 8 to run i
 
 The latest stable release can be found [here](https://github.com/TheThirdOne/rars/releases/latest), a release with the latest developments can be found on the [continuous release](https://github.com/TheThirdOne/rars/releases/tag/continuous), and the [releases page](https://github.com/TheThirdOne/rars/releases) contains all previous stable releases with patch notes.
 
+Alternatively, if you wish to make your own jar and/or modify the code, you
+should clone the repo with `git clone https://github.com/TheThirdOne/rars --recursive`.
+Running the script `./build-jar.sh` on a Unix system will build `rars.jar`.
+
 ## Screenshot
 
 ![Screenshot of sample program](screenshot.png)
-
 
 ## Changes from MARS 4.5
 
