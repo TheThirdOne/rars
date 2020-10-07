@@ -116,10 +116,9 @@ public class SegmentWindowDumpFormat extends AbstractDumpFormat {
         if (!Memory.inTextSegment(firstAddress)) {
             return;
         }
+        
         // If address in text segment, print in same format as Text Segment Window
-        out.println(" Address    Code        Basic                     Source");
-        //           12345678901234567890123456789012345678901234567890
-        //                    1         2         3         4         5
+        out.println("Address     Code        Basic                        Line Source");
         out.println();
         String string = null;
         try {
@@ -131,7 +130,7 @@ public class SegmentWindowDumpFormat extends AbstractDumpFormat {
                 string += Binary.intToHexString(temp) + "  ";
                 try {
                     ProgramStatement ps = memory.getStatement(address);
-                    string += (ps.getPrintableBasicAssemblyStatement() + "                      ").substring(0, 22);
+                    string += (ps.getPrintableBasicAssemblyStatement() + "                             ").substring(0, 29);
                     string += (((ps.getSource() == "") ? "" : Integer.toString(ps.getSourceLine())) + "     ").substring(0, 5);
                     string += ps.getSource();
                 } catch (AddressErrorException aee) {

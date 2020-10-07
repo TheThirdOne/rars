@@ -343,7 +343,11 @@ public class ProgramStatement implements Comparable<ProgramStatement> {
                  **************************  END DPS 3-July-2008 COMMENTS *******************************/
 
                 basic += tempNumeric;
-                basicStatementList.addValue(tempNumeric);
+                if (tokenType == TokenTypes.INTEGER_5) {
+                    basicStatementList.addShortValue(tempNumeric);
+                } else {
+                    basicStatementList.addValue(tempNumeric);
+                }
                 this.operands[this.numOperands++] = tempNumeric;
                 ///// End modification 1/7/05 KENV   ///////////////////////////////////////////
             } else {
@@ -823,6 +827,9 @@ public class ProgramStatement implements Comparable<ProgramStatement> {
         void addValue(int value) {
             list.add(new ListElement(2, null, value));
         }
+        void addShortValue(int value) {
+            list.add(new ListElement(3, null, value));
+        }
 
         public String toString() {
             int addressBase = (Globals.getSettings().getBooleanSetting(Settings.Bool.DISPLAY_ADDRESSES_IN_HEX)) ? NumberDisplayBaseChooser.HEXADECIMAL : NumberDisplayBaseChooser.DECIMAL;
@@ -843,6 +850,10 @@ public class ProgramStatement implements Comparable<ProgramStatement> {
                         } else {
                             result.append(NumberDisplayBaseChooser.formatNumber(e.iValue, valueBase));
                         }
+                        break;
+                    case 3:
+                        result.append(e.iValue);
+                        break;
                     default:
                         break;
                 }
