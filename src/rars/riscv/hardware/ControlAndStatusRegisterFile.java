@@ -70,6 +70,7 @@ public class ControlAndStatusRegisterFile {
                 null, // cycleh
                 null, // timeh
                 null, // instreth
+                new ReadOnlyRegister("medeleg", 0x302, 0),
         };
         tmp[1] = new LinkedRegister("fflags", 0x001, tmp[3], 0x1F);
         tmp[2] = new LinkedRegister("frm", 0x002, tmp[3], 0xE0);
