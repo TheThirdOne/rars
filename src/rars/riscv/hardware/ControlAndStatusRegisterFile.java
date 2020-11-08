@@ -1,6 +1,7 @@
 package rars.riscv.hardware;
 
 import rars.Globals;
+import rars.Settings;
 
 import java.util.Observer;
 
@@ -258,6 +259,10 @@ public class ControlAndStatusRegisterFile {
 
     public static void resetRegisters() {
         instance.resetRegisters();
+
+        if (Globals.getSettings().getBooleanSetting(Settings.Bool.DELEGATE_EXCEPTIONS)) {
+            updateRegisterBackdoor("medeleg", 0xffff);
+        }
     }
 
     /**
