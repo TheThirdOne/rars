@@ -55,7 +55,11 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 public class SyscallInputDialogString extends AbstractSyscall {
     public SyscallInputDialogString() {
-        super("InputDialogString");
+        super("InputDialogString","Service to display a message to a user and request a string input",
+                "a0 = address of null-terminated string that is the message to user<br>a1 = address of input buffer<br>"+
+                        "a2 = maximum number of characters to read (including the terminating null)",
+                "a1 contains status value.<br> 0: OK status. Buffer contains the input string.<br>-2: Cancel was chosen. No change to buffer.<br>"+
+                        "-3: OK was chosen but no data had been input into field. No change to buffer.<br>-4: length of the input string exceeded the specified maximum. Buffer contains the maximum allowable input string terminated with null.");
     }
 
     public void simulate(ProgramStatement statement) throws ExitingException {

@@ -35,7 +35,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 public class SyscallPrintFloat extends AbstractSyscall {
     public SyscallPrintFloat() {
-        super("PrintFloat", "Prints an floating point number", "fa0 = float to print", "N/A");
+        super("PrintFloat", "Prints a floating point number", "fa0 = float to print", "N/A");
     }
 
     public void simulate(ProgramStatement statement) {

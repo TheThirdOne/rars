@@ -36,7 +36,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 public class SyscallReadFloat extends AbstractSyscall {
     public SyscallReadFloat() {
-        super("ReadFloat", "Read a float from input console", "N/A", "fa0 = the float");
+        super("ReadFloat", "Reads a float from input console", "N/A", "fa0 = the float");
     }
 
     public void simulate(ProgramStatement statement) throws ExitingException {

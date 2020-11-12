@@ -37,7 +37,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 public class SyscallReadInt extends AbstractSyscall {
     public SyscallReadInt() {
-        super("ReadInt", "Read an int from input console", "N/A", "a0 = the int");
+        super("ReadInt", "Reads an int from input console", "N/A", "a0 = the int");
     }
 
     public void simulate(ProgramStatement statement) throws ExitingException {

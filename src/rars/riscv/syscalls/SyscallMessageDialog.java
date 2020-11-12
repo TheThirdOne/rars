@@ -39,8 +39,8 @@ public class SyscallMessageDialog extends AbstractSyscall {
     public SyscallMessageDialog() {
         super("MessageDialog", "Service to display a message to user",
                 "a0 = address of null-terminated string that is the message to user <br>" +
-                        "a1 = the type of the message to the user, which is one of:<br>1: error message <br>" +
-                        "2: information message <br>3: warning message <br>4: question message <br>other: plain message", "N/A");
+                        "a1 = the type of the message to the user, which is one of:<br>"+
+                        "0: error message <br>1: information message <br>2: warning message <br>3: question message <br>other: plain message", "N/A");
     }
 
     public void simulate(ProgramStatement statement) throws ExitingException {
