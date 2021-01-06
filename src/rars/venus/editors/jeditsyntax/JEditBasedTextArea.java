@@ -1,6 +1,7 @@
 package rars.venus.editors.jeditsyntax;
 
 import rars.Globals;
+import rars.Settings;
 import rars.venus.EditPane;
 import rars.venus.editors.TextEditingArea;
 import rars.venus.editors.jeditsyntax.tokenmarker.RISCVTokenMarker;
@@ -176,7 +177,11 @@ public class JEditBasedTextArea extends JEditTextArea implements TextEditingArea
     //
     public void setSourceCode(String s, boolean editable) {
         this.setText(s);
-        this.setBackground((editable) ? Color.WHITE : Color.GRAY);
+        Color background = Globals.getSettings().getColorSettingByPosition(Settings.EDITOR_BACKGROUND);
+        Color foreground = Globals.getSettings().getColorSettingByPosition(Settings.EDITOR_FOREGROUND);
+        this.setBackground((editable) ? background : background.darker());
+        this.getPainter().setLineHighlightColor(Globals.getSettings().getColorSettingByPosition(Settings.EDITOR_LINE_HIGHLIGHT));
+        this.setForeground((editable) ? foreground : foreground.darker());
         this.setEditable(editable);
         this.setEnabled(editable);
         //this.getCaret().setVisible(editable);
