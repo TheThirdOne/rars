@@ -131,6 +131,7 @@ public class JEditBasedTextArea extends JEditTextArea implements TextEditingArea
         Color foreground = settings.getColorSettingByPosition(Settings.EDITOR_FOREGROUND);
         this.setBackground((editable) ? background : background.darker());
         this.getPainter().setLineHighlightColor(settings.getColorSettingByPosition(Settings.EDITOR_LINE_HIGHLIGHT));
+        this.getPainter().setSelectionColor(settings.getColorSettingByPosition(Settings.EDITOR_SELECTION_COLOR));
         this.setForeground((editable) ? foreground : foreground.darker());
     }
 

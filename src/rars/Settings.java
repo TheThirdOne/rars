@@ -341,6 +341,10 @@ public class Settings extends Observable {
      * RGB line-highlight color of Editor
      */
     public static final int EDITOR_LINE_HIGHLIGHT = 14;
+    /**
+     * RGB color of text-selection in Editor
+     */
+    public static final int EDITOR_SELECTION_COLOR = 15;
     // Match the above by position.
     private static final String[] colorSettingsKeys = {
             "EvenRowBackground", "EvenRowForeground", "OddRowBackground", "OddRowForeground",
@@ -348,7 +352,7 @@ public class Settings extends Observable {
             "TextSegmentDelaySlotHighlightBackground", "TextSegmentDelaySlotHighlightForeground",
             "DataSegmentHighlightBackground", "DataSegmentHighlightForeground",
             "RegisterHighlightBackground", "RegisterHighlightForeground",
-            "EditorBackground", "EditorForeground", "EditorLineHighlight"};
+            "EditorBackground", "EditorForeground", "EditorLineHighlight", "EditSelection"};
     /**
      * Last resort default values for color settings;
      * will use only if neither the Preferences nor the properties file work.
@@ -356,7 +360,7 @@ public class Settings extends Observable {
      * Must match key by list position.
      */
     private static String[] defaultColorSettingsValues = {
-            "0x00e0e0e0", "0", "0x00ffffff", "0", "0x00ffff99", "0", "0x0033ff00", "0", "0x0099ccff", "0", "0x0099cc55", "0", "0x00ffffff", "0x00000000", "0x00eeeeee"};
+            "0x00e0e0e0", "0", "0x00ffffff", "0", "0x00ffff99", "0", "0x0033ff00", "0", "0x0099ccff", "0", "0x0099cc55", "0", "0x00ffffff", "0x00000000", "0x00eeeeee", "0x00ccccff"};
 
 
     private HashMap<Bool, Boolean> booleanSettingsValues;
