@@ -338,7 +338,7 @@ public class Settings extends Observable {
      */
     public static final int EDITOR_FOREGROUND = 13;
     /**
-     * RGB foreground color of Editor
+     * RGB line-highlight color of Editor
      */
     public static final int EDITOR_LINE_HIGHLIGHT = 14;
     // Match the above by position.
