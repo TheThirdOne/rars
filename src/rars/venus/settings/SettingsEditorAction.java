@@ -114,7 +114,7 @@ public class SettingsEditorAction extends GuiAction {
         private JSlider tabSizeSelector;
         private JSpinner tabSizeSpinSelector, blinkRateSpinSelector, popupPrefixLengthSpinSelector;
         private JCheckBox lineHighlightCheck, genericEditorCheck, autoIndentCheck;
-        private ColorChangerPanel bgChanger, fgChanger, lhChanger, textSelChanger;
+        private ColorChangerPanel bgChanger, fgChanger, lhChanger, textSelChanger, caretChanger;
         private Caret blinkCaret;
         private JTextField blinkSample;
         private ButtonGroup popupGuidanceButtons;
@@ -230,6 +230,7 @@ public class SettingsEditorAction extends GuiAction {
             fgChanger.save();
             lhChanger.save();
             textSelChanger.save();
+            caretChanger.save();
             if (syntaxStylesAction) {
                 for (int i = 0; i < syntaxStyleIndex.length; i++) {
                     Globals.getSettings().setEditorSyntaxStyleByPosition(syntaxStyleIndex[i],
@@ -273,6 +274,7 @@ public class SettingsEditorAction extends GuiAction {
             fgChanger.reset();
             lhChanger.reset();
             textSelChanger.reset();
+            caretChanger.save();
             popupGuidanceOptions[initialPopupGuidance].setSelected(true);
         }
 
@@ -346,15 +348,17 @@ public class SettingsEditorAction extends GuiAction {
             blinkPanel.add(blinkRateSpinSelector);
             blinkPanel.add(blinkSample);
 
-            JPanel editorColorSettingsPanel = new JPanel(new GridLayout(2, 2));
+            JPanel editorColorSettingsPanel = new JPanel(new GridLayout(3, 2));
             bgChanger = new ColorChangerPanel("Background-Color", "Select the Editor's Background-Color", Settings.EDITOR_BACKGROUND);
             fgChanger = new ColorChangerPanel("Foreground-Color", "Select the Editor's Foreground-Color", Settings.EDITOR_FOREGROUND);
             lhChanger = new ColorChangerPanel("Line-Highlight-Color", "Select the Editor's Line-Highlight-Color", Settings.EDITOR_LINE_HIGHLIGHT);
             textSelChanger = new ColorChangerPanel("Text-Selection-Color", "Select the Editor's Text-Selection-Color", Settings.EDITOR_SELECTION_COLOR);
+            caretChanger = new ColorChangerPanel("Caret-Color", "Select the Editor's Caret-Color", Settings.EDITOR_CARET_COLOR);
             editorColorSettingsPanel.add(bgChanger);
             editorColorSettingsPanel.add(fgChanger);
             editorColorSettingsPanel.add(lhChanger);
             editorColorSettingsPanel.add(textSelChanger);
+            editorColorSettingsPanel.add(caretChanger);
 
             otherSettingsPanel.setLayout(new GridLayout(1, 2));
             JPanel leftColumnSettingsPanel = new JPanel(new GridBagLayout());
@@ -372,7 +376,7 @@ public class SettingsEditorAction extends GuiAction {
                 gbc.gridy = 3;
                 leftColumnSettingsPanel.add(autoIndentCheck, gbc);
                 gbc.gridy = 4;
-                gbc.weighty = 2;
+                gbc.weighty = 3;
                 leftColumnSettingsPanel.add(editorColorSettingsPanel, gbc);
             }
 
