@@ -352,7 +352,7 @@ public class Settings extends Observable {
             "TextSegmentDelaySlotHighlightBackground", "TextSegmentDelaySlotHighlightForeground",
             "DataSegmentHighlightBackground", "DataSegmentHighlightForeground",
             "RegisterHighlightBackground", "RegisterHighlightForeground",
-            "EditorBackground", "EditorForeground", "EditorLineHighlight", "EditSelection"};
+            "EditorBackground", "EditorForeground", "EditorLineHighlight", "EditorSelection"};
     /**
      * Last resort default values for color settings;
      * will use only if neither the Preferences nor the properties file work.
