@@ -121,10 +121,25 @@ public class JEditBasedTextArea extends JEditTextArea implements TextEditingArea
     }
 
     /**
-     * Update the syntax style table, which is obtained from
-     * SyntaxUtilities.
+     * Update editor-colors based on the information
+     * from {@link Globals#getSettings()}
+     */
+    public void updateEditorColors() {
+        boolean editable = this.isEditable();
+        Settings settings = Globals.getSettings();
+        Color background = settings.getColorSettingByPosition(Settings.EDITOR_BACKGROUND);
+        Color foreground = settings.getColorSettingByPosition(Settings.EDITOR_FOREGROUND);
+        this.setBackground((editable) ? background : background.darker());
+        this.getPainter().setLineHighlightColor(settings.getColorSettingByPosition(Settings.EDITOR_LINE_HIGHLIGHT));
+        this.setForeground((editable) ? foreground : foreground.darker());
+    }
+
+    /**
+     * Update editor colors and update the syntax style table,
+     * which is obtained from {@link SyntaxUtilities}.
      */
     public void updateSyntaxStyles() {
+        updateEditorColors();
         painter.setStyles(SyntaxUtilities.getCurrentSyntaxStyles());
     }
 
@@ -177,15 +192,11 @@ public class JEditBasedTextArea extends JEditTextArea implements TextEditingArea
     //
     public void setSourceCode(String s, boolean editable) {
         this.setText(s);
-        Color background = Globals.getSettings().getColorSettingByPosition(Settings.EDITOR_BACKGROUND);
-        Color foreground = Globals.getSettings().getColorSettingByPosition(Settings.EDITOR_FOREGROUND);
-        this.setBackground((editable) ? background : background.darker());
-        this.getPainter().setLineHighlightColor(Globals.getSettings().getColorSettingByPosition(Settings.EDITOR_LINE_HIGHLIGHT));
-        this.setForeground((editable) ? foreground : foreground.darker());
         this.setEditable(editable);
         this.setEnabled(editable);
         //this.getCaret().setVisible(editable);
         this.setCaretPosition(0);
+        updateEditorColors();
         if (editable) this.requestFocusInWindow();
     }
 
