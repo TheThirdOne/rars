@@ -114,6 +114,7 @@ public class SettingsEditorAction extends GuiAction {
         private JSlider tabSizeSelector;
         private JSpinner tabSizeSpinSelector, blinkRateSpinSelector, popupPrefixLengthSpinSelector;
         private JCheckBox lineHighlightCheck, genericEditorCheck, autoIndentCheck;
+        private ColorChangerPanel bgChanger, fgChanger, lhChanger, textSelChanger;
         private Caret blinkCaret;
         private JTextField blinkSample;
         private ButtonGroup popupGuidanceButtons;
@@ -225,6 +226,10 @@ public class SettingsEditorAction extends GuiAction {
             Globals.getSettings().setBooleanSetting(Settings.Bool.AUTO_INDENT, autoIndentCheck.isSelected());
             Globals.getSettings().setCaretBlinkRate((Integer) blinkRateSpinSelector.getValue());
             Globals.getSettings().setEditorTabSize(tabSizeSelector.getValue());
+            bgChanger.save();
+            fgChanger.save();
+            lhChanger.save();
+            textSelChanger.save();
             if (syntaxStylesAction) {
                 for (int i = 0; i < syntaxStyleIndex.length; i++) {
                     Globals.getSettings().setEditorSyntaxStyleByPosition(syntaxStyleIndex[i],
@@ -256,7 +261,6 @@ public class SettingsEditorAction extends GuiAction {
             genericEditorCheck.setSelected(initialGenericTextEditor);
         }
 
-
         // Perform reset on miscellaneous editor settings
         private void resetOtherSettings() {
             tabSizeSelector.setValue(initialEditorTabSize);
@@ -265,6 +269,10 @@ public class SettingsEditorAction extends GuiAction {
             autoIndentCheck.setSelected(initialAutoIndent);
             blinkRateSpinSelector.setValue(initialCaretBlinkRate);
             blinkCaret.setBlinkRate(initialCaretBlinkRate);
+            bgChanger.reset();
+            fgChanger.reset();
+            lhChanger.reset();
+            textSelChanger.reset();
             popupGuidanceOptions[initialPopupGuidance].setSelected(true);
         }
 
@@ -338,12 +346,35 @@ public class SettingsEditorAction extends GuiAction {
             blinkPanel.add(blinkRateSpinSelector);
             blinkPanel.add(blinkSample);
 
+            JPanel editorColorSettingsPanel = new JPanel(new GridLayout(2, 2));
+            bgChanger = new ColorChangerPanel("Background-Color", "Select the Editor's Background-Color", Settings.EDITOR_BACKGROUND);
+            fgChanger = new ColorChangerPanel("Foreground-Color", "Select the Editor's Foreground-Color", Settings.EDITOR_FOREGROUND);
+            lhChanger = new ColorChangerPanel("Line-Highlight-Color", "Select the Editor's Line-Highlight-Color", Settings.EDITOR_LINE_HIGHLIGHT);
+            textSelChanger = new ColorChangerPanel("Text-Selection-Color", "Select the Editor's Text-Selection-Color", Settings.EDITOR_SELECTION_COLOR);
+            editorColorSettingsPanel.add(bgChanger);
+            editorColorSettingsPanel.add(fgChanger);
+            editorColorSettingsPanel.add(lhChanger);
+            editorColorSettingsPanel.add(textSelChanger);
+
             otherSettingsPanel.setLayout(new GridLayout(1, 2));
-            JPanel leftColumnSettingsPanel = new JPanel(new GridLayout(4, 1));
-            leftColumnSettingsPanel.add(tabPanel);
-            leftColumnSettingsPanel.add(blinkPanel);
-            leftColumnSettingsPanel.add(lineHighlightCheck);
-            leftColumnSettingsPanel.add(autoIndentCheck);
+            JPanel leftColumnSettingsPanel = new JPanel(new GridBagLayout());
+            {
+                GridBagConstraints gbc = new GridBagConstraints();
+                gbc.fill = GridBagConstraints.HORIZONTAL;
+                gbc.anchor = GridBagConstraints.NORTH;
+                gbc.weighty = 1;
+                gbc.gridy = 0;
+                leftColumnSettingsPanel.add(tabPanel, gbc);
+                gbc.gridy = 1;
+                leftColumnSettingsPanel.add(blinkPanel, gbc);
+                gbc.gridy = 2;
+                leftColumnSettingsPanel.add(lineHighlightCheck, gbc);
+                gbc.gridy = 3;
+                leftColumnSettingsPanel.add(autoIndentCheck, gbc);
+                gbc.gridy = 4;
+                gbc.weighty = 2;
+                leftColumnSettingsPanel.add(editorColorSettingsPanel, gbc);
+            }
 
             // Combine instruction guide off/on and instruction prefix length into radio buttons
             JPanel rightColumnSettingsPanel = new JPanel(new GridLayout(4, 1));
@@ -563,6 +594,52 @@ public class SettingsEditorAction extends GuiAction {
                 currentStyles[row] = new SyntaxStyle(button.getBackground(),
                         italic[row].isSelected(), bold[row].isSelected());
                 syntaxStylesAction = true;
+            }
+        }
+
+        /**
+         * Panel to change colors via {@link Settings}
+         */
+        class ColorChangerPanel extends JPanel {
+            private final int index;
+            private final ColorSelectButton colorSelect;
+            private Color color;
+
+            /**
+             * Creates a {@link ColorChangerPanel}
+             * @param label The label to be put next to the changer
+             * @param title The title of the dialogue to be opened
+             * @param index the index of the color for
+             *  {@link Settings#getColorSettingByPosition(int)} and {@link Settings#setColorSettingByPosition(int, Color)}
+             */
+            public ColorChangerPanel(String label, String title, int index) {
+                super(new FlowLayout(FlowLayout.LEFT));
+                this.index = index;
+                add(new JLabel(label));
+                colorSelect = new ColorSelectButton(); // defined in SettingsHighlightingAction
+                color = Globals.getSettings().getColorSettingByPosition(index);
+                colorSelect.setBackground(color);
+                colorSelect.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        JButton button = (JButton) e.getSource();
+                        Color newColor = JColorChooser.showDialog(null, title, button.getBackground());
+                        if (newColor != null) {
+                            color = newColor;
+                            button.setBackground(newColor);
+                        }
+                    }
+                });
+                setToolTipText(title);
+                add(colorSelect);
+            }
+
+            public void reset() {
+                colorSelect.setBackground(Globals.getSettings().getDefaultColorSettingByPosition(index));
+            }
+
+            public void save() {
+                Globals.getSettings().setColorSettingByPosition(index, colorSelect.getBackground());
             }
         }
 
