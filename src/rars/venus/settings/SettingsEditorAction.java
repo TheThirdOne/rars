@@ -231,6 +231,10 @@ public class SettingsEditorAction extends GuiAction {
             lhChanger.save();
             textSelChanger.save();
             caretChanger.save();
+
+            // re-update, since setting may depend on other settings
+            lhChanger.updateColorBySetting();
+
             if (syntaxStylesAction) {
                 for (int i = 0; i < syntaxStyleIndex.length; i++) {
                     Globals.getSettings().setEditorSyntaxStyleByPosition(syntaxStyleIndex[i],
@@ -607,6 +611,8 @@ public class SettingsEditorAction extends GuiAction {
         class ColorChangerPanel extends JPanel {
             private final int index;
             private final ColorSelectButton colorSelect;
+            private final JButton modeButton;
+            private Settings.ColorMode mode;
             private Color color;
 
             /**
@@ -622,28 +628,56 @@ public class SettingsEditorAction extends GuiAction {
                 add(new JLabel(label));
                 colorSelect = new ColorSelectButton(); // defined in SettingsHighlightingAction
                 color = Globals.getSettings().getColorSettingByPosition(index);
+                mode = Globals.getSettings().getColorModeByPosition(index);
                 colorSelect.setBackground(color);
                 colorSelect.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        JButton button = (JButton) e.getSource();
-                        Color newColor = JColorChooser.showDialog(null, title, button.getBackground());
+                        Color newColor = JColorChooser.showDialog(null, title, colorSelect.getBackground());
                         if (newColor != null) {
                             color = newColor;
-                            button.setBackground(newColor);
+                            mode = Settings.ColorMode.CUSTOM;
+                            colorSelect.setBackground(color);
                         }
                     }
                 });
-                setToolTipText(title);
                 add(colorSelect);
+
+                modeButton = new JButton(mode.name());
+                modeButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        setMode(mode == Settings.ColorMode.DEFAULT ? Settings.ColorMode.SYSTEM : Settings.ColorMode.DEFAULT);
+                        modeButton.setText(mode.name());
+                    }
+                });
+                add(modeButton);
+
+                setToolTipText(title);
             }
 
             public void reset() {
-                colorSelect.setBackground(Globals.getSettings().getDefaultColorSettingByPosition(index));
+                setMode(Globals.getSettings().getDefaultColorMode());
             }
 
             public void save() {
-                Globals.getSettings().setColorSettingByPosition(index, colorSelect.getBackground());
+                if (mode == Settings.ColorMode.CUSTOM) {
+                    Globals.getSettings().setColorSettingByPosition(index, colorSelect.getBackground());
+                } else {
+                    Globals.getSettings().setColorSettingByPosition(index, mode);
+                }
+                updateColorBySetting();
+            }
+
+            public void updateColorBySetting() {
+                color = Globals.getSettings().getColorSettingByPosition(index);
+                colorSelect.setBackground(color);
+            }
+
+            private void setMode(Settings.ColorMode mode) {
+                this.mode = mode;
+                color = Globals.getSettings().previewColorModeByPosition(index, mode);
+                colorSelect.setBackground(color);
             }
         }
 
