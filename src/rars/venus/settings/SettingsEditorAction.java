@@ -636,7 +636,7 @@ public class SettingsEditorAction extends GuiAction {
                         Color newColor = JColorChooser.showDialog(null, title, colorSelect.getBackground());
                         if (newColor != null) {
                             color = newColor;
-                            mode = Settings.ColorMode.CUSTOM;
+                            setMode(Settings.ColorMode.CUSTOM);
                             colorSelect.setBackground(color);
                         }
                     }
@@ -648,7 +648,6 @@ public class SettingsEditorAction extends GuiAction {
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         setMode(mode == Settings.ColorMode.DEFAULT ? Settings.ColorMode.SYSTEM : Settings.ColorMode.DEFAULT);
-                        modeButton.setText(mode.name());
                     }
                 });
                 add(modeButton);
@@ -678,6 +677,7 @@ public class SettingsEditorAction extends GuiAction {
                 this.mode = mode;
                 color = Globals.getSettings().previewColorModeByPosition(index, mode);
                 colorSelect.setBackground(color);
+                modeButton.setText(mode.name());
             }
         }
 
