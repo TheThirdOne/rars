@@ -278,7 +278,7 @@ public class SettingsEditorAction extends GuiAction {
             fgChanger.reset();
             lhChanger.reset();
             textSelChanger.reset();
-            caretChanger.save();
+            caretChanger.reset();
             popupGuidanceOptions[initialPopupGuidance].setSelected(true);
         }
 
