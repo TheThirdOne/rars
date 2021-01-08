@@ -675,9 +675,11 @@ public class SettingsEditorAction extends GuiAction {
 
             private void setMode(Settings.ColorMode mode) {
                 this.mode = mode;
-                color = Globals.getSettings().previewColorModeByPosition(index, mode);
-                colorSelect.setBackground(color);
                 modeButton.setText(mode.name());
+                if (mode != Settings.ColorMode.CUSTOM) {
+                    color = Globals.getSettings().previewColorModeByPosition(index, mode);
+                    colorSelect.setBackground(color);
+                }
             }
         }
 
