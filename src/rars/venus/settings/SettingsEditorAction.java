@@ -138,13 +138,16 @@ public class SettingsEditorAction extends GuiAction {
         protected JPanel buildDialogPanel() {
             JPanel dialog = new JPanel(new BorderLayout());
             JPanel fontDialogPanel = super.buildDialogPanel();
+            JPanel editorStylePanel = buildEditorStylePanel();
             JPanel syntaxStylePanel = buildSyntaxStylePanel();
             JPanel otherSettingsPanel = buildOtherSettingsPanel();
             fontDialogPanel.setBorder(BorderFactory.createTitledBorder("Editor Font"));
+            editorStylePanel.setBorder(BorderFactory.createTitledBorder("Editor Style"));
             syntaxStylePanel.setBorder(BorderFactory.createTitledBorder("Syntax Styling"));
             otherSettingsPanel.setBorder(BorderFactory.createTitledBorder("Other Editor Settings"));
             dialog.add(fontDialogPanel, BorderLayout.WEST);
-            dialog.add(syntaxStylePanel, BorderLayout.CENTER);
+            dialog.add(editorStylePanel, BorderLayout.CENTER);
+            dialog.add(syntaxStylePanel, BorderLayout.EAST);
             dialog.add(otherSettingsPanel, BorderLayout.SOUTH);
             this.dialogPanel = dialog; /////4 Aug 2010
             this.syntaxStylePanel = syntaxStylePanel; /////4 Aug 2010
@@ -352,37 +355,12 @@ public class SettingsEditorAction extends GuiAction {
             blinkPanel.add(blinkRateSpinSelector);
             blinkPanel.add(blinkSample);
 
-            JPanel editorColorSettingsPanel = new JPanel(new GridLayout(3, 2));
-            bgChanger = new ColorChangerPanel("Background-Color", "Select the Editor's Background-Color", Settings.EDITOR_BACKGROUND);
-            fgChanger = new ColorChangerPanel("Foreground-Color", "Select the Editor's Foreground-Color", Settings.EDITOR_FOREGROUND);
-            lhChanger = new ColorChangerPanel("Line-Highlight-Color", "Select the Editor's Line-Highlight-Color", Settings.EDITOR_LINE_HIGHLIGHT);
-            textSelChanger = new ColorChangerPanel("Text-Selection-Color", "Select the Editor's Text-Selection-Color", Settings.EDITOR_SELECTION_COLOR);
-            caretChanger = new ColorChangerPanel("Caret-Color", "Select the Editor's Caret-Color", Settings.EDITOR_CARET_COLOR);
-            editorColorSettingsPanel.add(bgChanger);
-            editorColorSettingsPanel.add(fgChanger);
-            editorColorSettingsPanel.add(lhChanger);
-            editorColorSettingsPanel.add(textSelChanger);
-            editorColorSettingsPanel.add(caretChanger);
-
             otherSettingsPanel.setLayout(new GridLayout(1, 2));
-            JPanel leftColumnSettingsPanel = new JPanel(new GridBagLayout());
-            {
-                GridBagConstraints gbc = new GridBagConstraints();
-                gbc.fill = GridBagConstraints.HORIZONTAL;
-                gbc.anchor = GridBagConstraints.NORTH;
-                gbc.weighty = 1;
-                gbc.gridy = 0;
-                leftColumnSettingsPanel.add(tabPanel, gbc);
-                gbc.gridy = 1;
-                leftColumnSettingsPanel.add(blinkPanel, gbc);
-                gbc.gridy = 2;
-                leftColumnSettingsPanel.add(lineHighlightCheck, gbc);
-                gbc.gridy = 3;
-                leftColumnSettingsPanel.add(autoIndentCheck, gbc);
-                gbc.gridy = 4;
-                gbc.weighty = 3;
-                leftColumnSettingsPanel.add(editorColorSettingsPanel, gbc);
-            }
+            JPanel leftColumnSettingsPanel = new JPanel(new GridLayout(4, 1));
+            leftColumnSettingsPanel.add(tabPanel);
+            leftColumnSettingsPanel.add(blinkPanel);
+            leftColumnSettingsPanel.add(lineHighlightCheck);
+            leftColumnSettingsPanel.add(autoIndentCheck);
 
             // Combine instruction guide off/on and instruction prefix length into radio buttons
             JPanel rightColumnSettingsPanel = new JPanel(new GridLayout(4, 1));
@@ -411,6 +389,24 @@ public class SettingsEditorAction extends GuiAction {
             return otherSettingsPanel;
         }
 
+
+        // Editor style panel
+        private JPanel buildEditorStylePanel() {
+            JPanel editorStylePanel = new JPanel(new GridLayout(5, 3, gridHGap, gridVGap));
+            bgChanger = new ColorChangerPanel("Background", "Select the Editor's Background-Color", Settings.EDITOR_BACKGROUND);
+            fgChanger = new ColorChangerPanel("Foreground", "Select the Editor's Foreground-Color", Settings.EDITOR_FOREGROUND);
+            lhChanger = new ColorChangerPanel("Line-Highlight", "Select the Editor's Line-Highlight-Color", Settings.EDITOR_LINE_HIGHLIGHT);
+            textSelChanger = new ColorChangerPanel("Text-Selection", "Select the Editor's Text-Selection-Color", Settings.EDITOR_SELECTION_COLOR);
+            caretChanger = new ColorChangerPanel("Caret", "Select the Editor's Caret-Color", Settings.EDITOR_CARET_COLOR);
+
+            bgChanger.addElements(editorStylePanel);
+            fgChanger.addElements(editorStylePanel);
+            lhChanger.addElements(editorStylePanel);
+            textSelChanger.addElements(editorStylePanel);
+            caretChanger.addElements(editorStylePanel);
+
+            return editorStylePanel;
+        }
 
         // control style (color, plain/italic/bold) for syntax highlighting
         private JPanel buildSyntaxStylePanel() {
@@ -612,6 +608,7 @@ public class SettingsEditorAction extends GuiAction {
             private final int index;
             private final ColorSelectButton colorSelect;
             private final JButton modeButton;
+            private final JLabel label;
             private Settings.ColorMode mode;
             private Color color;
 
@@ -625,7 +622,8 @@ public class SettingsEditorAction extends GuiAction {
             public ColorChangerPanel(String label, String title, int index) {
                 super(new FlowLayout(FlowLayout.LEFT));
                 this.index = index;
-                add(new JLabel(label));
+                this.label = new JLabel(label);
+                add(this.label);
                 colorSelect = new ColorSelectButton(); // defined in SettingsHighlightingAction
                 color = Globals.getSettings().getColorSettingByPosition(index);
                 mode = Globals.getSettings().getColorModeByPosition(index);
@@ -680,6 +678,12 @@ public class SettingsEditorAction extends GuiAction {
                     color = Globals.getSettings().previewColorModeByPosition(index, mode);
                     colorSelect.setBackground(color);
                 }
+            }
+
+            public void addElements(JPanel gridPanel) {
+                gridPanel.add(label);
+                gridPanel.add(colorSelect);
+                gridPanel.add(modeButton);
             }
         }
 
