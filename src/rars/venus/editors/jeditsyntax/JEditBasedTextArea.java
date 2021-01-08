@@ -31,6 +31,7 @@ import java.awt.*;
 
 public class JEditBasedTextArea extends JEditTextArea implements TextEditingArea, CaretListener {
 
+    private final JComponent lineNumbers;
     private EditPane editPane;
     private UndoManager undoManager;
     private UndoableEditListener undoableEditListener;
@@ -41,6 +42,7 @@ public class JEditBasedTextArea extends JEditTextArea implements TextEditingArea
 
     public JEditBasedTextArea(EditPane editPain, JComponent lineNumbers) {
         super(lineNumbers);
+        this.lineNumbers = lineNumbers;
         this.editPane = editPain;
         this.undoManager = new UndoManager();
         this.compoundEdit = new CompoundEdit();
@@ -118,6 +120,21 @@ public class JEditBasedTextArea extends JEditTextArea implements TextEditingArea
      */
     public void setTabSize(int chars) {
         painter.setTabSize(chars);
+    }
+
+    @Override
+    public void setBackground(Color bg) {
+        super.setBackground(bg);
+        getPainter().setBackground(bg);
+        lineNumbers.setOpaque(true);
+        lineNumbers.setBackground(bg);
+    }
+
+    @Override
+    public void setForeground(Color fg) {
+        super.setForeground(fg);
+        getPainter().setForeground(fg);
+        lineNumbers.setForeground(fg);
     }
 
     /**

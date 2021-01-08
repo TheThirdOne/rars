@@ -2287,18 +2287,6 @@ public class JEditTextArea extends JComponent {
         return false;
     }
 
-    @Override
-    public void setBackground(Color bg) {
-        super.setBackground(bg);
-        getPainter().setBackground(bg);
-    }
-
-    @Override
-    public void setForeground(Color fg) {
-        super.setForeground(fg);
-        getPainter().setForeground(fg);
-    }
-
     static {
         caretTimer = new Timer(500, new CaretBlinker());
         caretTimer.setInitialDelay(500);
