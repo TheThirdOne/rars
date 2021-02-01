@@ -1011,6 +1011,7 @@ public class Settings extends Observable {
         initializeEditorSyntaxStyles();
     }
 
+    /** Takes a color from the LookAndFeel */
     static class LookAndFeelColor implements SystemColorProvider {
         private final String key;
         public LookAndFeelColor(String key) {this.key = key; }
@@ -1029,16 +1030,32 @@ public class Settings extends Observable {
         );
     }
 
-    class ColorSettingMixProvider implements SystemColorProvider {
+    /** Mixes two other setting-colors */
+    @SuppressWarnings("unused")
+    class ColorSettingMix implements SystemColorProvider {
         private final int posA;
         private final int posB;
         private final float ratio;
-        public ColorSettingMixProvider(int posA, int posB, float ratio) {
+        public ColorSettingMix(int posA, int posB, float ratio) {
             this.posA = posA; this.posB = posB; this.ratio = ratio;
         }
 
         public Color getColor() {
             return mixColors(getColorSettingByPosition(posA), getColorSettingByPosition(posB), ratio);
+        }
+    }
+
+    /** Mixes color of two providers */
+    static class ColorProviderMix implements SystemColorProvider {
+        private final SystemColorProvider proA;
+        private final SystemColorProvider proB;
+        private final float ratio;
+        public ColorProviderMix(SystemColorProvider proA, SystemColorProvider proB, float ratio) {
+            this.proA = proA; this.proB = proB; this.ratio = ratio;
+        }
+
+        public Color getColor() {
+            return mixColors(proA.getColor(), proB.getColor(), ratio);
         }
     }
 
@@ -1048,7 +1065,10 @@ public class Settings extends Observable {
         systemColors[EDITOR_FOREGROUND] = new LookAndFeelColor("TextArea.foreground");
         systemColors[EDITOR_SELECTION_COLOR] = new LookAndFeelColor("TextArea.selectionBackground");
         systemColors[EDITOR_CARET_COLOR] = new LookAndFeelColor("TextArea.caretForeground");
-        systemColors[EDITOR_LINE_HIGHLIGHT] = new ColorSettingMixProvider(EDITOR_SELECTION_COLOR, EDITOR_BACKGROUND, 0.2f);
+        // Mixes based on the system-color of the background and selection-color
+        systemColors[EDITOR_LINE_HIGHLIGHT] = new ColorProviderMix(systemColors[EDITOR_SELECTION_COLOR], systemColors[EDITOR_BACKGROUND], 0.2f);
+        // Mixes based on the set color of the background and selection-color
+        // systemColors[EDITOR_LINE_HIGHLIGHT] = new ColorSettingMix(EDITOR_SELECTION_COLOR, EDITOR_BACKGROUND, 0.2f);
     }
 
     // Used by all the boolean setting "setter" methods.

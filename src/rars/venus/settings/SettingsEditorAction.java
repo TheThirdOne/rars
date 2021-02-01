@@ -235,9 +235,6 @@ public class SettingsEditorAction extends GuiAction {
             textSelChanger.save();
             caretChanger.save();
 
-            // re-update, since setting may depend on other settings
-            lhChanger.updateColorBySetting();
-
             if (syntaxStylesAction) {
                 for (int i = 0; i < syntaxStyleIndex.length; i++) {
                     Globals.getSettings().setEditorSyntaxStyleByPosition(syntaxStyleIndex[i],
