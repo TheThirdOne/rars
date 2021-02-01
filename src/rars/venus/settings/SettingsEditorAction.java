@@ -231,9 +231,9 @@ public class SettingsEditorAction extends GuiAction {
             Globals.getSettings().setEditorTabSize(tabSizeSelector.getValue());
             bgChanger.save();
             fgChanger.save();
-            lhChanger.save();
             textSelChanger.save();
             caretChanger.save();
+            lhChanger.save();
 
             if (syntaxStylesAction) {
                 for (int i = 0; i < syntaxStyleIndex.length; i++) {
