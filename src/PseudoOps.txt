@@ -179,7 +179,6 @@ fld f1,(t2)       ;fld RG1,0(RG3)  ;#Load Word: Set f1 to 64-bit value from effe
 fld f1,-100       ;fld RG1, VL2(x0);#Load Word: Set f1 to 64-bit value from effective memory word address
 fld f1,10000000,t3;lui RG3, VH2    ;fld RG1, VL2(RG3) ;#Load Word: Set f1 to 64-bit value from effective memory word address using t3 as a temporary
 fld f1,label, t3  ;auipc RG3, PCH2 ;fld RG1, PCL2(RG3);#Load Word: Set f1 to 64-bit value from effective memory word address using t3 as a temporary
-
 fsd f1,(t2)       ;fsd RG1,0(RG3)  ;#Store Word: Store 64-bit value from f1 to effective memory word address
 fsd f1,-100       ;fsd RG1, VL2(x0);#Store Word: Store 64-bit value from f1 to effective memory word address
 fsd f1,10000000,t3;lui RG3, VH2    ;fsd RG1, VL2(RG3) ;#Store Word: Store 64-bit value from f1 to effective memory word address using t3 as a temporary
@@ -198,23 +197,19 @@ csrci fcsr, 100 ;csrrci x0, RG1, RG2 ;#Clear bits in control and status register
 
 frcsr t1     ; csrrs RG1, 0x003, x0  ;#Read FP control/status register
 fscsr t1, t2 ; csrrw RG1, 0x003, RG2 ;#Swap FP control/status register
-fscsr t1     ; csrrs  x0, 0x003, RG1 ;#Write FP control/status register
+fscsr t1     ; csrrw  x0, 0x003, RG1 ;#Write FP control/status register
 
 frsr t1     ; csrrs RG1, 0x003, x0  ;#Alias for frcsr t1
 fssr t1, t2 ; csrrw RG1, 0x003, RG2 ;#Alias for fscsr t1, t2
-fssr t1     ; csrrs  x0, 0x003, RG1 ;#Alias for fscsr t1 
+fssr t1     ; csrrw  x0, 0x003, RG1 ;#Alias for fscsr t1 
 
 frrm t1      ; csrrs RG1, 0x002, x0  ;#Read FP rounding mode
 fsrm t1, t2  ; csrrw RG1, 0x002, RG2 ;#Swap FP rounding mode
-fsrm t1      ; csrrs  x0, 0x002, RG1 ;#Write FP rounding mode
-fsrmi t1, 100 ; csrrwi RG1, 0x002, RG2 ;#Swap FP rounding mode, immediate
-fsrmi 100     ; csrrsi  x0, 0x002, RG1 ;#Write FP rounding mode, immediate
+fsrm t1      ; csrrw  x0, 0x002, RG1 ;#Write FP rounding mode
 
 frflags t1      ; csrrs RG1, 0x001, x0  ;#Read FP exception flags
 fsflags t1, t2  ; csrrw RG1, 0x001, RG2 ;#Swap FP exception flags
-fsflags t1      ; csrrs  x0, 0x001, RG1 ;#Write FP exception flags
-fsflagsi t1, 100 ; csrrwi RG1, 0x001, RG2 ;#Swap FP exception flags, immediate
-fsflagsi 100     ; csrrsi  x0, 0x001, RG1 ;#Write FP exception flags, immediate
+fsflags t1      ; csrrw  x0, 0x001, RG1 ;#Write FP exception flags
 
 rdcycle t1    ; csrrs RG1, 0xC00, x0 ;# Read from cycle
 rdtime t1     ; csrrs RG1, 0xC01, x0 ;# Read from time
