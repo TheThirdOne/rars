@@ -114,6 +114,7 @@ public class SettingsEditorAction extends GuiAction {
         private JSlider tabSizeSelector;
         private JSpinner tabSizeSpinSelector, blinkRateSpinSelector, popupPrefixLengthSpinSelector;
         private JCheckBox lineHighlightCheck, genericEditorCheck, autoIndentCheck;
+        private ColorChangerPanel bgChanger, fgChanger, lhChanger, textSelChanger, caretChanger;
         private Caret blinkCaret;
         private JTextField blinkSample;
         private ButtonGroup popupGuidanceButtons;
@@ -137,13 +138,16 @@ public class SettingsEditorAction extends GuiAction {
         protected JPanel buildDialogPanel() {
             JPanel dialog = new JPanel(new BorderLayout());
             JPanel fontDialogPanel = super.buildDialogPanel();
+            JPanel editorStylePanel = buildEditorStylePanel();
             JPanel syntaxStylePanel = buildSyntaxStylePanel();
             JPanel otherSettingsPanel = buildOtherSettingsPanel();
             fontDialogPanel.setBorder(BorderFactory.createTitledBorder("Editor Font"));
+            editorStylePanel.setBorder(BorderFactory.createTitledBorder("Editor Style"));
             syntaxStylePanel.setBorder(BorderFactory.createTitledBorder("Syntax Styling"));
             otherSettingsPanel.setBorder(BorderFactory.createTitledBorder("Other Editor Settings"));
             dialog.add(fontDialogPanel, BorderLayout.WEST);
-            dialog.add(syntaxStylePanel, BorderLayout.CENTER);
+            dialog.add(editorStylePanel, BorderLayout.CENTER);
+            dialog.add(syntaxStylePanel, BorderLayout.EAST);
             dialog.add(otherSettingsPanel, BorderLayout.SOUTH);
             this.dialogPanel = dialog; /////4 Aug 2010
             this.syntaxStylePanel = syntaxStylePanel; /////4 Aug 2010
@@ -225,6 +229,12 @@ public class SettingsEditorAction extends GuiAction {
             Globals.getSettings().setBooleanSetting(Settings.Bool.AUTO_INDENT, autoIndentCheck.isSelected());
             Globals.getSettings().setCaretBlinkRate((Integer) blinkRateSpinSelector.getValue());
             Globals.getSettings().setEditorTabSize(tabSizeSelector.getValue());
+            bgChanger.save();
+            fgChanger.save();
+            textSelChanger.save();
+            caretChanger.save();
+            lhChanger.save();
+
             if (syntaxStylesAction) {
                 for (int i = 0; i < syntaxStyleIndex.length; i++) {
                     Globals.getSettings().setEditorSyntaxStyleByPosition(syntaxStyleIndex[i],
@@ -256,7 +266,6 @@ public class SettingsEditorAction extends GuiAction {
             genericEditorCheck.setSelected(initialGenericTextEditor);
         }
 
-
         // Perform reset on miscellaneous editor settings
         private void resetOtherSettings() {
             tabSizeSelector.setValue(initialEditorTabSize);
@@ -265,6 +274,11 @@ public class SettingsEditorAction extends GuiAction {
             autoIndentCheck.setSelected(initialAutoIndent);
             blinkRateSpinSelector.setValue(initialCaretBlinkRate);
             blinkCaret.setBlinkRate(initialCaretBlinkRate);
+            bgChanger.reset();
+            fgChanger.reset();
+            lhChanger.reset();
+            textSelChanger.reset();
+            caretChanger.reset();
             popupGuidanceOptions[initialPopupGuidance].setSelected(true);
         }
 
@@ -372,6 +386,24 @@ public class SettingsEditorAction extends GuiAction {
             return otherSettingsPanel;
         }
 
+
+        // Editor style panel
+        private JPanel buildEditorStylePanel() {
+            JPanel editorStylePanel = new JPanel(new GridLayout(5, 3, gridHGap, gridVGap));
+            bgChanger = new ColorChangerPanel("Background", "Select the Editor's Background-Color", Settings.EDITOR_BACKGROUND);
+            fgChanger = new ColorChangerPanel("Foreground", "Select the Editor's Foreground-Color", Settings.EDITOR_FOREGROUND);
+            lhChanger = new ColorChangerPanel("Line-Highlight", "Select the Editor's Line-Highlight-Color", Settings.EDITOR_LINE_HIGHLIGHT);
+            textSelChanger = new ColorChangerPanel("Text-Selection", "Select the Editor's Text-Selection-Color", Settings.EDITOR_SELECTION_COLOR);
+            caretChanger = new ColorChangerPanel("Caret", "Select the Editor's Caret-Color", Settings.EDITOR_CARET_COLOR);
+
+            bgChanger.addElements(editorStylePanel);
+            fgChanger.addElements(editorStylePanel);
+            lhChanger.addElements(editorStylePanel);
+            textSelChanger.addElements(editorStylePanel);
+            caretChanger.addElements(editorStylePanel);
+
+            return editorStylePanel;
+        }
 
         // control style (color, plain/italic/bold) for syntax highlighting
         private JPanel buildSyntaxStylePanel() {
@@ -563,6 +595,92 @@ public class SettingsEditorAction extends GuiAction {
                 currentStyles[row] = new SyntaxStyle(button.getBackground(),
                         italic[row].isSelected(), bold[row].isSelected());
                 syntaxStylesAction = true;
+            }
+        }
+
+        /**
+         * Panel to change colors via {@link Settings}
+         */
+        class ColorChangerPanel extends JPanel {
+            private final int index;
+            private final ColorSelectButton colorSelect;
+            private final JButton modeButton;
+            private final JLabel label;
+            private Settings.ColorMode mode;
+            private Color color;
+
+            /**
+             * Creates a {@link ColorChangerPanel}
+             * @param label The label to be put next to the changer
+             * @param title The title of the dialogue to be opened
+             * @param index the index of the color for
+             *  {@link Settings#getColorSettingByPosition(int)} and {@link Settings#setColorSettingByPosition(int, Color)}
+             */
+            public ColorChangerPanel(String label, String title, int index) {
+                super(new FlowLayout(FlowLayout.LEFT));
+                this.index = index;
+                this.label = new JLabel(label);
+                add(this.label);
+                colorSelect = new ColorSelectButton(); // defined in SettingsHighlightingAction
+                color = Globals.getSettings().getColorSettingByPosition(index);
+                mode = Globals.getSettings().getColorModeByPosition(index);
+                colorSelect.setBackground(color);
+                colorSelect.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        Color newColor = JColorChooser.showDialog(null, title, colorSelect.getBackground());
+                        if (newColor != null) {
+                            color = newColor;
+                            setMode(Settings.ColorMode.CUSTOM);
+                            colorSelect.setBackground(color);
+                        }
+                    }
+                });
+                add(colorSelect);
+
+                modeButton = new JButton(mode.name());
+                modeButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        setMode(mode == Settings.ColorMode.DEFAULT ? Settings.ColorMode.SYSTEM : Settings.ColorMode.DEFAULT);
+                    }
+                });
+                add(modeButton);
+
+                setToolTipText(title);
+            }
+
+            public void reset() {
+                setMode(Globals.getSettings().getDefaultColorMode());
+            }
+
+            public void save() {
+                if (mode == Settings.ColorMode.CUSTOM) {
+                    Globals.getSettings().setColorSettingByPosition(index, colorSelect.getBackground());
+                } else {
+                    Globals.getSettings().setColorSettingByPosition(index, mode);
+                }
+                updateColorBySetting();
+            }
+
+            public void updateColorBySetting() {
+                color = Globals.getSettings().getColorSettingByPosition(index);
+                colorSelect.setBackground(color);
+            }
+
+            private void setMode(Settings.ColorMode mode) {
+                this.mode = mode;
+                modeButton.setText(mode.name());
+                if (mode != Settings.ColorMode.CUSTOM) {
+                    color = Globals.getSettings().previewColorModeByPosition(index, mode);
+                    colorSelect.setBackground(color);
+                }
+            }
+
+            public void addElements(JPanel gridPanel) {
+                gridPanel.add(label);
+                gridPanel.add(colorSelect);
+                gridPanel.add(modeButton);
             }
         }
 
