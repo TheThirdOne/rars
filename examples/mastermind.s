@@ -32,7 +32,6 @@ myLabel:
         li a7, 4
         la a0, myLabel
         ecall
-        delayDisplay
 .end_macro
 
 .macro printLn 					# print a carriage-return
@@ -42,13 +41,6 @@ CRstring:
         .text
         li a7, 4
         la a0, CRstring
-        ecall
-        delayDisplay
-.end_macro
-
-.macro delayDisplay				# this macro is used to delay display
-        li a0, 150				# preventing a bug found in rars 0e138d8
-        li a7, 32				# see issue #108
         ecall
 .end_macro
 
@@ -150,7 +142,6 @@ noMatch:
         mv a0, s11
         li a7, 1						# PrintInt
         ecall							# syscall
-        delayDisplay                    # to prevent printing bug
         printLn  						# print carriage-return
         addi s11, s11, -4				# substract 4 to number of correct matches
         beqz s11, userWin				# and if null, it's a win!
@@ -192,7 +183,6 @@ noMatch2:
         mv a0, s11
         li a7, 1						# PrintInt
         ecall							# syscall
-        delayDisplay                    # to prevent printing bug
         printLn   						# print carriage-return
         j user							# and go back to have another guess!
 
@@ -241,7 +231,6 @@ loopSol:
         lb a0, 0(t0)                    # load digit
         li a7, 1                        # printInt
         ecall                           # syscall
-        delayDisplay                    # to prevent printing bug
         addi t0, t0, 1                  # go to next digit
         addi t1, t1, -1                 # and jump back
         bnez t1, loopSol                #  unless no more to print
