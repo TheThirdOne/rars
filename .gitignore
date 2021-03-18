@@ -6,3 +6,4 @@ out
 .classpath
 .project
 examples/riscv
+.DS_Store
