@@ -5,6 +5,7 @@ import rars.util.EditorFont;
 import rars.venus.editors.jeditsyntax.SyntaxStyle;
 import rars.venus.editors.jeditsyntax.SyntaxUtilities;
 
+import javax.swing.*;
 import java.awt.*;
 import java.util.HashMap;
 import java.util.Observable;
@@ -61,6 +62,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 public class Settings extends Observable {
     /* Properties file used to hold default settings. */
     private static String settingsFile = "Settings";
+    private ColorMode defaultColorMode = ColorMode.SYSTEM;
 
     // BOOLEAN SETTINGS...
     public enum Bool {
@@ -329,13 +331,44 @@ public class Settings extends Observable {
      * RGB color for register highlighted foreground
      */
     public static final int REGISTER_HIGHLIGHT_FOREGROUND = 11;
+    /**
+     * RGB background color of Editor
+     */
+    public static final int EDITOR_BACKGROUND = 12;
+    /**
+     * RGB foreground color of Editor
+     */
+    public static final int EDITOR_FOREGROUND = 13;
+    /**
+     * RGB line-highlight color of Editor
+     */
+    public static final int EDITOR_LINE_HIGHLIGHT = 14;
+    /**
+     * RGB color of text-selection in Editor
+     */
+    public static final int EDITOR_SELECTION_COLOR = 15;
+    /**
+     * RGB color of caret in Editor
+     */
+    public static final int EDITOR_CARET_COLOR = 16;
+
+    public enum ColorMode {
+        DEFAULT("DEF"),
+        SYSTEM("SYS"),
+        CUSTOM(null);
+
+        public final String modeKey;
+        ColorMode(String modeKey) {this.modeKey = modeKey; }
+    }
+
     // Match the above by position.
     private static final String[] colorSettingsKeys = {
             "EvenRowBackground", "EvenRowForeground", "OddRowBackground", "OddRowForeground",
             "TextSegmentHighlightBackground", "TextSegmentHighlightForeground",
             "TextSegmentDelaySlotHighlightBackground", "TextSegmentDelaySlotHighlightForeground",
             "DataSegmentHighlightBackground", "DataSegmentHighlightForeground",
-            "RegisterHighlightBackground", "RegisterHighlightForeground"};
+            "RegisterHighlightBackground", "RegisterHighlightForeground",
+            "EditorBackground", "EditorForeground", "EditorLineHighlight", "EditorSelection", "EditorCaretColor"};
     /**
      * Last resort default values for color settings;
      * will use only if neither the Preferences nor the properties file work.
@@ -343,14 +376,17 @@ public class Settings extends Observable {
      * Must match key by list position.
      */
     private static String[] defaultColorSettingsValues = {
-            "0x00e0e0e0", "0", "0x00ffffff", "0", "0x00ffff99", "0", "0x0033ff00", "0", "0x0099ccff", "0", "0x0099cc55", "0"};
+            "0x00e0e0e0", "0", "0x00ffffff", "0", "0x00ffff99", "0", "0x0033ff00", "0", "0x0099ccff", "0", "0x0099cc55", "0", "0x00ffffff", "0x00000000", "0x00eeeeee", "0x00ccccff", "0x00000000"};
 
+    interface SystemColorProvider { Color getColor();}
+    private SystemColorProvider[] systemColors;
 
     private HashMap<Bool, Boolean> booleanSettingsValues;
     private String[] stringSettingsValues;
     private String[] fontFamilySettingsValues;
     private String[] fontStyleSettingsValues;
     private String[] fontSizeSettingsValues;
+    /** Color settings, either a hex-encoded value or a value of {@link ColorMode#modeKey} */
     private String[] colorSettingsValues;
 
     private Preferences preferences;
@@ -450,13 +486,13 @@ public class Settings extends Observable {
     }
 
     public SyntaxStyle getEditorSyntaxStyleByPosition(int index) {
-        return new SyntaxStyle(getColorValueByPosition(index, syntaxStyleColorSettingsValues),
+        return new SyntaxStyle(getColorValueByPosition(index, syntaxStyleColorSettingsValues, defaultSyntaxStyleColorSettingsValues, null),
                 syntaxStyleItalicSettingsValues[index],
                 syntaxStyleBoldSettingsValues[index]);
     }
 
     public SyntaxStyle getDefaultEditorSyntaxStyleByPosition(int index) {
-        return new SyntaxStyle(getColorValueByPosition(index, defaultSyntaxStyleColorSettingsValues),
+        return new SyntaxStyle(getColorValueByPosition(index, defaultSyntaxStyleColorSettingsValues, null, null),
                 defaultSyntaxStyleItalicSettingsValues[index],
                 defaultSyntaxStyleBoldSettingsValues[index]);
     }
@@ -687,7 +723,7 @@ public class Settings extends Observable {
      * @return corresponding Color, or null if key not found or value not valid color
      */
     public Color getColorSettingByKey(String key) {
-        return getColorValueByKey(key, colorSettingsValues);
+        return getColorValueByKey(key, colorSettingsValues, defaultColorSettingsValues, systemColors);
     }
 
     /**
@@ -698,7 +734,7 @@ public class Settings extends Observable {
      * @return corresponding default Color, or null if key not found or value not valid color
      */
     public Color getDefaultColorSettingByKey(String key) {
-        return getColorValueByKey(key, defaultColorSettingsValues);
+        return getColorValueByKey(key, defaultColorSettingsValues, null, null);
     }
 
 
@@ -710,7 +746,7 @@ public class Settings extends Observable {
      * @return corresponding Color, or null if argument invalid or value not valid color
      */
     public Color getColorSettingByPosition(int position) {
-        return getColorValueByPosition(position, colorSettingsValues);
+        return getColorValueByPosition(position, colorSettingsValues, defaultColorSettingsValues, systemColors);
     }
 
     /**
@@ -721,9 +757,35 @@ public class Settings extends Observable {
      * @return corresponding default Color, or null if argument invalid or value not valid color
      */
     public Color getDefaultColorSettingByPosition(int position) {
-        return getColorValueByPosition(position, defaultColorSettingsValues);
+        return getColorValueByPosition(position, defaultColorSettingsValues, null, null);
     }
 
+    /**
+     * Get Color-Mode for specified settings name (a static constant).
+     * Returns null if argument invalid or its value is not a valid color encoding.
+     *
+     * @param position the Setting name (see list of static constants)
+     * @return The corresponding color-mode
+     */
+    public ColorMode getColorModeByPosition(int position) {
+        return getColorModeByPostion(position, colorSettingsValues);
+    }
+
+    /**
+     * Get a preview of the color-mode for specified settings name (a static constant).
+     * Returns null if argument invalid or its value is not a valid color encoding.
+     *
+     * @param position the Setting name (see list of static constants)
+     * @param mode The color-mode to preview
+     * @return The color to preview
+     */
+    public Color previewColorModeByPosition(int position, ColorMode mode) {
+        if (mode.modeKey != null && !mode.modeKey.isEmpty()) {
+            return getColorValueByString(position, mode.modeKey, defaultColorSettingsValues, systemColors);
+        } else {
+            return getColorSettingByPosition(position);
+        }
+    }
 
     ////////////////////////////////////////////////////////////////////////
     //  Setting Setters
@@ -890,9 +952,24 @@ public class Settings extends Observable {
      * @param color    the Color to save
      */
     public void setColorSettingByPosition(int position, Color color) {
-        if (position >= 0 && position < colorSettingsKeys.length) {
-            setColorSetting(position, color);
-        }
+        setColorSetting(position, color);
+    }
+
+    /**
+     * Set Color-Mode for specified settings name (a static constant). Has no effect if invalid.
+     *
+     * @param position the Setting name (see list of static constants)
+     * @param mode    the color-mode to set
+     */
+    public void setColorSettingByPosition(int position, ColorMode mode) {
+        setColorSetting(position, mode.modeKey);
+    }
+
+    /**
+     * @return Default color mode
+     */
+    public ColorMode getDefaultColorMode() {
+        return defaultColorMode;
     }
 
     /////////////////////////////////////////////////////////////////////////
@@ -907,6 +984,7 @@ public class Settings extends Observable {
     //           In either case, use these values as defaults in call to Preferences.
 
     private void initialize() {
+        initSystemProviders();
         applyDefaultSettings();
         if (!readSettingsFromPropertiesFile(settingsFile)) {
             System.out.println("RARS System error: unable to read Settings.properties defaults. Using built-in defaults.");
@@ -928,9 +1006,69 @@ public class Settings extends Observable {
             fontSizeSettingsValues[i] = defaultFontSizeSettingsValues[i];
         }
         for (int i = 0; i < colorSettingsValues.length; i++) {
-            colorSettingsValues[i] = defaultColorSettingsValues[i];
+            colorSettingsValues[i] = getDefaultColorMode().modeKey;
         }
         initializeEditorSyntaxStyles();
+    }
+
+    /** Takes a color from the LookAndFeel */
+    static class LookAndFeelColor implements SystemColorProvider {
+        private final String key;
+        public LookAndFeelColor(String key) {this.key = key; }
+        public Color getColor() {
+            // Deep copy, because using the color directly in UI caused problems
+            return new Color(UIManager.getLookAndFeel().getDefaults().getColor(key).getRGB());
+        }
+    }
+
+    private static Color mixColors(Color a, Color b, float ratio) {
+        return new Color(
+                ((float) a.getRed())/256*ratio + ((float) b.getRed())/256*(1-ratio),
+                ((float) a.getGreen())/256*ratio + ((float) b.getGreen())/256*(1-ratio),
+                ((float) a.getBlue())/256*ratio + ((float) b.getBlue())/256*(1-ratio),
+                ((float) a.getAlpha())/256*ratio + ((float) b.getAlpha())/256*(1-ratio)
+        );
+    }
+
+    /** Mixes two other setting-colors */
+    @SuppressWarnings("unused")
+    class ColorSettingMix implements SystemColorProvider {
+        private final int posA;
+        private final int posB;
+        private final float ratio;
+        public ColorSettingMix(int posA, int posB, float ratio) {
+            this.posA = posA; this.posB = posB; this.ratio = ratio;
+        }
+
+        public Color getColor() {
+            return mixColors(getColorSettingByPosition(posA), getColorSettingByPosition(posB), ratio);
+        }
+    }
+
+    /** Mixes color of two providers */
+    static class ColorProviderMix implements SystemColorProvider {
+        private final SystemColorProvider proA;
+        private final SystemColorProvider proB;
+        private final float ratio;
+        public ColorProviderMix(SystemColorProvider proA, SystemColorProvider proB, float ratio) {
+            this.proA = proA; this.proB = proB; this.ratio = ratio;
+        }
+
+        public Color getColor() {
+            return mixColors(proA.getColor(), proB.getColor(), ratio);
+        }
+    }
+
+    private void initSystemProviders() {
+        systemColors = new SystemColorProvider[colorSettingsKeys.length];
+        systemColors[EDITOR_BACKGROUND] = new LookAndFeelColor("TextArea.background");
+        systemColors[EDITOR_FOREGROUND] = new LookAndFeelColor("TextArea.foreground");
+        systemColors[EDITOR_SELECTION_COLOR] = new LookAndFeelColor("TextArea.selectionBackground");
+        systemColors[EDITOR_CARET_COLOR] = new LookAndFeelColor("TextArea.caretForeground");
+        // Mixes based on the system-color of the background and selection-color
+        systemColors[EDITOR_LINE_HIGHLIGHT] = new ColorProviderMix(systemColors[EDITOR_SELECTION_COLOR], systemColors[EDITOR_BACKGROUND], 0.2f);
+        // Mixes based on the set color of the background and selection-color
+        // systemColors[EDITOR_LINE_HIGHLIGHT] = new ColorSettingMix(EDITOR_SELECTION_COLOR, EDITOR_BACKGROUND, 0.2f);
     }
 
     // Used by all the boolean setting "setter" methods.
@@ -951,17 +1089,23 @@ public class Settings extends Observable {
 
     // Used by setter methods for color-based settings
     private void setColorSetting(int settingIndex, Color color) {
-        colorSettingsValues[settingIndex] = Binary.intToHexString(color.getRed() << 16 | color.getGreen() << 8 | color.getBlue());
-        saveColorSetting(settingIndex);
+        setColorSetting(settingIndex,
+                Binary.intToHexString(color.getRed() << 16 | color.getGreen() << 8 | color.getBlue()));
+    }
+
+    private void setColorSetting(int settingIndex, String colorStr) {
+        if (settingIndex >= 0 && settingIndex < colorSettingsValues.length) {
+            colorSettingsValues[settingIndex] = colorStr;
+            saveColorSetting(settingIndex);
+        }
     }
 
     // Get Color object for this key value.  Get it from values array provided as argument (could be either
     // the current or the default settings array).
-    private Color getColorValueByKey(String key, String[] values) {
-        Color color = null;
+    private Color getColorValueByKey(String key, String[] values, String[] defaults, SystemColorProvider[] system) {
         for (int i = 0; i < colorSettingsKeys.length; i++) {
             if (key.equals(colorSettingsKeys[i])) {
-                return getColorValueByPosition(i, values);
+                return getColorValueByPosition(i, values, defaults, system);
             }
         }
         return null;
@@ -969,16 +1113,53 @@ public class Settings extends Observable {
 
     // Get Color object for this key array position.  Get it from values array provided as argument (could be either
     // the current or the default settings array).
-    private Color getColorValueByPosition(int position, String[] values) {
+    private Color getColorValueByPosition(int position, String[] values, String[] defaults, SystemColorProvider[] system) {
+        return getColorValueByString(position, getColorStringByPosition(position, values), defaults, systemColors);
+    }
+
+    private Color getColorValueByString(int position, String colorStr, String[] defaults, SystemColorProvider[] system) {
         Color color = null;
-        if (position >= 0 && position < colorSettingsKeys.length) {
+        if (colorStr != null) {
+            if (colorStr.equalsIgnoreCase(ColorMode.DEFAULT.modeKey)) {
+                colorStr = null; // Trigger default
+            } else if (system != null && colorStr.equalsIgnoreCase(ColorMode.SYSTEM.modeKey)) {
+                color = getSystemColorByPosition(position, system);
+            }
+        }
+        if (color == null && colorStr == null) {
+            colorStr = getColorStringByPosition(position, defaults);
+        }
+        if (color == null && colorStr != null) {
             try {
-                color = Color.decode(values[position]);
+                color = Color.decode(colorStr);
             } catch (NumberFormatException nfe) {
                 color = null;
             }
         }
         return color;
+    }
+
+    private ColorMode getColorModeByPostion(int position, String[] values) {
+        String colorStr = getColorStringByPosition(position, values);
+        if (colorStr == null) return ColorMode.CUSTOM;
+
+        for (ColorMode mode : ColorMode.values())
+            if (mode.modeKey != null && mode.modeKey.equalsIgnoreCase(colorStr)) return mode;
+
+        return ColorMode.CUSTOM;
+    }
+
+    private String getColorStringByPosition(int position, String[] values) {
+        if (values == null) return null;
+        if (position >= 0 && position < values.length) return values[position];
+        return null;
+    }
+    private Color getSystemColorByPosition(int position, SystemColorProvider[] providers) {
+        if (position >= 0 && position < providers.length) {
+            SystemColorProvider provider = providers[position];
+            if (provider != null) return provider.getColor();
+        }
+        return null;
     }
 
 

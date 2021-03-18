@@ -1,6 +1,7 @@
 package rars.venus.editors.jeditsyntax;
 
 import rars.Globals;
+import rars.Settings;
 import rars.venus.EditPane;
 import rars.venus.editors.TextEditingArea;
 import rars.venus.editors.jeditsyntax.tokenmarker.RISCVTokenMarker;
@@ -30,6 +31,7 @@ import java.awt.*;
 
 public class JEditBasedTextArea extends JEditTextArea implements TextEditingArea, CaretListener {
 
+    private final JComponent lineNumbers;
     private EditPane editPane;
     private UndoManager undoManager;
     private UndoableEditListener undoableEditListener;
@@ -40,6 +42,7 @@ public class JEditBasedTextArea extends JEditTextArea implements TextEditingArea
 
     public JEditBasedTextArea(EditPane editPain, JComponent lineNumbers) {
         super(lineNumbers);
+        this.lineNumbers = lineNumbers;
         this.editPane = editPain;
         this.undoManager = new UndoManager();
         this.compoundEdit = new CompoundEdit();
@@ -119,11 +122,43 @@ public class JEditBasedTextArea extends JEditTextArea implements TextEditingArea
         painter.setTabSize(chars);
     }
 
+    @Override
+    public void setBackground(Color bg) {
+        super.setBackground(bg);
+        getPainter().setBackground(bg);
+        lineNumbers.setOpaque(true);
+        lineNumbers.setBackground(bg);
+    }
+
+    @Override
+    public void setForeground(Color fg) {
+        super.setForeground(fg);
+        getPainter().setForeground(fg);
+        lineNumbers.setForeground(fg);
+    }
+
     /**
-     * Update the syntax style table, which is obtained from
-     * SyntaxUtilities.
+     * Update editor-colors based on the information
+     * from {@link Globals#getSettings()}
+     */
+    public void updateEditorColors() {
+        boolean editable = this.isEditable();
+        Settings settings = Globals.getSettings();
+        Color background = settings.getColorSettingByPosition(Settings.EDITOR_BACKGROUND);
+        Color foreground = settings.getColorSettingByPosition(Settings.EDITOR_FOREGROUND);
+        this.setBackground((editable) ? background : background.darker());
+        this.getPainter().setLineHighlightColor(settings.getColorSettingByPosition(Settings.EDITOR_LINE_HIGHLIGHT));
+        this.getPainter().setSelectionColor(settings.getColorSettingByPosition(Settings.EDITOR_SELECTION_COLOR));
+        this.getPainter().setCaretColor(settings.getColorSettingByPosition(Settings.EDITOR_CARET_COLOR));
+        this.setForeground((editable) ? foreground : foreground.darker());
+    }
+
+    /**
+     * Update editor colors and update the syntax style table,
+     * which is obtained from {@link SyntaxUtilities}.
      */
     public void updateSyntaxStyles() {
+        updateEditorColors();
         painter.setStyles(SyntaxUtilities.getCurrentSyntaxStyles());
     }
 
@@ -176,11 +211,11 @@ public class JEditBasedTextArea extends JEditTextArea implements TextEditingArea
     //
     public void setSourceCode(String s, boolean editable) {
         this.setText(s);
-        this.setBackground((editable) ? Color.WHITE : Color.GRAY);
         this.setEditable(editable);
         this.setEnabled(editable);
         //this.getCaret().setVisible(editable);
         this.setCaretPosition(0);
+        updateEditorColors();
         if (editable) this.requestFocusInWindow();
     }
 

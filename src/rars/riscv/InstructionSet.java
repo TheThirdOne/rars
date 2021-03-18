@@ -5,7 +5,9 @@ import rars.ProgramStatement;
 import rars.Settings;
 import rars.SimulationException;
 import rars.riscv.hardware.RegisterFile;
+import rars.riscv.syscalls.*;
 import rars.util.FilenameFinder;
+import rars.util.SystemIO;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -274,6 +276,20 @@ public class InstructionSet {
             throws SimulationException {
         AbstractSyscall service = SyscallLoader.findSyscall(number);
         if (service != null) {
+            // TODO: find a cleaner way of doing this
+            // This was introduced to solve issue #108
+            boolean is_writing = service instanceof SyscallPrintChar ||
+                    service instanceof SyscallPrintDouble ||
+                    service instanceof SyscallPrintFloat ||
+                    service instanceof SyscallPrintInt ||
+                    service instanceof SyscallPrintIntBinary ||
+                    service instanceof SyscallPrintIntHex ||
+                    service instanceof SyscallPrintIntUnsigned ||
+                    service instanceof SyscallPrintString ||
+                    service instanceof SyscallWrite;
+            if (!is_writing) {
+                SystemIO.flush(true);
+            }
             service.simulate(statement);
             return;
         }
