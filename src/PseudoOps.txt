@@ -96,7 +96,7 @@ beqz t1,label ;beq RG1, x0, LAB ;#Branch if EQual Zero : Branch to statement at 
 bnez t1,label ;bne RG1, x0, LAB ;#Branch if Not Equal Zero : Branch to statement at label if t1 != 0
 bgez t1,label ;bge RG1, x0, LAB ;#Branch if Greater than or Equal to Zero : Branch to statement at label if t1 >= 0
 bltz t1,label ;blt RG1, x0, LAB ;#Branch if Less Than Zero : Branch to statement at label if t1 < 0
-bgtz t1,label ;blt x0, RG1, LAB ;#Branch if Greater Than: Branch to statement at label if t1 > 0
+bgtz t1,label ;blt x0, RG1, LAB ;#Branch if Greater Than Zero: Branch to statement at label if t1 > 0
 blez t1,label ;bge x0, RG1, LAB ;#Branch if Less than or Equal to Zero : Branch to statement at label if t1 <= 0
 bgt  t1,t2,label ;blt  RG2, RG1, LAB ;#Branch if Greater Than : Branch to statement at label if t1 > t2
 bgtu t1,t2,label ;bltu RG2, RG1, LAB ;#Branch if Greater Than Unsigned: Branch to statement at label if t1 > t2 (unsigned compare)
