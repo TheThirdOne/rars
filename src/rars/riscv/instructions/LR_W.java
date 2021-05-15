@@ -4,10 +4,7 @@ import rars.Globals;
 import rars.riscv.hardware.AddressErrorException;
 import rars.ProgramStatement;
 import rars.SimulationException;
-import rars.riscv.hardware.AddressErrorException;
 import rars.riscv.hardware.RegisterFile;
-import rars.riscv.BasicInstruction;
-import rars.riscv.BasicInstructionFormat;
 
 public class LR_W extends Atomic {
     public LR_W() {

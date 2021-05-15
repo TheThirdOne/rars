@@ -267,5 +267,5 @@ fgt.d t1, f2, f3      ;fle.d RG1, RG2, RG3 ;#Floating Greater Than (64 bit): if 
 fge.d t1, f2, f3      ;flt.d RG1, RG2, RG3 ;#Floating Greater Than or Equal (64 bit): if f1 >= f2, set t1 to 1, else set t1 to 0
 
 #########################  atomic pseudo-ops  ##########################
-lr.w t1,(t2)     ;lw RG1,0(RG3)   ;#Load Reserved Word : Set t1 to contents of effective memory word address and reserves memory word address
-sc.w t1,t2,(t3)     ;sw RG1,0(RG3)   ;#Store Conditional Word : Tries to store t2 contents into effective memory word address and returns store result in t1
+lr.w t1,(t2)        ;lr.w RG1,(RG3)       ;#Load Reserved Word : Set t1 to contents of effective memory word address and reserves memory word address
+sc.w t1,t2,(t3)     ;sc.w RG1,RG2,(RG3)   ;#Store Conditional Word : Tries to store t2 contents into effective memory word address and returns store result in t1
