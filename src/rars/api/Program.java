@@ -54,6 +54,7 @@ public class Program {
 
     public Program(Options set){
         Globals.initialize(false);
+        ReserveTable.ResetReserve();
         this.set = set;
         code = new RISCVprogram();
         assembled = new Memory();
@@ -130,6 +131,7 @@ public class Program {
      */
     public void setup(ArrayList<String> args, String STDIN){
         RegisterFile.resetRegisters();
+        ReserveTable.ResetReserve();
         FloatingPointRegisterFile.resetRegisters();
         ControlAndStatusRegisterFile.resetRegisters();
         InterruptController.reset();

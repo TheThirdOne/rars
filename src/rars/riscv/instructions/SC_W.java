@@ -5,6 +5,7 @@ import rars.riscv.hardware.AddressErrorException;
 import rars.ProgramStatement;
 import rars.SimulationException;
 import rars.riscv.hardware.RegisterFile;
+import rars.riscv.hardware.ReserveTable;
 
 public class SC_W extends Atomic {
     public SC_W() {
@@ -22,7 +23,11 @@ public class SC_W extends Atomic {
     }
 
     private int store(int address, int value) throws AddressErrorException {
-        Globals.memory.setWord(address, value);
-        return 0;
+        // -------------------------------------------------> Doubt Doubt Doubt Doubt Doubt Doubt Doubt Doubt 
+        if(ReserveTable.sc_w1(address)){
+            Globals.memory.setWord(address, value);
+            return 0;
+        }
+        return -1;
     }
 }
