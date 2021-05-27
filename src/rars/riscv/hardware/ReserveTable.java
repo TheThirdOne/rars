@@ -28,66 +28,52 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 public class ReserveTable{
-	public static ArrayList<Integer> proc1 = new ArrayList<Integer>();
-	public static ArrayList<Integer> proc2 = new ArrayList<Integer>();
-	public static ArrayList<Integer> bool = new ArrayList<Integer>();
-
+	//0 represents Stored value;;
+	public static ArrayList<ArrayList> arrrayProc = new ArrayList<ArrayList>();
+	public static int procs = 0;
 	public static void ResetReserve(){
-		proc1.clear();
-		proc2.clear();
-		bool.clear();
+		arrayProc = new ArrayList<ArrayList>(); 
 	}
-	public static void addproc1(int address){
-		proc1.add(Integer.valueOf(address));
+
+	public static void addproc(int address, int processor){
+		arrrayProc.get(processor).get(1).add(Integer.valueOf(address));
 	}
-	public static void addproc2(int address){
-		proc1.add(Integer.valueOf(address));
-	}
+
 	public static void addbool(int address){
-		bool.add(Integer.valueOf(address));
+		arrrayProc.get(processor).get(0).add(Integer.valueOf(address));
 	}
-	public static void lr_w1(int address){
-		if(proc1.contains(Integer.valueOf(address)))
+
+	public static void lr_w(int address, int processor){
+		if(arrrayProc.get(processor).get(1).contains(Integer.valueOf(address)))
 			return;
-		addproc1(address);
+		addproc(address, processor);
 	}
-	public static void lr_w2(int address){
-		if(proc2.contains(Integer.valueOf(address)))
+
+	private static void addToRest(int address, int processor){
+		if(procs = 0)
 			return;
-		addproc2(address);
+		for(int i = 0; i <= processor; i++){
+			if(i == processor)
+				continue;
+			if(arrrayProc.get(i).get(1).contains(address)){
+				arrrayProc.get(i).get(0).add(address)
+			}
+		}
 	}
-	public static boolean sc_w1(int address){
-		if(!proc1.contains(Integer.valueOf(address))){
+
+	public static boolean sc_w(int address, int processor){
+		if(!arrrayProc.get(processor).get(1).contains(Integer.valueOf(address))){
 			return false; // -------------------------------------------------> Doubt Doubt Doubt Doubt Doubt Doubt Doubt Doubt 
 		}
-		if(bool.contains(Integer.valueOf(address))){
-			proc1.remove(Integer.valueOf(address));
-			bool.remove(Integer.valueOf(address));
+		if(arrrayProc.get(processor).get(0).contains(Integer.valueOf(address))){
+			arrrayProc.get(processor).get(1).remove(Integer.valueOf(address));
+			arrrayProc.get(processor).get(0).remove(Integer.valueOf(address));
 			return false;
 		}
-		if(!proc2.contains(Integer.valueOf(address))){
-			proc1.remove(Integer.valueOf(address));
-			return true;
-		}
-		proc1.remove(Integer.valueOf(address));
-		addbool(address);
+		addToRest(address, processor);
 		return true;
 	}
-	public static boolean sc_w2(int address){
-		if(!proc2.contains(Integer.valueOf(address))){
-			return false; // -------------------------------------------------> Doubt Doubt Doubt Doubt Doubt Doubt Doubt Doubt 
-		}
-		if(bool.contains(Integer.valueOf(address))){
-			proc2.remove(Integer.valueOf(address));
-			bool.remove(Integer.valueOf(address));
-			return false;
-		}
-		if(!proc1.contains(Integer.valueOf(address))){
-			proc2.remove(Integer.valueOf(address));
-			return true;
-		}
-		proc2.remove(Integer.valueOf(address));
-		addbool(address);
-		return true;
+	public static setProcs(int procces){
+		procs = procces;
 	}
 }
