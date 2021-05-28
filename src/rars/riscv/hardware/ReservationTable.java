@@ -36,6 +36,8 @@ public class ReservationTable {
 	}
 
 	public void reserveAddress(int address) {
+		if(table.contains(Integer.valueOf(address)))
+			return;
 		if (table.size() == capacity)
 			table.remove(0);
 		table.add(Integer.valueOf(address));
