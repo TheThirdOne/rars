@@ -35,6 +35,9 @@ public class ReservationTables {
 
 	public void reset(){
 		reservationTables = new ReservationTable[processors];
+		for (int i = 0; i < reservationTables.length; i++) {
+			reservationTables[i] = new ReservationTable();
+		}
 	}
 
 	public void reserveAddress(int processor, int address) {

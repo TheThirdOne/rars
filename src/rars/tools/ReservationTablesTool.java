@@ -3,6 +3,7 @@ package rars.tools;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import java.awt.GridLayout;
+import javax.swing.JTable;
 
 /*
 Copyright (c) 2021, Giancarlo Pernudi Segura.
@@ -40,7 +41,9 @@ public class ReservationTablesTool extends AbstractToolAndApplication {
     }
 
     protected JComponent buildMainDisplayArea() {
-        JPanel panelTools = new JPanel(new GridLayout(1, 2));
+        JPanel panelTools = new JPanel(new GridLayout(2, 1));
+        JTable reservations = new JTable();
+        panelTools.add(reservations);
         return panelTools;
     }
 
