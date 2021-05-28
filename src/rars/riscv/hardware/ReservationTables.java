@@ -27,8 +27,13 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 public class ReservationTables {
 	private ReservationTable[] reservationTables;
-
+	private int processors;
 	public ReservationTables(int processors) {
+		this.processors = processors;
+		reset();
+	}
+
+	public void reset(){
 		reservationTables = new ReservationTable[processors];
 	}
 
