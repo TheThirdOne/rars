@@ -1,9 +1,7 @@
 package rars.riscv.hardware;
 
-import java.util.ArrayList;
-
 /*
-Copyright (c) 2021,  Siva Chowdeswar Nandipati.
+Copyright (c) 2021, Siva Chowdeswar Nandipati & Giancarlo Pernudi Segura.
 
 Permission is hereby granted, free of charge, to any person obtaining 
 a copy of this software and associated documentation files (the 
@@ -27,38 +25,34 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 (MIT license, http://www.opensource.org/licenses/mit-license.html)
  */
 
-public class ReserveTable{
-	//0 represents Stored value;;
-	public static ArrayList<ArrayList> arrrayProc = new ArrayList<ArrayList>();//Reserve Table for 
-	public static int procs = 0;
-	public static ArrayList<Integer> oldestReserve = new ArrayList<Integer>()
-	public static void ResetReserve(){
-		arrayProc = new ArrayList<ArrayList>(); 
+public class ReservationTables {
+	private ReservationTable[] reservationTables;
+
+	public ReservationTables(int processors) {
+		reservationTables = new ReservationTable[processors];
 	}
 
-	public static void addproc(int address, int processor){
-
-		arrrayProc.get(processor).add(Integer.valueOf(address));
+	public void reserveAddress(int processor, int address) {
+		reservationTables[processor].reserveAddress(address);
 	}
 
-	public static void lr_w(int address, int processor){
-		if(arrrayProc.get(processor).contains(Integer.valueOf(address)))
-			return;
-		addproc(address, processor);
-	}
-
-	public static boolean sc_w(int address, int processor){
-		if(!arrrayProc.get(processor).contains(Integer.valueOf(address))){
-			return false;
+	public boolean unreserveAddress(int processor, int address) {
+		if (reservationTables[processor].contains(address)) {
+			for (ReservationTable reservationTable : reservationTables) {
+				reservationTable.unreserveAddress(address);
+			}
+			return true;
 		}
-		for(int i = 0; i < procs; i++){
-			if(arrrayProc.get(i).contains(address)){
-				arrrayProc.remove(Integer.valueOf(address));
+		return false;
+	}
+
+	public Integer[][] allAddresses() {
+		Integer[][] all = new Integer[reservationTables.length][ReservationTable.capacity];
+		for (int i = 0; i < reservationTables.length; i++) {
+			for (int j = 0; j < ReservationTable.capacity; j++) {
+				all[i] = reservationTables[i].getAddresses();
 			}
 		}
-		return true;
-	}
-	public static setProcs(int procces){
-		procs = procces;
+		return all;
 	}
 }
