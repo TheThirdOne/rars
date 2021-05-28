@@ -5,7 +5,7 @@ import rars.riscv.hardware.AddressErrorException;
 import rars.ProgramStatement;
 import rars.SimulationException;
 import rars.riscv.hardware.RegisterFile;
-import rars.riscv.hardware.ReserveTable;
+import rars.riscv.hardware.ReservationTable;
 
 
 public class LR_W extends Atomic {
@@ -23,9 +23,7 @@ public class LR_W extends Atomic {
     }
 
     private long load(int address) throws AddressErrorException {
-        // -------------------------------------------------> Doubt Doubt Doubt Doubt Doubt Doubt Doubt Doubt
 
-        ReserveTable.lr_w1(address);
         return Globals.memory.getWord(address);
     }
 }
