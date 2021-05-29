@@ -6,6 +6,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
 
 import rars.Globals;
 
@@ -58,7 +59,21 @@ public class ReservationTablesTool extends AbstractToolAndApplication {
                 return false;
             }
         };
+        reservations.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         panelTools.add(new JScrollPane(reservations));
+        JButton clearButton = new JButton("Clear Selected");
+        clearButton.addActionListener(l -> {
+            if (connectButton.isConnected()) {
+                int row = reservations.getSelectedRow();
+                int col = reservations.getSelectedColumn();
+                int address = Integer.parseInt(reservations.getValueAt(row, col)
+                    .toString().substring(2), 16);
+                Globals.reservationTables.unreserveAddress(col, address);
+            }
+            reservations.clearSelection();
+            updateDisplay();
+        });
+        panelTools.add(clearButton);
         return panelTools;
     }
 
@@ -94,7 +109,9 @@ public class ReservationTablesTool extends AbstractToolAndApplication {
 
     @Override
     protected void reset() {
-        Globals.reservationTables.reset();
-        updateDisplay();
+        if (connectButton.isConnected()) {
+            Globals.reservationTables.reset();
+            updateDisplay();
+        }
     }
 }
