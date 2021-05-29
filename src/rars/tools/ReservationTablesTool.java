@@ -67,6 +67,8 @@ public class ReservationTablesTool extends AbstractToolAndApplication {
             if (connectButton.isConnected()) {
                 int row = reservations.getSelectedRow();
                 int col = reservations.getSelectedColumn();
+                if(row < 0 || col < 0)
+                    return;
                 int address = Integer.parseInt(reservations.getValueAt(row, col)
                     .toString().substring(2), 16);
                 Globals.reservationTables.unreserveAddress(col, address);
