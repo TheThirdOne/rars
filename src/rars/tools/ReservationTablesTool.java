@@ -8,6 +8,7 @@ import javax.swing.JPanel;
 import javax.swing.JTable;
 import rars.venus.NumberDisplayBaseChooser;
 import rars.Globals;
+import rars.riscv.hardware.ReservationTable;
 
 /*
 Copyright (c) 2021, Giancarlo Pernudi Segura.
@@ -40,7 +41,7 @@ public class ReservationTablesTool extends AbstractToolAndApplication {
     private static String heading = "Reservation Table Tool";
     private static String version = "Version 1.0";
 
-    private String[][] addressStrings;
+    JTable reservations;
 
     public ReservationTablesTool() {
         super(heading + ", " + version, heading);
@@ -48,12 +49,12 @@ public class ReservationTablesTool extends AbstractToolAndApplication {
 
     protected JComponent buildMainDisplayArea() {
         JPanel panelTools = new JPanel(new GridLayout(2, 1));
-        String[] columns = new String[Globals.reservationTables.processors];
-        for (int i = 0; i < columns.length; i++) {
-            columns[i] = String.format("Processor %d", i);
-        }
+        reservations = new JTable(ReservationTable.capacity, Globals.reservationTables.processors);
+        // String[] columns = new String[Globals.reservationTables.processors];
+        // for (int i = 0; i < columns.length; i++) {
+        //     columns[i] = String.format("Processor %d", i);
+        // }
         updateDisplay();
-        JTable reservations = new JTable(addressStrings, columns);
         panelTools.add(reservations);
         return panelTools;
     }
@@ -81,10 +82,10 @@ public class ReservationTablesTool extends AbstractToolAndApplication {
     @Override
     protected void updateDisplay() {
         Integer[][] addresses = Globals.reservationTables.getAllAddresses();
-        addressStrings = new String[addresses.length][addresses[0].length];
-        for (int i = 0; i < addressStrings.length; i++) {
-            for (int j = 0; j < addressStrings[i].length; j++) {
-                addressStrings[i][j] = NumberDisplayBaseChooser.formatNumber(addresses[i][j], 16);
+        for (int i = 0; i < addresses.length; i++) {
+            for (int j = 0; j < addresses[i].length; j++) {
+                System.out.println(addresses[i][j]);
+                reservations.setValueAt(NumberDisplayBaseChooser.formatNumber(addresses[i][j], 16), i, j);
             }
         }
     }

@@ -66,7 +66,7 @@ public class ReservationTables {
 		for (int i = 0; i < ReservationTable.capacity; i++) {
 			for (int j = 0; j < processors; j++) {
 				Integer[] addresses = reservationTables[j].getAddresses();
-				all[i][j] = addresses[j];
+				all[i][j] = addresses[i];
 			}
 		}
 		return all;
