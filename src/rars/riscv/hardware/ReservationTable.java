@@ -52,9 +52,13 @@ public class ReservationTable {
 	}
 
 	public Integer[] getAddresses() {
-		Integer[] addresses = new Integer[table.size()];
-		for (int i = 0; i < addresses.length; i++) {
-			addresses[i] = table.get(i);
+		Integer[] addresses = new Integer[capacity];
+		for (int i = 0; i < capacity; i++) {
+			try {
+				addresses[i] = table.get(i);
+			} catch (IndexOutOfBoundsException e) {
+				addresses[i] = 0;
+			}
 		}
 		return addresses;
 	}

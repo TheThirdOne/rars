@@ -1,5 +1,10 @@
 package rars.riscv.hardware;
 
+import java.util.Collection;
+import java.util.Observable;
+import java.util.Observer;
+import java.util.Vector;
+
 /*
 Copyright (c) 2021, Siva Chowdeswar Nandipati & Giancarlo Pernudi Segura.
 
@@ -27,13 +32,15 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 public class ReservationTables {
 	private ReservationTable[] reservationTables;
-	private int processors;
+	public int processors;
+	private Collection<ReservationTablesObservable> observables = new Vector<>();
+
 	public ReservationTables(int processors) {
 		this.processors = processors;
 		reset();
 	}
 
-	public void reset(){
+	public void reset() {
 		reservationTables = new ReservationTable[processors];
 		for (int i = 0; i < reservationTables.length; i++) {
 			reservationTables[i] = new ReservationTable();
@@ -54,13 +61,29 @@ public class ReservationTables {
 		return false;
 	}
 
-	public Integer[][] allAddresses() {
-		Integer[][] all = new Integer[reservationTables.length][ReservationTable.capacity];
-		for (int i = 0; i < reservationTables.length; i++) {
-			for (int j = 0; j < ReservationTable.capacity; j++) {
-				all[i] = reservationTables[i].getAddresses();
+	public Integer[][] getAllAddresses() {
+		Integer[][] all = new Integer[ReservationTable.capacity][processors];
+		for (int i = 0; i < ReservationTable.capacity; i++) {
+			for (int j = 0; j < processors; j++) {
+				Integer[] addresses = reservationTables[j].getAddresses();
+				all[i][j] = addresses[j];
 			}
 		}
 		return all;
+	}
+
+	public void addObserver(Observer obs) {
+		observables.add(new ReservationTablesObservable(obs));
+	}
+
+	private class ReservationTablesObservable extends Observable {
+		public ReservationTablesObservable(Observer obs) {
+			this.addObserver(obs);
+		}
+
+		public void notifyObserver(MemoryAccessNotice notice) {
+			this.setChanged();
+			this.notifyObservers(notice);
+		}
 	}
 }

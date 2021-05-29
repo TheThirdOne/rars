@@ -1,9 +1,13 @@
 package rars.tools;
 
-import javax.swing.JComponent;
-import javax.swing.JPanel;
 import java.awt.GridLayout;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JTable;
+import rars.venus.NumberDisplayBaseChooser;
+import rars.Globals;
 
 /*
 Copyright (c) 2021, Giancarlo Pernudi Segura.
@@ -36,13 +40,20 @@ public class ReservationTablesTool extends AbstractToolAndApplication {
     private static String heading = "Reservation Table Tool";
     private static String version = "Version 1.0";
 
+    private String[][] addressStrings;
+
     public ReservationTablesTool() {
         super(heading + ", " + version, heading);
     }
 
     protected JComponent buildMainDisplayArea() {
         JPanel panelTools = new JPanel(new GridLayout(2, 1));
-        JTable reservations = new JTable();
+        String[] columns = new String[Globals.reservationTables.processors];
+        for (int i = 0; i < columns.length; i++) {
+            columns[i] = String.format("Processor %d", i);
+        }
+        updateDisplay();
+        JTable reservations = new JTable(addressStrings, columns);
         panelTools.add(reservations);
         return panelTools;
     }
@@ -50,5 +61,37 @@ public class ReservationTablesTool extends AbstractToolAndApplication {
     @Override
     public String getName() {
         return heading;
+    }
+
+    protected JComponent getHelpComponent() {
+        final String helpContent = "Use this tool to simulate atomic operations such as store conditional.\n"
+                + "While this tool is connected to the program, the table below shows the\n"
+                + "reservation table for each processor. Addresses reserved by a processor\n"
+                + "will appear under that processor's column. You can release an address, \n"
+                + "which will release that address across all the processor's tables in\n"
+                + "order to simulate some other processor performing a store conditional.\n"
+                + "(contributed by Giancarlo Pernudi Segura, pernudi@ualberta.ca)";
+        JButton help = new JButton("Help");
+        help.addActionListener(l -> {
+            JOptionPane.showMessageDialog(theWindow, helpContent);
+        });
+        return help;
+    }
+
+    @Override
+    protected void updateDisplay() {
+        Integer[][] addresses = Globals.reservationTables.getAllAddresses();
+        addressStrings = new String[addresses.length][addresses[0].length];
+        for (int i = 0; i < addressStrings.length; i++) {
+            for (int j = 0; j < addressStrings[i].length; j++) {
+                addressStrings[i][j] = NumberDisplayBaseChooser.formatNumber(addresses[i][j], 16);
+            }
+        }
+    }
+
+    @Override
+    protected void reset() {
+        Globals.reservationTables.reset();
+        updateDisplay();
     }
 }
