@@ -1,14 +1,8 @@
 package rars.tools;
 
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.ListSelectionModel;
-
+import java.awt.GridLayout;
 import rars.Globals;
+import javax.swing.*;
 
 /*
 Copyright (c) 2021, Giancarlo Pernudi Segura.
@@ -48,7 +42,7 @@ public class ReservationTablesTool extends AbstractToolAndApplication {
     }
 
     protected JComponent buildMainDisplayArea() {
-        JPanel panelTools = new JPanel();
+        JPanel panelTools = new JPanel(new GridLayout());
         String[] columns = new String[Globals.reservationTables.processors];
         for (int i = 0; i < columns.length; i++) {
             columns[i] = String.format("Processor %d", i);
@@ -60,8 +54,15 @@ public class ReservationTablesTool extends AbstractToolAndApplication {
             }
         };
         reservations.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        panelTools.add(new JScrollPane(reservations));
+        panelTools.add(reservations);
+        return panelTools;
+    }
+
+    @Override
+    protected JComponent buildButtonAreaForTool(){
+        super.buildButtonAreaForTool();
         JButton clearButton = new JButton("Clear Selected");
+        clearButton.setToolTipText("Clear the Selected from the Reserve Table");
         clearButton.addActionListener(l -> {
             if (connectButton.isConnected()) {
                 int row = reservations.getSelectedRow();
@@ -73,8 +74,11 @@ public class ReservationTablesTool extends AbstractToolAndApplication {
             reservations.clearSelection();
             updateDisplay();
         });
-        panelTools.add(clearButton);
-        return panelTools;
+        clearButton.addKeyListener(new EnterKeyListener(clearButton));
+        buttonArea.add(clearButton);
+        buttonArea.add(Box.createHorizontalGlue());
+        return buttonArea;
+
     }
 
     @Override
@@ -109,9 +113,7 @@ public class ReservationTablesTool extends AbstractToolAndApplication {
 
     @Override
     protected void reset() {
-        if (connectButton.isConnected()) {
             Globals.reservationTables.reset();
             updateDisplay();
-        }
     }
 }

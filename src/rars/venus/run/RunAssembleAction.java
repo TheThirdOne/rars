@@ -124,6 +124,7 @@ public class RunAssembleAction extends GuiAction {
                 FloatingPointRegisterFile.resetRegisters();
                 ControlAndStatusRegisterFile.resetRegisters();
                 InterruptController.reset();
+                Globals.reservationTables.reset();
 
                 executePane.getTextSegmentWindow().setupTable();
                 executePane.getDataSegmentWindow().setupTable();
