@@ -72,6 +72,17 @@ public class ReservationTables {
 		return all;
 	}
 
+	public String[][] getAllAddressesAsStrings() {
+		String[][] all = new String[ReservationTable.capacity][processors];
+		for (int i = 0; i < ReservationTable.capacity; i++) {
+			for (int j = 0; j < processors; j++) {
+				Integer[] addresses = reservationTables[j].getAddresses();
+				all[i][j] = String.format("0x%08x", addresses[i]);
+			}
+		}
+		return all;
+	}
+
 	public void addObserver(Observer obs) {
 		observables.add(new ReservationTablesObservable(obs));
 	}

@@ -1,14 +1,13 @@
 package rars.tools;
 
-import java.awt.GridLayout;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import rars.venus.NumberDisplayBaseChooser;
+
 import rars.Globals;
-import rars.riscv.hardware.ReservationTable;
 
 /*
 Copyright (c) 2021, Giancarlo Pernudi Segura.
@@ -48,14 +47,18 @@ public class ReservationTablesTool extends AbstractToolAndApplication {
     }
 
     protected JComponent buildMainDisplayArea() {
-        JPanel panelTools = new JPanel(new GridLayout(2, 1));
-        reservations = new JTable(ReservationTable.capacity, Globals.reservationTables.processors);
-        // String[] columns = new String[Globals.reservationTables.processors];
-        // for (int i = 0; i < columns.length; i++) {
-        //     columns[i] = String.format("Processor %d", i);
-        // }
-        updateDisplay();
-        panelTools.add(reservations);
+        JPanel panelTools = new JPanel();
+        String[] columns = new String[Globals.reservationTables.processors];
+        for (int i = 0; i < columns.length; i++) {
+            columns[i] = String.format("Processor %d", i);
+        }
+        reservations = new JTable(Globals.reservationTables.getAllAddressesAsStrings(), columns) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+        panelTools.add(new JScrollPane(reservations));
         return panelTools;
     }
 
@@ -68,7 +71,7 @@ public class ReservationTablesTool extends AbstractToolAndApplication {
         final String helpContent = "Use this tool to simulate atomic operations such as store conditional.\n"
                 + "While this tool is connected to the program, the table below shows the\n"
                 + "reservation table for each processor. Addresses reserved by a processor\n"
-                + "will appear under that processor's column. You can release an address, \n"
+                + "will appear under that processor's column. You can release an address,\n"
                 + "which will release that address across all the processor's tables in\n"
                 + "order to simulate some other processor performing a store conditional.\n"
                 + "(contributed by Giancarlo Pernudi Segura, pernudi@ualberta.ca)";
@@ -81,11 +84,10 @@ public class ReservationTablesTool extends AbstractToolAndApplication {
 
     @Override
     protected void updateDisplay() {
-        Integer[][] addresses = Globals.reservationTables.getAllAddresses();
+        String[][] addresses = Globals.reservationTables.getAllAddressesAsStrings();
         for (int i = 0; i < addresses.length; i++) {
             for (int j = 0; j < addresses[i].length; j++) {
-                System.out.println(addresses[i][j]);
-                reservations.setValueAt(NumberDisplayBaseChooser.formatNumber(addresses[i][j], 16), i, j);
+                reservations.setValueAt(addresses[i][j], i, j);
             }
         }
     }
