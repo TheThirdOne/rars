@@ -3,6 +3,7 @@ package rars.tools;
 import java.awt.GridLayout;
 import rars.Globals;
 import javax.swing.*;
+import java.awt.*;
 
 /*
 Copyright (c) 2021, Giancarlo Pernudi Segura & Siva Chowdeswar Nandipati.
@@ -42,10 +43,10 @@ public class ReservationTablesTool extends AbstractToolAndApplication {
     }
 
     protected JComponent buildMainDisplayArea() {
-        JPanel panelTools = new JPanel(new GridLayout());
+        JPanel panelTools = new JPanel(new BorderLayout());
         String[] columns = new String[Globals.reservationTables.processors];
         for (int i = 0; i < columns.length; i++) {
-            columns[i] = String.format("Processor %d", i);
+            columns[i] = String.format("Processor %d", i + 1);
         }
         reservations = new JTable(Globals.reservationTables.getAllAddressesAsStrings(), columns) {
             @Override
@@ -53,6 +54,7 @@ public class ReservationTablesTool extends AbstractToolAndApplication {
                 return false;
             }
         };
+        panelTools.add(reservations.getTableHeader(), BorderLayout.NORTH);
         reservations.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         panelTools.add(reservations);
         return panelTools;
