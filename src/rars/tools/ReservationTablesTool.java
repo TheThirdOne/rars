@@ -5,9 +5,9 @@ import rars.Globals;
 import javax.swing.*;
 
 /*
-Copyright (c) 2021, Giancarlo Pernudi Segura.
+Copyright (c) 2021, Giancarlo Pernudi Segura & Siva Chowdeswar Nandipati.
 
-Developed by Giancarlo Pernudi Segura (pernudi@ualberta.ca)
+Developed by Giancarlo Pernudi Segura (pernudi@ualberta.ca) & Siva Chowdeswar Nandipati (sivachow@ualberta.ca).
 
 Permission is hereby granted, free of charge, to any person obtaining 
 a copy of this software and associated documentation files (the 
