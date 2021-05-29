@@ -55,7 +55,8 @@ public class ReservationTablesTool extends AbstractToolAndApplication {
             }
         };
         panelTools.add(reservations.getTableHeader(), BorderLayout.NORTH);
-        reservations.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        reservations.setCellSelectionEnabled(true);
+        reservations.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
         panelTools.add(reservations);
         return panelTools;
     }
@@ -97,7 +98,8 @@ public class ReservationTablesTool extends AbstractToolAndApplication {
                 + "will appear under that processor's column. You can release an address,\n"
                 + "which will release that address across all the processor's tables in\n"
                 + "order to simulate some other processor performing a store conditional.\n"
-                + "(contributed by Giancarlo Pernudi Segura, pernudi@ualberta.ca)";
+                + "(contributed by Giancarlo Pernudi Segura, pernudi@ualberta.ca) &" 
+                + "\n Siva Chowdeswar Nandipati (sivachow@ualberta.ca)";
         JButton help = new JButton("Help");
         help.addActionListener(l -> {
             JOptionPane.showMessageDialog(theWindow, helpContent);
