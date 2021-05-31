@@ -44,9 +44,9 @@ public class ReservationTablesTool extends AbstractToolAndApplication {
 
     protected JComponent buildMainDisplayArea() {
         JPanel panelTools = new JPanel(new BorderLayout());
-        String[] columns = new String[Globals.reservationTables.processors];
+        String[] columns = new String[Globals.reservationTables.harts];
         for (int i = 0; i < columns.length; i++) {
-            columns[i] = String.format("Processor %d", i + 1);
+            columns[i] = String.format("Hart %d", i);
         }
         reservations = new JTable(Globals.reservationTables.getAllAddressesAsStrings(), columns) {
             @Override
@@ -94,10 +94,10 @@ public class ReservationTablesTool extends AbstractToolAndApplication {
     protected JComponent getHelpComponent() {
         final String helpContent = "Use this tool to simulate atomic operations such as store conditional.\n"
                 + "While this tool is connected to the program, the table below shows the\n"
-                + "reservation table for each processor. Addresses reserved by a processor\n"
-                + "will appear under that processor's column. You can release an address,\n"
-                + "which will release that address across all the processor's tables in\n"
-                + "order to simulate some other processor performing a store conditional.\n"
+                + "reservation table for each Hart. Addresses reserved by a Hart\n"
+                + "will appear under that Hart's column. You can release an address,\n"
+                + "which will release that address across all the Hart's tables in\n"
+                + "order to simulate some other Hart performing a store conditional.\n"
                 + "(contributed by Giancarlo Pernudi Segura, pernudi@ualberta.ca) &" 
                 + "\n Siva Chowdeswar Nandipati (sivachow@ualberta.ca)";
         JButton help = new JButton("Help");

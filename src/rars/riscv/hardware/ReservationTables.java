@@ -32,27 +32,27 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 public class ReservationTables {
 	private ReservationTable[] reservationTables;
-	public int processors;
+	public int harts;
 	private Collection<ReservationTablesObservable> observables = new Vector<>();
 
-	public ReservationTables(int processors) {
-		this.processors = processors;
+	public ReservationTables(int harts) {
+		this.harts = harts;
 		reset();
 	}
 
 	public void reset() {
-		reservationTables = new ReservationTable[processors];
+		reservationTables = new ReservationTable[harts];
 		for (int i = 0; i < reservationTables.length; i++) {
 			reservationTables[i] = new ReservationTable();
 		}
 	}
 
-	public void reserveAddress(int processor, int address) {
-		reservationTables[processor].reserveAddress(address);
+	public void reserveAddress(int hart, int address) {
+		reservationTables[hart].reserveAddress(address);
 	}
 
-	public boolean unreserveAddress(int processor, int address) {
-		if (reservationTables[processor].contains(address)) {
+	public boolean unreserveAddress(int hart, int address) {
+		if (reservationTables[hart].contains(address)) {
 			for (ReservationTable reservationTable : reservationTables) {
 				reservationTable.unreserveAddress(address);
 			}
@@ -62,9 +62,9 @@ public class ReservationTables {
 	}
 
 	public Integer[][] getAllAddresses() {
-		Integer[][] all = new Integer[ReservationTable.capacity][processors];
+		Integer[][] all = new Integer[ReservationTable.capacity][harts];
 		for (int i = 0; i < ReservationTable.capacity; i++) {
-			for (int j = 0; j < processors; j++) {
+			for (int j = 0; j < harts; j++) {
 				Integer[] addresses = reservationTables[j].getAddresses();
 				all[i][j] = addresses[i];
 			}
@@ -73,9 +73,9 @@ public class ReservationTables {
 	}
 
 	public String[][] getAllAddressesAsStrings() {
-		String[][] all = new String[ReservationTable.capacity][processors];
+		String[][] all = new String[ReservationTable.capacity][harts];
 		for (int i = 0; i < ReservationTable.capacity; i++) {
-			for (int j = 0; j < processors; j++) {
+			for (int j = 0; j < harts; j++) {
 				Integer[] addresses = reservationTables[j].getAddresses();
 				all[i][j] = String.format("0x%08x", addresses[i]);
 			}
