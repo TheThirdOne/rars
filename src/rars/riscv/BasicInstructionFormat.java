@@ -42,5 +42,4 @@ public enum BasicInstructionFormat {
     B_FORMAT, // 2 src registers + small immediate shifted left
     U_FORMAT, // 1 dst register  + large immediate
     J_FORMAT, // 1 dst register  + large immediate for jumping
-    A_FORMAT, // 1 dst and 1 or 2 src register
 }

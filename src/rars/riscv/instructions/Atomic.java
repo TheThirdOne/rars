@@ -38,7 +38,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 public abstract class Atomic extends BasicInstruction {
     public Atomic(String usage, String description, String funct3, String funct5) {
-        super(usage, description, BasicInstructionFormat.A_FORMAT,
+        super(usage, description, BasicInstructionFormat.R_FORMAT,
                 funct5 + " 00sssss ttttt " + funct3 + " fffff 0101111");
     }
 }
