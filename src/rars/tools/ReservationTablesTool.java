@@ -95,10 +95,10 @@ public class ReservationTablesTool extends AbstractToolAndApplication {
     protected JComponent getHelpComponent() {
         final String helpContent = "Use this tool to simulate atomic operations such as store conditional.\n"
                 + "While this tool is connected to the program, the table below shows the\n"
-                + "reservation table for each Hart. Addresses reserved by a Hart\n"
-                + "will appear under that Hart's column. You can release an address,\n"
-                + "which will release that address across all the Hart's tables in\n"
-                + "order to simulate some other Hart performing a store conditional.\n"
+                + "reservation table for each hart. Addresses reserved by a hart\n"
+                + "will appear under that hart's column. You can release an address,\n"
+                + "which will release that address across all the hart's tables in\n"
+                + "order to simulate some other hart performing a store conditional.\n"
                 + "(contributed by Giancarlo Pernudi Segura, pernudi@ualberta.ca) &" 
                 + "\n Siva Chowdeswar Nandipati (sivachow@ualberta.ca)";
         JButton help = new JButton("Help");

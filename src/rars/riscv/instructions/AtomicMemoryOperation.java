@@ -1,7 +1,10 @@
 package rars.riscv.instructions;
 
-import rars.riscv.BasicInstruction;
-import rars.riscv.BasicInstructionFormat;
+import rars.Globals;
+import rars.ProgramStatement;
+import rars.SimulationException;
+import rars.riscv.hardware.AddressErrorException;
+import rars.riscv.hardware.RegisterFile;
 
 /*
 Copyright (c) 2021, Giancarlo Pernudi Segura
@@ -36,9 +39,23 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * @author Giancarlo Pernudi Segura
  * @version May 2017
  */
-public abstract class Atomic extends BasicInstruction {
-    public Atomic(String usage, String description, String funct3, String funct5) {
-        super(usage, description, BasicInstructionFormat.R_FORMAT,
-                funct5 + " 00sssss ttttt " + funct3 + " fffff 0101111");
+public abstract class AtomicMemoryOperation extends Atomic {
+    public AtomicMemoryOperation(String usage, String description, String funct3, String funct5) {
+        super(usage, description, funct5, funct3);
     }
+
+    public void simulate(ProgramStatement statement) throws SimulationException {
+        int[] operands = statement.getOperands();
+        try {
+            int rs1Data = Globals.memory.getWord(RegisterFile.getValue(operands[1]));
+            int rs2Value = RegisterFile.getValue(operands[2]);
+            RegisterFile.updateRegister(operands[0], rs1Data);
+            rs1Data = binaryOperation(rs1Data, rs2Value);
+            Globals.memory.setWord(RegisterFile.getValue(operands[1]), rs1Data);
+        } catch (AddressErrorException e) {
+            throw new SimulationException(statement, e);
+        }
+    }
+
+    protected abstract int binaryOperation(int value1, int value2);
 }
