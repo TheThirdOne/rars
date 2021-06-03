@@ -80,6 +80,7 @@ public class ReservationTablesTool extends AbstractToolAndApplication {
             updateDisplay();
         });
         clearButton.addKeyListener(new EnterKeyListener(clearButton));
+        buttonArea.add(Box.createHorizontalGlue());
         buttonArea.add(clearButton);
         buttonArea.add(Box.createHorizontalGlue());
         return buttonArea;
