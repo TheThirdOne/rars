@@ -6,8 +6,8 @@ import rars.ProgramStatement;
 import rars.SimulationException;
 import rars.riscv.hardware.RegisterFile;
 
-public class SC_W extends Atomic {
-    public SC_W() {
+public class SCW extends Atomic {
+    public SCW() {
         super("sc.w t0, t1, (t2)", "Try to store t1 to contents of effective memory word address, sets t0 to store attempt result", "010", "00011");
     }
 

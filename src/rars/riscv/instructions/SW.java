@@ -36,9 +36,7 @@ public class SW extends Store {
     }
 
     public void store(int address, long data) throws AddressErrorException {
+        Globals.reservationTables.unreserveAddress(0, address);
         Globals.memory.setWord(address, (int) data);
     }
 }
-
-
-

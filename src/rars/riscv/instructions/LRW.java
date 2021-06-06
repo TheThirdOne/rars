@@ -7,8 +7,8 @@ import rars.SimulationException;
 import rars.riscv.hardware.RegisterFile;
 
 
-public class LR_W extends Atomic {
-    public LR_W() {
+public class LRW extends Atomic {
+    public LRW() {
         super("lr.w t1, (t2)", "Set t1 to contents of effective memory word address and reserve", "010", "00010");
     }
 

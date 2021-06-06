@@ -36,9 +36,7 @@ public class SH extends Store {
     }
 
     public void store(int address, long data) throws AddressErrorException {
+        Globals.reservationTables.unreserveAddress(0, address & ~0b11);
         Globals.memory.setHalf(address, (int)data & 0x0000FFFF);
     }
 }
-
-
-

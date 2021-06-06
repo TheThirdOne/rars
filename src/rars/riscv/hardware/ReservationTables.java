@@ -5,6 +5,8 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.Vector;
 
+import rars.SimulationException;
+
 /*
 Copyright (c) 2021, Siva Chowdeswar Nandipati & Giancarlo Pernudi Segura.
 
@@ -30,7 +32,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 (MIT license, http://www.opensource.org/licenses/mit-license.html)
  */
 
-public class ReservationTables {
+public class ReservationTables extends Observable {
 	private ReservationTable[] reservationTables;
 	public int harts;
 	private Collection<ReservationTablesObservable> observables = new Vector<>();
@@ -51,7 +53,10 @@ public class ReservationTables {
 		reservationTables[hart].reserveAddress(address);
 	}
 
-	public boolean unreserveAddress(int hart, int address) {
+	public boolean unreserveAddress(int hart, int address) throws AddressErrorException {
+		if (address % 4 != 0) {
+			throw new AddressErrorException("Reservation address not aligned to word boundary ", SimulationException.STORE_ADDRESS_MISALIGNED, address);
+		}
 		if (reservationTables[hart].contains(address)) {
 			for (ReservationTable reservationTable : reservationTables) {
 				reservationTable.unreserveAddress(address);
@@ -85,6 +90,25 @@ public class ReservationTables {
 
 	public void addObserver(Observer obs) {
 		observables.add(new ReservationTablesObservable(obs));
+	}
+
+	/**
+	 * Remove specified reservation tables observer
+	 *
+	 * @param obs Observer to be removed
+	 */
+	public void deleteObserver(Observer obs) {
+		for (ReservationTablesObservable o : observables) {
+			o.deleteObserver(obs);
+		}
+	}
+
+	/**
+	 * Remove all reservation tables observers
+	 */
+	public void deleteObservers() {
+		// just drop the collection
+		observables = new Vector<>();
 	}
 
 	private class ReservationTablesObservable extends Observable {

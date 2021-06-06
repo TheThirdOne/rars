@@ -1,7 +1,8 @@
 package rars.tools;
 
-import java.awt.GridLayout;
 import rars.Globals;
+import rars.riscv.hardware.AddressErrorException;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -40,6 +41,7 @@ public class ReservationTablesTool extends AbstractToolAndApplication {
 
     public ReservationTablesTool() {
         super(heading + ", " + version, heading);
+        Globals.reservationTables.addObserver(this);
     }
 
     protected JComponent buildMainDisplayArea() {
@@ -74,7 +76,11 @@ public class ReservationTablesTool extends AbstractToolAndApplication {
                     return;
                 int address = Integer.parseInt(reservations.getValueAt(row, col)
                     .toString().substring(2), 16);
-                Globals.reservationTables.unreserveAddress(col, address);
+                try {
+                    Globals.reservationTables.unreserveAddress(col, address);
+                } catch (AddressErrorException e) {
+                    e.printStackTrace();
+                }
             }
             reservations.clearSelection();
             updateDisplay();
@@ -82,7 +88,6 @@ public class ReservationTablesTool extends AbstractToolAndApplication {
         clearButton.addKeyListener(new EnterKeyListener(clearButton));
         buttonArea.add(Box.createHorizontalGlue());
         buttonArea.add(clearButton);
-        buttonArea.add(Box.createHorizontalGlue());
         return buttonArea;
 
     }
