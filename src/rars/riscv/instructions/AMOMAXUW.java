@@ -1,11 +1,5 @@
 package rars.riscv.instructions;
 
-import rars.Globals;
-import rars.ProgramStatement;
-import rars.SimulationException;
-import rars.riscv.hardware.AddressErrorException;
-import rars.riscv.hardware.RegisterFile;
-
 /*
 Copyright (c) 2021, Giancarlo Pernudi Segura
 
@@ -33,31 +27,13 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 (MIT license, http://www.opensource.org/licenses/mit-license.html)
  */
 
-/**
- * Base class for all Atomic instructions
- *
- * @author Giancarlo Pernudi Segura
- * @version May 2017
- */
-public abstract class AtomicMemoryOperation extends Atomic {
-    public AtomicMemoryOperation(String usage, String description, String funct3, String funct5) {
-        super(usage, description, funct3, funct5);
+public class AMOMAXUW extends AtomicMemoryOperation {
+    public AMOMAXUW() {
+        super("amomaxu.w t0, t1, (t2)", "Loads value at t2 and places it into t0, and saves at memory location t2, the greatest unsigned value between value t1 and t0 (new).", "010", "11100");
     }
 
-    public void simulate(ProgramStatement statement) throws SimulationException {
-        int[] operands = statement.getOperands();
-        try {
-            int rs1Loc = RegisterFile.getValue(operands[2]);
-            Globals.reservationTables.unreserveAddress(0, rs1Loc);
-            int rs1Data = Globals.memory.getWord(rs1Loc);
-            int rs2Value = RegisterFile.getValue(operands[1]);
-            RegisterFile.updateRegister(operands[0], rs1Data);
-            rs1Data = binaryOperation(rs1Data, rs2Value);
-            Globals.memory.setWord(rs1Loc, rs1Data);
-        } catch (AddressErrorException e) {
-            throw new SimulationException(statement, e);
-        }
+    @Override
+    protected int binaryOperation(int value1, int value2) {
+        return Integer.compareUnsigned(value1, value2) > 0 ? value1 : value2;
     }
-
-    protected abstract int binaryOperation(int value1, int value2);
 }
