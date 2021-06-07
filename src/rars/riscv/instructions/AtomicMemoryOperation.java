@@ -3,6 +3,7 @@ package rars.riscv.instructions;
 import rars.Globals;
 import rars.ProgramStatement;
 import rars.SimulationException;
+import rars.riscv.InstructionSet;
 import rars.riscv.hardware.AddressErrorException;
 import rars.riscv.hardware.RegisterFile;
 
@@ -40,8 +41,12 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * @version May 2017
  */
 public abstract class AtomicMemoryOperation extends Atomic {
-    public AtomicMemoryOperation(String usage, String description, String funct3, String funct5) {
-        super(usage, description, funct3, funct5);
+    public AtomicMemoryOperation(String usage, String description, String funct5) {
+        super(usage, description, "010", funct5);
+    }
+
+    public AtomicMemoryOperation(String usage, String description, String funct5, boolean rv64) {
+        super(usage, description, rv64 ? "011" : "010", funct5, rv64);
     }
 
     public void simulate(ProgramStatement statement) throws SimulationException {
@@ -49,15 +54,19 @@ public abstract class AtomicMemoryOperation extends Atomic {
         try {
             int rs1Loc = RegisterFile.getValue(operands[2]);
             Globals.reservationTables.unreserveAddress(0, rs1Loc);
-            int rs1Data = Globals.memory.getWord(rs1Loc);
-            int rs2Value = RegisterFile.getValue(operands[1]);
+            long rs1Data = InstructionSet.rv64 ? Globals.memory.getDoubleWord(rs1Loc) : Globals.memory.getWord(rs1Loc);
+            long rs2Value = RegisterFile.getValueLong(operands[1]);
             RegisterFile.updateRegister(operands[0], rs1Data);
             rs1Data = binaryOperation(rs1Data, rs2Value);
-            Globals.memory.setWord(rs1Loc, rs1Data);
+            if (InstructionSet.rv64) {
+                Globals.memory.setDoubleWord(rs1Loc, rs1Data);
+            } else {
+                Globals.memory.setWord(rs1Loc, (int) rs1Data);
+            }
         } catch (AddressErrorException e) {
             throw new SimulationException(statement, e);
         }
     }
 
-    protected abstract int binaryOperation(int value1, int value2);
+    protected abstract long binaryOperation(long value1, long value2);
 }

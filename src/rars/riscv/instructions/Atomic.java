@@ -41,4 +41,9 @@ public abstract class Atomic extends BasicInstruction {
         super(usage, description, BasicInstructionFormat.R_FORMAT,
                 funct5 + " 00sssss ttttt " + funct3 + " fffff 0101111");
     }
+
+    public Atomic(String usage, String description, String funct3, String funct5, boolean rv64) {
+        super(usage, description, BasicInstructionFormat.R_FORMAT,
+                funct5 + " 00sssss ttttt " + funct3 + " fffff 0101111", rv64);
+    }
 }

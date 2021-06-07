@@ -27,13 +27,13 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 (MIT license, http://www.opensource.org/licenses/mit-license.html)
  */
 
-public class AMOXORW extends AtomicMemoryOperation {
-    public AMOXORW() {
-        super("amoxor.w t0, t1, (t2)", "Loads value at t2 and places it into t0, XORS value t1 and t0 (new), and saves at memory location t2.", "00100");
+public class AMOADDD extends AtomicMemoryOperation {
+    public AMOADDD() {
+        super("amoadd.d t0, t1, (t2)", "Loads value at t2 and places it into t0, adds value t1 and t0 (new), and saves at memory location t2.", "00000", true);
     }
 
     @Override
     protected long binaryOperation(long value1, long value2) {
-        return value1 ^ value2;
+        return value1 + value2;
     }
 }

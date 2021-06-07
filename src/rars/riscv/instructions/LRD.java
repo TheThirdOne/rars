@@ -6,9 +6,9 @@ import rars.ProgramStatement;
 import rars.SimulationException;
 import rars.riscv.hardware.RegisterFile;
 
-public class LRW extends Atomic {
-    public LRW() {
-        super("lr.w t1, (t2)", "Set t1 to contents of effective memory word address and reserve", "010", "00010");
+public class LRD extends Atomic {
+    public LRD() {
+        super("lr.d t1, (t2)", "Set t1 to contents of effective memory word address and reserve", "011", "00010", true);
     }
 
     public void simulate(ProgramStatement statement) throws SimulationException {
@@ -22,6 +22,6 @@ public class LRW extends Atomic {
 
     private long load(int address) throws AddressErrorException {
         Globals.reservationTables.reserveAddress(0, address);
-        return Globals.memory.getWord(address);
+        return Globals.memory.getDoubleWord(address);
     }
 }

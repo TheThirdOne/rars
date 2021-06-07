@@ -29,11 +29,11 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 public class AMOMAXW extends AtomicMemoryOperation {
     public AMOMAXW() {
-        super("amomax.w t0, t1, (t2)", "Loads value at t2 and places it into t0, and saves at memory location t2, the greatest value between value t1 and t0 (new).", "010", "10100");
+        super("amomax.w t0, t1, (t2)", "Loads value at t2 and places it into t0, and saves at memory location t2, the greatest value between value t1 and t0 (new).", "10100");
     }
 
     @Override
-    protected int binaryOperation(int value1, int value2) {
-        return Integer.max(value1, value2);
+    protected long binaryOperation(long value1, long value2) {
+        return Long.max(value1, value2);
     }
 }

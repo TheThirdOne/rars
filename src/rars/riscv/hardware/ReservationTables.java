@@ -6,6 +6,7 @@ import java.util.Observer;
 import java.util.Vector;
 
 import rars.SimulationException;
+import rars.riscv.InstructionSet;
 
 /*
 Copyright (c) 2021, Siva Chowdeswar Nandipati & Giancarlo Pernudi Segura.
@@ -49,12 +50,17 @@ public class ReservationTables extends Observable {
 		}
 	}
 
-	public void reserveAddress(int hart, int address) {
+	public void reserveAddress(int hart, int address) throws AddressErrorException {
+		int modulo = InstructionSet.rv64 ? 8 : 4;
+		if (address % modulo != 0) {
+			throw new AddressErrorException("Reservation address not aligned to word boundary ", SimulationException.LOAD_ADDRESS_MISALIGNED, address);
+		}
 		reservationTables[hart].reserveAddress(address);
 	}
 
 	public boolean unreserveAddress(int hart, int address) throws AddressErrorException {
-		if (address % 4 != 0) {
+		int modulo = InstructionSet.rv64 ? 8 : 4;
+		if (address % modulo != 0) {
 			throw new AddressErrorException("Reservation address not aligned to word boundary ", SimulationException.STORE_ADDRESS_MISALIGNED, address);
 		}
 		if (reservationTables[hart].contains(address)) {

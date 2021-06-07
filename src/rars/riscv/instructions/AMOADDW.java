@@ -29,11 +29,11 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 public class AMOADDW extends AtomicMemoryOperation {
     public AMOADDW() {
-        super("amoadd.w t0, t1, (t2)", "Loads value at t2 and places it into t0, adds value t1 and t0 (new), and saves at memory location t2.", "010", "00000");
+        super("amoadd.w t0, t1, (t2)", "Loads value at t2 and places it into t0, adds value t1 and t0 (new), and saves at memory location t2.", "00000");
     }
 
     @Override
-    protected int binaryOperation(int value1, int value2) {
+    protected long binaryOperation(long value1, long value2) {
         return value1 + value2;
     }
 }

@@ -29,11 +29,11 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 public class AMOSWAPW extends AtomicMemoryOperation {
     public AMOSWAPW() {
-        super("amoswap.w t0, t1, (t2)", "Loads value at t2 and places it into t0, saves value t1 at memory location t2.", "010", "00001");
+        super("amoswap.w t0, t1, (t2)", "Loads value at t2 and places it into t0, saves value t1 at memory location t2.", "00001");
     }
 
     @Override
-    protected int binaryOperation(int value1, int value2) {
+    protected long binaryOperation(long value1, long value2) {
         return value2;
     }
 }
