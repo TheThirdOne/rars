@@ -145,6 +145,11 @@ public class Globals {
 
     public static boolean runSpeedPanelExists = false;
 
+    private static int harts = 1;
+
+    public static int getHarts() {
+        return harts;
+    }
     private static String getCopyrightYears() {
         return "2003-2019";
     }
@@ -172,7 +177,7 @@ public class Globals {
     public static void initialize(boolean gui) {
         if (!initialized) {
             memory = Memory.getInstance(); //clients can use Memory.getInstance instead of Globals.memory
-            reservationTables = new ReservationTables(1);
+            reservationTables = new ReservationTables(harts);
             symbolTable = new SymbolTable("global");
             settings = new Settings(gui);
             instructionSet = new InstructionSet();

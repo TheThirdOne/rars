@@ -2,9 +2,15 @@ package rars.tools;
 
 import rars.Globals;
 import rars.riscv.hardware.AddressErrorException;
+import rars.riscv.hardware.*;
+import rars.util.Binary;
+import rars.venus.*;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.*;
+import java.awt.event.*;
+import javax.swing.border.TitledBorder;
 
 /*
 Copyright (c) 2021, Giancarlo Pernudi Segura & Siva Chowdeswar Nandipati.
@@ -36,8 +42,19 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 public class ReservationTablesTool extends AbstractToolAndApplication {
     private static String heading = "Reservation Table Tool";
     private static String version = "Version 1.0";
+    private static String displayPanelTitle;
+    private JPanel displayOptions, hartPanel;
+    private JComboBox<Integer> hartWindow;
 
-    JTable reservations;
+    private Integer[] SelectHartWindow(){
+        Integer hartChoser[];
+        hartChoser = new Integer[(Integer) Globals.getHarts()];
+        for(int i = 0; i < Globals.getHarts(); i ++){
+            hartChoser[i] = i;
+        }
+        return hartChoser;
+    }
+    private JTable reservations;
 
     public ReservationTablesTool() {
         super(heading + ", " + version, heading);
@@ -46,6 +63,7 @@ public class ReservationTablesTool extends AbstractToolAndApplication {
 
     protected JComponent buildMainDisplayArea() {
         JPanel panelTools = new JPanel(new BorderLayout());
+        hartPanel = new JPanel(new BorderLayout());
         String[] columns = new String[Globals.reservationTables.harts];
         for (int i = 0; i < columns.length; i++) {
             columns[i] = String.format("Hart %d", i);
@@ -56,16 +74,26 @@ public class ReservationTablesTool extends AbstractToolAndApplication {
                 return false;
             }
         };
-        panelTools.add(reservations.getTableHeader(), BorderLayout.NORTH);
+
+        hartPanel.add(reservations.getTableHeader(), BorderLayout.NORTH);
         reservations.setCellSelectionEnabled(true);
         reservations.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
-        panelTools.add(reservations);
-        return panelTools;
-    }
+        hartPanel.add(reservations);
 
-    @Override
-    protected JComponent buildButtonAreaForTool(){
-        super.buildButtonAreaForTool();
+        TitledBorder tb = new TitledBorder(displayPanelTitle);
+        tb.setTitleJustification(TitledBorder.CENTER);
+        panelTools.setBorder(tb);
+
+        Box displayOptions = Box.createHorizontalBox();
+        hartWindow = new JComboBox<>(SelectHartWindow());
+        hartWindow.setToolTipText("Technique for determining simulated transmitter device processing delay");
+        //ToDo-----------
+        hartWindow.addActionListener(
+                new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                    }
+                });
+
         JButton clearButton = new JButton("Clear Selected");
         clearButton.setToolTipText("Clear the Selected from the Reserve Table");
         clearButton.addActionListener(l -> {
@@ -85,12 +113,20 @@ public class ReservationTablesTool extends AbstractToolAndApplication {
             reservations.clearSelection();
             updateDisplay();
         });
-        clearButton.addKeyListener(new EnterKeyListener(clearButton));
-        buttonArea.add(Box.createHorizontalGlue());
-        buttonArea.add(clearButton);
-        return buttonArea;
 
+        displayOptions.add(Box.createHorizontalGlue());
+        displayOptions.add(hartWindow);
+        clearButton.addKeyListener(new EnterKeyListener(clearButton));
+        displayOptions.add(Box.createHorizontalGlue());
+        displayOptions.add(clearButton);
+        displayOptions.add(Box.createHorizontalGlue());
+
+        JSplitPane both = new JSplitPane(JSplitPane.VERTICAL_SPLIT, hartPanel, displayOptions);
+        both.setResizeWeight(0.5);
+        panelTools.add(both);
+        return panelTools;
     }
+
 
     @Override
     public String getName() {
