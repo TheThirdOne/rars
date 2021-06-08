@@ -7,6 +7,7 @@ import rars.riscv.InstructionSet;
 import rars.riscv.SyscallNumberOverride;
 import rars.util.PropertiesFile;
 import rars.venus.VenusUI;
+import rars.venus.GeneralVenusUI;
 
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -146,6 +147,15 @@ public class Globals {
     public static boolean runSpeedPanelExists = false;
 
     private static int harts = 1;
+
+    private static ArrayList<GeneralVenusUI> hartWindows =  new ArrayList();
+
+
+    public static ArrayList<GeneralVenusUI> getHartWindows(){
+        GeneralVenusUI temp= new GeneralVenusUI("Window "+0);
+        hartWindows.add(temp);
+        return hartWindows;
+    }
 
     public static int getHarts() {
         return harts;

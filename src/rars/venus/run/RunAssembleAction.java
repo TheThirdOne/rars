@@ -1,11 +1,13 @@
 package rars.venus.run;
 
 import rars.*;
+import rars.Globals;
 import rars.riscv.hardware.*;
 import rars.util.FilenameFinder;
 import rars.util.SystemIO;
 import rars.venus.*;
 import rars.venus.registers.RegistersPane;
+import rars.venus.registers.GeneralRegistersPane;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -51,10 +53,12 @@ public class RunAssembleAction extends GuiAction {
     // Threshold for adding filename to printed message of files being assembled.
     private static final int LINE_LENGTH_LIMIT = 60;
     private VenusUI mainUI;
+    private GeneralVenusUI gmainUI;
 
     public RunAssembleAction(String name, Icon icon, String descrip,
                              Integer mnemonic, KeyStroke accel, VenusUI gui) {
         super(name, icon, descrip, mnemonic, accel);
+        gmainUI = Globals.getHartWindows().get(0);
         mainUI = gui;
     }
 
@@ -76,6 +80,10 @@ public class RunAssembleAction extends GuiAction {
         MessagesPane messagesPane = mainUI.getMessagesPane();
         ExecutePane executePane = mainUI.getMainPane().getExecutePane();
         RegistersPane registersPane = mainUI.getRegistersPane();
+
+        GeneralExecutePane gexecutePane = gmainUI.getMainPane().getExecutePane();
+        GeneralRegistersPane gregistersPane = gmainUI.getRegistersPane();
+
         extendedAssemblerEnabled = Globals.getSettings().getBooleanSetting(Settings.Bool.EXTENDED_ASSEMBLER_ENABLED);
         warningsAreErrors = Globals.getSettings().getBooleanSetting(Settings.Bool.WARNINGS_ARE_ERRORS);
         if (FileStatus.getFile() != null) {
@@ -126,6 +134,9 @@ public class RunAssembleAction extends GuiAction {
                 InterruptController.reset();
                 Globals.reservationTables.reset();
 
+                gexecutePane.getTextSegmentWindow().setupTable();
+                gexecutePane.getLabelsWindow().setupTable();
+
                 executePane.getTextSegmentWindow().setupTable();
                 executePane.getDataSegmentWindow().setupTable();
                 executePane.getDataSegmentWindow().highlightCellForAddress(Memory.dataBaseAddress);
@@ -136,9 +147,17 @@ public class RunAssembleAction extends GuiAction {
                 registersPane.getRegistersWindow().clearWindow();
                 registersPane.getFloatingPointWindow().clearWindow();
                 registersPane.getControlAndStatusWindow().clearWindow();
+
+                gregistersPane.getRegistersWindow().clearWindow();
+                gregistersPane.getFloatingPointWindow().clearWindow();
+                gregistersPane.getControlAndStatusWindow().clearWindow();
+
                 mainUI.setReset(true);
                 mainUI.setStarted(false);
                 mainUI.getMainPane().setSelectedComponent(executePane);
+
+                gmainUI.setReset(true);
+                gmainUI.setStarted(false);
 
                 // Aug. 24, 2005 Ken Vollmar
                 SystemIO.resetFiles();  // Ensure that I/O "file descriptors" are initialized for a new program run

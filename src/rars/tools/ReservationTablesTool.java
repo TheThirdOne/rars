@@ -44,7 +44,8 @@ public class ReservationTablesTool extends AbstractToolAndApplication {
     private static String version = "Version 1.0";
     private static String displayPanelTitle;
     private JPanel displayOptions, hartPanel;
-    private JComboBox<Integer> hartWindow;
+    private JComboBox<Integer> hartWindowSelector;
+    protected ArrayList<GeneralVenusUI> hartWindows = Globals.getHartWindows();
 
     private Integer[] SelectHartWindow(){
         Integer hartChoser[];
@@ -59,6 +60,11 @@ public class ReservationTablesTool extends AbstractToolAndApplication {
     public ReservationTablesTool() {
         super(heading + ", " + version, heading);
         Globals.reservationTables.addObserver(this);
+
+        for(int i = 1; i < Globals.getHarts(); i++){
+            GeneralVenusUI temp= new GeneralVenusUI("Window "+i);
+            hartWindows.add(temp);
+        }
     }
 
     protected JComponent buildMainDisplayArea() {
@@ -85,12 +91,13 @@ public class ReservationTablesTool extends AbstractToolAndApplication {
         panelTools.setBorder(tb);
 
         Box displayOptions = Box.createHorizontalBox();
-        hartWindow = new JComboBox<>(SelectHartWindow());
-        hartWindow.setToolTipText("Technique for determining simulated transmitter device processing delay");
+        hartWindowSelector = new JComboBox<>(SelectHartWindow());
+        hartWindowSelector.setToolTipText("Technique for determining simulated transmitter device processing delay");
         //ToDo-----------
-        hartWindow.addActionListener(
+        hartWindowSelector.addActionListener(
                 new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
+                        hartWindows.get(0).setVisible(true);  
                     }
                 });
 
@@ -115,7 +122,7 @@ public class ReservationTablesTool extends AbstractToolAndApplication {
         });
 
         displayOptions.add(Box.createHorizontalGlue());
-        displayOptions.add(hartWindow);
+        displayOptions.add(hartWindowSelector);
         clearButton.addKeyListener(new EnterKeyListener(clearButton));
         displayOptions.add(Box.createHorizontalGlue());
         displayOptions.add(clearButton);
@@ -165,3 +172,5 @@ public class ReservationTablesTool extends AbstractToolAndApplication {
             updateDisplay();
     }
 }
+
+
