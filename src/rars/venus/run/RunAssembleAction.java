@@ -137,6 +137,9 @@ public class RunAssembleAction extends GuiAction {
                 gexecutePane.getTextSegmentWindow().setupTable();
                 gexecutePane.getLabelsWindow().setupTable();
 
+                gexecutePane.getTextSegmentWindow().setCodeHighlighting(true);
+                gexecutePane.getTextSegmentWindow().highlightStepAtPC();
+
                 executePane.getTextSegmentWindow().setupTable();
                 executePane.getDataSegmentWindow().setupTable();
                 executePane.getDataSegmentWindow().highlightCellForAddress(Memory.dataBaseAddress);

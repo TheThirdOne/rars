@@ -49,7 +49,6 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 public class GeneralMainPane extends JTabbedPane {
     GeneralExecutePane executeTab;
-    EditTabbedPane editTabbedPane;
 
     private GeneralVenusUI mainUI;
 
@@ -79,16 +78,6 @@ public class GeneralMainPane extends JTabbedPane {
 
         this.setToolTipTextAt(0, "View and control assembly language program execution.  Enabled upon successful assemble.");
       
-    }
-
-
-    /**
-     * Returns component containing editor display
-     *
-     * @return the editor tabbed pane
-     */
-    public JComponent getEditTabbedPane() {
-        return editTabbedPane;
     }
 
     /**

@@ -47,7 +47,6 @@ public class GeneralExecutePane extends JDesktopPane {
     private RegistersWindow registerValues;
     private FloatingPointWindow fpRegValues;
     private ControlAndStatusWindow csrValues;
-    private DataSegmentWindow dataSegment;
     private TextSegmentWindow textSegment;
     private LabelsWindow labelValues;
     private GeneralVenusUI mainUI;
@@ -68,12 +67,6 @@ public class GeneralExecutePane extends JDesktopPane {
         this.mainUI = mainUI;
         // Although these are displayed in Data Segment, they apply to all three internal
         // windows within the Execute pane.  So they will be housed here.
-        addressDisplayBase = new NumberDisplayBaseChooser("Hexadecimal Addresses",
-                Globals.getSettings().getBooleanSetting(Settings.Bool.DISPLAY_ADDRESSES_IN_HEX));
-        valueDisplayBase = new NumberDisplayBaseChooser("Hexadecimal Values",
-                Globals.getSettings().getBooleanSetting(Settings.Bool.DISPLAY_VALUES_IN_HEX));//VenusUI.DEFAULT_NUMBER_BASE);
-        addressDisplayBase.setToolTipText("If checked, displays all memory addresses in hexadecimal.  Otherwise, decimal.");
-        valueDisplayBase.setToolTipText("If checked, displays all memory and register contents in hexadecimal.  Otherwise, decimal.");
         registerValues = regs;
         fpRegValues = fpRegs;
         csrValues = csrRegs;
@@ -81,9 +74,7 @@ public class GeneralExecutePane extends JDesktopPane {
         labelValues = new LabelsWindow();
         labelWindowVisible = Globals.getSettings().getBooleanSetting(Settings.Bool.LABEL_WINDOW_VISIBILITY);
         this.add(textSegment);  // these 3 LOC moved up.  DPS 3-Sept-2014
-        this.add(labelValues);
         textSegment.pack();   // these 3 LOC added.  DPS 3-Sept-2014
-        labelValues.pack();
         textSegment.setVisible(true);
         labelValues.setVisible(labelWindowVisible);
 
@@ -105,11 +96,12 @@ public class GeneralExecutePane extends JDesktopPane {
     public void setWindowBounds() {
 
         int fullWidth = this.getSize().width - this.getInsets().left - this.getInsets().right;
-        int fullHeight = this.getSize().height - this.getInsets().top - this.getInsets().bottom;
+        int fullHeight = this.getSize().height;
         int halfHeight = fullHeight / 2;
         Dimension textDim = new Dimension((int) (fullWidth * .75), halfHeight);
         Dimension lablDim = new Dimension((int) (fullWidth * .25), halfHeight);
         Dimension textFullDim = new Dimension((int) (fullWidth), halfHeight);
+
         if (labelWindowVisible) {
             textSegment.setBounds(0, 0, textDim.width, textDim.height);
             labelValues.setBounds(textDim.width + 1, 0, lablDim.width, lablDim.height);
@@ -138,7 +130,7 @@ public class GeneralExecutePane extends JDesktopPane {
             textSegment.setVisible(false);
             setWindowBounds();
             textSegment.setVisible(true);
-            labelValues.setVisible(true);
+            labelValues.setVisible(false);
         }
     }
 
@@ -156,7 +148,6 @@ public class GeneralExecutePane extends JDesktopPane {
         this.getLabelsWindow().clearWindow();
         // seems to be required, to display cleared Execute tab contents...
         if (mainUI.getMainPane().getSelectedComponent() == this) {
-            mainUI.getMainPane().setSelectedComponent(mainUI.getMainPane().getEditTabbedPane());
             mainUI.getMainPane().setSelectedComponent(this);
         }
     }

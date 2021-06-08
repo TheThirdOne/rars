@@ -79,7 +79,6 @@ public class GeneralVenusUI extends JFrame {
     public GeneralVenusUI(String s) {
         super(s);
         mainUI = this;
-
         double screenWidth = Toolkit.getDefaultToolkit().getScreenSize().getWidth();
         double screenHeight = Toolkit.getDefaultToolkit().getScreenSize().getHeight();
         double mainWidthPct = (screenWidth < 1000.0) ? 0.67 : 0.73;
@@ -120,15 +119,12 @@ public class GeneralVenusUI extends JFrame {
         registersPane = new GeneralRegistersPane(mainUI, registersTab, fpTab, csrTab);
         registersPane.setPreferredSize(registersPanePreferredSize);
 
-        //Insets defaultTabInsets = (Insets)UIManager.get("TabbedPane.tabInsets");
-        //UIManager.put("TabbedPane.tabInsets", new Insets(1, 1, 1, 1));
         mainPane = new GeneralMainPane(mainUI, registersTab, fpTab, csrTab);
-        mainPane.remove(0);
-        //UIManager.put("TabbedPane.tabInsets", defaultTabInsets);
+
 
         mainPane.setPreferredSize(mainPanePreferredSize);
 
-        horizonSplitter = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, splitter, registersPane);
+        horizonSplitter = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, mainPane, registersPane);
         horizonSplitter.setOneTouchExpandable(true);
         horizonSplitter.resetToPreferredSizes();
 
@@ -136,14 +132,14 @@ public class GeneralVenusUI extends JFrame {
         JPanel center = new JPanel(new BorderLayout());
         center.add(jp, BorderLayout.NORTH);
         center.add(horizonSplitter);
-
+        this.add(center);
 
         // This is invoked when opening the app.  It will set the app to
         // appear at full screen size.
         this.addWindowListener(
                 new WindowAdapter() {
                     public void windowOpened(WindowEvent e) {
-                        mainUI.setExtendedState(JFrame.MAXIMIZED_BOTH);
+                        mainUI.pack();
                     }
                 });
 
