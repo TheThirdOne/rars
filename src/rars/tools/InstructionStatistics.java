@@ -259,6 +259,8 @@ public class InstructionStatistics extends AbstractToolAndApplication {
             return InstructionStatistics.CATEGORY_MEM;      // lb, lh, lwl, lw, lbu, lhu, lwr
         if (instruction instanceof Store)
             return InstructionStatistics.CATEGORY_MEM;      // sb, sh, swl, sw, swr
+        if (instruction instanceof Atomic)
+            return InstructionStatistics.CATEGORY_MEM;      // a extension
 
         return InstructionStatistics.CATEGORY_OTHER;
     }
