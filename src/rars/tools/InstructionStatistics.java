@@ -28,10 +28,12 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 package rars.tools;
 
 import rars.ProgramStatement;
+import rars.riscv.Instruction;
 import rars.riscv.hardware.AccessNotice;
 import rars.riscv.hardware.AddressErrorException;
 import rars.riscv.hardware.Memory;
 import rars.riscv.hardware.MemoryAccessNotice;
+import rars.riscv.instructions.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -220,55 +222,43 @@ public class InstructionStatistics extends AbstractToolAndApplication {
         addAsObserver(Memory.textBaseAddress, Memory.textLimitAddress);
     }
 
-    // TODO: Port this to work with RISCV rather than MIPS
     /**
      * decodes the instruction and determines the category of the instruction.
      * <p>
-     * The instruction is decoded by extracting the operation and function code of the 32-bit instruction.
+     * The instruction is decoded by checking the java instance of the instruction.
      * Only the most relevant instructions are decoded and categorized.
      *
-     * @param stmt the instruction to decode
+     * @param instruction the instruction to decode
      * @return the category of the instruction
      * @see InstructionStatistics#CATEGORY_ALU
      * @see InstructionStatistics#CATEGORY_JUMP
      * @see InstructionStatistics#CATEGORY_BRANCH
      * @see InstructionStatistics#CATEGORY_MEM
      * @see InstructionStatistics#CATEGORY_OTHER
+     * @author Giancarlo Pernudi Segura
      */
-    protected int getInstructionCategory(ProgramStatement stmt) {
-        int opCode = stmt.getBinaryStatement() >>> (32 - 6);
-        int funct = stmt.getBinaryStatement() & 0x1F;
-
-        if (opCode == 0x00) {
-            if (funct == 0x00)
-                return InstructionStatistics.CATEGORY_ALU; // sll
-            if (0x02 <= funct && funct <= 0x07)
-                return InstructionStatistics.CATEGORY_ALU; // srl, sra, sllv, srlv, srav
-            if (funct == 0x08 || funct == 0x09)
-                return InstructionStatistics.CATEGORY_JUMP; // jr, jalr
-            if (0x10 <= funct && funct <= 0x2F)
-                return InstructionStatistics.CATEGORY_ALU; // mfhi, mthi, mflo, mtlo, mult, multu, div, divu, add, addu, sub, subu, and, or, xor, nor, slt, sltu
-            return InstructionStatistics.CATEGORY_OTHER;
-        }
-        if (opCode == 0x01) {
-            if (0x00 <= funct && funct <= 0x07)
-                return InstructionStatistics.CATEGORY_BRANCH; // bltz, bgez, bltzl, bgezl
-            if (0x10 <= funct && funct <= 0x13)
-                return InstructionStatistics.CATEGORY_BRANCH; // bltzal, bgezal, bltzall, bgczall
-            return InstructionStatistics.CATEGORY_OTHER;
-        }
-        if (opCode == 0x02 || opCode == 0x03)
-            return InstructionStatistics.CATEGORY_JUMP; // j, jal
-        if (0x04 <= opCode && opCode <= 0x07)
-            return InstructionStatistics.CATEGORY_BRANCH; // beq, bne, blez, bgtz
-        if (0x08 <= opCode && opCode <= 0x0F)
-            return InstructionStatistics.CATEGORY_ALU; // addi, addiu, slti, sltiu, andi, ori, xori, lui
-        if (0x14 <= opCode && opCode <= 0x17)
-            return InstructionStatistics.CATEGORY_BRANCH; // beql, bnel, blezl, bgtzl
-        if (0x20 <= opCode && opCode <= 0x26)
-            return InstructionStatistics.CATEGORY_MEM; // lb, lh, lwl, lw, lbu, lhu, lwr
-        if (0x28 <= opCode && opCode <= 0x2E)
-            return InstructionStatistics.CATEGORY_MEM; // sb, sh, swl, sw, swr
+    protected int getInstructionCategory(Instruction instruction) {
+        if (instruction instanceof Arithmetic)
+            return InstructionStatistics.CATEGORY_ALU;      // add, addw, sub, subw, and, or, xor, slt, sltu, m extension
+        if (instruction instanceof ADDI || instruction instanceof ADDIW || instruction instanceof ANDI
+                || instruction instanceof ORI || instruction instanceof XORI
+                || instruction instanceof SLTI || instruction instanceof SLTIU
+                || instruction instanceof LUI || instruction instanceof AUIPC)
+            return InstructionStatistics.CATEGORY_ALU;      // addi, addiw, andi, ori, xori, slti, sltiu, lui, auipc
+        if (instruction instanceof SLLI || instruction instanceof SLLI64 || instruction instanceof SLLIW)
+            return InstructionStatistics.CATEGORY_ALU;      // slli, slliw
+        if (instruction instanceof SRLI || instruction instanceof SRLI64 || instruction instanceof SRLIW)
+            return InstructionStatistics.CATEGORY_ALU;      // srli, srliw
+        if (instruction instanceof SRAI || instruction instanceof SRAI64 || instruction instanceof SRAIW)
+            return InstructionStatistics.CATEGORY_ALU;      // srai, sraiw
+        if (instruction instanceof JAL || instruction instanceof JALR)
+            return InstructionStatistics.CATEGORY_JUMP;     // jal, jalr
+        if (instruction instanceof Branch)
+            return InstructionStatistics.CATEGORY_BRANCH;   // beq, bge, bgeu, blt, bltu, bne
+        if (instruction instanceof Load)
+            return InstructionStatistics.CATEGORY_MEM;      // lb, lh, lwl, lw, lbu, lhu, lwr
+        if (instruction instanceof Store)
+            return InstructionStatistics.CATEGORY_MEM;      // sb, sh, swl, sw, swr
 
         return InstructionStatistics.CATEGORY_OTHER;
     }
@@ -308,7 +298,7 @@ public class InstructionStatistics extends AbstractToolAndApplication {
                 // necessary to handle possible null pointers at the end of the program
                 // (e.g., if the simulator tries to execute the next instruction after the last instruction in the text segment)
                 if (stmt != null) {
-                    int category = getInstructionCategory(stmt);
+                    int category = getInstructionCategory(stmt.getInstruction());
 
                     m_totalCounter++;
                     m_counters[category]++;
