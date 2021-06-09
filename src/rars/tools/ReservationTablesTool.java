@@ -93,11 +93,16 @@ public class ReservationTablesTool extends AbstractToolAndApplication {
         Box displayOptions = Box.createHorizontalBox();
         hartWindowSelector = new JComboBox<>(SelectHartWindow());
         hartWindowSelector.setToolTipText("Technique for determining simulated transmitter device processing delay");
-        //ToDo-----------
         hartWindowSelector.addActionListener(
                 new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
-                        hartWindows.get(0).setVisible(true);  
+                        int i = hartWindowSelector.getSelectedIndex();
+                        if(i == 0)
+                            return;
+                        else{
+                            hartWindows.get(i-1).setVisible(true);                              
+                        }
+
                     }
                 });
 

@@ -152,8 +152,6 @@ public class Globals {
 
 
     public static ArrayList<GeneralVenusUI> getHartWindows(){
-        GeneralVenusUI temp= new GeneralVenusUI("Window "+0);
-        hartWindows.add(temp);
         return hartWindows;
     }
 

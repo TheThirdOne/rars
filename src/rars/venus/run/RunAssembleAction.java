@@ -58,7 +58,8 @@ public class RunAssembleAction extends GuiAction {
     public RunAssembleAction(String name, Icon icon, String descrip,
                              Integer mnemonic, KeyStroke accel, VenusUI gui) {
         super(name, icon, descrip, mnemonic, accel);
-        gmainUI = Globals.getHartWindows().get(0);
+        if(Globals.getHarts() > 1)
+            gmainUI = Globals.getHartWindows().get(0);
         mainUI = gui;
     }
 
@@ -80,9 +81,12 @@ public class RunAssembleAction extends GuiAction {
         MessagesPane messagesPane = mainUI.getMessagesPane();
         ExecutePane executePane = mainUI.getMainPane().getExecutePane();
         RegistersPane registersPane = mainUI.getRegistersPane();
-
-        GeneralExecutePane gexecutePane = gmainUI.getMainPane().getExecutePane();
-        GeneralRegistersPane gregistersPane = gmainUI.getRegistersPane();
+        GeneralExecutePane gexecutePane = null;
+        GeneralRegistersPane gregistersPane = null;
+        if(Globals.getHarts() > 1){
+            gexecutePane = gmainUI.getMainPane().getExecutePane();
+            gregistersPane = gmainUI.getRegistersPane();
+        }
 
         extendedAssemblerEnabled = Globals.getSettings().getBooleanSetting(Settings.Bool.EXTENDED_ASSEMBLER_ENABLED);
         warningsAreErrors = Globals.getSettings().getBooleanSetting(Settings.Bool.WARNINGS_ARE_ERRORS);
@@ -133,13 +137,13 @@ public class RunAssembleAction extends GuiAction {
                 ControlAndStatusRegisterFile.resetRegisters();
                 InterruptController.reset();
                 Globals.reservationTables.reset();
-
+                if(Globals.getHarts() > 1){
                 gexecutePane.getTextSegmentWindow().setupTable();
                 gexecutePane.getLabelsWindow().setupTable();
 
                 gexecutePane.getTextSegmentWindow().setCodeHighlighting(true);
                 gexecutePane.getTextSegmentWindow().highlightStepAtPC();
-
+                }
                 executePane.getTextSegmentWindow().setupTable();
                 executePane.getDataSegmentWindow().setupTable();
                 executePane.getDataSegmentWindow().highlightCellForAddress(Memory.dataBaseAddress);
@@ -150,17 +154,17 @@ public class RunAssembleAction extends GuiAction {
                 registersPane.getRegistersWindow().clearWindow();
                 registersPane.getFloatingPointWindow().clearWindow();
                 registersPane.getControlAndStatusWindow().clearWindow();
-
+                if(Globals.getHarts() > 1){
                 gregistersPane.getRegistersWindow().clearWindow();
                 gregistersPane.getFloatingPointWindow().clearWindow();
                 gregistersPane.getControlAndStatusWindow().clearWindow();
-
+                gmainUI.setReset(true);
+                gmainUI.setStarted(false);
+                }
                 mainUI.setReset(true);
                 mainUI.setStarted(false);
                 mainUI.getMainPane().setSelectedComponent(executePane);
 
-                gmainUI.setReset(true);
-                gmainUI.setStarted(false);
 
                 // Aug. 24, 2005 Ken Vollmar
                 SystemIO.resetFiles();  // Ensure that I/O "file descriptors" are initialized for a new program run
