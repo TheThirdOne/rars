@@ -10,10 +10,9 @@ import javax.swing.*;
 import java.awt.*;
 
 /*
-Copyright (c) 2003-2006,  Pete Sanderson and Kenneth Vollmar
+Copyright (c) 2003-2006,  Siva Chowdeswar Nandipati
 
-Developed by Pete Sanderson (psanderson@otterbein.edu)
-and Kenneth Vollmar (kenvollmar@missouristate.edu)
+Developed by Siva Chowdeswar Nandipati (sivachow@ualberta.ca)
 
 Permission is hereby granted, free of charge, to any person obtaining 
 a copy of this software and associated documentation files (the 
