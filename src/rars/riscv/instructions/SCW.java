@@ -26,6 +26,6 @@ public class SCW extends Atomic {
             Globals.memory.setWord(address, value);
             return 0;
         }
-        return -1;
+        return 1;
     }
 }

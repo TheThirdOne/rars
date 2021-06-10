@@ -26,6 +26,6 @@ public class SCD extends Atomic {
             Globals.memory.setDoubleWord(address, value);
             return 0;
         }
-        return -1;
+        return 1;
     }
 }
