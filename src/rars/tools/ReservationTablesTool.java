@@ -61,10 +61,7 @@ public class ReservationTablesTool extends AbstractToolAndApplication {
         super(heading + ", " + version, heading);
         Globals.reservationTables.addObserver(this);
 
-        for(int i = 1; i < Globals.getHarts(); i++){
-            GeneralVenusUI temp= new GeneralVenusUI("Window "+i);
-            hartWindows.add(temp);
-        }
+        
     }
 
     protected JComponent buildMainDisplayArea() {

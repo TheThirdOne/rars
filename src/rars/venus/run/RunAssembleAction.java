@@ -54,10 +54,15 @@ public class RunAssembleAction extends GuiAction {
     private static final int LINE_LENGTH_LIMIT = 60;
     private VenusUI mainUI;
     private GeneralVenusUI gmainUI;
+    protected ArrayList<GeneralVenusUI> hartWindows = Globals.getHartWindows();
 
     public RunAssembleAction(String name, Icon icon, String descrip,
                              Integer mnemonic, KeyStroke accel, VenusUI gui) {
         super(name, icon, descrip, mnemonic, accel);
+        for(int i = 1; i < Globals.getHarts(); i++){
+            GeneralVenusUI temp= new GeneralVenusUI("Window "+i);
+            hartWindows.add(temp);
+        }
         if(Globals.getHarts() > 1)
             gmainUI = Globals.getHartWindows().get(0);
         mainUI = gui;
