@@ -86,8 +86,6 @@ public class GeneralVenusUI extends JFrame {
         double registersHeightPct = (screenWidth < 1000.0) ? 0.72 : 0.80;
         Dimension mainPanePreferredSize = new Dimension((int) (screenWidth * mainWidthPct), (int) (screenHeight * mainHeightPct));
         Dimension registersPanePreferredSize = new Dimension((int) (screenWidth * registersWidthPct), (int) (screenHeight * registersHeightPct));
-
-
         Globals.initialize(true);
 
         //  image courtesy of NASA/JPL.
@@ -112,7 +110,7 @@ public class GeneralVenusUI extends JFrame {
         // roughly in bottom-up order; some are created in component constructors and thus are
         // not visible here.
 
-        registersTab = new RegistersWindow();
+        registersTab = new RegistersWindow("Not GUI");
         fpTab = new FloatingPointWindow();
         csrTab = new ControlAndStatusWindow();
         registersPane = new GeneralRegistersPane(mainUI, registersTab, fpTab, csrTab);

@@ -146,10 +146,16 @@ public class Globals {
 
     public static boolean runSpeedPanelExists = false;
 
-    private static int harts = 1;
+    private static int harts = 2;
 
     private static ArrayList<GeneralVenusUI> hartWindows =  new ArrayList();
 
+    public static void setHartWindows(){
+        for(int i = 1; i < Globals.getHarts(); i++){
+            GeneralVenusUI temp= new GeneralVenusUI("Window "+i);
+            hartWindows.add(temp);
+        }
+    }
 
     public static ArrayList<GeneralVenusUI> getHartWindows(){
         return hartWindows;
