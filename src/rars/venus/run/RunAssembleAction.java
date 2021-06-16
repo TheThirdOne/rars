@@ -48,6 +48,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 public class RunAssembleAction extends GuiAction {
 
     private static ArrayList<RISCVprogram> programsToAssemble;
+    private static ArrayList<ArrayList<RISCVprogram>> gProgramsToAssemble;
     private static boolean extendedAssemblerEnabled;
     private static boolean warningsAreErrors;
     // Threshold for adding filename to printed message of files being assembled.
@@ -96,6 +97,10 @@ public class RunAssembleAction extends GuiAction {
             }
             try {
                 Globals.program = new RISCVprogram();
+                Globals.gPrograms = new ArrayList<>();
+                for (int i = 0; i < hartWindows.size(); i++){
+                    Globals.gPrograms.add(new RISCVprogram());
+                }
                 ArrayList<String> filesToAssemble;
                 if (Globals.getSettings().getBooleanSetting(Settings.Bool.ASSEMBLE_ALL)) {// setting calls for multiple
                                                                                           // file assembly
@@ -132,7 +137,7 @@ public class RunAssembleAction extends GuiAction {
                 messagesPane.postMessage(name + ": operation completed successfully.\n\n");
                 FileStatus.setAssembled(true);
                 FileStatus.set(FileStatus.RUNNABLE);
-
+                //TODO
                 RegisterFile.resetRegisters();
                 FloatingPointRegisterFile.resetRegisters();
                 ControlAndStatusRegisterFile.resetRegisters();
@@ -141,7 +146,6 @@ public class RunAssembleAction extends GuiAction {
                 for (int i = 0; i < hartWindows.size(); i++) {
                     gexecutePanes.get(i).getTextSegmentWindow().setupTable();
                     gexecutePanes.get(i).getLabelsWindow().setupTable();
-
                     gexecutePanes.get(i).getTextSegmentWindow().setCodeHighlighting(true);
                     gexecutePanes.get(i).getTextSegmentWindow().highlightStepAtPC();
                 }

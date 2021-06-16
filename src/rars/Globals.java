@@ -62,6 +62,8 @@ public class Globals {
      * the program currently being worked with.  Used by GUI only, not command line.
      **/
     public static RISCVprogram program;
+
+    public static ArrayList<RISCVprogram> gPrograms;
     /**
      * Symbol table for file currently being assembled.
      **/
