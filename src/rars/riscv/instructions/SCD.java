@@ -5,6 +5,7 @@ import rars.riscv.hardware.AddressErrorException;
 import rars.ProgramStatement;
 import rars.SimulationException;
 import rars.riscv.hardware.RegisterFile;
+import rars.riscv.hardware.ReservationTable.bitWidth;
 
 public class SCD extends Atomic {
     public SCD() {
@@ -22,7 +23,7 @@ public class SCD extends Atomic {
     }
 
     private long store(int address, int value) throws AddressErrorException {
-        if (Globals.reservationTables.unreserveAddress(0, address)) {
+        if (Globals.reservationTables.unreserveAddress(0, address, bitWidth.doubleWord)) {
             Globals.memory.setDoubleWord(address, value);
             return 0;
         }

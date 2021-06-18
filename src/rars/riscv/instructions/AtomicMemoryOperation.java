@@ -6,6 +6,7 @@ import rars.SimulationException;
 import rars.riscv.InstructionSet;
 import rars.riscv.hardware.AddressErrorException;
 import rars.riscv.hardware.RegisterFile;
+import rars.riscv.hardware.ReservationTable.bitWidth;
 
 /*
 Copyright (c) 2021, Giancarlo Pernudi Segura
@@ -41,19 +42,23 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * @version May 2017
  */
 public abstract class AtomicMemoryOperation extends Atomic {
+    private bitWidth width;
+
     public AtomicMemoryOperation(String usage, String description, String funct5) {
         super(usage, description, "010", funct5);
+        width = bitWidth.word;
     }
 
     public AtomicMemoryOperation(String usage, String description, String funct5, boolean rv64) {
         super(usage, description, rv64 ? "011" : "010", funct5, rv64);
+        width = rv64 ? bitWidth.doubleWord : bitWidth.word;
     }
 
     public void simulate(ProgramStatement statement) throws SimulationException {
         int[] operands = statement.getOperands();
         try {
             int rs1Loc = RegisterFile.getValue(operands[2]);
-            Globals.reservationTables.unreserveAddress(0, rs1Loc);
+            Globals.reservationTables.unreserveAddress(0, rs1Loc, width);
             long rs1Data = InstructionSet.rv64 ? Globals.memory.getDoubleWord(rs1Loc) : Globals.memory.getWord(rs1Loc);
             long rs2Value = RegisterFile.getValueLong(operands[1]);
             RegisterFile.updateRegister(operands[0], rs1Data);

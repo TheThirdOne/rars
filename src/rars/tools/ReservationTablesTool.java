@@ -2,8 +2,7 @@ package rars.tools;
 
 import rars.Globals;
 import rars.riscv.hardware.AddressErrorException;
-import rars.riscv.hardware.*;
-import rars.util.Binary;
+import rars.riscv.hardware.ReservationTable.bitWidth;
 import rars.venus.*;
 
 import javax.swing.*;
@@ -60,16 +59,15 @@ public class ReservationTablesTool extends AbstractToolAndApplication {
     public ReservationTablesTool() {
         super(heading + ", " + version, heading);
         Globals.reservationTables.addObserver(this);
-
-        
     }
 
     protected JComponent buildMainDisplayArea() {
         JPanel panelTools = new JPanel(new BorderLayout());
         hartPanel = new JPanel(new BorderLayout());
-        String[] columns = new String[Globals.reservationTables.harts];
-        for (int i = 0; i < columns.length; i++) {
-            columns[i] = String.format("Hart %d", i);
+        String[] columns = new String[Globals.reservationTables.harts * 2];
+        for (int i = 0; i < Globals.reservationTables.harts; i++) {
+            columns[i * 2] = String.format("Hart %d", i);
+            columns[i * 2 + 1] = "Length";
         }
         reservations = new JTable(Globals.reservationTables.getAllAddressesAsStrings(), columns) {
             @Override
@@ -80,7 +78,8 @@ public class ReservationTablesTool extends AbstractToolAndApplication {
 
         hartPanel.add(reservations.getTableHeader(), BorderLayout.NORTH);
         reservations.setCellSelectionEnabled(true);
-        reservations.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+        reservations.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        reservations.getTableHeader().setReorderingAllowed(false);
         hartPanel.add(reservations);
 
         TitledBorder tb = new TitledBorder(displayPanelTitle);
@@ -94,12 +93,10 @@ public class ReservationTablesTool extends AbstractToolAndApplication {
                 new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
                         int i = hartWindowSelector.getSelectedIndex();
-                        if(i == 0)
+                        if (i == 0)
                             return;
-                        else{
-                            hartWindows.get(i-1).setVisible(true);                              
-                        }
-
+                        else
+                            hartWindows.get(i-1).setVisible(true);
                     }
                 });
 
@@ -111,10 +108,12 @@ public class ReservationTablesTool extends AbstractToolAndApplication {
                 int col = reservations.getSelectedColumn();
                 if(row < 0 || col < 0)
                     return;
+                if (col % 2 == 1)
+                    col--;
                 int address = Integer.parseInt(reservations.getValueAt(row, col)
                     .toString().substring(2), 16);
                 try {
-                    Globals.reservationTables.unreserveAddress(col, address);
+                    Globals.reservationTables.unreserveAddress(col, address, bitWidth.word);
                 } catch (AddressErrorException e) {
                     e.printStackTrace();
                 }
@@ -174,5 +173,3 @@ public class ReservationTablesTool extends AbstractToolAndApplication {
             updateDisplay();
     }
 }
-
-

@@ -1,6 +1,7 @@
 package rars.riscv.hardware;
 
 import java.util.ArrayList;
+import java.util.function.Predicate;
 
 /*
 Copyright (c) 2021, Siva Chowdeswar Nandipati & Giancarlo Pernudi Segura.
@@ -28,36 +29,78 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 public class ReservationTable {
-	private ArrayList<Integer> table;
+	private ArrayList<ReservationTableEntry> table;
 	public final static int capacity = 8;
+	private final static int doubleAlignMask = ~0x7;
 
-	public ReservationTable() {
-		table = new ArrayList<Integer>();
+	public enum bitWidth {
+		word,
+		doubleWord
 	}
 
-	public void reserveAddress(int address) {
-		if(table.contains(Integer.valueOf(address)))
+	protected class ReservationTableEntry {
+		protected Integer address;
+		protected bitWidth width;
+
+		public ReservationTableEntry(Integer address, bitWidth width) {
+			this.address = address;
+			this.width = width;
+		}
+
+		public boolean equals(Object o) {
+			ReservationTableEntry other = (ReservationTableEntry) o;
+			return address.equals(other.address) && width.equals(other.width);
+		}
+	}
+
+	public ReservationTable() {
+		table = new ArrayList<ReservationTableEntry>();
+	}
+
+	public void reserveAddress(int address, bitWidth width) {
+		ReservationTableEntry newEntry = new ReservationTableEntry(address, width);
+		if(table.contains(newEntry))
 			return;
 		if (table.size() == capacity)
 			table.remove(0);
-		table.add(Integer.valueOf(address));
+		table.add(newEntry);
 	}
 
-	public void unreserveAddress(int address) {
-		table.removeIf(val -> val == address);
+	public void unreserveAddress(int address, bitWidth width) {
+		Predicate<ReservationTableEntry> filter = entry ->
+				(entry.address == address && entry.width == width)
+				|| ((address & doubleAlignMask) == entry.address && entry.width == bitWidth.doubleWord);
+		table.removeIf(filter);
 	}
 
-	public boolean contains(int address) {
-		return table.contains(Integer.valueOf(address));
+	public boolean contains(int address, bitWidth width) {
+		for (ReservationTableEntry entry : table) {
+			if ((entry.address == address && entry.width == width)
+					|| ((address & doubleAlignMask) == entry.address && entry.width == bitWidth.doubleWord))
+				return true;
+		}
+		return false;
 	}
 
 	public Integer[] getAddresses() {
 		Integer[] addresses = new Integer[capacity];
 		for (int i = 0; i < capacity; i++) {
 			try {
-				addresses[i] = table.get(i);
+				addresses[i] = this.table.get(i).address;
 			} catch (IndexOutOfBoundsException e) {
 				addresses[i] = 0;
+			}
+		}
+		return addresses;
+	}
+
+	public bitWidth[] getWidths() {
+		bitWidth[] addresses = new bitWidth[capacity];
+		for (int i = 0; i < capacity; i++) {
+			try {
+				addresses[i] = this.table.get(i).width;
+			} catch (IndexOutOfBoundsException e) {
+				addresses[i] = null;
 			}
 		}
 		return addresses;

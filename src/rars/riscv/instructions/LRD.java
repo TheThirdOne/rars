@@ -5,6 +5,7 @@ import rars.riscv.hardware.AddressErrorException;
 import rars.ProgramStatement;
 import rars.SimulationException;
 import rars.riscv.hardware.RegisterFile;
+import rars.riscv.hardware.ReservationTable.bitWidth;
 
 public class LRD extends Atomic {
     public LRD() {
@@ -21,7 +22,7 @@ public class LRD extends Atomic {
     }
 
     private long load(int address) throws AddressErrorException {
-        Globals.reservationTables.reserveAddress(0, address);
+        Globals.reservationTables.reserveAddress(0, address, bitWidth.doubleWord);
         return Globals.memory.getDoubleWord(address);
     }
 }

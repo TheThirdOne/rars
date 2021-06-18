@@ -6,7 +6,7 @@ import java.util.Observer;
 import java.util.Vector;
 
 import rars.SimulationException;
-import rars.riscv.InstructionSet;
+import rars.riscv.hardware.ReservationTable.bitWidth;
 
 /*
 Copyright (c) 2021, Siva Chowdeswar Nandipati & Giancarlo Pernudi Segura.
@@ -50,45 +50,44 @@ public class ReservationTables extends Observable {
 		}
 	}
 
-	public void reserveAddress(int hart, int address) throws AddressErrorException {
-		int modulo = InstructionSet.rv64 ? 8 : 4;
+	public void reserveAddress(int hart, int address, bitWidth width) throws AddressErrorException {
+		int modulo = width == bitWidth.doubleWord ? 8 : 4;
 		if (address % modulo != 0) {
 			throw new AddressErrorException("Reservation address not aligned to word boundary ", SimulationException.LOAD_ADDRESS_MISALIGNED, address);
 		}
-		reservationTables[hart].reserveAddress(address);
+		reservationTables[hart].reserveAddress(address, width);
 	}
 
-	public boolean unreserveAddress(int hart, int address) throws AddressErrorException {
-		int modulo = InstructionSet.rv64 ? 8 : 4;
+	public boolean unreserveAddress(int hart, int address, bitWidth width) throws AddressErrorException {
+		int modulo = width == bitWidth.doubleWord ? 8 : 4;
 		if (address % modulo != 0) {
 			throw new AddressErrorException("Reservation address not aligned to word boundary ", SimulationException.STORE_ADDRESS_MISALIGNED, address);
 		}
-		if (reservationTables[hart].contains(address)) {
+		if (reservationTables[hart].contains(address, width)) {
 			for (ReservationTable reservationTable : reservationTables) {
-				reservationTable.unreserveAddress(address);
+				reservationTable.unreserveAddress(address, width);
 			}
 			return true;
 		}
 		return false;
 	}
 
-	public Integer[][] getAllAddresses() {
-		Integer[][] all = new Integer[ReservationTable.capacity][harts];
-		for (int i = 0; i < ReservationTable.capacity; i++) {
-			for (int j = 0; j < harts; j++) {
-				Integer[] addresses = reservationTables[j].getAddresses();
-				all[i][j] = addresses[i];
-			}
-		}
-		return all;
-	}
-
 	public String[][] getAllAddressesAsStrings() {
-		String[][] all = new String[ReservationTable.capacity][harts];
+		String[][] all = new String[ReservationTable.capacity][harts * 2];
+		char width = '0';
 		for (int i = 0; i < ReservationTable.capacity; i++) {
 			for (int j = 0; j < harts; j++) {
 				Integer[] addresses = reservationTables[j].getAddresses();
-				all[i][j] = String.format("0x%08x", addresses[i]);
+				ReservationTable.bitWidth[] widths = reservationTables[j].getWidths();
+				if (widths[i] == ReservationTable.bitWidth.word) {
+					width = 'w';
+				} else if (widths[i] == ReservationTable.bitWidth.doubleWord) {
+					width = 'd';
+				} else {
+					width = ' ';
+				}
+				all[i][j * 2] = String.format("0x%08x", addresses[i]);
+				all[i][j * 2 + 1] = String.format("%c", width);
 			}
 		}
 		return all;
