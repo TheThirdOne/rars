@@ -377,9 +377,10 @@ public class SystemIO {
             return -1;
         }   // fileErrorString would have been set
 
-        String parent = new File(Globals.program.getFilename()).getParent();
         File filepath = new File(filename);
-        if (!filepath.isAbsolute()) {
+        if (!filepath.isAbsolute() && Globals.program != null && Globals.getSettings()
+                .getBooleanSetting(Settings.Bool.DERIVE_CURRENT_WORKING_DIRECTORY)) {
+            String parent = new File(Globals.program.getFilename()).getParent();
             filepath = new File(parent, filename);
         }
         if (flags == O_RDONLY) // Open for reading only
