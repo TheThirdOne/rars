@@ -70,6 +70,7 @@ public class RunStepAction extends GuiAction {
      * perform next simulated instruction step.
      */
     public void actionPerformed(ActionEvent e) {
+        hartWindows = Globals.getHartWindows();
         name = this.getValue(Action.NAME).toString();
         executePane = mainUI.getMainPane().getExecutePane();
         gExecutePanes = new ArrayList<>();
@@ -102,7 +103,7 @@ public class RunStepAction extends GuiAction {
 
             Globals.program.startSimulation(1, null);
             for(int i = 0; i < hartWindows.size(); i++){
-                Globals.gPrograms.get(i).startSimulation(1, null);
+                Globals.gPrograms.get(i).startSimulation(1, null, i);
             }
         } else {
             // note: this should never occur since "Step" is only enabled after successful assembly.

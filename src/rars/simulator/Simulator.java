@@ -49,10 +49,12 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  **/
 
 public class Simulator extends Observable {
-    private SimThread simulatorThread;
+    private SimThread simulatorThread = null;
+    private static ArrayList<SimThread> gSimulatorThread;
     private static Simulator simulator = null;  // Singleton object
+    private static ArrayList<Simulator> gSimulator;
     private static Runnable interactiveGUIUpdater = null;
-
+    private int hart = 0;
     /**
      * various reasons for simulate to end...
      */
@@ -81,9 +83,30 @@ public class Simulator extends Observable {
         }
         return simulator;
     }
+    public static Simulator getInstance(int tempHart) {
+        // Do NOT change this to create the Simulator at load time (in declaration above)!
+        // Its constructor looks for the GUI, which at load time is not created yet,
+        // and incorrectly leaves interactiveGUIUpdater null!  This causes runtime
+        // exceptions while running in timed mode.
+        if (gSimulator == null) {
+            gSimulator = new ArrayList<>();
+            gSimulatorThread = new ArrayList<>();
+            for(int i = 0; i < Globals.getHarts() - 1 ; i++){
+                gSimulatorThread.add(null);
+                gSimulator.add(new Simulator(i));
+            }
+        }
+        return gSimulator.get(tempHart);
+    }
 
     private Simulator() {
         simulatorThread = null;
+        if (Globals.getGui() != null) {
+            interactiveGUIUpdater = new UpdateGUI();
+        }
+    }
+
+    private Simulator(int tempHart) {
         if (Globals.getGui() != null) {
             interactiveGUIUpdater = new UpdateGUI();
         }
@@ -125,7 +148,11 @@ public class Simulator extends Observable {
         simulatorThread = new SimThread(pc, maxSteps, breakPoints);
         new Thread(simulatorThread, "RISCV").start();
     }
-
+    public void startSimulation(int pc, int maxSteps, int[] breakPoints, int hart) {
+        gSimulatorThread.add(hart, new SimThread(pc, maxSteps, breakPoints, hart));
+        String s = "Hart " + hart; 
+        new Thread(gSimulatorThread.get(hart), s).start();
+    }
 
     /**
      * Set the volatile stop boolean variable checked by the execution
@@ -202,6 +229,7 @@ public class Simulator extends Observable {
         private SimulationException pe;
         private volatile boolean stop = false;
         private Reason constructReturnReason;
+        private int hart = -1;
 
         /**
          * SimThread constructor.  Receives all the information it needs to simulate execution.
@@ -216,8 +244,16 @@ public class Simulator extends Observable {
             this.breakPoints = breakPoints;
             this.done = false;
             this.pe = null;
+            this.hart = -1;
         }
-
+        SimThread(int pc, int maxSteps, int[] breakPoints, int hart) {
+            this.pc = pc;
+            this.maxSteps = maxSteps;
+            this.breakPoints = breakPoints;
+            this.done = false;
+            this.pe = null;
+            this.hart = hart;
+        }
         /**
          * Sets to "true" the volatile boolean variable that is tested after each
          * instruction is executed.  After calling this method, the next test
@@ -242,9 +278,10 @@ public class Simulator extends Observable {
             this.constructReturnReason = reason;
             SystemIO.flush(true);
             if (done) SystemIO.resetFiles(); // close any files opened in the process of simulating
-            Simulator.getInstance().notifyObserversOfExecution(new SimulatorNotice(SimulatorNotice.SIMULATOR_STOP,
-                    maxSteps, (Globals.getGui() != null || Globals.runSpeedPanelExists)?RunSpeedPanel.getInstance().getRunSpeed():RunSpeedPanel.UNLIMITED_SPEED,
-                    pc, reason, pe, done));
+            if(hart == -1)
+                Simulator.getInstance().notifyObserversOfExecution(new SimulatorNotice(SimulatorNotice.SIMULATOR_STOP,
+                        maxSteps, (Globals.getGui() != null || Globals.runSpeedPanelExists)?RunSpeedPanel.getInstance().getRunSpeed():RunSpeedPanel.UNLIMITED_SPEED,
+                        pc, reason, pe, done));
         }
 
         private synchronized void interrupt() {
@@ -346,8 +383,8 @@ public class Simulator extends Observable {
             } else {
                 Arrays.sort(breakPoints);  // must be pre-sorted for binary search
             }
-
-            startExecution();
+            if(hart == -1)
+                startExecution();
 
             // *******************  PS addition 26 July 2006  **********************
             // A couple statements below were added for the purpose of assuring that when
@@ -378,8 +415,12 @@ public class Simulator extends Observable {
             // the backstep button is not enabled until a "real" instruction is executed.
             // This is noticeable in stepped mode.
             // *********************************************************************
-
-            RegisterFile.initializeProgramCounter(pc);
+            if(hart == -1){
+                RegisterFile.initializeProgramCounter(pc);
+            }
+            else{
+                RegisterFile.initializeProgramCounter(pc, hart);
+            }
             ProgramStatement statement = null;
             int steps = 0;
             boolean ebreak = false, waiting = false;
@@ -398,7 +439,12 @@ public class Simulator extends Observable {
                     long uip = ControlAndStatusRegisterFile.getValueNoNotify("uip"), uie = ControlAndStatusRegisterFile.getValueNoNotify("uie");
                     boolean IE = (ControlAndStatusRegisterFile.getValueNoNotify("ustatus") & ControlAndStatusRegisterFile.INTERRUPT_ENABLE) != 0;
                     // make sure no interrupts sneak in while we are processing them
-                    pc = RegisterFile.getProgramCounter();
+                    if(hart == -1){
+                        pc = RegisterFile.getProgramCounter();
+                    }
+                    else{
+                        pc = RegisterFile.getProgramCounter(hart);
+                    }
                     synchronized (InterruptController.lock) {
                         boolean pendingExternal = InterruptController.externalPending(),
                                 pendingTimer = InterruptController.timerPending(),
@@ -446,11 +492,20 @@ public class Simulator extends Observable {
                         }
                     }
 
-                    pc = RegisterFile.getProgramCounter();
-                    RegisterFile.incrementPC();
+                    if(hart == -1){
+                        pc = RegisterFile.getProgramCounter();
+                        RegisterFile.incrementPC();
+                    }
+                    else{
+                        pc = RegisterFile.getProgramCounter(hart);
+                    }
+                    
                     // Get instuction
                     try {
-                        statement = Globals.memory.getStatement(pc);
+                        if(hart == -1)
+                            statement = Globals.memory.getStatement(pc);
+                        else
+                            statement = Globals.memory.getStatementNoNotify(pc);
                     } catch (AddressErrorException e) {
                         SimulationException tmp;
                         if (e.getType() == SimulationException.LOAD_ACCESS_FAULT) {
@@ -573,6 +628,20 @@ public class Simulator extends Observable {
     }
 
     private class UpdateGUI implements Runnable {
+        public void run() {
+            if (Globals.getGui().getRegistersPane().getSelectedComponent() ==
+                    Globals.getGui().getMainPane().getExecutePane().getRegistersWindow()) {
+                Globals.getGui().getMainPane().getExecutePane().getRegistersWindow().updateRegisters();
+            } else {
+                Globals.getGui().getMainPane().getExecutePane().getFloatingPointWindow().updateRegisters();
+            }
+            Globals.getGui().getMainPane().getExecutePane().getDataSegmentWindow().updateValues();
+            Globals.getGui().getMainPane().getExecutePane().getTextSegmentWindow().setCodeHighlighting(true);
+            Globals.getGui().getMainPane().getExecutePane().getTextSegmentWindow().highlightStepAtPC();
+        }
+    }
+
+    private class GeneralUpdateGUI implements Runnable {
         public void run() {
             if (Globals.getGui().getRegistersPane().getSelectedComponent() ==
                     Globals.getGui().getMainPane().getExecutePane().getRegistersWindow()) {

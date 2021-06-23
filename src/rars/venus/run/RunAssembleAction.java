@@ -54,7 +54,7 @@ public class RunAssembleAction extends GuiAction {
     // Threshold for adding filename to printed message of files being assembled.
     private static final int LINE_LENGTH_LIMIT = 60;
     private VenusUI mainUI;
-    protected ArrayList<GeneralVenusUI> hartWindows = Globals.getHartWindows();
+    protected ArrayList<GeneralVenusUI> hartWindows;
 
     public RunAssembleAction(String name, Icon icon, String descrip, Integer mnemonic, KeyStroke accel, VenusUI gui) {
         super(name, icon, descrip, mnemonic, accel);
@@ -77,6 +77,9 @@ public class RunAssembleAction extends GuiAction {
     }
 
     public void actionPerformed(ActionEvent e) {
+        hartWindows = Globals.getHartWindows();
+        RegisterFile.initGRegisterBlock();
+        RegisterFile.initProgramCounter();
         String name = this.getValue(Action.NAME).toString();
         MessagesPane messagesPane = mainUI.getMessagesPane();
         ExecutePane executePane = mainUI.getMainPane().getExecutePane();
