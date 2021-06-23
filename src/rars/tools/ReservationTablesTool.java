@@ -45,15 +45,6 @@ public class ReservationTablesTool extends AbstractToolAndApplication {
     private JPanel hartPanel;
     private JComboBox<Integer> hartWindowSelector;
     protected ArrayList<GeneralVenusUI> hartWindows;
-
-    private Integer[] SelectHartWindow(){
-        Integer hartChoser[];
-        hartChoser = new Integer[(Integer) Globals.getHarts()];
-        for(int i = 0; i < Globals.getHarts(); i ++){
-            hartChoser[i] = i;
-        }
-        return hartChoser;
-    }
     private JTable reservations;
 
     public ReservationTablesTool() {
@@ -128,13 +119,13 @@ public class ReservationTablesTool extends AbstractToolAndApplication {
         JButton btnMinus = new JButton("-");
         btnPlus.addActionListener(l -> {
             Globals.setHarts(1);
-            buildMainDisplayArea();
             super.dialog.dispose();
+            action();
         });
         btnMinus.addActionListener(l -> {
             Globals.setHarts(-1);
-            buildMainDisplayArea();
             super.dialog.dispose();
+            action();
         });
         displayOptions.add(Box.createHorizontalGlue());
         displayOptions.add(btnMinus);
@@ -187,5 +178,14 @@ public class ReservationTablesTool extends AbstractToolAndApplication {
     protected void reset() {
             Globals.reservationTables.reset();
             updateDisplay();
+    }
+
+    private Integer[] SelectHartWindow() {
+        Integer hartChoser[];
+        hartChoser = new Integer[(Integer) Globals.getHarts()];
+        for (int i = 0; i < Globals.getHarts(); i++) {
+            hartChoser[i] = i;
+        }
+        return hartChoser;
     }
 }

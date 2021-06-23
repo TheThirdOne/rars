@@ -150,10 +150,10 @@ public class Globals {
 
     private static int harts = 1;
 
-    private static ArrayList<GeneralVenusUI> hartWindows =  new ArrayList();
+    private static ArrayList<GeneralVenusUI> hartWindows =  new ArrayList<>();
 
     public static void setHartWindows(){
-        for(int i = 1; i < Globals.getHarts(); i++){
+        for (int i = 1; i < Globals.getHarts(); i++) {
             GeneralVenusUI temp= new GeneralVenusUI("Window "+i);
             hartWindows.add(temp);
         }
@@ -167,19 +167,16 @@ public class Globals {
         return harts;
     }
 
-    public static void setHarts(int i){
-        if(harts == 0 && i < 0 || harts ==7 && i > 0){
+    public static void setHarts(int i) {
+        if ((harts == 1 && i < 0) || (harts == 7 && i > 0)) {
             return;
-        }
-        if(i >0){
-            harts++;
-            reservationTables = new ReservationTables(harts);
-        }
-        else{
-            harts--;
-            reservationTables = new ReservationTables(harts);
+        } if (i > 0) {
+            reservationTables = new ReservationTables(++harts);
+        } else {
+            reservationTables = new ReservationTables(--harts);
         }
     }
+
     private static String getCopyrightYears() {
         return "2003-2019";
     }
