@@ -148,7 +148,7 @@ public class Globals {
 
     public static boolean runSpeedPanelExists = false;
 
-    private static int harts = 2;
+    private static int harts = 1;
 
     private static ArrayList<GeneralVenusUI> hartWindows =  new ArrayList();
 
@@ -165,6 +165,20 @@ public class Globals {
 
     public static int getHarts() {
         return harts;
+    }
+
+    public static void setHarts(int i){
+        if(harts == 0 && i < 0 || harts ==7 && i > 0){
+            return;
+        }
+        if(i >0){
+            harts++;
+            reservationTables = new ReservationTables(harts);
+        }
+        else{
+            harts--;
+            reservationTables = new ReservationTables(harts);
+        }
     }
     private static String getCopyrightYears() {
         return "2003-2019";

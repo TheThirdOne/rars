@@ -42,9 +42,9 @@ public class ReservationTablesTool extends AbstractToolAndApplication {
     private static String heading = "Reservation Table Tool";
     private static String version = "Version 1.0";
     private static String displayPanelTitle;
-    private JPanel displayOptions, hartPanel;
+    private JPanel hartPanel;
     private JComboBox<Integer> hartWindowSelector;
-    protected ArrayList<GeneralVenusUI> hartWindows = Globals.getHartWindows();
+    protected ArrayList<GeneralVenusUI> hartWindows;
 
     private Integer[] SelectHartWindow(){
         Integer hartChoser[];
@@ -58,6 +58,7 @@ public class ReservationTablesTool extends AbstractToolAndApplication {
 
     public ReservationTablesTool() {
         super(heading + ", " + version, heading);
+        hartWindows = Globals.getHartWindows();
         Globals.reservationTables.addObserver(this);
     }
 
@@ -93,6 +94,8 @@ public class ReservationTablesTool extends AbstractToolAndApplication {
                 new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
                         int i = hartWindowSelector.getSelectedIndex();
+                        hartWindows = Globals.getHartWindows();
+                        Globals.setHartWindows();
                         if (i == 0)
                             return;
                         else
@@ -121,9 +124,22 @@ public class ReservationTablesTool extends AbstractToolAndApplication {
             reservations.clearSelection();
             updateDisplay();
         });
-
+        JButton btnPlus = new JButton("+");
+        JButton btnMinus = new JButton("-");
+        btnPlus.addActionListener(l -> {
+            Globals.setHarts(1);
+            buildMainDisplayArea();
+            super.dialog.dispose();
+        });
+        btnMinus.addActionListener(l -> {
+            Globals.setHarts(-1);
+            buildMainDisplayArea();
+            super.dialog.dispose();
+        });
         displayOptions.add(Box.createHorizontalGlue());
+        displayOptions.add(btnMinus);
         displayOptions.add(hartWindowSelector);
+        displayOptions.add(btnPlus);
         clearButton.addKeyListener(new EnterKeyListener(clearButton));
         displayOptions.add(Box.createHorizontalGlue());
         displayOptions.add(clearButton);
