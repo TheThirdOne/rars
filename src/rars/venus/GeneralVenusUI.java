@@ -12,6 +12,7 @@ import rars.venus.settings.*;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.beans.PropertyVetoException;
 import java.net.URL;
 
 /*
@@ -117,9 +118,13 @@ public class GeneralVenusUI extends JFrame {
         registersPane.setPreferredSize(registersPanePreferredSize);
 
         mainPane = new GeneralMainPane(mainUI, registersTab, fpTab, csrTab);
-
-
         mainPane.setPreferredSize(mainPanePreferredSize);
+        try {
+            mainPane.getExecutePane().getTextSegmentWindow().setMaximum(true);
+        } catch (PropertyVetoException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        }
 
         horizonSplitter = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, mainPane, registersPane);
         horizonSplitter.setOneTouchExpandable(true);

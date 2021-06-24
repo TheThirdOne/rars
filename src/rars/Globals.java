@@ -154,7 +154,7 @@ public class Globals {
 
     public static void setHartWindows(){
         for (int i = 1; i < Globals.getHarts(); i++) {
-            GeneralVenusUI temp= new GeneralVenusUI("Window "+i);
+            GeneralVenusUI temp= new GeneralVenusUI(String.format("Hart %d", i));
             hartWindows.add(temp);
         }
     }
