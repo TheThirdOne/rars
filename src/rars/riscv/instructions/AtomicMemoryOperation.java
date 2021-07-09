@@ -57,11 +57,23 @@ public abstract class AtomicMemoryOperation extends Atomic {
     public void simulate(ProgramStatement statement) throws SimulationException {
         int[] operands = statement.getOperands();
         try {
-            int rs1Loc = RegisterFile.getValue(operands[2]);
+            int rs1Loc;
+            long rs2Value;
+            long rs1Data;
+            if(statement.getCurrentHart() == -1){
+                rs1Loc = RegisterFile.getValue(operands[2]);
+                rs2Value = RegisterFile.getValueLong(operands[1]);
+                rs1Data = InstructionSet.rv64 ? Globals.memory.getDoubleWord(rs1Loc) : Globals.memory.getWord(rs1Loc);
+                RegisterFile.updateRegister(operands[0], rs1Data);
+            }
+            else{
+                rs1Loc = RegisterFile.getValue(operands[2], statement.getCurrentHart());
+                rs2Value = RegisterFile.getValueLong(operands[1], statement.getCurrentHart());
+                rs1Data = InstructionSet.rv64 ? Globals.memory.getDoubleWord(rs1Loc) : Globals.memory.getWord(rs1Loc);
+                RegisterFile.updateRegister(operands[0], rs1Data, statement.getCurrentHart());
+            }
             Globals.reservationTables.unreserveAddress(0, rs1Loc, width);
-            long rs1Data = InstructionSet.rv64 ? Globals.memory.getDoubleWord(rs1Loc) : Globals.memory.getWord(rs1Loc);
-            long rs2Value = RegisterFile.getValueLong(operands[1]);
-            RegisterFile.updateRegister(operands[0], rs1Data);
+            
             rs1Data = binaryOperation(rs1Data, rs2Value);
             if (InstructionSet.rv64) {
                 Globals.memory.setDoubleWord(rs1Loc, rs1Data);

@@ -111,13 +111,13 @@ public class GeneralVenusUI extends JFrame {
         // roughly in bottom-up order; some are created in component constructors and thus are
         // not visible here.
 
-        registersTab = new RegistersWindow("Not GUI");
+        registersTab = new RegistersWindow(s.charAt(s.length()-1) - '1');
         fpTab = new FloatingPointWindow();
         csrTab = new ControlAndStatusWindow();
         registersPane = new GeneralRegistersPane(mainUI, registersTab, fpTab, csrTab);
         registersPane.setPreferredSize(registersPanePreferredSize);
 
-        mainPane = new GeneralMainPane(mainUI, registersTab, fpTab, csrTab);
+        mainPane = new GeneralMainPane(mainUI, registersTab, fpTab, csrTab, s.charAt(s.length()-1) - '1');
         mainPane.setPreferredSize(mainPanePreferredSize);
         try {
             mainPane.getExecutePane().getTextSegmentWindow().setMaximum(true);

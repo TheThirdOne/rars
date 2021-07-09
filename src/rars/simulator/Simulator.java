@@ -88,6 +88,9 @@ public class Simulator extends Observable {
         // Its constructor looks for the GUI, which at load time is not created yet,
         // and incorrectly leaves interactiveGUIUpdater null!  This causes runtime
         // exceptions while running in timed mode.
+        if(tempHart < 0){
+            return null;    
+        }
         if (gSimulator == null) {
             gSimulator = new ArrayList<>();
             gSimulatorThread = new ArrayList<>();
@@ -229,7 +232,7 @@ public class Simulator extends Observable {
         private SimulationException pe;
         private volatile boolean stop = false;
         private Reason constructReturnReason;
-        private int hart = -1;
+        private int hart;
 
         /**
          * SimThread constructor.  Receives all the information it needs to simulate execution.
@@ -272,7 +275,11 @@ public class Simulator extends Observable {
                     maxSteps,(Globals.getGui() != null || Globals.runSpeedPanelExists)?RunSpeedPanel.getInstance().getRunSpeed():RunSpeedPanel.UNLIMITED_SPEED,
                     pc, null, pe, done));
         }
-
+        private void startExecution(int hart) {
+            Simulator.getInstance(hart).notifyObserversOfExecution(new SimulatorNotice(SimulatorNotice.SIMULATOR_START,
+                    maxSteps,(Globals.getGui() != null || Globals.runSpeedPanelExists)?RunSpeedPanel.getInstance().getRunSpeed():RunSpeedPanel.UNLIMITED_SPEED,
+                    pc, null, pe, done));
+        }
         private void stopExecution(boolean done, Reason reason) {
             this.done = done;
             this.constructReturnReason = reason;
@@ -385,6 +392,8 @@ public class Simulator extends Observable {
             }
             if(hart == -1)
                 startExecution();
+            else
+                startExecution(hart);
 
             // *******************  PS addition 26 July 2006  **********************
             // A couple statements below were added for the purpose of assuring that when
@@ -498,14 +507,21 @@ public class Simulator extends Observable {
                     }
                     else{
                         pc = RegisterFile.getProgramCounter(hart);
+                        RegisterFile.incrementPC(hart);
                     }
                     
                     // Get instuction
                     try {
-                        if(hart == -1)
+                        if(hart == -1){
                             statement = Globals.memory.getStatement(pc);
-                        else
+                            if(statement != null)
+                                statement.setCurrentHart(-1);
+                        }
+                        else{
                             statement = Globals.memory.getStatementNoNotify(pc);
+                            if(statement != null)
+                                statement.setCurrentHart(hart);
+                        }
                     } catch (AddressErrorException e) {
                         SimulationException tmp;
                         if (e.getType() == SimulationException.LOAD_ACCESS_FAULT) {
@@ -536,8 +552,8 @@ public class Simulator extends Observable {
                                     SimulationException.ILLEGAL_INSTRUCTION);
                         }
                         // THIS IS WHERE THE INSTRUCTION EXECUTION IS ACTUALLY SIMULATED!
-                        instruction.simulate(statement);
 
+                        instruction.simulate(statement);
                         // IF statement added 7/26/06 (explanation above)
                         if (Globals.getSettings().getBackSteppingEnabled()) {
                             Globals.program.getBackStepper().addDoNothing(pc);
@@ -641,7 +657,7 @@ public class Simulator extends Observable {
         }
     }
 
-    private class GeneralUpdateGUI implements Runnable {
+  /*  private class GeneralUpdateGUI implements Runnable {
         public void run() {
             if (Globals.getGui().getRegistersPane().getSelectedComponent() ==
                     Globals.getGui().getMainPane().getExecutePane().getRegistersWindow()) {
@@ -653,5 +669,5 @@ public class Simulator extends Observable {
             Globals.getGui().getMainPane().getExecutePane().getTextSegmentWindow().setCodeHighlighting(true);
             Globals.getGui().getMainPane().getExecutePane().getTextSegmentWindow().highlightStepAtPC();
         }
-    }
+    }*/
 }

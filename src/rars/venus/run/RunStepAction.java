@@ -103,7 +103,10 @@ public class RunStepAction extends GuiAction {
 
             Globals.program.startSimulation(1, null);
             for(int i = 0; i < hartWindows.size(); i++){
+                Simulator.getInstance(i).addObserver(stopListener);
                 Globals.gPrograms.get(i).startSimulation(1, null, i);
+                gExecutePanes.get(i).getRegistersWindow().updateRegisters(i);
+                //System.out.println("Hart " + i + " " + RegisterFile.gInstance.get(i).getRegister(6).getValue());
             }
         } else {
             // note: this should never occur since "Step" is only enabled after successful assembly.
@@ -120,7 +123,7 @@ public class RunStepAction extends GuiAction {
         executePane.getDataSegmentWindow().updateValues();
 
         for(int i = 0; i < hartWindows.size(); i++){
-            gExecutePanes.get(i).getRegistersWindow().updateRegisters();
+            gExecutePanes.get(i).getRegistersWindow().updateRegisters(i);
             gExecutePanes.get(i).getFloatingPointWindow().updateRegisters();
             gExecutePanes.get(i).getControlAndStatusWindow().updateRegisters();
         }

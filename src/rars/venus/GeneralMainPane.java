@@ -48,7 +48,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 public class GeneralMainPane extends JTabbedPane {
     GeneralExecutePane executeTab;
-
+    private int hart;
     private GeneralVenusUI mainUI;
 
     /**
@@ -56,15 +56,16 @@ public class GeneralMainPane extends JTabbedPane {
      **/
 
     public GeneralMainPane(GeneralVenusUI appFrame, RegistersWindow regs,
-                    FloatingPointWindow cop1Regs, ControlAndStatusWindow cop0Regs) {
+                    FloatingPointWindow cop1Regs, ControlAndStatusWindow cop0Regs, int hart) {
         super();
+        this.hart = hart;
         this.mainUI = appFrame;
         this.setTabPlacement(JTabbedPane.TOP); //LEFT);
         if (this.getUI() instanceof BasicTabbedPaneUI) {
             BasicTabbedPaneUI ui = (BasicTabbedPaneUI) this.getUI();
         }
 
-        executeTab = new GeneralExecutePane(appFrame, regs, cop1Regs, cop0Regs);
+        executeTab = new GeneralExecutePane(appFrame, regs, cop1Regs, cop0Regs, hart);
         String executeTabTitle = "Execute"; //"<html><center>&nbsp;<br>E<br>x<br>e<br>c<br>u<br>t<br>e<br>&nbsp;</center></html>";
         Icon executeTabIcon = null;//new ImageIcon(Toolkit.getDefaultToolkit().getImage(this.getClass().getResource(Globals.imagesPath+"Execute_tab.jpg")));
 
