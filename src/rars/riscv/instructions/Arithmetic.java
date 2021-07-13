@@ -53,7 +53,7 @@ public abstract class Arithmetic extends BasicInstruction {
     public void simulate(ProgramStatement statement) {
         int[] operands = statement.getOperands();
         if (InstructionSet.rv64){
-            if(statement.getCurrentHart() == 0)
+            if(statement.getCurrentHart() == -1)
                 RegisterFile.updateRegister(operands[0], compute(RegisterFile.getValueLong(operands[1]),RegisterFile.getValueLong(operands[2])));
             else{
                 RegisterFile.updateRegister(operands[0], compute(RegisterFile.getValueLong(operands[1]),RegisterFile.getValueLong(operands[2])), statement.getCurrentHart());
@@ -61,7 +61,7 @@ public abstract class Arithmetic extends BasicInstruction {
         }
         else {
             
-            if(statement.getCurrentHart() == 0)
+            if(statement.getCurrentHart() == -1)
                 RegisterFile.updateRegister(operands[0], computeW(RegisterFile.getValue(operands[1]),RegisterFile.getValue(operands[2])));
             else{
                 RegisterFile.updateRegister(operands[0], computeW(RegisterFile.getValue(operands[1]),RegisterFile.getValue(operands[2])), statement.getCurrentHart());
