@@ -10,8 +10,6 @@ import rars.simulator.SimulatorNotice;
 import rars.util.SystemIO;
 import rars.venus.ExecutePane;
 import rars.venus.FileStatus;
-import rars.venus.GeneralExecutePane;
-import rars.venus.GeneralVenusUI;
 import rars.venus.GuiAction;
 import rars.venus.VenusUI;
 
@@ -59,9 +57,7 @@ public class RunGoAction extends GuiAction {
     public static int maxSteps = defaultMaxSteps;
     private String name;
     private ExecutePane executePane;
-    private ArrayList<GeneralExecutePane> gexecutePanes = new ArrayList<>();
     private VenusUI mainUI;
-    protected ArrayList<GeneralVenusUI> hartWindows = Globals.getHartWindows();
 
     public RunGoAction(String name, Icon icon, String descrip,
                        Integer mnemonic, KeyStroke accel, VenusUI gui) {
@@ -75,9 +71,6 @@ public class RunGoAction extends GuiAction {
     public void actionPerformed(ActionEvent e) {
         name = this.getValue(Action.NAME).toString();
         executePane = mainUI.getMainPane().getExecutePane();
-        for(int i = 0; i < hartWindows.size(); i++){
-            gexecutePanes.add(hartWindows.get(i).getMainPane().getExecutePane());
-        }
         if (FileStatus.isAssembled()) {
             if (!mainUI.getStarted()) {
                 processProgramArgumentsIfAny();  // DPS 17-July-2008
@@ -85,18 +78,11 @@ public class RunGoAction extends GuiAction {
             if (mainUI.getReset() || mainUI.getStarted()) {
 
                 mainUI.setStarted(true);  // added 8/27/05
-                for(int i = 0; i < hartWindows.size(); i++){
-                    hartWindows.get(i).setStarted(true);
-                }
                 mainUI.getMessagesPane().postMessage(
                         name + ": running " + FileStatus.getFile().getName() + "\n\n");
                 mainUI.getMessagesPane().selectRunMessageTab();
                 executePane.getTextSegmentWindow().setCodeHighlighting(false);
                 executePane.getTextSegmentWindow().unhighlightAllSteps();
-                for(int i = 0; i < hartWindows.size(); i++){
-                    gexecutePanes.get(i).getTextSegmentWindow().setCodeHighlighting(false);
-                    gexecutePanes.get(i).getTextSegmentWindow().unhighlightAllSteps();
-                }
                 //FileStatus.set(FileStatus.RUNNING);
                 mainUI.setMenuState(FileStatus.RUNNING);
 
@@ -156,15 +142,6 @@ public class RunGoAction extends GuiAction {
         executePane.getFloatingPointWindow().updateRegisters();
         executePane.getControlAndStatusWindow().updateRegisters();
         executePane.getDataSegmentWindow().updateValues();
-        for(int i = 0; i < hartWindows.size(); i++){
-            gexecutePanes.get(i).getTextSegmentWindow().setCodeHighlighting(true);
-            gexecutePanes.get(i).getTextSegmentWindow().highlightStepAtPC();
-            gexecutePanes.get(i).getRegistersWindow().updateRegisters();
-            gexecutePanes.get(i).getFloatingPointWindow().updateRegisters();
-            gexecutePanes.get(i).getControlAndStatusWindow().updateRegisters();
-            hartWindows.get(i).setReset(false);
-
-        }
         FileStatus.set(FileStatus.RUNNABLE);
         mainUI.setReset(false);
     }
@@ -182,11 +159,6 @@ public class RunGoAction extends GuiAction {
         executePane.getFloatingPointWindow().updateRegisters();
         executePane.getControlAndStatusWindow().updateRegisters();
         executePane.getDataSegmentWindow().updateValues();
-        for(int i = 0; i < hartWindows.size(); i++){
-            gexecutePanes.get(i).getRegistersWindow().updateRegisters();
-            gexecutePanes.get(i).getFloatingPointWindow().updateRegisters();
-            gexecutePanes.get(i).getControlAndStatusWindow().updateRegisters();
-        }
         FileStatus.set(FileStatus.TERMINATED);
         SystemIO.resetFiles(); // close any files opened in MIPS program
         // Bring CSRs to the front if terminated due to exception.
@@ -196,12 +168,6 @@ public class RunGoAction extends GuiAction {
             executePane.getTextSegmentWindow().setCodeHighlighting(true);
             executePane.getTextSegmentWindow().unhighlightAllSteps();
             executePane.getTextSegmentWindow().highlightStepAtAddress(RegisterFile.getProgramCounter() - 4);
-            for(int i = 0; i < hartWindows.size(); i++){
-                hartWindows.get(i).getRegistersPane().setSelectedComponent(executePane.getControlAndStatusWindow());
-                gexecutePanes.get(i).getTextSegmentWindow().setCodeHighlighting(true);
-                gexecutePanes.get(i).getTextSegmentWindow().unhighlightAllSteps();
-                gexecutePanes.get(i).getTextSegmentWindow().highlightStepAtAddress(RegisterFile.getProgramCounter() - 4);
-            }
         }
         switch (reason) {
             case NORMAL_TERMINATION:
@@ -239,11 +205,6 @@ public class RunGoAction extends GuiAction {
         }
         RunGoAction.resetMaxSteps();
         mainUI.setReset(false);
-        for(int i = 0; i < hartWindows.size(); i++){
-            hartWindows.get(i).setReset(false);
-        }
-
-        
     }
 
     /**

@@ -7,7 +7,6 @@ import rars.util.FilenameFinder;
 import rars.util.SystemIO;
 import rars.venus.*;
 import rars.venus.registers.RegistersPane;
-import rars.venus.registers.GeneralRegistersPane;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -48,17 +47,14 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 public class RunAssembleAction extends GuiAction {
 
     private static ArrayList<RISCVprogram> programsToAssemble;
-    private static ArrayList<ArrayList<RISCVprogram>> gProgramsToAssemble;
     private static boolean extendedAssemblerEnabled;
     private static boolean warningsAreErrors;
     // Threshold for adding filename to printed message of files being assembled.
     private static final int LINE_LENGTH_LIMIT = 60;
     private VenusUI mainUI;
-    protected ArrayList<GeneralVenusUI> hartWindows = Globals.getHartWindows();
 
     public RunAssembleAction(String name, Icon icon, String descrip, Integer mnemonic, KeyStroke accel, VenusUI gui) {
         super(name, icon, descrip, mnemonic, accel);
-        Globals.setHartWindows();
         mainUI = gui;
     }
 
@@ -81,13 +77,6 @@ public class RunAssembleAction extends GuiAction {
         MessagesPane messagesPane = mainUI.getMessagesPane();
         ExecutePane executePane = mainUI.getMainPane().getExecutePane();
         RegistersPane registersPane = mainUI.getRegistersPane();
-        ArrayList<GeneralExecutePane> gexecutePanes =  new ArrayList<>();
-        ArrayList<GeneralRegistersPane> gregistersPanes = new ArrayList<>();
-
-        for (int i = 0; i < hartWindows.size(); i++) {
-            gexecutePanes.add(hartWindows.get(i).getMainPane().getExecutePane());
-            gregistersPanes.add(hartWindows.get(i).getRegistersPane());
-        }
 
         extendedAssemblerEnabled = Globals.getSettings().getBooleanSetting(Settings.Bool.EXTENDED_ASSEMBLER_ENABLED);
         warningsAreErrors = Globals.getSettings().getBooleanSetting(Settings.Bool.WARNINGS_ARE_ERRORS);
@@ -97,10 +86,6 @@ public class RunAssembleAction extends GuiAction {
             }
             try {
                 Globals.program = new RISCVprogram();
-                Globals.gPrograms = new ArrayList<>();
-                for (int i = 0; i < hartWindows.size(); i++){
-                    Globals.gPrograms.add(new RISCVprogram());
-                }
                 ArrayList<String> filesToAssemble;
                 if (Globals.getSettings().getBooleanSetting(Settings.Bool.ASSEMBLE_ALL)) {// setting calls for multiple
                                                                                           // file assembly
@@ -143,12 +128,6 @@ public class RunAssembleAction extends GuiAction {
                 ControlAndStatusRegisterFile.resetRegisters();
                 InterruptController.reset();
                 Globals.reservationTables.reset();
-                for (int i = 0; i < hartWindows.size(); i++) {
-                    gexecutePanes.get(i).getTextSegmentWindow().setupTable();
-                    gexecutePanes.get(i).getLabelsWindow().setupTable();
-                    gexecutePanes.get(i).getTextSegmentWindow().setCodeHighlighting(true);
-                    gexecutePanes.get(i).getTextSegmentWindow().highlightStepAtPC();
-                }
                 executePane.getTextSegmentWindow().setupTable();
                 executePane.getDataSegmentWindow().setupTable();
                 executePane.getDataSegmentWindow().highlightCellForAddress(Memory.dataBaseAddress);
@@ -159,13 +138,6 @@ public class RunAssembleAction extends GuiAction {
                 registersPane.getRegistersWindow().clearWindow();
                 registersPane.getFloatingPointWindow().clearWindow();
                 registersPane.getControlAndStatusWindow().clearWindow();
-                for(int i = 0; i < hartWindows.size(); i++){
-                    gregistersPanes.get(i).getRegistersWindow().clearWindow();
-                    gregistersPanes.get(i).getFloatingPointWindow().clearWindow();
-                    gregistersPanes.get(i).getControlAndStatusWindow().clearWindow();
-                    hartWindows.get(i).setReset(true);
-                    hartWindows.get(i).setStarted(false);
-                }
                 mainUI.setReset(true);
                 mainUI.setStarted(false);
                 mainUI.getMainPane().setSelectedComponent(executePane);

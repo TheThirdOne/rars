@@ -7,7 +7,6 @@ import rars.riscv.InstructionSet;
 import rars.riscv.SyscallNumberOverride;
 import rars.util.PropertiesFile;
 import rars.venus.VenusUI;
-import rars.venus.GeneralVenusUI;
 
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -62,8 +61,6 @@ public class Globals {
      * the program currently being worked with.  Used by GUI only, not command line.
      **/
     public static RISCVprogram program;
-
-    public static ArrayList<RISCVprogram> gPrograms;
     /**
      * Symbol table for file currently being assembled.
      **/
@@ -148,20 +145,7 @@ public class Globals {
 
     public static boolean runSpeedPanelExists = false;
 
-    private static int harts = 2;
-
-    private static ArrayList<GeneralVenusUI> hartWindows =  new ArrayList();
-
-    public static void setHartWindows(){
-        for(int i = 1; i < Globals.getHarts(); i++){
-            GeneralVenusUI temp= new GeneralVenusUI("Window "+i);
-            hartWindows.add(temp);
-        }
-    }
-
-    public static ArrayList<GeneralVenusUI> getHartWindows(){
-        return hartWindows;
-    }
+    private static int harts = 1;
 
     public static int getHarts() {
         return harts;

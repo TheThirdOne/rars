@@ -44,7 +44,6 @@ public class ReservationTablesTool extends AbstractToolAndApplication {
     private static String displayPanelTitle;
     private JPanel displayOptions, hartPanel;
     private JComboBox<Integer> hartWindowSelector;
-    protected ArrayList<GeneralVenusUI> hartWindows = Globals.getHartWindows();
 
     private Integer[] SelectHartWindow(){
         Integer hartChoser[];
