@@ -43,16 +43,7 @@ public class ReservationTablesTool extends AbstractToolAndApplication {
     private static String version = "Version 1.0";
     private static String displayPanelTitle;
     private JPanel displayOptions, hartPanel;
-    private JComboBox<Integer> hartWindowSelector;
 
-    private Integer[] SelectHartWindow(){
-        Integer hartChoser[];
-        hartChoser = new Integer[(Integer) Globals.getHarts()];
-        for(int i = 0; i < Globals.getHarts(); i ++){
-            hartChoser[i] = i;
-        }
-        return hartChoser;
-    }
     private JTable reservations;
 
     public ReservationTablesTool() {
@@ -86,18 +77,6 @@ public class ReservationTablesTool extends AbstractToolAndApplication {
         panelTools.setBorder(tb);
 
         Box displayOptions = Box.createHorizontalBox();
-        hartWindowSelector = new JComboBox<>(SelectHartWindow());
-        hartWindowSelector.setToolTipText("Technique for determining simulated transmitter device processing delay");
-        hartWindowSelector.addActionListener(
-                new ActionListener() {
-                    public void actionPerformed(ActionEvent e) {
-                        int i = hartWindowSelector.getSelectedIndex();
-                        if (i == 0)
-                            return;
-                        else
-                            hartWindows.get(i-1).setVisible(true);
-                    }
-                });
 
         JButton clearButton = new JButton("Clear Selected");
         clearButton.setToolTipText("Clear the Selected from the Reserve Table");
@@ -121,8 +100,6 @@ public class ReservationTablesTool extends AbstractToolAndApplication {
             updateDisplay();
         });
 
-        displayOptions.add(Box.createHorizontalGlue());
-        displayOptions.add(hartWindowSelector);
         clearButton.addKeyListener(new EnterKeyListener(clearButton));
         displayOptions.add(Box.createHorizontalGlue());
         displayOptions.add(clearButton);
