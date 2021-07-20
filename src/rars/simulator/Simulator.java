@@ -54,7 +54,6 @@ public class Simulator extends Observable {
     private static Simulator simulator = null;  // Singleton object
     private static ArrayList<Simulator> gSimulator;
     private static Runnable interactiveGUIUpdater = null;
-    private int hart = 0;
     /**
      * various reasons for simulate to end...
      */
@@ -229,7 +228,7 @@ public class Simulator extends Observable {
         private SimulationException pe;
         private volatile boolean stop = false;
         private Reason constructReturnReason;
-        private int hart = -1;
+        private int hart;
 
         /**
          * SimThread constructor.  Receives all the information it needs to simulate execution.
@@ -498,14 +497,21 @@ public class Simulator extends Observable {
                     }
                     else{
                         pc = RegisterFile.getProgramCounter(hart);
+                        RegisterFile.incrementPC(hart);
                     }
                     
                     // Get instuction
                     try {
-                        if(hart == -1)
+                        if(hart == -1){
                             statement = Globals.memory.getStatement(pc);
-                        else
+                            if(statement != null)
+                                statement.setCurrentHart(-1);
+                        }
+                        else{
                             statement = Globals.memory.getStatementNoNotify(pc);
+                            if(statement != null)
+                                statement.setCurrentHart(hart);
+                        }
                     } catch (AddressErrorException e) {
                         SimulationException tmp;
                         if (e.getType() == SimulationException.LOAD_ACCESS_FAULT) {
@@ -536,8 +542,8 @@ public class Simulator extends Observable {
                                     SimulationException.ILLEGAL_INSTRUCTION);
                         }
                         // THIS IS WHERE THE INSTRUCTION EXECUTION IS ACTUALLY SIMULATED!
-                        instruction.simulate(statement);
 
+                        instruction.simulate(statement);
                         // IF statement added 7/26/06 (explanation above)
                         if (Globals.getSettings().getBackSteppingEnabled()) {
                             Globals.program.getBackStepper().addDoNothing(pc);

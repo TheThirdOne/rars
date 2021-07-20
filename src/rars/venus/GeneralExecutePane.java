@@ -52,6 +52,7 @@ public class GeneralExecutePane extends JDesktopPane {
     private NumberDisplayBaseChooser valueDisplayBase;
     private NumberDisplayBaseChooser addressDisplayBase;
     private boolean labelWindowVisible;
+    private int hart;
 
     /**
      * initialize the Execute pane with major components
@@ -62,10 +63,15 @@ public class GeneralExecutePane extends JDesktopPane {
      * @param csrRegs window containing the CSR set
      */
 
-    public GeneralExecutePane(GeneralVenusUI mainUI, RegistersWindow regs, FloatingPointWindow fpRegs, ControlAndStatusWindow csrRegs) {
+    public GeneralExecutePane(GeneralVenusUI mainUI, RegistersWindow regs, FloatingPointWindow fpRegs, ControlAndStatusWindow csrRegs, int hart) {
         this.mainUI = mainUI;
         // Although these are displayed in Data Segment, they apply to all three internal
         // windows within the Execute pane.  So they will be housed here.
+        addressDisplayBase = new NumberDisplayBaseChooser("Hexadecimal Addresses",
+                Globals.getSettings().getBooleanSetting(Settings.Bool.DISPLAY_ADDRESSES_IN_HEX));
+        valueDisplayBase = new NumberDisplayBaseChooser("Hexadecimal Values",
+                Globals.getSettings().getBooleanSetting(Settings.Bool.DISPLAY_VALUES_IN_HEX));//VenusUI.DEFAULT_NUMBER_BASE);
+        this.hart = hart;
         registerValues = regs;
         fpRegValues = fpRegs;
         csrValues = csrRegs;
@@ -227,7 +233,7 @@ public class GeneralExecutePane extends JDesktopPane {
     public void numberDisplayBaseChanged(NumberDisplayBaseChooser chooser) {
         if (chooser == valueDisplayBase) {
             // Have all internal windows update their value columns
-            registerValues.updateRegisters();
+            registerValues.updateRegisters(hart);
             fpRegValues.updateRegisters();
             csrValues.updateRegisters();
             textSegment.updateBasicStatements();
