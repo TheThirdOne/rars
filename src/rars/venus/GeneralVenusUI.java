@@ -1,13 +1,9 @@
 package rars.venus;
 
 import rars.Globals;
-import rars.Settings;
-import rars.riscv.InstructionSet;
-import rars.riscv.dump.DumpFormatLoader;
 import rars.simulator.Simulator;
 import rars.venus.registers.*;
 import rars.venus.run.*;
-import rars.venus.settings.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -56,15 +52,18 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 public class GeneralVenusUI extends JFrame {
     GeneralVenusUI mainUI;
 
+    private JToolBar toolbar;
     private GeneralMainPane mainPane;
     private GeneralRegistersPane registersPane;
     private RegistersWindow registersTab;
     private FloatingPointWindow fpTab;
     private ControlAndStatusWindow csrTab;
-    private JSplitPane splitter, horizonSplitter;
+    private JSplitPane horizonSplitter;
     JPanel north;
 
-    private int frameState; // see windowActivated() and windowDeactivated()
+    private JButton Run, Reset, Step, Backstep, Stop, Pause;
+    private Action runGoAction, runStepAction, runBackstepAction,
+            runResetAction, runStopAction, runPauseAction;
 
     // PLEASE PUT THESE TWO (& THEIR METHODS) SOMEWHERE THEY BELONG, NOT HERE
     private boolean reset = true; // registers/memory reset for execution
@@ -76,6 +75,7 @@ public class GeneralVenusUI extends JFrame {
      * @param s Name of the window to be created.
      **/
 
+    // TODO check for mem observer
     public GeneralVenusUI(String s) {
         super(s);
         mainUI = this;
@@ -130,7 +130,11 @@ public class GeneralVenusUI extends JFrame {
         horizonSplitter.setOneTouchExpandable(true);
         horizonSplitter.resetToPreferredSizes();
 
+        this.createActionObjects();
+        toolbar = this.setUpToolBar();
+
         JPanel jp = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        jp.add(toolbar);
         JPanel center = new JPanel(new BorderLayout());
         center.add(jp, BorderLayout.NORTH);
         center.add(horizonSplitter);
@@ -215,5 +219,73 @@ public class GeneralVenusUI extends JFrame {
 
     private KeyStroke makeShortcut(int key) {
         return KeyStroke.getKeyStroke(key, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());
+    }
+
+    /*
+     * Action objects are used instead of action listeners because one can be easily
+     * shared between a menu item and a toolbar button. Does nice things like
+     * disable both if the action is disabled, etc.
+     */
+    private void createActionObjects() {
+        try {
+            runGoAction = new RunGoAction("Go", loadIcon("Play22.png"), "Run the current program", KeyEvent.VK_G,
+                    KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0), Globals.getGui());
+            runStepAction = new RunStepAction("Step", loadIcon("StepForward22.png"), "Run one step at a time",
+                    KeyEvent.VK_T, KeyStroke.getKeyStroke(KeyEvent.VK_F7, 0), Globals.getGui());
+            runBackstepAction = new RunBackstepAction("Backstep", loadIcon("StepBack22.png"), "Undo the last step",
+                    KeyEvent.VK_B, KeyStroke.getKeyStroke(KeyEvent.VK_F8, 0), Globals.getGui());
+            runPauseAction = new GuiAction("Pause", loadIcon("Pause22.png"), "Pause the currently running program",
+                    KeyEvent.VK_P, KeyStroke.getKeyStroke(KeyEvent.VK_F9, 0)) {
+                public void actionPerformed(ActionEvent e) {
+                    Simulator.getInstance().pauseExecution();
+                    // RunGoAction's "paused" method will do the cleanup.
+                }
+            };
+            runStopAction = new GuiAction("Stop", loadIcon("Stop22.png"), "Stop the currently running program",
+                    KeyEvent.VK_S, KeyStroke.getKeyStroke(KeyEvent.VK_F11, 0)) {
+                public void actionPerformed(ActionEvent e) {
+                    Simulator.getInstance().stopExecution();
+                    // RunGoAction's "stopped" method will take care of the cleanup.
+                }
+            };
+            runResetAction = new RunResetAction("Reset", loadIcon("Reset22.png"), "Reset memory and registers",
+                    KeyEvent.VK_R, KeyStroke.getKeyStroke(KeyEvent.VK_F12, 0), Globals.getGui());
+        } catch (NullPointerException e) {
+            System.out.println(
+                    "Internal Error: images folder not found, or other null pointer exception while creating Action objects");
+            e.printStackTrace();
+            System.exit(0);
+        }
+    }
+
+    /*
+     * build the toolbar and connect items to action objects (which serve as action
+     * listeners shared between toolbar icon and corresponding menu item).
+     */
+
+    JToolBar setUpToolBar() {
+        JToolBar toolBar = new JToolBar();
+
+        Run = new JButton(runGoAction);
+        Run.setText("");
+        Step = new JButton(runStepAction);
+        Step.setText("");
+        Backstep = new JButton(runBackstepAction);
+        Backstep.setText("");
+        Reset = new JButton(runResetAction);
+        Reset.setText("");
+        Stop = new JButton(runStopAction);
+        Stop.setText("");
+        Pause = new JButton(runPauseAction);
+        Pause.setText("");
+
+        toolBar.add(Run);
+        toolBar.add(Step);
+        toolBar.add(Backstep);
+        toolBar.add(Pause);
+        toolBar.add(Stop);
+        toolBar.add(Reset);
+
+        return toolBar;
     }
 }

@@ -106,7 +106,7 @@ public class RunStepAction extends GuiAction {
                 Simulator.getInstance(i).addObserver(stopListener);
                 Globals.gPrograms.get(i).startSimulation(1, null, i);
                 gExecutePanes.get(i).getRegistersWindow().updateRegisters(i);
-                System.out.println("Hart " + i + " " + RegisterFile.gInstance.get(i).getRegister(6).getValue());
+                //System.out.println("Hart " + i + " " + RegisterFile.gInstance.get(i).getRegister(6).getValue());
             }
         } else {
             // note: this should never occur since "Step" is only enabled after successful assembly.

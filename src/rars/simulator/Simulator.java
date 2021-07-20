@@ -87,6 +87,9 @@ public class Simulator extends Observable {
         // Its constructor looks for the GUI, which at load time is not created yet,
         // and incorrectly leaves interactiveGUIUpdater null!  This causes runtime
         // exceptions while running in timed mode.
+        if(tempHart < 0){
+            return null;    
+        }
         if (gSimulator == null) {
             gSimulator = new ArrayList<>();
             gSimulatorThread = new ArrayList<>();
@@ -271,7 +274,11 @@ public class Simulator extends Observable {
                     maxSteps,(Globals.getGui() != null || Globals.runSpeedPanelExists)?RunSpeedPanel.getInstance().getRunSpeed():RunSpeedPanel.UNLIMITED_SPEED,
                     pc, null, pe, done));
         }
-
+        private void startExecution(int hart) {
+            Simulator.getInstance(hart).notifyObserversOfExecution(new SimulatorNotice(SimulatorNotice.SIMULATOR_START,
+                    maxSteps,(Globals.getGui() != null || Globals.runSpeedPanelExists)?RunSpeedPanel.getInstance().getRunSpeed():RunSpeedPanel.UNLIMITED_SPEED,
+                    pc, null, pe, done));
+        }
         private void stopExecution(boolean done, Reason reason) {
             this.done = done;
             this.constructReturnReason = reason;
@@ -384,6 +391,8 @@ public class Simulator extends Observable {
             }
             if(hart == -1)
                 startExecution();
+            else
+                startExecution(hart);
 
             // *******************  PS addition 26 July 2006  **********************
             // A couple statements below were added for the purpose of assuring that when
@@ -647,7 +656,7 @@ public class Simulator extends Observable {
         }
     }
 
-    private class GeneralUpdateGUI implements Runnable {
+  /*  private class GeneralUpdateGUI implements Runnable {
         public void run() {
             if (Globals.getGui().getRegistersPane().getSelectedComponent() ==
                     Globals.getGui().getMainPane().getExecutePane().getRegistersWindow()) {
@@ -659,5 +668,5 @@ public class Simulator extends Observable {
             Globals.getGui().getMainPane().getExecutePane().getTextSegmentWindow().setCodeHighlighting(true);
             Globals.getGui().getMainPane().getExecutePane().getTextSegmentWindow().highlightStepAtPC();
         }
-    }
+    }*/
 }

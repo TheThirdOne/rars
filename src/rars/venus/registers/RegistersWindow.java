@@ -86,7 +86,9 @@ public class RegistersWindow extends RegisterBlockWindow {
     protected void beginObserving() {
         RegisterFile.addRegistersObserver(this);
     }
-
+    protected void beginObserving(int hart){
+        RegisterFile.addRegistersObserver(this, hart);
+    }
     protected void endObserving() {
         RegisterFile.deleteRegistersObserver(this);
     }
