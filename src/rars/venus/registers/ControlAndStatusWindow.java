@@ -47,7 +47,10 @@ public class ControlAndStatusWindow extends RegisterBlockWindow {
     protected void beginObserving() {
         ControlAndStatusRegisterFile.addRegistersObserver(this);
     }
-
+    protected void beginObserving(int hart) {
+        ControlAndStatusRegisterFile.addRegistersObserver(this);
+    }
+    
     protected void endObserving() {
         ControlAndStatusRegisterFile.deleteRegistersObserver(this);
     }

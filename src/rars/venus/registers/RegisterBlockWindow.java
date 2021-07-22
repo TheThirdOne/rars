@@ -119,6 +119,7 @@ public abstract class RegisterBlockWindow extends JPanel implements Observer {
     protected abstract String formatRegister(Register value, int base);
 
     protected abstract void beginObserving();
+    protected abstract void beginObserving(int hart);
 
     protected abstract void endObserving();
 
@@ -188,6 +189,7 @@ public abstract class RegisterBlockWindow extends JPanel implements Observer {
      * @param register Register object corresponding to row to be selected.
      */
     private void highlightCellForRegister(Register register) {
+        System.out.println(register.getHart() + " ggg");
         for (int i = 0; i < registers.length; i++) {
             if (registers[i] == register) {
                 this.highlightRow = i;
@@ -216,7 +218,10 @@ public abstract class RegisterBlockWindow extends JPanel implements Observer {
                 // Simulated MIPS execution starts.  Respond to memory changes if running in timed
                 // or stepped mode.
                 if (notice.getRunSpeed() != RunSpeedPanel.UNLIMITED_SPEED || notice.getMaxSteps() == 1) {
-                    beginObserving();
+                    if(this.hart == -1)
+                        beginObserving();
+                    else
+                        beginObserving(hart);
                     this.highlighting = true;
                 }
             } else {
@@ -229,11 +234,9 @@ public abstract class RegisterBlockWindow extends JPanel implements Observer {
             if (access.getAccessType() == AccessNotice.WRITE) {
                 // Uses the same highlighting technique as for Text Segment -- see
                 // AddressCellRenderer class in DataSegmentWindow.java.
-                System.out.println("\nHHHHHHHH " + hart + "\n");
+                System.out.println("\nHHHHHHHH " + hart + " " + ((Register) observable).getHart());
                 this.highlighting = true;
                 this.highlightCellForRegister((Register) observable);
-                if(notMainUI && hart == -1)
-                    Globals.getGui().getRegistersPane().setSelectedComponent(this);
             }
         }
     }

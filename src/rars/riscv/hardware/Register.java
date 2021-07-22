@@ -140,6 +140,10 @@ public class Register extends Observable {
         return old;
     }
 
+    public int getHart(){
+            return hart;
+    }
+
     /**
      * Sets the value of the register to the val passed to it. This should only
      * be used to update registers not related to the current instruction.

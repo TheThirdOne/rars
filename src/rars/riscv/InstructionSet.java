@@ -322,7 +322,9 @@ public class InstructionSet {
     public static void processJump(int targetAddress) {
         RegisterFile.setProgramCounter(targetAddress);
     }
-
+    public static void processJump(int targetAddress, int hart) {
+        RegisterFile.setProgramCounter(targetAddress, hart);
+    }
    	/*
         * Method to process storing of a return address in the given
    	 * register.  This is used only by the "and link"
@@ -333,7 +335,9 @@ public class InstructionSet {
     public static void processReturnAddress(int register) {
         RegisterFile.updateRegister(register, RegisterFile.getProgramCounter());
     }
-
+    public static void processReturnAddress(int register, int hart){
+        RegisterFile.updateRegister(register, RegisterFile.getProgramCounter(hart), hart);
+    }
     private static class MatchMap implements Comparable<MatchMap> {
         private int mask;
         private int maskLength; // number of 1 bits in mask

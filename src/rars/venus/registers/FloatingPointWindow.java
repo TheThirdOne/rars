@@ -59,7 +59,9 @@ public class FloatingPointWindow extends RegisterBlockWindow {
     protected void beginObserving() {
         FloatingPointRegisterFile.addRegistersObserver(this);
     }
-
+    protected void beginObserving(int hart) {
+        FloatingPointRegisterFile.addRegistersObserver(this);
+    }
     protected void endObserving() {
         FloatingPointRegisterFile.deleteRegistersObserver(this);
     }

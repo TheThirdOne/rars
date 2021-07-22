@@ -72,6 +72,9 @@ public class RegisterFile {
     private static ArrayList<Register> gProgramCounter;
     
     public static void initProgramCounter(){
+        if(gProgramCounter != null){
+            return;
+        }
         gProgramCounter = new ArrayList<>();
         for(int i = 1;  i < Globals.getHarts(); i++){
             Register temp = new Register("pc", -1, Memory.textBaseAddress);
@@ -79,6 +82,8 @@ public class RegisterFile {
         }
     }
     public static void initGRegisterBlock(){
+        if(gInstance != null)
+            return;
         gInstance = new ArrayList<>();
         for(int i = 0; i < Globals.getHarts(); i++){
             RegisterBlock temp = new RegisterBlock('x', new Register[]{
@@ -104,7 +109,40 @@ public class RegisterFile {
         }
 
     }
-
+    public static void changeHarts(int sign){
+        if(gInstance == null){
+            initProgramCounter();
+            initGRegisterBlock();
+        }
+        if(sign > 0){
+            int i = gInstance.size();
+            RegisterBlock temp = new RegisterBlock('x', new Register[]{
+                new Register("zero", 0, 0, i), new Register("ra", 1, 0, i),
+                new Register("sp", STACK_POINTER_REGISTER, Memory.stackPointer, i),
+                new Register("gp", GLOBAL_POINTER_REGISTER, Memory.globalPointer, i),
+                new Register("tp", 4, 0, i), new Register("t0", 5, 0, i),
+                new Register("t1", 6, 0, i), new Register("t2", 7, 0, i),
+                new Register("s0", 8, 0, i), new Register("s1", 9, 0, i),
+                new Register("a0", 10, 0, i), new Register("a1", 11, 0, i),
+                new Register("a2", 12, 0, i), new Register("a3", 13, 0, i),
+                new Register("a4", 14, 0, i), new Register("a5", 15, 0, i),
+                new Register("a6", 16, 0, i), new Register("a7", 17, 0, i),
+                new Register("s2", 18, 0, i), new Register("s3", 19, 0, i),
+                new Register("s4", 20, 0, i), new Register("s5", 21, 0, i),
+                new Register("s6", 22, 0, i), new Register("s7", 23, 0, i),
+                new Register("s8", 24, 0, i), new Register("s9", 25, 0, i),
+                new Register("s10", 26, 0,i), new Register("s11", 27, 0, i),
+                new Register("t3", 28, 0, i), new Register("t4", 29, 0, i),
+                new Register("t5", 30, 0, i), new Register("t6", 31, 0, i)
+            });
+            gInstance.add(temp);
+        }
+        if(sign < 0){
+            gInstance.remove(gInstance.size() -1);
+            gProgramCounter.remove(gProgramCounter.size()-1);
+        }
+        
+    }
     /**
      * This method updates the register value who's number is num.  Also handles the lo and hi registers
      *
@@ -259,7 +297,14 @@ public class RegisterFile {
         }
         return old;
     }
-
+    public static int setProgramCounter(int value, int hart) {
+        int old = (int)gProgramCounter.get(hart).getValue();
+        gProgramCounter.get(hart).setValue(value);
+        if (Globals.getSettings().getBackSteppingEnabled()) {
+            Globals.program.getBackStepper().addPCRestore(old);
+        }
+        return old;
+    }
     /**
      * For returning the program counters value.
      *
@@ -307,6 +352,12 @@ public class RegisterFile {
     public static void resetRegisters() {
         instance.resetRegisters();
         initializeProgramCounter(Globals.getSettings().getBooleanSetting(Settings.Bool.START_AT_MAIN));// replaces "programCounter.resetValue()", DPS 3/3/09
+        if(gInstance == null)
+            return;
+        for(int i = 0; i < gInstance.size(); i++){
+            gInstance.get(i).resetRegisters();
+        }
+
     }
 
     /**

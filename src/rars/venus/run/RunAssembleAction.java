@@ -78,8 +78,6 @@ public class RunAssembleAction extends GuiAction {
 
     public void actionPerformed(ActionEvent e) {
         hartWindows = Globals.getHartWindows();
-        RegisterFile.initGRegisterBlock();
-        RegisterFile.initProgramCounter();
         String name = this.getValue(Action.NAME).toString();
         MessagesPane messagesPane = mainUI.getMessagesPane();
         ExecutePane executePane = mainUI.getMainPane().getExecutePane();
