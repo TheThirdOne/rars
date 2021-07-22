@@ -16,6 +16,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.net.URL;
+import java.util.ArrayList;
 
 /*
 Copyright (c) 2003-2013,  Pete Sanderson and Kenneth Vollmar
@@ -112,6 +113,7 @@ public class VenusUI extends JFrame {
             settingsHighlightingAction, settingsMemoryConfigurationAction, settingsSelfModifyingCodeAction,settingsRV64Action;
     private Action helpHelpAction, helpAboutAction;
 
+    protected static ArrayList<GeneralVenusUI> observers;
 
     /**
      * Constructor for the Class. Sets up a window object for the UI
@@ -124,6 +126,7 @@ public class VenusUI extends JFrame {
         mainUI = this;
         Globals.setGui(this);
         this.editor = new Editor(this);
+        observers = new ArrayList<GeneralVenusUI>();
 
         double screenWidth = Toolkit.getDefaultToolkit().getScreenSize().getWidth();
         double screenHeight = Toolkit.getDefaultToolkit().getScreenSize().getHeight();
@@ -799,6 +802,7 @@ public class VenusUI extends JFrame {
                 System.out.println("Invalid File Status: " + status);
                 break;
         }
+        notifyObservers();
     }
 
 
@@ -1184,5 +1188,11 @@ public class VenusUI extends JFrame {
 
     private KeyStroke makeShortcut(int key) {
         return KeyStroke.getKeyStroke(key, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());
+    }
+
+    public void notifyObservers() {
+        for (GeneralVenusUI ui : observers) {
+            ui.setMenuState();
+        }
     }
 }

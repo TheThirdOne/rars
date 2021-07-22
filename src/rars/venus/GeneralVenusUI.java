@@ -1,6 +1,7 @@
 package rars.venus;
 
 import rars.Globals;
+import rars.Settings;
 import rars.simulator.Simulator;
 import rars.venus.registers.*;
 import rars.venus.run.*;
@@ -12,9 +13,9 @@ import java.beans.PropertyVetoException;
 import java.net.URL;
 
 /*
-Copyright (c) 2003-2006,  Siva Chowdeswar Nandipati
+Copyright (c) 2003-2006, Siva Chowdeswar Nandipati & Giancarlo Pernudi Segura
 
-Developed by Siva Chowdeswar Nandipati (sivachow@ualberta.ca)
+Developed by Siva Chowdeswar Nandipati (sivachow@ualberta.ca) and Giancarlo (pernudi@ualberta.ca)
 
 Permission is hereby granted, free of charge, to any person obtaining 
 a copy of this software and associated documentation files (the 
@@ -39,16 +40,10 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 /**
- * Top level container for Venus GUI.
+ * Top level container for General Venus GUI.
  *
- * @author Sanderson and Team JSpim
+ * @author Siva, Giancarlo, Sanderson, and Team JSpim
  **/
-
-	  /* Heavily modified by Pete Sanderson, July 2004, to incorporate JSPIMMenu and JSPIMToolbar
-       * not as subclasses of JMenuBar and JToolBar, but as instances of them.  They are both
-		* here primarily so both can share the Action objects.
-		*/
-
 public class GeneralVenusUI extends JFrame {
     GeneralVenusUI mainUI;
 
@@ -79,6 +74,7 @@ public class GeneralVenusUI extends JFrame {
     public GeneralVenusUI(String s) {
         super(s);
         mainUI = this;
+        VenusUI.observers.add(this);
         double screenWidth = Toolkit.getDefaultToolkit().getScreenSize().getWidth();
         double screenHeight = Toolkit.getDefaultToolkit().getScreenSize().getHeight();
         double mainWidthPct = (screenWidth < 1000.0) ? 0.67 : 0.73;
@@ -140,19 +136,22 @@ public class GeneralVenusUI extends JFrame {
         center.add(horizonSplitter);
         this.add(center);
 
-        // This is invoked when opening the app.  It will set the app to
-        // appear at full screen size.
         this.addWindowListener(
-                new WindowAdapter() {
+            new WindowAdapter() {
+                    // This is invoked when opening the app.  It will set the app to
+                    // appear at full screen size.
                     public void windowOpened(WindowEvent e) {
                         mainUI.pack();
+                        mainUI.setMenuState();
+                    }
+
+                    // This is invoked when closing the app.
+                    public void windowClosed(WindowEvent e) {
+                        VenusUI.observers.remove(mainUI);
                     }
                 });
-
-        this.pack();
     }
 
-   
     /**
      * To set whether the register values are reset.
      *
@@ -287,5 +286,142 @@ public class GeneralVenusUI extends JFrame {
         toolBar.add(Reset);
 
         return toolBar;
+    }
+
+    /*
+     * Determine from FileStatus what the menu state (enabled/disabled)should be
+     * then call the appropriate method to set it. Current states are:
+     *
+     * setMenuStateInitial: set upon startup and after File->Close
+     * setMenuStateEditingNew: set upon File->New setMenuStateEditing: set upon
+     * File->Open or File->Save or erroneous Run->Assemble setMenuStateRunnable: set
+     * upon successful Run->Assemble setMenuStateRunning: set upon Run->Go
+     * setMenuStateTerminated: set upon completion of simulated execution
+     */
+    protected void setMenuState() {
+        int status = VenusUI.getMenuState();
+        switch (status) {
+            case FileStatus.NO_FILE:
+                setMenuStateInitial();
+                break;
+            case FileStatus.NEW_NOT_EDITED:
+                setMenuStateEditingNew();
+                break;
+            case FileStatus.NEW_EDITED:
+                setMenuStateEditingNew();
+                break;
+            case FileStatus.NOT_EDITED:
+                setMenuStateNotEdited(); // was MenuStateEditing. DPS 9-Aug-2011
+                break;
+            case FileStatus.EDITED:
+                setMenuStateEditing();
+                break;
+            case FileStatus.RUNNABLE:
+                setMenuStateRunnable();
+                break;
+            case FileStatus.RUNNING:
+                setMenuStateRunning();
+                break;
+            case FileStatus.TERMINATED:
+                setMenuStateTerminated();
+                break;
+            case FileStatus.OPENING:// This is a temporary state. DPS 9-Aug-2011
+                break;
+            default:
+                System.out.println("Invalid File Status: " + status);
+                break;
+        }
+    }
+
+    private void setMenuStateInitial() {
+        runGoAction.setEnabled(false);
+        runStepAction.setEnabled(false);
+        runBackstepAction.setEnabled(false);
+        runResetAction.setEnabled(false);
+        runStopAction.setEnabled(false);
+        runPauseAction.setEnabled(false);
+    }
+
+    /*
+     * Added DPS 9-Aug-2011, for newly-opened files. Retain existing Run menu state
+     * (except Assemble, which is always true). Thus if there was a valid assembly
+     * it is retained.
+     */
+    private void setMenuStateNotEdited() {
+        /* Note: undo and redo are handled separately by the undo manager */
+        // If assemble-all, allow previous Run menu settings to remain.
+        // Otherwise, clear them out. DPS 9-Aug-2011
+        if (!Globals.getSettings().getBooleanSetting(Settings.Bool.ASSEMBLE_ALL)) {
+            runGoAction.setEnabled(false);
+            runStepAction.setEnabled(false);
+            runBackstepAction.setEnabled(false);
+            runResetAction.setEnabled(false);
+            runStopAction.setEnabled(false);
+            runPauseAction.setEnabled(false);
+        }
+    }
+
+    private void setMenuStateEditing() {
+        /* Note: undo and redo are handled separately by the undo manager */
+        runGoAction.setEnabled(false);
+        runStepAction.setEnabled(false);
+        runBackstepAction.setEnabled(false);
+        runResetAction.setEnabled(false);
+        runStopAction.setEnabled(false);
+        runPauseAction.setEnabled(false);
+    }
+
+    /*
+     * Use this when "File -> New" is used
+     */
+    private void setMenuStateEditingNew() {
+        /* Note: undo and redo are handled separately by the undo manager */
+        runGoAction.setEnabled(false);
+        runStepAction.setEnabled(false);
+        runBackstepAction.setEnabled(false);
+        runResetAction.setEnabled(false);
+        runStopAction.setEnabled(false);
+        runPauseAction.setEnabled(false);
+    }
+
+    /*
+     * Use this upon successful assemble or reset
+     */
+    private void setMenuStateRunnable() {
+        /* Note: undo and redo are handled separately by the undo manager */
+        runGoAction.setEnabled(true);
+        runStepAction.setEnabled(true);
+        runBackstepAction.setEnabled(
+                Globals.getSettings().getBackSteppingEnabled() && !Globals.program.getBackStepper().empty());
+        runResetAction.setEnabled(true);
+        runStopAction.setEnabled(false);
+        runPauseAction.setEnabled(false);
+    }
+
+    /*
+     * Use this while program is running
+     */
+    private void setMenuStateRunning() {
+        /* Note: undo and redo are handled separately by the undo manager */
+        runGoAction.setEnabled(false);
+        runStepAction.setEnabled(false);
+        runBackstepAction.setEnabled(false);
+        runResetAction.setEnabled(false);
+        runStopAction.setEnabled(true);
+        runPauseAction.setEnabled(true);
+    }
+
+    /*
+     * Use this upon completion of execution
+     */
+    private void setMenuStateTerminated() {
+        /* Note: undo and redo are handled separately by the undo manager */
+        runGoAction.setEnabled(false);
+        runStepAction.setEnabled(false);
+        runBackstepAction.setEnabled(
+                Globals.getSettings().getBackSteppingEnabled() && !Globals.program.getBackStepper().empty());
+        runResetAction.setEnabled(true);
+        runStopAction.setEnabled(false);
+        runPauseAction.setEnabled(false);
     }
 }
