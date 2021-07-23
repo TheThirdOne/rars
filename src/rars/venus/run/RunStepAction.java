@@ -141,6 +141,9 @@ public class RunStepAction extends GuiAction {
                 gExecutePanes.get(i).getTextSegmentWindow().unhighlightAllSteps();
             }
             FileStatus.set(FileStatus.TERMINATED);
+            for (GeneralVenusUI hw : hartWindows) {
+                hw.setMenuStateTerminated();
+            }
         }
         if (done && pe == null) {
             mainUI.getMessagesPane().postMessage(
@@ -160,6 +163,9 @@ public class RunStepAction extends GuiAction {
                     "\n" + name + ": execution terminated with errors.\n\n");
             mainUI.getRegistersPane().setSelectedComponent(executePane.getControlAndStatusWindow());
             FileStatus.set(FileStatus.TERMINATED); // should be redundant.
+            for (GeneralVenusUI hw : hartWindows) {
+                hw.setMenuStateTerminated();
+            }
             executePane.getTextSegmentWindow().setCodeHighlighting(true);
             executePane.getTextSegmentWindow().unhighlightAllSteps();
             executePane.getTextSegmentWindow().highlightStepAtAddress(RegisterFile.getProgramCounter() - 4);

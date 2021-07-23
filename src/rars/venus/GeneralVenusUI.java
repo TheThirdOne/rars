@@ -322,9 +322,6 @@ public class GeneralVenusUI extends JFrame {
             case FileStatus.RUNNING:
                 setMenuStateRunning();
                 break;
-            case FileStatus.TERMINATED:
-                setMenuStateTerminated();
-                break;
             case FileStatus.OPENING:// This is a temporary state. DPS 9-Aug-2011
                 break;
             default:
@@ -414,7 +411,7 @@ public class GeneralVenusUI extends JFrame {
     /*
      * Use this upon completion of execution
      */
-    private void setMenuStateTerminated() {
+    public void setMenuStateTerminated() {
         /* Note: undo and redo are handled separately by the undo manager */
         runGoAction.setEnabled(false);
         runStepAction.setEnabled(false);

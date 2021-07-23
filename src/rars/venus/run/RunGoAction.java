@@ -188,6 +188,9 @@ public class RunGoAction extends GuiAction {
             gexecutePanes.get(i).getControlAndStatusWindow().updateRegisters();
         }
         FileStatus.set(FileStatus.TERMINATED);
+        for (GeneralVenusUI hw : hartWindows) {
+            hw.setMenuStateTerminated();
+        }
         SystemIO.resetFiles(); // close any files opened in MIPS program
         // Bring CSRs to the front if terminated due to exception.
         if (pe != null) {
