@@ -2,6 +2,7 @@ package rars.tools;
 
 import rars.Globals;
 import rars.riscv.hardware.AddressErrorException;
+import rars.riscv.hardware.ControlAndStatusRegisterFile;
 import rars.riscv.hardware.RegisterFile;
 import rars.riscv.hardware.ReservationTable.bitWidth;
 import rars.venus.*;
@@ -123,6 +124,7 @@ public class ReservationTablesTool extends AbstractToolAndApplication {
             super.dialog.dispose();
             RegisterFile.initGRegisterBlock();
             RegisterFile.initProgramCounter();
+            ControlAndStatusRegisterFile.changeHarts(1);
             action();
             
         });
@@ -131,6 +133,7 @@ public class ReservationTablesTool extends AbstractToolAndApplication {
             super.dialog.dispose();
             RegisterFile.initGRegisterBlock();
             RegisterFile.initProgramCounter();
+            ControlAndStatusRegisterFile.changeHarts(-1);
             action();
         });
         displayOptions.add(Box.createHorizontalGlue());

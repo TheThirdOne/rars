@@ -41,14 +41,27 @@ public class CSRRCI extends BasicInstruction {
 
     public void simulate(ProgramStatement statement) throws SimulationException {
         int[] operands = statement.getOperands();
+        int hart = statement.getCurrentHart();
         try {
-            long csr = ControlAndStatusRegisterFile.getValueLong(operands[1]);
-            if (operands[2] != 0) {
-                if(ControlAndStatusRegisterFile.clearRegister(operands[1], operands[2])){
-                    throw new SimulationException(statement, "Attempt to write to read-only CSR", SimulationException.ILLEGAL_INSTRUCTION);
+            if (hart == -1) {
+                long csr = ControlAndStatusRegisterFile.getValueLong(operands[1]);
+                if (operands[2] != 0) {
+                    if (ControlAndStatusRegisterFile.clearRegister(operands[1], operands[2])) {
+                        throw new SimulationException(statement, "Attempt to write to read-only CSR",
+                                SimulationException.ILLEGAL_INSTRUCTION);
+                    }
                 }
+                RegisterFile.updateRegister(operands[0], csr);
+            } else {
+                long csr = ControlAndStatusRegisterFile.getValueLong(operands[1], hart);
+                if (operands[2] != 0) {
+                    if (ControlAndStatusRegisterFile.clearRegister(operands[1], operands[2], hart)) {
+                        throw new SimulationException(statement, "Attempt to write to read-only CSR",
+                                SimulationException.ILLEGAL_INSTRUCTION);
+                    }
+                }
+                RegisterFile.updateRegister(operands[0], csr, hart);
             }
-            RegisterFile.updateRegister(operands[0], csr);
         } catch (NullPointerException e) {
             throw new SimulationException(statement, "Attempt to access unavailable CSR", SimulationException.ILLEGAL_INSTRUCTION);
         }

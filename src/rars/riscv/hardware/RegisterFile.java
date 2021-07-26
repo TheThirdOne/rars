@@ -81,8 +81,8 @@ public class RegisterFile {
             gProgramCounter.add(temp);
         }
     }
-    public static void initGRegisterBlock(){
-        if(gInstance != null)
+    public static void initGRegisterBlock() {
+        if (gInstance != null)
             return;
         gInstance = new ArrayList<>();
         for(int i = 0; i < Globals.getHarts(); i++){
@@ -105,7 +105,7 @@ public class RegisterFile {
                 new Register("t3", 28, 0, i), new Register("t4", 29, 0, i),
                 new Register("t5", 30, 0, i), new Register("t6", 31, 0, i)
         });
-            gInstance.add(temp);        
+            gInstance.add(temp);
         }
 
     }
@@ -192,8 +192,8 @@ public class RegisterFile {
     }
     public static int getValue(int num, int hart) {
         return (int) gInstance.get(hart).getValue(num);
-
     }
+
     /**
      * Returns the value of the register.
      *

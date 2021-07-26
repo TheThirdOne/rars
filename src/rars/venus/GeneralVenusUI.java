@@ -109,7 +109,7 @@ public class GeneralVenusUI extends JFrame {
 
         registersTab = new RegistersWindow(s.charAt(s.length()-1) - '1');
         fpTab = new FloatingPointWindow();
-        csrTab = new ControlAndStatusWindow();
+        csrTab = new ControlAndStatusWindow(s.charAt(s.length() - 1) - '1');
         registersPane = new GeneralRegistersPane(mainUI, registersTab, fpTab, csrTab);
         registersPane.setPreferredSize(registersPanePreferredSize);
 
