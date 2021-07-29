@@ -83,39 +83,35 @@ public class ControlAndStatusRegisterFile {
         instance = new RegisterBlock('_', tmp); // prefix not used
     }
 
-    public static ArrayList<RegisterBlock> gInstance;
+    public static ArrayList<RegisterBlock> gInstance = new ArrayList<>();
 
     public static void changeHarts(int sign) {
-        if (gInstance == null) {
-            gInstance = new ArrayList<>();
-        }
         if (sign > 0) {
-            for (int i = 1; i <= Globals.getHarts(); i++) {
-                Register[] tmp = new Register[] { new MaskedRegister("ustatus", 0x000, 0, ~0x11), null, // fflags
-                        null, // frm
-                        new MaskedRegister("fcsr", 0x003, 0, ~0xFF), new Register("uie", 0x004, 0),
-                        new Register("utvec", 0x005, 0), new Register("uscratch", 0x040, 0),
-                        new Register("uepc", 0x041, 0), new Register("ucause", 0x042, 0),
-                        new Register("utval", 0x043, 0), new Register("uip", 0x044, 0),
-                        new ReadOnlyRegister("cycle", 0xC00, 0), new ReadOnlyRegister("time", 0xC01, 0),
-                        new ReadOnlyRegister("instret", 0xC02, 0), null, // cycleh
-                        null, // timeh
-                        null, // instreth
-                        null, // mhartid
-                };
-                tmp[1] = new LinkedRegister("fflags", 0x001, tmp[3], 0x1F);
-                tmp[2] = new LinkedRegister("frm", 0x002, tmp[3], 0xE0);
-                tmp[14] = new LinkedRegister("cycleh", 0xC80, tmp[11], 0xFFFFFFFF_00000000L);
-                tmp[15] = new LinkedRegister("timeh", 0xC81, tmp[12], 0xFFFFFFFF_00000000L);
-                tmp[16] = new LinkedRegister("instreth", 0xC82, tmp[13], 0xFFFFFFFF_00000000L);
-                tmp[17] = new ReadOnlyRegister("mhartid", 0xF10, i);
-                RegisterBlock temp = new RegisterBlock('_', tmp);
-                gInstance.add(temp);
-            }
+            Register[] tmp = new Register[] { new MaskedRegister("ustatus", 0x000, 0, ~0x11), null, // fflags
+                    null, // frm
+                    new MaskedRegister("fcsr", 0x003, 0, ~0xFF), new Register("uie", 0x004, 0),
+                    new Register("utvec", 0x005, 0), new Register("uscratch", 0x040, 0),
+                    new Register("uepc", 0x041, 0), new Register("ucause", 0x042, 0),
+                    new Register("utval", 0x043, 0), new Register("uip", 0x044, 0),
+                    new ReadOnlyRegister("cycle", 0xC00, 0), new ReadOnlyRegister("time", 0xC01, 0),
+                    new ReadOnlyRegister("instret", 0xC02, 0), null, // cycleh
+                    null, // timeh
+                    null, // instreth
+                    null, // mhartid
+            };
+            tmp[1] = new LinkedRegister("fflags", 0x001, tmp[3], 0x1F);
+            tmp[2] = new LinkedRegister("frm", 0x002, tmp[3], 0xE0);
+            tmp[14] = new LinkedRegister("cycleh", 0xC80, tmp[11], 0xFFFFFFFF_00000000L);
+            tmp[15] = new LinkedRegister("timeh", 0xC81, tmp[12], 0xFFFFFFFF_00000000L);
+            tmp[16] = new LinkedRegister("instreth", 0xC82, tmp[13], 0xFFFFFFFF_00000000L);
+            tmp[17] = new ReadOnlyRegister("mhartid", 0xF10, Globals.getHarts() - 1);
+            RegisterBlock temp = new RegisterBlock('_', tmp);
+            gInstance.add(temp);
         }
         if (sign < 0) {
             gInstance.remove(gInstance.size() - 1);
         }
+        System.out.println(gInstance.size());
     }
 
     /**
@@ -183,6 +179,15 @@ public class ControlAndStatusRegisterFile {
         }
     }
 
+    public static void updateRegisterBackdoor(int num, long val, int hart) {
+        if ((Globals.getSettings().getBackSteppingEnabled())) {
+            Globals.program.getBackStepper().addControlAndStatusBackdoor(num,
+                    gInstance.get(hart).getRegister(num).setValueBackdoor(val));
+        } else {
+            gInstance.get(hart).getRegister(num).setValueBackdoor(val);
+        }
+    }
+
     /**
      * This method updates the register value silently and bypasses read only
      *
@@ -192,6 +197,11 @@ public class ControlAndStatusRegisterFile {
      **/
     public static void updateRegisterBackdoor(String name, long val) {
         updateRegisterBackdoor(instance.getRegister(name).getNumber(), val);
+    }
+
+    public static void updateRegisterBackdoor(String name, long val, int hart) {
+        System.out.printf("Getting secondary hart %d out of %d total secondary harts\n", hart, gInstance.size());
+        updateRegisterBackdoor(gInstance.get(hart).getRegister(name).getNumber(), val, hart);
     }
 
     /**
@@ -292,6 +302,10 @@ public class ControlAndStatusRegisterFile {
 
     public static long getValueNoNotify(String name) {
         return instance.getRegister(name).getValueNoNotify();
+    }
+
+    public static long getValueNoNotify(String name, int hart) {
+        return gInstance.get(hart).getRegister(name).getValueNoNotify();
     }
 
     /**

@@ -299,6 +299,7 @@ public class Simulator extends Observable {
             assert se.cause() >= 0 : "Interrupts cannot be handled by the trap handler";
 
             // set the relevant CSRs
+            // TODO
             ControlAndStatusRegisterFile.updateRegister("ucause", se.cause());
             ControlAndStatusRegisterFile.updateRegister("uepc", pc);
             ControlAndStatusRegisterFile.updateRegister("utval", se.value());
@@ -340,6 +341,7 @@ public class Simulator extends Observable {
             assert ((ControlAndStatusRegisterFile.getValue("ustatus") & 0x1) != 0 && (ControlAndStatusRegisterFile.getValue("uie") & (1 << code)) != 0) : "The interrupt handler must be enabled";
 
             // set the relevant CSRs
+            // TODO
             ControlAndStatusRegisterFile.updateRegister("ucause", cause);
             ControlAndStatusRegisterFile.updateRegister("uepc", pc);
             ControlAndStatusRegisterFile.updateRegister("utval", value);
@@ -487,6 +489,7 @@ public class Simulator extends Observable {
                         uip |= (pendingExternal ? ControlAndStatusRegisterFile.EXTERNAL_INTERRUPT : 0) | (pendingTimer ? ControlAndStatusRegisterFile.TIMER_INTERRUPT : 0);
                     }
                     if (uip != ControlAndStatusRegisterFile.getValueNoNotify("uip")) {
+                        // TODO
                         ControlAndStatusRegisterFile.updateRegister("uip", uip);
                     }
 
@@ -530,6 +533,7 @@ public class Simulator extends Observable {
                         }
                         if (!InterruptController.registerSynchronousTrap(tmp, pc)) {
                             this.pe = tmp;
+                            // TODO
                             ControlAndStatusRegisterFile.updateRegister("uepc", pc);
                             stopExecution(true, Reason.EXCEPTION);
                             return;
@@ -594,10 +598,17 @@ public class Simulator extends Observable {
                 // Update cycle(h) and instret(h)
                 long cycle = ControlAndStatusRegisterFile.getValueNoNotify("cycle"),
                          instret = ControlAndStatusRegisterFile.getValueNoNotify("instret"),
-                         time = System.currentTimeMillis();;
-                ControlAndStatusRegisterFile.updateRegisterBackdoor("cycle",cycle+1);
-                ControlAndStatusRegisterFile.updateRegisterBackdoor("instret",instret+1);
-                ControlAndStatusRegisterFile.updateRegisterBackdoor("time",time);
+                         time = System.currentTimeMillis();
+                ControlAndStatusRegisterFile.updateRegisterBackdoor("cycle", cycle + 1);
+                ControlAndStatusRegisterFile.updateRegisterBackdoor("instret", instret + 1);
+                ControlAndStatusRegisterFile.updateRegisterBackdoor("time", time);
+                for (int i = 0; i < Globals.getHarts() - 1; i++) {
+                    cycle = ControlAndStatusRegisterFile.getValueNoNotify("cycle", i);
+                    instret = ControlAndStatusRegisterFile.getValueNoNotify("instret", i);
+                    ControlAndStatusRegisterFile.updateRegisterBackdoor("cycle", cycle + 1, i);
+                    ControlAndStatusRegisterFile.updateRegisterBackdoor("instret", instret + 1, i);
+                    ControlAndStatusRegisterFile.updateRegisterBackdoor("time", time, i);
+                }
 
                 //     Return if we've reached a breakpoint.
                 if (ebreak || (breakPoints != null) &&
