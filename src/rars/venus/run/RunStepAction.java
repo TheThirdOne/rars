@@ -170,7 +170,7 @@ public class RunStepAction extends GuiAction {
             executePane.getTextSegmentWindow().unhighlightAllSteps();
             executePane.getTextSegmentWindow().highlightStepAtAddress(RegisterFile.getProgramCounter() - 4);
             for(int i = 0; i < hartWindows.size(); i++){
-                hartWindows.get(i).getRegistersPane().setSelectedComponent(executePane.getControlAndStatusWindow());
+                hartWindows.get(i).getRegistersPane().setSelectedComponent(gExecutePanes.get(i).getControlAndStatusWindow());
                 gExecutePanes.get(i).getTextSegmentWindow().setCodeHighlighting(true);
                 gExecutePanes.get(i).getTextSegmentWindow().unhighlightAllSteps();
                 gExecutePanes.get(i).getTextSegmentWindow().highlightStepAtAddress(RegisterFile.getProgramCounter() - 4);
