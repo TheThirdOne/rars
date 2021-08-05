@@ -37,6 +37,10 @@ public class BLTU extends Branch {
 
     public boolean willBranch(ProgramStatement statement) {
         int[] operands = statement.getOperands();
-        return Long.compareUnsigned(RegisterFile.getValueLong(operands[0]), RegisterFile.getValueLong(operands[1])) < 0;
+        int hart = statement.getCurrentHart();
+        if (hart == -1)
+            return Long.compareUnsigned(RegisterFile.getValueLong(operands[0]), RegisterFile.getValueLong(operands[1])) < 0;
+        else
+            return Long.compareUnsigned(RegisterFile.getValueLong(operands[0], hart), RegisterFile.getValueLong(operands[1], hart)) < 0;
     }
 }

@@ -310,6 +310,10 @@ public class InstructionSet {
         // Decrement needed because PC has already been incremented
         RegisterFile.setProgramCounter(RegisterFile.getProgramCounter() + displacement - Instruction.INSTRUCTION_LENGTH);
     }
+    public static void processBranch(int displacement, int hart) {
+        // Decrement needed because PC has already been incremented
+        RegisterFile.setProgramCounter(RegisterFile.getProgramCounter(hart) + displacement - Instruction.INSTRUCTION_LENGTH, hart);
+    }
 
    	/*
         * Method to process a jump.  DO NOT USE WITH BRANCH INSTRUCTIONS!
@@ -372,4 +376,3 @@ public class InstructionSet {
         }
     }
 }
-

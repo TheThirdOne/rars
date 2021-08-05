@@ -48,7 +48,11 @@ public abstract class Branch extends BasicInstruction {
 
     public void simulate(ProgramStatement statement) {
         if (willBranch(statement)) {
-            InstructionSet.processBranch(statement.getOperands()[2]);
+            if (statement.getCurrentHart() == -1) {
+                InstructionSet.processBranch(statement.getOperands()[2]);
+            } else {
+                InstructionSet.processBranch(statement.getOperands()[2], statement.getCurrentHart());
+            }
         }
     }
 

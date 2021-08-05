@@ -37,9 +37,10 @@ public class BEQ extends Branch {
 
     public boolean willBranch(ProgramStatement statement) {
         int[] operands = statement.getOperands();
-        if(statement.getCurrentHart() == -1)
+        int hart = statement.getCurrentHart();
+        if (hart == -1)
             return RegisterFile.getValueLong(operands[0]) == RegisterFile.getValueLong(operands[1]);
         else
-            return RegisterFile.getValueLong(operands[0], statement.getCurrentHart()) == RegisterFile.getValueLong(operands[1], statement.getCurrentHart());
+            return RegisterFile.getValueLong(operands[0], hart) == RegisterFile.getValueLong(operands[1], hart);
     }
 }

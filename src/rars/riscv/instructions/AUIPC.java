@@ -40,9 +40,10 @@ public class AUIPC extends BasicInstruction {
 
     public void simulate(ProgramStatement statement) {
         int[] operands = statement.getOperands();
-        if(statement.getCurrentHart() == -1)
+        int hart = statement.getCurrentHart();
+        if (hart == -1)
             RegisterFile.updateRegister(operands[0], RegisterFile.getProgramCounter() - INSTRUCTION_LENGTH + (operands[1] << 12));
         else
-            RegisterFile.updateRegister(operands[0], RegisterFile.getProgramCounter() - INSTRUCTION_LENGTH + (operands[1] << 12), statement.getCurrentHart());
+            RegisterFile.updateRegister(operands[0], RegisterFile.getProgramCounter(hart) - INSTRUCTION_LENGTH + (operands[1] << 12), hart);
     }
 }
