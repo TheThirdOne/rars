@@ -69,18 +69,16 @@ public class RegisterFile {
     public static ArrayList<RegisterBlock> gInstance;
     private static Register programCounter = new Register("pc", -1, Memory.textBaseAddress);
 
-    private static ArrayList<Register> gProgramCounter;
-    
-    public static void initProgramCounter(){
-        if(gProgramCounter != null){
-            return;
-        }
-        gProgramCounter = new ArrayList<>();
-        for(int i = 1;  i < Globals.getHarts(); i++){
+    private static ArrayList<Register> gProgramCounter = new ArrayList<>();
+
+    public static void initProgramCounter() {
+        gProgramCounter.clear();
+        for (int i = 1; i < Globals.getHarts(); i++) {
             Register temp = new Register("pc", -1, Memory.textBaseAddress);
             gProgramCounter.add(temp);
         }
     }
+
     public static void initGRegisterBlock() {
         if (gInstance != null)
             return;
@@ -111,7 +109,6 @@ public class RegisterFile {
     }
     public static void changeHarts(int sign){
         if(gInstance == null){
-            initProgramCounter();
             initGRegisterBlock();
         }
         if(sign > 0){
@@ -257,10 +254,13 @@ public class RegisterFile {
      **/
 
     public static void initializeProgramCounter(int value) {
-        programCounter.setValue((long)value);
+        programCounter.setValue((long) value);
+        for (int i = 0; i < gProgramCounter.size(); i++) {
+            initializeProgramCounter(value, i);
+        }
     }
     public static void initializeProgramCounter(int value, int hart){
-        gProgramCounter.get(hart).setValue(value);
+        gProgramCounter.get(hart).setValue((long) value);
     }
     /**
      * Will initialize the Program Counter to either the default reset value, or the address
@@ -326,8 +326,6 @@ public class RegisterFile {
         return programCounter;
     }
     public static Register getProgramCounterRegister(int hart) {
-        if(gProgramCounter == null)
-            initProgramCounter();
         return gProgramCounter.get(hart);
     }
     /**

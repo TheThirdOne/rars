@@ -425,12 +425,7 @@ public class Simulator extends Observable {
             // the backstep button is not enabled until a "real" instruction is executed.
             // This is noticeable in stepped mode.
             // *********************************************************************
-            if(hart == -1){
-                RegisterFile.initializeProgramCounter(pc);
-            }
-            else{
-                RegisterFile.initializeProgramCounter(pc, hart);
-            }
+            RegisterFile.initializeProgramCounter(pc);
             ProgramStatement statement = null;
             int steps = 0;
             boolean ebreak = false, waiting = false;

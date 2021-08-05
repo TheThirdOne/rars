@@ -126,7 +126,6 @@ public class ReservationTablesTool extends AbstractToolAndApplication {
             RegisterFile.initProgramCounter();
             ControlAndStatusRegisterFile.changeHarts(1);
             action();
-            
         });
         btnMinus.addActionListener(l -> {
             Globals.setHarts(-1);
