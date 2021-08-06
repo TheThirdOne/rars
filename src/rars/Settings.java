@@ -153,7 +153,11 @@ public class Settings extends Observable {
         /**
          * Flag to determine whether a program uses rv64i instead of rv32i
          */
-        RV64_ENABLED("rv64Enabled", false);;
+        RV64_ENABLED("rv64Enabled", false),
+        /**
+         * Flag to determine if the step buttons should run for all harts or just indivdual hart
+         */
+        PER_HART_EXECUTION("PerHartExecution", false);;
 
         // TODO: add option for turning off user trap handling and interrupts
         private String name;
