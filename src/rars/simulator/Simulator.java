@@ -150,9 +150,10 @@ public class Simulator extends Observable {
         simulatorThread = new SimThread(pc, maxSteps, breakPoints);
         new Thread(simulatorThread, "RISCV").start();
     }
+
     public void startSimulation(int pc, int maxSteps, int[] breakPoints, int hart) {
         gSimulatorThread.add(hart, new SimThread(pc, maxSteps, breakPoints, hart));
-        String s = "Hart " + hart; 
+        String s = String.format("Hart %d", hart);
         new Thread(gSimulatorThread.get(hart), s).start();
     }
 
@@ -284,10 +285,15 @@ public class Simulator extends Observable {
             this.constructReturnReason = reason;
             SystemIO.flush(true);
             if (done) SystemIO.resetFiles(); // close any files opened in the process of simulating
-            if(hart == -1)
+            double runSpeed = (Globals.getGui() != null || Globals.runSpeedPanelExists)
+                    ? RunSpeedPanel.getInstance().getRunSpeed()
+                    : RunSpeedPanel.UNLIMITED_SPEED;
+            if (hart == -1)
                 Simulator.getInstance().notifyObserversOfExecution(new SimulatorNotice(SimulatorNotice.SIMULATOR_STOP,
-                        maxSteps, (Globals.getGui() != null || Globals.runSpeedPanelExists)?RunSpeedPanel.getInstance().getRunSpeed():RunSpeedPanel.UNLIMITED_SPEED,
-                        pc, reason, pe, done));
+                        maxSteps, runSpeed, pc, reason, pe, done));
+            else
+                Simulator.getInstance(hart).notifyObserversOfExecution(new SimulatorNotice(SimulatorNotice.SIMULATOR_STOP,
+                        maxSteps, runSpeed, pc, reason, pe, done));
         }
 
         private synchronized void interrupt() {
@@ -299,31 +305,51 @@ public class Simulator extends Observable {
             assert se.cause() >= 0 : "Interrupts cannot be handled by the trap handler";
 
             // set the relevant CSRs
-            // TODO
-            ControlAndStatusRegisterFile.updateRegister("ucause", se.cause());
-            ControlAndStatusRegisterFile.updateRegister("uepc", pc);
-            ControlAndStatusRegisterFile.updateRegister("utval", se.value());
+            if (hart == -1) {
+                ControlAndStatusRegisterFile.updateRegister("ucause", se.cause());
+                ControlAndStatusRegisterFile.updateRegister("uepc", pc);
+                ControlAndStatusRegisterFile.updateRegister("utval", se.value());
+            } else {
+                ControlAndStatusRegisterFile.updateRegister("ucause", se.cause(), hart);
+                ControlAndStatusRegisterFile.updateRegister("uepc", pc, hart);
+                ControlAndStatusRegisterFile.updateRegister("utval", se.value(), hart);
+            }
 
             // Get the interrupt handler if it exists
-            int utvec = ControlAndStatusRegisterFile.getValue("utvec");
+            int utvec = (hart == -1)
+                    ? ControlAndStatusRegisterFile.getValue("utvec")
+                    : ControlAndStatusRegisterFile.getValue("utvec", hart);
 
             // Mode can be ignored because we are only handling traps
             int base = utvec & 0xFFFFFFFC;
 
             ProgramStatement exceptionHandler = null;
-            if ((ControlAndStatusRegisterFile.getValue("ustatus") & 0x1) != 0) { // test user-interrupt enable (UIE)
-                try {
-                    exceptionHandler = Globals.memory.getStatement(base);
-                } catch (AddressErrorException aee) {
-                    // Handled below
+            try {
+                if (hart == -1) {
+                    if ((ControlAndStatusRegisterFile.getValue("ustatus") & 0x1) != 0) { // test user-interrupt enable (UIE)
+                        exceptionHandler = Globals.memory.getStatement(base);
+                    }
+                } else {
+                    if ((ControlAndStatusRegisterFile.getValue("ustatus", hart) & 0x1) != 0) { // test user-interrupt enable (UIE)
+                        exceptionHandler = Globals.memory.getStatement(base);
+                    }
                 }
+            } catch (AddressErrorException aee) {
+                // Handled below
             }
 
             if (exceptionHandler != null) {
-                ControlAndStatusRegisterFile.orRegister("ustatus", 0x10); // Set UPIE
-                ControlAndStatusRegisterFile.clearRegister("ustatus", 0x1); // Clear UIE
-                RegisterFile.setProgramCounter(base);
-                return true;
+                if (hart == -1) {
+                    ControlAndStatusRegisterFile.orRegister("ustatus", 0x10); // Set UPIE
+                    ControlAndStatusRegisterFile.clearRegister("ustatus", 0x1); // Clear UIE
+                    RegisterFile.setProgramCounter(base);
+                    return true;
+                } else {
+                    ControlAndStatusRegisterFile.orRegister("ustatus", 0x10, hart); // Set UPIE
+                    ControlAndStatusRegisterFile.clearRegister("ustatus", 0x1, hart); // Clear UIE
+                    RegisterFile.setProgramCounter(base, hart);
+                    return true;
+                }
             } else {
                 // If we don't have an error handler or exceptions are disabled terminate the process
                 this.pe = se;
@@ -338,16 +364,30 @@ public class Simulator extends Observable {
             int code = cause & 0x7FFFFFFF;
 
             // Don't handle cases where that interrupt isn't enabled
-            assert ((ControlAndStatusRegisterFile.getValue("ustatus") & 0x1) != 0 && (ControlAndStatusRegisterFile.getValue("uie") & (1 << code)) != 0) : "The interrupt handler must be enabled";
+            if (hart == -1)
+                assert ((ControlAndStatusRegisterFile.getValue("ustatus") & 0x1) != 0
+                        && (ControlAndStatusRegisterFile.getValue("uie") & (1 << code)) != 0)
+                        : "The interrupt handler must be enabled";
+            else
+                assert ((ControlAndStatusRegisterFile.getValue("ustatus", hart) & 0x1) != 0
+                        && (ControlAndStatusRegisterFile.getValue("uie", hart) & (1 << code)) != 0)
+                        : "The interrupt handler must be enabled";
 
             // set the relevant CSRs
-            // TODO
-            ControlAndStatusRegisterFile.updateRegister("ucause", cause);
-            ControlAndStatusRegisterFile.updateRegister("uepc", pc);
-            ControlAndStatusRegisterFile.updateRegister("utval", value);
+            if (hart == -1) {
+                ControlAndStatusRegisterFile.updateRegister("ucause", cause);
+                ControlAndStatusRegisterFile.updateRegister("uepc", pc);
+                ControlAndStatusRegisterFile.updateRegister("utval", value);
+            } else {
+                ControlAndStatusRegisterFile.updateRegister("ucause", cause, hart);
+                ControlAndStatusRegisterFile.updateRegister("uepc", pc, hart);
+                ControlAndStatusRegisterFile.updateRegister("utval", value, hart);
+            }
 
             // Get the interrupt handler if it exists
-            int utvec = ControlAndStatusRegisterFile.getValue("utvec");
+            int utvec = (hart == -1)
+                    ? ControlAndStatusRegisterFile.getValue("utvec")
+                    : ControlAndStatusRegisterFile.getValue("utvec", hart);
 
             // Handle vectored mode
             int base = utvec & 0xFFFFFFFC, mode = utvec & 0x3;
@@ -362,10 +402,19 @@ public class Simulator extends Observable {
                 // handled below
             }
             if (exceptionHandler != null) {
-                ControlAndStatusRegisterFile.orRegister("ustatus", 0x10); // Set UPIE
-                ControlAndStatusRegisterFile.clearRegister("ustatus", ControlAndStatusRegisterFile.INTERRUPT_ENABLE);
-                RegisterFile.setProgramCounter(base);
-                return true;
+                if (hart == -1) {
+                    ControlAndStatusRegisterFile.orRegister("ustatus", 0x10); // Set UPIE
+                    ControlAndStatusRegisterFile.clearRegister("ustatus",
+                            ControlAndStatusRegisterFile.INTERRUPT_ENABLE);
+                    RegisterFile.setProgramCounter(base);
+                    return true;
+                } else {
+                    ControlAndStatusRegisterFile.orRegister("ustatus", 0x10, hart); // Set UPIE
+                    ControlAndStatusRegisterFile.clearRegister("ustatus", ControlAndStatusRegisterFile.INTERRUPT_ENABLE,
+                            hart);
+                    RegisterFile.setProgramCounter(base, hart);
+                    return true;
+                }
             } else {
                 // If we don't have an error handler or exceptions are disabled terminate the process
                 this.pe = new SimulationException("Interrupt handler was not supplied, but interrupt enable was high");
@@ -441,15 +490,21 @@ public class Simulator extends Observable {
                 Globals.memoryAndRegistersLock.lock();
                 try {
                     // Handle pending interupts and traps first
-                    long uip = ControlAndStatusRegisterFile.getValueNoNotify("uip"), uie = ControlAndStatusRegisterFile.getValueNoNotify("uie");
-                    boolean IE = (ControlAndStatusRegisterFile.getValueNoNotify("ustatus") & ControlAndStatusRegisterFile.INTERRUPT_ENABLE) != 0;
+                    long uip = (hart == -1)
+                            ? ControlAndStatusRegisterFile.getValueNoNotify("uip")
+                            : ControlAndStatusRegisterFile.getValueNoNotify("uip", hart);
+                    long uie = (hart == -1)
+                            ? ControlAndStatusRegisterFile.getValueNoNotify("uie")
+                            : ControlAndStatusRegisterFile.getValueNoNotify("uie", hart);
+                    boolean IE = (hart == -1)
+                            ? (ControlAndStatusRegisterFile.getValueNoNotify("ustatus")
+                                    & ControlAndStatusRegisterFile.INTERRUPT_ENABLE) != 0
+                            : (ControlAndStatusRegisterFile.getValueNoNotify("ustatus", hart)
+                                    & ControlAndStatusRegisterFile.INTERRUPT_ENABLE) != 0;
                     // make sure no interrupts sneak in while we are processing them
-                    if(hart == -1){
-                        pc = RegisterFile.getProgramCounter();
-                    }
-                    else{
-                        pc = RegisterFile.getProgramCounter(hart);
-                    }
+                    pc = (hart == -1)
+                            ? RegisterFile.getProgramCounter()
+                            : RegisterFile.getProgramCounter(hart);
                     synchronized (InterruptController.lock) {
                         boolean pendingExternal = InterruptController.externalPending(),
                                 pendingTimer = InterruptController.timerPending(),
@@ -483,9 +538,10 @@ public class Simulator extends Observable {
                         }
                         uip |= (pendingExternal ? ControlAndStatusRegisterFile.EXTERNAL_INTERRUPT : 0) | (pendingTimer ? ControlAndStatusRegisterFile.TIMER_INTERRUPT : 0);
                     }
-                    if (uip != ControlAndStatusRegisterFile.getValueNoNotify("uip")) {
-                        // TODO
+                    if (hart == -1 && uip != ControlAndStatusRegisterFile.getValueNoNotify("uip")) {
                         ControlAndStatusRegisterFile.updateRegister("uip", uip);
+                    } else if (hart >= 0 && uip != ControlAndStatusRegisterFile.getValueNoNotify("uip", hart)) {
+                        ControlAndStatusRegisterFile.updateRegister("uip", uip, hart);
                     }
 
                     // always handle interrupts and traps before quiting
@@ -498,38 +554,32 @@ public class Simulator extends Observable {
                         }
                     }
 
-                    if(hart == -1){
+                    if (hart == -1) {
                         pc = RegisterFile.getProgramCounter();
                         RegisterFile.incrementPC();
-                    }
-                    else{
+                    } else {
                         pc = RegisterFile.getProgramCounter(hart);
                         RegisterFile.incrementPC(hart);
                     }
                     
                     // Get instuction
                     try {
-                        if(hart == -1){
-                            statement = Globals.memory.getStatement(pc);
-                            if(statement != null)
-                                statement.setCurrentHart(-1);
-                        }
-                        else{
-                            statement = Globals.memory.getStatementNoNotify(pc);
-                            if(statement != null)
-                                statement.setCurrentHart(hart);
-                        }
+                        statement = (hart == -1)
+                            ? Globals.memory.getStatement(pc)
+                            : Globals.memory.getStatementNoNotify(pc);
+                        if (statement != null)
+                            statement.setCurrentHart(hart);
                     } catch (AddressErrorException e) {
-                        SimulationException tmp;
-                        if (e.getType() == SimulationException.LOAD_ACCESS_FAULT) {
-                            tmp = new SimulationException("Instruction load access error", SimulationException.INSTRUCTION_ACCESS_FAULT);
-                        } else {
-                            tmp = new SimulationException("Instruction load alignment error", SimulationException.INSTRUCTION_ADDR_MISALIGNED);
-                        }
+                        SimulationException tmp = (e.getType() == SimulationException.LOAD_ACCESS_FAULT)
+                            ? new SimulationException("Instruction load access error", SimulationException.INSTRUCTION_ACCESS_FAULT)
+                            : new SimulationException("Instruction load alignment error", SimulationException.INSTRUCTION_ADDR_MISALIGNED);
                         if (!InterruptController.registerSynchronousTrap(tmp, pc)) {
                             this.pe = tmp;
-                            // TODO
-                            ControlAndStatusRegisterFile.updateRegister("uepc", pc);
+                            if (hart == -1) {
+                                ControlAndStatusRegisterFile.updateRegister("uepc", pc);
+                            } else {
+                                ControlAndStatusRegisterFile.updateRegister("uepc", pc, hart);
+                            }
                             stopExecution(true, Reason.EXCEPTION);
                             return;
                         } else {
