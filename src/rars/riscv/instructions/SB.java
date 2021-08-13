@@ -36,8 +36,8 @@ public class SB extends Store {
         super("sb t1, -100(t2)", "Store byte : Store the low-order 8 bits of t1 into the effective memory byte address", "000");
     }
 
-    public void store(int address, long data) throws AddressErrorException {
-        Globals.reservationTables.unreserveAddress(0, address & ~0b11, bitWidth.word);
+    public void store(int address, long data, int hart) throws AddressErrorException {
+        Globals.reservationTables.unreserveAddress(hart + 1, address & ~0b11, bitWidth.word);
         Globals.memory.setByte(address, (int)data & 0x000000FF);
     }
 }

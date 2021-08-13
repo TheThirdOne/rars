@@ -14,16 +14,22 @@ public class SCD extends Atomic {
 
     public void simulate(ProgramStatement statement) throws SimulationException {
         int[] operands = statement.getOperands();
+        int hart = statement.getCurrentHart();
         try {
-            long result = store(RegisterFile.getValue(operands[2]), RegisterFile.getValue(operands[1]));
-            RegisterFile.updateRegister(operands[0], result);
+            if (hart == -1) {
+                long result = store(RegisterFile.getValue(operands[2]), RegisterFile.getValue(operands[1]), hart);
+                RegisterFile.updateRegister(operands[0], result);
+            } else {
+                long result = store(RegisterFile.getValue(operands[2], hart), RegisterFile.getValue(operands[1], hart), hart);
+                RegisterFile.updateRegister(operands[0], result, hart);
+            }
         } catch (AddressErrorException e) {
             throw new SimulationException(statement, e);
         }
     }
 
-    private long store(int address, int value) throws AddressErrorException {
-        if (Globals.reservationTables.unreserveAddress(0, address, bitWidth.doubleWord)) {
+    private long store(int address, int value, int hart) throws AddressErrorException {
+        if (Globals.reservationTables.unreserveAddress(hart + 1, address, bitWidth.doubleWord)) {
             Globals.memory.setDoubleWord(address, value);
             return 0;
         }

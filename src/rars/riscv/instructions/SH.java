@@ -36,8 +36,8 @@ public class SH extends Store {
         super("sh t1, -100(t2)", "Store halfword : Store the low-order 16 bits of t1 into the effective memory halfword address", "001");
     }
 
-    public void store(int address, long data) throws AddressErrorException {
-        Globals.reservationTables.unreserveAddress(0, address & ~0b11, bitWidth.word);
-        Globals.memory.setHalf(address, (int)data & 0x0000FFFF);
+    public void store(int address, long data, int hart) throws AddressErrorException {
+        Globals.reservationTables.unreserveAddress(hart + 1, address & ~0b11, bitWidth.word);
+        Globals.memory.setHalf(address, (int) data & 0x0000FFFF);
     }
 }

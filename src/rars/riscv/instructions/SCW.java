@@ -14,16 +14,22 @@ public class SCW extends Atomic {
 
     public void simulate(ProgramStatement statement) throws SimulationException {
         int[] operands = statement.getOperands();
+        int hart = statement.getCurrentHart();
         try {
-            int result = store(RegisterFile.getValue(operands[2]), RegisterFile.getValue(operands[1]));
-            RegisterFile.updateRegister(operands[0], result);
+            if (hart == - 1) {
+                int result = store(RegisterFile.getValue(operands[2], hart), RegisterFile.getValue(operands[1], hart), hart);
+                RegisterFile.updateRegister(operands[0], result);
+            } else {
+                int result = store(RegisterFile.getValue(operands[2]), RegisterFile.getValue(operands[1]), hart);
+                RegisterFile.updateRegister(operands[0], result, hart);
+            }
         } catch (AddressErrorException e) {
             throw new SimulationException(statement, e);
         }
     }
 
-    private int store(int address, int value) throws AddressErrorException {
-        if (Globals.reservationTables.unreserveAddress(0, address, bitWidth.word)) {
+    private int store(int address, int value, int hart) throws AddressErrorException {
+        if (Globals.reservationTables.unreserveAddress(hart + 1, address, bitWidth.word)) {
             Globals.memory.setWord(address, value);
             return 0;
         }
