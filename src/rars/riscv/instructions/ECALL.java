@@ -41,6 +41,10 @@ public class ECALL extends BasicInstruction {
     }
 
     public void simulate(ProgramStatement statement) throws SimulationException {
-        InstructionSet.findAndSimulateSyscall(RegisterFile.getValue("a7"), statement);
+        int hart = statement.getCurrentHart();
+        if (hart == -1)
+            InstructionSet.findAndSimulateSyscall(RegisterFile.getValue("a7"), statement);
+        else
+            InstructionSet.findAndSimulateSyscall(RegisterFile.getValue("a7", hart), statement);
     }
 }

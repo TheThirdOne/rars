@@ -212,9 +212,12 @@ public class RegisterFile {
      * @param name The register's name.
      * @return The value of the given register.
      **/
-
     public static int getValue(String name) {
         return (int) instance.getValue(name);
+    }
+
+    public static int getValue(String name, int hart) {
+        return (int) gInstance.get(hart).getValue(name);
     }
 
     /**

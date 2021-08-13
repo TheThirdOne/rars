@@ -15,14 +15,18 @@ public class LRD extends Atomic {
     public void simulate(ProgramStatement statement) throws SimulationException {
         int[] operands = statement.getOperands();
         try {
-            RegisterFile.updateRegister(operands[0], load(RegisterFile.getValue(operands[1])));
+            int hart = statement.getCurrentHart();
+            if (hart == -1)
+                RegisterFile.updateRegister(operands[0], load(RegisterFile.getValue(operands[1]), hart));
+            else
+                RegisterFile.updateRegister(operands[0], load(RegisterFile.getValue(operands[1], hart), hart), hart);
         } catch (AddressErrorException e) {
             throw new SimulationException(statement, e);
         }
     }
 
-    private long load(int address) throws AddressErrorException {
-        Globals.reservationTables.reserveAddress(0, address, bitWidth.doubleWord);
+    private long load(int address, int hart) throws AddressErrorException {
+        Globals.reservationTables.reserveAddress(hart + 1, address, bitWidth.doubleWord);
         return Globals.memory.getDoubleWord(address);
     }
 }

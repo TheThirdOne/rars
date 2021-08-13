@@ -15,10 +15,11 @@ public class LRW extends Atomic {
     public void simulate(ProgramStatement statement) throws SimulationException {
         int[] operands = statement.getOperands();
         try {
-            if(statement.getCurrentHart() == -1)
-                RegisterFile.updateRegister(operands[0], load(RegisterFile.getValue(operands[1]), statement.getCurrentHart()));
+            int hart = statement.getCurrentHart();
+            if (hart == -1)
+                RegisterFile.updateRegister(operands[0], load(RegisterFile.getValue(operands[1]), hart));
             else
-            RegisterFile.updateRegister(operands[0], load(RegisterFile.getValue(operands[1], statement.getCurrentHart()), statement.getCurrentHart()), statement.getCurrentHart());
+            RegisterFile.updateRegister(operands[0], load(RegisterFile.getValue(operands[1], hart), hart), hart);
         } catch (AddressErrorException e) {
             throw new SimulationException(statement, e);
         }

@@ -164,6 +164,10 @@ public class ControlAndStatusRegisterFile {
         updateRegister(instance.getRegister(name).getNumber(), val);
     }
 
+    public static void updateRegister(String name, long val, int hart) {
+        updateRegister(gInstance.get(hart).getRegister(name).getNumber(), val, hart);
+    }
+
     /**
      * This method updates the register value silently and bypasses read only
      *
@@ -228,6 +232,10 @@ public class ControlAndStatusRegisterFile {
         updateRegister(name, instance.getValue(name) | val);
     }
 
+    public static void orRegister(String name, long val, int hart) {
+        updateRegister(name, gInstance.get(hart).getValue(name) | val, hart);
+    }
+
     /**
      * Clears bits from a register according to a value
      *
@@ -239,7 +247,7 @@ public class ControlAndStatusRegisterFile {
     }
 
     public static boolean clearRegister(int num, long val, int hart) {
-        return updateRegister(num, instance.getValue(num) & ~val, hart);
+        return updateRegister(num, gInstance.get(hart).getValue(num) & ~val, hart);
     }
 
     /**
@@ -250,6 +258,10 @@ public class ControlAndStatusRegisterFile {
      **/
     public static void clearRegister(String name, long val) {
         updateRegister(name, instance.getValue(name) & ~val);
+    }
+
+    public static void clearRegister(String name, long val, int hart) {
+        updateRegister(name, gInstance.get(hart).getValue(name) & ~val, hart);
     }
 
     /**
@@ -290,7 +302,11 @@ public class ControlAndStatusRegisterFile {
      **/
 
     public static int getValue(String name) {
-        return (int)instance.getValue(name);
+        return (int) instance.getValue(name);
+    }
+
+    public static int getValue(String name, int hart) {
+        return (int) gInstance.get(hart).getValue(name);
     }
 
     /**

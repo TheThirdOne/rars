@@ -39,13 +39,25 @@ public class URET extends BasicInstruction {
     }
 
     public void simulate(ProgramStatement statement) {
-        boolean upie = (ControlAndStatusRegisterFile.getValue("ustatus") & 0x10) == 0x10;
-        ControlAndStatusRegisterFile.clearRegister("ustatus", 0x10); // Clear UPIE
-        if (upie) { // Set UIE to UPIE
-            ControlAndStatusRegisterFile.orRegister("ustatus", 0x1);
+        int hart = statement.getCurrentHart();
+        if (hart == -1) {
+            boolean upie = (ControlAndStatusRegisterFile.getValue("ustatus") & 0x10) == 0x10;
+            ControlAndStatusRegisterFile.clearRegister("ustatus", 0x10); // Clear UPIE
+            if (upie) { // Set UIE to UPIE
+                ControlAndStatusRegisterFile.orRegister("ustatus", 0x1);
+            } else {
+                ControlAndStatusRegisterFile.clearRegister("ustatus", 0x1);
+            }
+            RegisterFile.setProgramCounter(ControlAndStatusRegisterFile.getValue("uepc"));
         } else {
-            ControlAndStatusRegisterFile.clearRegister("ustatus", 0x1);
+            boolean upie = (ControlAndStatusRegisterFile.getValue("ustatus", hart) & 0x10) == 0x10;
+            ControlAndStatusRegisterFile.clearRegister("ustatus", 0x10, hart); // Clear UPIE
+            if (upie) { // Set UIE to UPIE
+                ControlAndStatusRegisterFile.orRegister("ustatus", 0x1, hart);
+            } else {
+                ControlAndStatusRegisterFile.clearRegister("ustatus", 0x1, hart);
+            }
+            RegisterFile.setProgramCounter(ControlAndStatusRegisterFile.getValue("uepc", hart), hart);
         }
-        RegisterFile.setProgramCounter(ControlAndStatusRegisterFile.getValue("uepc"));
     }
 }

@@ -51,23 +51,21 @@ public abstract class ImmediateInstruction extends BasicInstruction {
 
     public void simulate(ProgramStatement statement) {
         int[] operands = statement.getOperands();
-        if (InstructionSet.rv64){
-            if(statement.getCurrentHart() == -1)
+        int hart = statement.getCurrentHart();
+        if (InstructionSet.rv64) {
+            if (hart == -1)
                 RegisterFile.updateRegister(operands[0], compute(RegisterFile.getValueLong(operands[1]),
                     (operands[2] << 20) >> 20)); // make sure the immediate is sign-extended
             else
-                RegisterFile.updateRegister(operands[0], compute(RegisterFile.getValueLong(operands[1], statement.getCurrentHart()),
-                    (operands[2] << 20) >> 20), statement.getCurrentHart()); // make sure the immediate is sign-extended
-        }else {
-            
-            if(statement.getCurrentHart() == -1)
+                RegisterFile.updateRegister(operands[0], compute(RegisterFile.getValueLong(operands[1], hart),
+                    (operands[2] << 20) >> 20), hart); // make sure the immediate is sign-extended
+        } else {
+            if (hart == -1)
                 RegisterFile.updateRegister(operands[0], computeW(RegisterFile.getValue(operands[1]),
                     (operands[2] << 20) >> 20)); // make sure the immediate is sign-extended
-            else{
-                RegisterFile.updateRegister(operands[0], computeW(RegisterFile.getValue(operands[1], statement.getCurrentHart()),
-                    (operands[2] << 20) >> 20), statement.getCurrentHart()); // make sure the immediate is sign-extended
-                System.out.println("Hart " + (statement.getCurrentHart() + 1) +" :" + "Register " + operands[0] + " : " + RegisterFile.getValue(operands[1], statement.getCurrentHart()));
-            }
+            else
+                RegisterFile.updateRegister(operands[0], computeW(RegisterFile.getValue(operands[1], hart),
+                    (operands[2] << 20) >> 20), hart); // make sure the immediate is sign-extended
         }
     }
 
