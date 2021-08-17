@@ -17,10 +17,10 @@ public class SCW extends Atomic {
         int hart = statement.getCurrentHart();
         try {
             if (hart == - 1) {
-                int result = store(RegisterFile.getValue(operands[2], hart), RegisterFile.getValue(operands[1], hart), hart);
+                int result = store(RegisterFile.getValue(operands[2]), RegisterFile.getValue(operands[1]), hart);
                 RegisterFile.updateRegister(operands[0], result);
             } else {
-                int result = store(RegisterFile.getValue(operands[2]), RegisterFile.getValue(operands[1]), hart);
+                int result = store(RegisterFile.getValue(operands[2], hart), RegisterFile.getValue(operands[1], hart), hart);
                 RegisterFile.updateRegister(operands[0], result, hart);
             }
         } catch (AddressErrorException e) {

@@ -187,6 +187,7 @@ public class RegisterFile {
         return (int) instance.getValue(num);
 
     }
+
     public static int getValue(int num, int hart) {
         return (int) gInstance.get(hart).getValue(num);
     }

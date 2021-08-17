@@ -564,9 +564,7 @@ public class Simulator extends Observable {
                     
                     // Get instuction
                     try {
-                        statement = (hart == -1)
-                            ? Globals.memory.getStatement(pc)
-                            : Globals.memory.getStatementNoNotify(pc);
+                        statement = Globals.memory.getStatement(pc);
                         if (statement != null)
                             statement.setCurrentHart(hart);
                     } catch (AddressErrorException e) {

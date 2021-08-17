@@ -61,7 +61,7 @@ public abstract class FusedFloat extends BasicInstruction {
                     : FloatingPointRegisterFile.getValue(operands[2])),
                     e);
         Floating.setfflags(e, hart);
-        if (hart == 1)
+        if (hart == -1)
             FloatingPointRegisterFile.updateRegister(operands[0],result.bits);
         else
             FloatingPointRegisterFile.updateRegisterLong(operands[0], result.bits, hart);

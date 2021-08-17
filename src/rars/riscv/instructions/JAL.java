@@ -45,10 +45,10 @@ public class JAL extends BasicInstruction {
         int hart = statement.getCurrentHart();
         if (hart >= 0) {
             InstructionSet.processReturnAddress(operands[0], hart);
-            InstructionSet.processJump(RegisterFile.getProgramCounter(hart) - Instruction.INSTRUCTION_LENGTH + operands[1]);
+            InstructionSet.processJump(RegisterFile.getProgramCounter(hart) - Instruction.INSTRUCTION_LENGTH + operands[1], hart);
             return;
         }
         InstructionSet.processReturnAddress(operands[0]);
-        InstructionSet.processJump(RegisterFile.getProgramCounter() - Instruction.INSTRUCTION_LENGTH + operands[1], hart);
+        InstructionSet.processJump(RegisterFile.getProgramCounter() - Instruction.INSTRUCTION_LENGTH + operands[1]);
     }
 }
