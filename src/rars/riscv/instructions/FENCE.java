@@ -39,5 +39,6 @@ public class FENCE extends BasicInstruction {
 
     public void simulate(ProgramStatement statement) {
         // Do nothing, currently there are no other threads so local consitency is enough
+        // TODO idk what to do for now but something will need to be implemented, maybe with a global variable?
     }
 }

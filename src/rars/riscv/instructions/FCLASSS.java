@@ -54,8 +54,14 @@ public class FCLASSS extends BasicInstruction {
      */
     public void simulate(ProgramStatement statement) {
         int[] operands = statement.getOperands();
-        Float32 in = new Float32(FloatingPointRegisterFile.getValue(operands[1]));
-        fclass(in,operands[0]);
+        int hart = statement.getCurrentHart();
+        Float32 in = (hart == -1)
+                ? new Float32(FloatingPointRegisterFile.getValue(operands[1]))
+                : new Float32(FloatingPointRegisterFile.getValue(operands[1], hart));
+        if (hart == -1)
+            fclass(in, operands[0]);
+        else
+            fclass(in, operands[0], hart);
     }
 
     public static <T extends jsoftfloat.types.Floating<T>> void fclass(T in, int out){
@@ -71,6 +77,23 @@ public class FCLASSS extends BasicInstruction {
                 RegisterFile.updateRegister(out, negative ? 0x004 : 0x020);
             } else {
                 RegisterFile.updateRegister(out, negative ? 0x002 : 0x040);
+            }
+        }
+    }
+
+    public static <T extends jsoftfloat.types.Floating<T>> void fclass(T in, int out, int hart) {
+        if (in.isNaN()) {
+            RegisterFile.updateRegister(out, in.isSignalling() ? 0x100 : 0x200, hart);
+        } else {
+            boolean negative = in.isSignMinus();
+            if (in.isInfinite()) {
+                RegisterFile.updateRegister(out, negative ? 0x001 : 0x080, hart);
+            } else if (in.isZero()) {
+                RegisterFile.updateRegister(out, negative ? 0x008 : 0x010, hart);
+            } else if (in.isSubnormal()) {
+                RegisterFile.updateRegister(out, negative ? 0x004 : 0x020, hart);
+            } else {
+                RegisterFile.updateRegister(out, negative ? 0x002 : 0x040, hart);
             }
         }
     }

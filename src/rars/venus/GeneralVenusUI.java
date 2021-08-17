@@ -59,6 +59,7 @@ public class GeneralVenusUI extends JFrame {
     private JButton Run, Reset, Step, Backstep, Stop, Pause;
     private Action runGoAction, runStepAction, runBackstepAction,
             runResetAction, runStopAction, runPauseAction;
+    private final int hart;
 
     // PLEASE PUT THESE TWO (& THEIR METHODS) SOMEWHERE THEY BELONG, NOT HERE
     private boolean reset = true; // registers/memory reset for execution
@@ -71,9 +72,11 @@ public class GeneralVenusUI extends JFrame {
      **/
 
     // TODO check for mem observer
-    public GeneralVenusUI(String s) {
-        super(s);
+    public GeneralVenusUI(int hart) {
+        super(String.format("Hart %d", hart));
         mainUI = this;
+        this.hart = hart;
+        this.createActionObjects();
         VenusUI.observers.add(this);
         double screenWidth = Toolkit.getDefaultToolkit().getScreenSize().getWidth();
         double screenHeight = Toolkit.getDefaultToolkit().getScreenSize().getHeight();
@@ -107,13 +110,13 @@ public class GeneralVenusUI extends JFrame {
         // roughly in bottom-up order; some are created in component constructors and thus are
         // not visible here.
 
-        registersTab = new RegistersWindow(s.charAt(s.length()-1) - '1');
-        fpTab = new FloatingPointWindow();
-        csrTab = new ControlAndStatusWindow(s.charAt(s.length() - 1) - '1');
+        registersTab = new RegistersWindow(hart);
+        fpTab = new FloatingPointWindow(hart);
+        csrTab = new ControlAndStatusWindow(hart);
         registersPane = new GeneralRegistersPane(mainUI, registersTab, fpTab, csrTab);
         registersPane.setPreferredSize(registersPanePreferredSize);
 
-        mainPane = new GeneralMainPane(mainUI, registersTab, fpTab, csrTab, s.charAt(s.length()-1) - '1');
+        mainPane = new GeneralMainPane(mainUI, registersTab, fpTab, csrTab, hart);
         mainPane.setPreferredSize(mainPanePreferredSize);
         try {
             mainPane.getExecutePane().getTextSegmentWindow().setMaximum(true);
@@ -126,7 +129,6 @@ public class GeneralVenusUI extends JFrame {
         horizonSplitter.setOneTouchExpandable(true);
         horizonSplitter.resetToPreferredSizes();
 
-        this.createActionObjects();
         toolbar = this.setUpToolBar();
 
         JPanel jp = new JPanel(new FlowLayout(FlowLayout.LEFT));

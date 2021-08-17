@@ -1,6 +1,7 @@
 package rars.riscv.instructions;
 
 import jsoftfloat.Environment;
+import jsoftfloat.operations.Conversions;
 import jsoftfloat.types.Float64;
 import rars.ProgramStatement;
 import rars.SimulationException;
@@ -17,11 +18,17 @@ public class FCVTLD extends BasicInstruction {
 
     public void simulate(ProgramStatement statement) throws SimulationException {
         int[] operands = statement.getOperands();
+        int hart = statement.getCurrentHart();
         Environment e = new Environment();
         e.mode = Floating.getRoundingMode(operands[2],statement);
-        Float64 in = new Float64(FloatingPointRegisterFile.getValueLong(operands[1]));
-        long out = jsoftfloat.operations.Conversions.convertToLong(in,e,false);
-        Floating.setfflags(e);
-        RegisterFile.updateRegister(operands[0],out);
+        Float64 in = new Float64((hart == -1)
+                    ? FloatingPointRegisterFile.getValueLong(operands[1])
+                    : FloatingPointRegisterFile.getValueLong(operands[1], hart));
+        long out = Conversions.convertToLong(in,e,false);
+        Floating.setfflags(e, hart);
+        if (hart == -1)
+            RegisterFile.updateRegister(operands[0], out);
+        else
+            RegisterFile.updateRegister(operands[0], out, hart);
     }
 }

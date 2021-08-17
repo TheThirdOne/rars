@@ -19,13 +19,24 @@ public abstract class FusedDouble extends BasicInstruction {
 
     public void simulate(ProgramStatement statement) throws SimulationException {
         int[] operands = statement.getOperands();
+        int hart = statement.getCurrentHart();
         Environment e = new Environment();
         e.mode = Floating.getRoundingMode(operands[4],statement);
-        Float64 result = compute(new Float64(FloatingPointRegisterFile.getValueLong(operands[1])),
-                new Float64(FloatingPointRegisterFile.getValueLong(operands[2])),
-                new Float64(FloatingPointRegisterFile.getValueLong(operands[3])),e);
-        Floating.setfflags(e);
-        FloatingPointRegisterFile.updateRegisterLong(operands[0],result.bits);
+        Float64 result = compute(new Float64((hart == -1)
+                ? FloatingPointRegisterFile.getValueLong(operands[1])
+                : FloatingPointRegisterFile.getValueLong(operands[1], hart)),
+                new Float64((hart == -1)
+                        ? FloatingPointRegisterFile.getValueLong(operands[2])
+                        : FloatingPointRegisterFile.getValueLong(operands[2], hart)),
+                new Float64((hart == -1)
+                        ? FloatingPointRegisterFile.getValueLong(operands[3])
+                        : FloatingPointRegisterFile.getValueLong(operands[3], hart)),
+                        e);
+        Floating.setfflags(e, hart);
+        if (hart == -1)
+            FloatingPointRegisterFile.updateRegisterLong(operands[0], result.bits);
+        else
+            FloatingPointRegisterFile.updateRegisterLong(operands[0], result.bits, hart);
     }
 
     /**

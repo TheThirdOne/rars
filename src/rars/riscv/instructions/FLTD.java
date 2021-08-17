@@ -1,6 +1,7 @@
 package rars.riscv.instructions;
 
 import jsoftfloat.Environment;
+import jsoftfloat.operations.Comparisons;
 import jsoftfloat.types.Float64;
 import rars.ProgramStatement;
 import rars.riscv.BasicInstruction;
@@ -15,10 +16,14 @@ public class FLTD extends BasicInstruction {
 
     public void simulate(ProgramStatement statement) {
         int[] operands = statement.getOperands();
+        int hart = statement.getCurrentHart();
         Float64 f1 = Double.getDouble(operands[1]), f2 = Double.getDouble(operands[2]);
         Environment e = new Environment();
-        boolean result = jsoftfloat.operations.Comparisons.compareSignalingLessThan(f1,f2,e);
-        Floating.setfflags(e);
-        RegisterFile.updateRegister(operands[0], result ? 1 : 0);
+        boolean result = Comparisons.compareSignalingLessThan(f1,f2,e);
+        Floating.setfflags(e, hart);
+        if (hart == -1)
+            RegisterFile.updateRegister(operands[0], result ? 1 : 0);
+        else
+            RegisterFile.updateRegister(operands[0], result ? 1 : 0, hart);
     }
 }

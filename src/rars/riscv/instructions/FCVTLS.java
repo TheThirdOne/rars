@@ -17,11 +17,17 @@ public class FCVTLS extends BasicInstruction {
 
     public void simulate(ProgramStatement statement) throws SimulationException {
         int[] operands = statement.getOperands();
+        int hart = statement.getCurrentHart();
         Environment e = new Environment();
         e.mode = Floating.getRoundingMode(operands[2],statement);
-        Float32 in = new Float32(FloatingPointRegisterFile.getValue(operands[1]));
+        Float32 in = new Float32((hart == -1)
+                ? FloatingPointRegisterFile.getValue(operands[1])
+                : FloatingPointRegisterFile.getValue(operands[1], hart));
         long out = jsoftfloat.operations.Conversions.convertToLong(in,e,false);
-        Floating.setfflags(e);
-        RegisterFile.updateRegister(operands[0],out);
+        Floating.setfflags(e, hart);
+        if (hart == -1)
+            RegisterFile.updateRegister(operands[0], out);
+        else
+            RegisterFile.updateRegister(operands[1], out, hart);
     }
 }

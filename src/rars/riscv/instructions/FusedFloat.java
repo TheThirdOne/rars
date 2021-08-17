@@ -5,7 +5,6 @@ import jsoftfloat.RoundingMode;
 import jsoftfloat.types.Float32;
 import rars.ProgramStatement;
 import rars.SimulationException;
-import rars.riscv.hardware.ControlAndStatusRegisterFile;
 import rars.riscv.hardware.FloatingPointRegisterFile;
 import rars.riscv.BasicInstruction;
 import rars.riscv.BasicInstructionFormat;
@@ -48,13 +47,24 @@ public abstract class FusedFloat extends BasicInstruction {
 
     public void simulate(ProgramStatement statement) throws SimulationException {
         int[] operands = statement.getOperands();
+        int hart = statement.getCurrentHart();
         Environment e = new Environment();
         e.mode = Floating.getRoundingMode(operands[4],statement);
-        Float32 result = compute(new Float32(FloatingPointRegisterFile.getValue(operands[1])),
-                new Float32(FloatingPointRegisterFile.getValue(operands[2])),
-                new Float32(FloatingPointRegisterFile.getValue(operands[3])),e);
-        Floating.setfflags(e);
-        FloatingPointRegisterFile.updateRegister(operands[0],result.bits);
+        Float32 result = compute(new Float32((hart == -1)
+                ? FloatingPointRegisterFile.getValue(operands[1])
+                : FloatingPointRegisterFile.getValue(operands[1], hart)),
+                new Float32((hart == -1)
+                    ? FloatingPointRegisterFile.getValue(operands[2])
+                    : FloatingPointRegisterFile.getValue(operands[2])),
+                new Float32((hart == -1)
+                    ? FloatingPointRegisterFile.getValue(operands[3])
+                    : FloatingPointRegisterFile.getValue(operands[2])),
+                    e);
+        Floating.setfflags(e, hart);
+        if (hart == 1)
+            FloatingPointRegisterFile.updateRegister(operands[0],result.bits);
+        else
+            FloatingPointRegisterFile.updateRegisterLong(operands[0], result.bits, hart);
     }
 
     public static void flipRounding(Environment e){

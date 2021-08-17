@@ -17,13 +17,19 @@ public class FCVTSD extends BasicInstruction {
 
     public void simulate(ProgramStatement statement) throws SimulationException {
         int[] operands = statement.getOperands();
+        int hart = statement.getCurrentHart();
         Environment e = new Environment();
         e.mode = Floating.getRoundingMode(operands[2],statement);
-        Float64 in = new Float64(FloatingPointRegisterFile.getValueLong(operands[1]));
+        Float64 in = (hart == -1)
+                ? new Float64(FloatingPointRegisterFile.getValueLong(operands[1]))
+                : new Float64(FloatingPointRegisterFile.getValueLong(operands[1], hart));
         Float32 out = new Float32(0);
         out = convert(in,out,e);
-        Floating.setfflags(e);
-        FloatingPointRegisterFile.updateRegister(operands[0],out.bits);
+        Floating.setfflags(e, hart);
+        if (hart == -1)
+            FloatingPointRegisterFile.updateRegister(operands[0], out.bits);
+        else
+            FloatingPointRegisterFile.updateRegister(operands[0], out.bits, hart);
     }
     // Kindof a long type, but removes duplicate code and would make it easy for quads to be implemented.
     public static <S extends jsoftfloat.types.Floating<S>,D extends jsoftfloat.types.Floating<D>>

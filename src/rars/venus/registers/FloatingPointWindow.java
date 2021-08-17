@@ -42,9 +42,16 @@ public class FloatingPointWindow extends RegisterBlockWindow {
             /* ft10 */  "floating point temporary",
             /* ft11 */  "floating point temporary"
     };
+    private final int hart;
 
     public FloatingPointWindow() {
         super(FloatingPointRegisterFile.getRegisters(), regToolTips, "32-bit single precision IEEE 754 floating point");
+        this.hart = -1;
+    }
+
+    public FloatingPointWindow(int hart) {
+        super(FloatingPointRegisterFile.getRegisters(hart), regToolTips, "32-bit single precision IEEE 754 floating point", hart);
+        this.hart = hart;
     }
 
     protected String formatRegister(Register value, int base) {
@@ -59,9 +66,11 @@ public class FloatingPointWindow extends RegisterBlockWindow {
     protected void beginObserving() {
         FloatingPointRegisterFile.addRegistersObserver(this);
     }
+
     protected void beginObserving(int hart) {
         FloatingPointRegisterFile.addRegistersObserver(this);
     }
+
     protected void endObserving() {
         FloatingPointRegisterFile.deleteRegistersObserver(this);
     }

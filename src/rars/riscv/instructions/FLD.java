@@ -17,11 +17,19 @@ public class FLD extends BasicInstruction {
 
     public void simulate(ProgramStatement statement) throws SimulationException {
         int[] operands = statement.getOperands();
+        int hart = statement.getCurrentHart();
         operands[1] = (operands[1] << 20) >> 20;
         try {
-            long low = Globals.memory.getWord(RegisterFile.getValue(operands[2]) + operands[1]);
-            long high = Globals.memory.getWord(RegisterFile.getValue(operands[2]) + operands[1]+4);
-            FloatingPointRegisterFile.updateRegisterLong(operands[0], (high << 32) | (low & 0xFFFFFFFFL));
+            long low = Globals.memory.getWord(((hart == -1)
+                    ? RegisterFile.getValue(operands[2])
+                    : RegisterFile.getValue(operands[2])) + operands[1]);
+            long high = Globals.memory.getWord(((hart == -1)
+                    ? RegisterFile.getValue(operands[2])
+                    : RegisterFile.getValue(operands[2])) + operands[1] + 4);
+            if (hart == -1)
+                FloatingPointRegisterFile.updateRegisterLong(operands[0], (high << 32) | (low & 0xFFFFFFFFL));
+            else
+                FloatingPointRegisterFile.updateRegisterLong(operands[0], (high << 32) | (low & 0xFFFFFFFFL), hart);
         } catch (AddressErrorException e) {
             throw new SimulationException(statement, e);
         }

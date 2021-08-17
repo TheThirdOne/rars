@@ -111,7 +111,6 @@ public class ControlAndStatusRegisterFile {
         if (sign < 0) {
             gInstance.remove(gInstance.size() - 1);
         }
-        System.out.println(gInstance.size());
     }
 
     /**

@@ -40,7 +40,17 @@ public class FSGNJS extends BasicInstruction {
 
     public void simulate(ProgramStatement statement) {
         int[] operands = statement.getOperands();
-        int result = (FloatingPointRegisterFile.getValue(operands[1]) & 0x7FFFFFFF) | (FloatingPointRegisterFile.getValue(operands[2]) & 0x80000000);
-        FloatingPointRegisterFile.updateRegister(operands[0], result);
+        int hart = statement.getCurrentHart();
+        int op1 = (hart == -1)
+                ? FloatingPointRegisterFile.getValue(operands[1])
+                : FloatingPointRegisterFile.getValue(operands[1], hart);
+        int op2 = (hart == -1)
+                ? FloatingPointRegisterFile.getValue(operands[2])
+                : FloatingPointRegisterFile.getValue(operands[2], hart);
+        int result = (op1 & 0x7FFFFFFF) | (op2 & 0x80000000);
+        if (hart == -1)
+            FloatingPointRegisterFile.updateRegister(operands[0], result);
+        else
+            FloatingPointRegisterFile.updateRegister(operands[0], result, hart);
     }
 }

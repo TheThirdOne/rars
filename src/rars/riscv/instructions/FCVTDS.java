@@ -17,12 +17,18 @@ public class FCVTDS extends BasicInstruction {
 
     public void simulate(ProgramStatement statement) throws SimulationException {
         int[] operands = statement.getOperands();
+        int hart = statement.getCurrentHart();
         Environment e = new Environment();
         e.mode = Floating.getRoundingMode(operands[2],statement);
-        Float32 in = new Float32(FloatingPointRegisterFile.getValue(operands[1]));
+        Float32 in = new Float32((hart == -1)
+                ? FloatingPointRegisterFile.getValue(operands[1])
+                : FloatingPointRegisterFile.getValue(operands[1]));
         Float64 out = new Float64(0);
         out = FCVTSD.convert(in,out,e);
-        Floating.setfflags(e);
-        FloatingPointRegisterFile.updateRegisterLong(operands[0],out.bits);
+        Floating.setfflags(e, hart);
+        if (hart == -1)
+            FloatingPointRegisterFile.updateRegisterLong(operands[0], out.bits);
+        else
+            FloatingPointRegisterFile.updateRegisterLong(operands[0], out.bits, hart);
     }
 }

@@ -41,6 +41,12 @@ public class FMVSX extends BasicInstruction {
 
     public void simulate(ProgramStatement statement) {
         int[] operands = statement.getOperands();
-        FloatingPointRegisterFile.updateRegister(operands[0], RegisterFile.getValue(operands[1]));
+        int hart = statement.getCurrentHart();
+        if (hart == -1)
+            FloatingPointRegisterFile.updateRegister(operands[0],
+                    RegisterFile.getValue(operands[1]));
+        else
+            FloatingPointRegisterFile.updateRegister(operands[0],
+                    RegisterFile.getValue(operands[1], hart), hart);
     }
 }

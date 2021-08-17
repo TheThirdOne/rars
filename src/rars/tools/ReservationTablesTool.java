@@ -3,6 +3,7 @@ package rars.tools;
 import rars.Globals;
 import rars.riscv.hardware.AddressErrorException;
 import rars.riscv.hardware.ControlAndStatusRegisterFile;
+import rars.riscv.hardware.FloatingPointRegisterFile;
 import rars.riscv.hardware.RegisterFile;
 import rars.riscv.hardware.ReservationTable.bitWidth;
 import rars.venus.*;
@@ -87,8 +88,8 @@ public class ReservationTablesTool extends AbstractToolAndApplication {
                 new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
                         int i = hartWindowSelector.getSelectedIndex();
-                        hartWindows = Globals.getHartWindows();
                         Globals.setHartWindows();
+                        hartWindows = Globals.getHartWindows();
                         if (i == 0)
                             return;
                         else
@@ -125,6 +126,7 @@ public class ReservationTablesTool extends AbstractToolAndApplication {
             RegisterFile.initGRegisterBlock();
             RegisterFile.initProgramCounter();
             ControlAndStatusRegisterFile.changeHarts(1);
+            FloatingPointRegisterFile.increaseHarts();
             action();
         });
         btnMinus.addActionListener(l -> {
@@ -133,6 +135,13 @@ public class ReservationTablesTool extends AbstractToolAndApplication {
             RegisterFile.initGRegisterBlock();
             RegisterFile.initProgramCounter();
             ControlAndStatusRegisterFile.changeHarts(-1);
+            FloatingPointRegisterFile.decreaseHarts();
+            try {
+                Globals
+                        .getHartWindows()
+                        .remove(Globals.getHarts() - 1)
+                        .dispose();
+            } catch (IndexOutOfBoundsException e) {}
             action();
         });
         displayOptions.add(Box.createHorizontalGlue());

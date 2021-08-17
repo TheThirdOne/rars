@@ -14,6 +14,12 @@ public class FMVXD extends BasicInstruction {
 
     public void simulate(ProgramStatement statement) {
         int[] operands = statement.getOperands();
-        RegisterFile.updateRegister(operands[0], FloatingPointRegisterFile.getValueLong(operands[1]));
+        int hart = statement.getCurrentHart();
+        if (hart == -1)
+            RegisterFile.updateRegister(operands[0],
+                    FloatingPointRegisterFile.getValueLong(operands[1]));
+        else
+            RegisterFile.updateRegister(operands[0],
+                    FloatingPointRegisterFile.getValueLong(operands[1], hart), hart);
     }
 }
