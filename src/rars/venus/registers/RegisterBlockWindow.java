@@ -189,7 +189,6 @@ public abstract class RegisterBlockWindow extends JPanel implements Observer {
      * @param register Register object corresponding to row to be selected.
      */
     private void highlightCellForRegister(Register register) {
-        System.out.println(register.getHart() + " ggg");
         for (int i = 0; i < registers.length; i++) {
             if (registers[i] == register) {
                 this.highlightRow = i;
@@ -234,7 +233,6 @@ public abstract class RegisterBlockWindow extends JPanel implements Observer {
             if (access.getAccessType() == AccessNotice.WRITE) {
                 // Uses the same highlighting technique as for Text Segment -- see
                 // AddressCellRenderer class in DataSegmentWindow.java.
-                System.out.println("\nHHHHHHHH " + hart + " " + ((Register) observable).getHart());
                 this.highlighting = true;
                 this.highlightCellForRegister((Register) observable);
             }
