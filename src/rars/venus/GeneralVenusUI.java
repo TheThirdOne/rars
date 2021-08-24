@@ -324,6 +324,8 @@ public class GeneralVenusUI extends JFrame {
             case FileStatus.RUNNING:
                 setMenuStateRunning();
                 break;
+            case FileStatus.TERMINATED:
+                break;
             case FileStatus.OPENING:// This is a temporary state. DPS 9-Aug-2011
                 break;
             default:
