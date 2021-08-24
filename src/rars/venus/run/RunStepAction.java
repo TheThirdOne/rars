@@ -129,7 +129,7 @@ public class RunStepAction extends GuiAction {
         }
         if (!done) {
             for(int i = 0; i < hartWindows.size(); i++){
-                gExecutePanes.get(i).getTextSegmentWindow().highlightStepAtPC();
+                gExecutePanes.get(i).getTextSegmentWindow().highlightStepAtPC(i);
             }
             executePane.getTextSegmentWindow().highlightStepAtPC();
             FileStatus.set(FileStatus.RUNNABLE);

@@ -158,7 +158,7 @@ public class RunGoAction extends GuiAction {
         executePane.getDataSegmentWindow().updateValues();
         for(int i = 0; i < hartWindows.size(); i++){
             gexecutePanes.get(i).getTextSegmentWindow().setCodeHighlighting(true);
-            gexecutePanes.get(i).getTextSegmentWindow().highlightStepAtPC();
+            gexecutePanes.get(i).getTextSegmentWindow().highlightStepAtPC(i);
             gexecutePanes.get(i).getRegistersWindow().updateRegisters();
             gexecutePanes.get(i).getFloatingPointWindow().updateRegisters();
             gexecutePanes.get(i).getControlAndStatusWindow().updateRegisters();
