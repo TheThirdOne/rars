@@ -175,7 +175,9 @@ public class RegisterFile {
     public static void updateRegister(String name, long val) {
         updateRegister(instance.getRegister(name).getNumber(), val);
     }
-
+    public static void updateRegister(String name, long val, int hart) {
+        updateRegister(gInstance.get(hart).getRegister(name).getNumber(), val, hart);
+    }
     /**
      * Returns the value of the register.
      *

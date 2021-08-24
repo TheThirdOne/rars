@@ -1,5 +1,6 @@
 package rars.riscv.hardware;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Observable;
 import java.util.Observer;
@@ -7,6 +8,7 @@ import java.util.Vector;
 
 import rars.SimulationException;
 import rars.riscv.hardware.ReservationTable.bitWidth;
+import rars.tools.ReservationTablesTool;
 
 /*
 Copyright (c) 2021, Siva Chowdeswar Nandipati & Giancarlo Pernudi Segura.
@@ -37,6 +39,7 @@ public class ReservationTables extends Observable {
 	private ReservationTable[] reservationTables;
 	public int harts;
 	private Collection<ReservationTablesObservable> observables = new Vector<>();
+	private static final ArrayList<ReservationTablesTool> toolObserver  = new ArrayList<>();
 
 	public ReservationTables(int harts) {
 		this.harts = harts;
@@ -56,6 +59,17 @@ public class ReservationTables extends Observable {
 			throw new AddressErrorException("Reservation address not aligned to word boundary ", SimulationException.LOAD_ADDRESS_MISALIGNED, address);
 		}
 		reservationTables[hart].reserveAddress(address, width);
+		this.notifyTools();
+	}
+
+	public void subscribeTool(ReservationTablesTool tool) {
+		toolObserver.add(tool);
+		System.out.println(toolObserver.hashCode());
+	}
+
+	public void notifyTools() {
+		System.out.printf("NOTIFYING %d tools\n", toolObserver.hashCode());
+		toolObserver.forEach(t -> t.update());
 	}
 
 	public boolean unreserveAddress(int hart, int address, bitWidth width) throws AddressErrorException {
@@ -67,8 +81,10 @@ public class ReservationTables extends Observable {
 			for (ReservationTable reservationTable : reservationTables) {
 				reservationTable.unreserveAddress(address, width);
 			}
+			this.notifyTools();
 			return true;
 		}
+		this.notifyTools();
 		return false;
 	}
 
