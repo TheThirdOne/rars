@@ -50,10 +50,37 @@ public class SyscallWrite extends AbstractSyscall {
     }
 
     public void simulate(ProgramStatement statement) throws ExitingException {
-        int byteAddress = RegisterFile.getValue("a1"); // source of characters to write to file
-        int reqLength = RegisterFile.getValue("a2"); // user-requested length
+        if(statement.getCurrentHart() == -1){
+            int byteAddress = RegisterFile.getValue("a1"); // source of characters to write to file
+            int reqLength = RegisterFile.getValue("a2"); // user-requested length
+            if (reqLength < 0) {
+                RegisterFile.updateRegister("a0", -1);
+                return;
+            }
+            int index = 0;
+            byte myBuffer[] = new byte[reqLength];
+            try {
+                byte b = (byte) Globals.memory.getByte(byteAddress);
+                while (index < reqLength) // Stop at requested length. Null bytes are included.
+                {
+                    myBuffer[index++] = b;
+                    byteAddress++;
+                    b = (byte) Globals.memory.getByte(byteAddress);
+                }
+            } catch (AddressErrorException e) {
+                throw new ExitingException(statement, e);
+            }
+            int retValue = SystemIO.writeToFile(
+                    RegisterFile.getValue("a0"), // fd
+                    myBuffer, // buffer
+                    RegisterFile.getValue("a2")); // length
+            RegisterFile.updateRegister("a0", retValue); // set returned value in register
+            return;
+        }
+        int byteAddress = RegisterFile.getValue("a1", statement.getCurrentHart()); // source of characters to write to file
+        int reqLength = RegisterFile.getValue("a2", statement.getCurrentHart()); // user-requested length
         if (reqLength < 0) {
-            RegisterFile.updateRegister("a0", -1);
+            RegisterFile.updateRegister("a0", -1, statement.getCurrentHart());
             return;
         }
         int index = 0;
@@ -70,9 +97,9 @@ public class SyscallWrite extends AbstractSyscall {
             throw new ExitingException(statement, e);
         }
         int retValue = SystemIO.writeToFile(
-                RegisterFile.getValue("a0"), // fd
+                RegisterFile.getValue("a0", statement.getCurrentHart()), // fd
                 myBuffer, // buffer
-                RegisterFile.getValue("a2")); // length
-        RegisterFile.updateRegister("a0", retValue); // set returned value in register
+                RegisterFile.getValue("a2", statement.getCurrentHart())); // length
+        RegisterFile.updateRegister("a0", retValue, statement.getCurrentHart()); // set returned value in register
     }
 }

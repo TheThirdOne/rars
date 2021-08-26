@@ -39,7 +39,9 @@ public class SyscallSleep extends AbstractSyscall {
 
     public void simulate(ProgramStatement statement) {
         try {
-            Thread.sleep(RegisterFile.getValue("a0")); // units of milliseconds  1000 millisec = 1 sec.
+            if(statement.getCurrentHart() == -1)
+                Thread.sleep(RegisterFile.getValue("a0")); // units of milliseconds  1000 millisec = 1 sec.
+            Thread.sleep(RegisterFile.getValue("a0", statement.getCurrentHart()));
         } catch (InterruptedException e) {
         }
     }

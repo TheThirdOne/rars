@@ -39,9 +39,15 @@ public class SyscallTime extends AbstractSyscall {
     }
 
     public void simulate(ProgramStatement statement) {
+        if(statement.getCurrentHart() == -1){
+            long value = new java.util.Date().getTime();
+            RegisterFile.updateRegister("a0", Binary.lowOrderLongToInt(value));
+            RegisterFile.updateRegister("a1", Binary.highOrderLongToInt(value));
+            return;
+        }
         long value = new java.util.Date().getTime();
-        RegisterFile.updateRegister("a0", Binary.lowOrderLongToInt(value));
-        RegisterFile.updateRegister("a1", Binary.highOrderLongToInt(value));
+        RegisterFile.updateRegister("a0", Binary.lowOrderLongToInt(value), statement.getCurrentHart());
+        RegisterFile.updateRegister("a1", Binary.highOrderLongToInt(value), statement.getCurrentHart());
     }
 
 }
