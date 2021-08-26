@@ -73,7 +73,7 @@ public class GeneralVenusUI extends JFrame {
 
     // TODO check for mem observer
     public GeneralVenusUI(int hart) {
-        super(String.format("Hart %d", hart));
+        super(String.format("Hart %d", hart + 1));
         mainUI = this;
         this.hart = hart;
         this.createActionObjects();
