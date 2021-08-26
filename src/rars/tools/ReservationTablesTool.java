@@ -191,6 +191,10 @@ public class ReservationTablesTool extends AbstractToolAndApplication {
         }
     }
 
+    public void update() {
+        this.updateDisplay();
+    }
+
     @Override
     protected void reset() {
             Globals.reservationTables.reset();
