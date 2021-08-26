@@ -44,16 +44,28 @@ public class SyscallRead extends AbstractSyscall {
     }
 
     public void simulate(ProgramStatement statement) throws ExitingException {
-        int byteAddress = RegisterFile.getValue("a1", statement.getCurrentHart()); // destination of characters read from file
+        int hart = statement.getCurrentHart();
+        int byteAddress = hart == -1
+                ? RegisterFile.getValue("a1")
+                : RegisterFile.getValue("a1", hart); // destination of characters read from file
         int index = 0;
-        int length = RegisterFile.getValue("a2", statement.getCurrentHart());
+        int length = hart == -1
+                ? RegisterFile.getValue("a2")
+                : RegisterFile.getValue("a2", hart);
         byte myBuffer[] = new byte[length]; // specified length
         // Call to SystemIO.xxxx.read(xxx,xxx,xxx)  returns actual length
         int retLength = SystemIO.readFromFile(
-                RegisterFile.getValue("a0", statement.getCurrentHart()), // fd
+                hart == -1 // fd
+                    ? RegisterFile.getValue("a0")
+                    : RegisterFile.getValue("a0", hart),
                 myBuffer, // buffer
                 length); // length
-        RegisterFile.updateRegister("a0", retLength, statement.getCurrentHart()); // set returned value in register
+        // set returned value in register
+        if (hart == -1) {
+            RegisterFile.updateRegister("a0", retLength);
+        } else {
+            RegisterFile.updateRegister("a0", retLength, hart);
+        }
 
         // copy bytes from returned buffer into memory
         try {
