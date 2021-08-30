@@ -8,6 +8,7 @@ import rars.riscv.hardware.FloatingPointRegisterFile;
 import rars.riscv.hardware.RegisterFile;
 import rars.riscv.AbstractSyscall;
 
+import javax.lang.model.util.ElementScanner14;
 import javax.swing.*;
 
 /*
@@ -63,9 +64,13 @@ public class SyscallInputDialogDouble extends AbstractSyscall {
         //       -2: Cancel was chosen
         //       -3: OK was chosen but no data had been input into field
 
-
+        int hart = statement.getCurrentHart();
         String message = new String(); // = "";
-        int byteAddress = RegisterFile.getValue(4);
+        int byteAddress;
+        if(hart == -1)
+            byteAddress= RegisterFile.getValue(4);
+        else
+            byteAddress = RegisterFile.getValue(4, hart);
         char ch[] = {' '}; // Need an array to convert to String
         try {
             ch[0] = (char) Globals.memory.getByte(byteAddress);
@@ -85,26 +90,49 @@ public class SyscallInputDialogDouble extends AbstractSyscall {
         // means that OK was chosen but no string was input.
         String inputValue = null;
         inputValue = JOptionPane.showInputDialog(message);
+        if(hart == -1){
+            try {
+                FloatingPointRegisterFile.updateRegisterLong(0, 0); // set $f0 to zero
+                if (inputValue == null)  // Cancel was chosen
+                {
+                    RegisterFile.updateRegister("a1", -2);  // set $a1 to -2 flag
+                } else if (inputValue.length() == 0)  // OK was chosen but there was no input
+                {
+                    RegisterFile.updateRegister("a1", -3);  // set $a1 to -3 flag
+                } else {
+                    double doubleValue = Double.parseDouble(inputValue);
 
-        try {
-            FloatingPointRegisterFile.updateRegisterLong(0, 0); // set $f0 to zero
-            if (inputValue == null)  // Cancel was chosen
+                    // Successful parse of valid input data
+                    FloatingPointRegisterFile.updateRegisterLong(10, Double.doubleToRawLongBits(doubleValue));
+                    RegisterFile.updateRegister("a1", 0);  // set $a1 to valid flag
+
+                }
+            }catch (NumberFormatException e)    // Unsuccessful parse of input data
             {
-                RegisterFile.updateRegister("a1", -2);  // set $a1 to -2 flag
-            } else if (inputValue.length() == 0)  // OK was chosen but there was no input
-            {
-                RegisterFile.updateRegister("a1", -3);  // set $a1 to -3 flag
-            } else {
-                double doubleValue = Double.parseDouble(inputValue);
-
-                // Successful parse of valid input data
-                FloatingPointRegisterFile.updateRegisterLong(10, Double.doubleToRawLongBits(doubleValue));
-                RegisterFile.updateRegister("a1", 0);  // set $a1 to valid flag
-
+                RegisterFile.updateRegister("a1", -1);  // set $a1 to -1 flag
             }
-        }catch (NumberFormatException e)    // Unsuccessful parse of input data
-        {
-            RegisterFile.updateRegister("a1", -1);  // set $a1 to -1 flag
+        }
+        else{
+            try {
+                FloatingPointRegisterFile.updateRegisterLong(0, 0, hart); // set $f0 to zero
+                if (inputValue == null)  // Cancel was chosen
+                {
+                    RegisterFile.updateRegister("a1", -2, hart);  // set $a1 to -2 flag
+                } else if (inputValue.length() == 0)  // OK was chosen but there was no input
+                {
+                    RegisterFile.updateRegister("a1", -3, hart);  // set $a1 to -3 flag
+                } else {
+                    double doubleValue = Double.parseDouble(inputValue);
+
+                    // Successful parse of valid input data
+                    FloatingPointRegisterFile.updateRegisterLong(10, Double.doubleToRawLongBits(doubleValue), hart);
+                    RegisterFile.updateRegister("a1", 0, hart);  // set $a1 to valid flag
+
+                }
+            }catch (NumberFormatException e)    // Unsuccessful parse of input data
+            {
+                RegisterFile.updateRegister("a1", -1, hart);  // set $a1 to -1 flag
+            }
         }
     }
 }

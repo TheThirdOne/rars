@@ -45,24 +45,48 @@ public class SyscallGetCWD extends AbstractSyscall {
 
     public void simulate(ProgramStatement statement) throws ExitingException {
         String path = System.getProperty("user.dir");
-        int buf = RegisterFile.getValue("a0");
-        int length = RegisterFile.getValue("a1");
+        int hart = statement.getCurrentHart();
+        if(hart == -1){
+            int buf = RegisterFile.getValue("a0");
+            int length = RegisterFile.getValue("a1");
 
-        byte[] utf8BytesList = path.getBytes(StandardCharsets.UTF_8);
-        if(length < utf8BytesList.length+1){
-            // This should be -34 (ERANGE) for compatability with spike, but until other syscalls are ready with compatable
-            // error codes, lets keep internal consitency.
-            RegisterFile.updateRegister("a0",-1);
-            return;
-        }
-        try {
-            for (int index = 0; index < utf8BytesList.length; index++) {
-                Globals.memory.setByte(buf + index,
-                        utf8BytesList[index]);
+            byte[] utf8BytesList = path.getBytes(StandardCharsets.UTF_8);
+            if(length < utf8BytesList.length+1){
+                // This should be -34 (ERANGE) for compatability with spike, but until other syscalls are ready with compatable
+                // error codes, lets keep internal consitency.
+                RegisterFile.updateRegister("a0",-1);
+                return;
             }
-            Globals.memory.setByte(buf + utf8BytesList.length, 0);
-        } catch (AddressErrorException e) {
-            throw new ExitingException(statement, e);
+            try {
+                for (int index = 0; index < utf8BytesList.length; index++) {
+                    Globals.memory.setByte(buf + index,
+                            utf8BytesList[index]);
+                }
+                Globals.memory.setByte(buf + utf8BytesList.length, 0);
+            } catch (AddressErrorException e) {
+                throw new ExitingException(statement, e);
+            }
+        }
+        else{
+            int buf = RegisterFile.getValue("a0", hart);
+            int length = RegisterFile.getValue("a1", hart);
+
+            byte[] utf8BytesList = path.getBytes(StandardCharsets.UTF_8);
+            if(length < utf8BytesList.length+1){
+                // This should be -34 (ERANGE) for compatability with spike, but until other syscalls are ready with compatable
+                // error codes, lets keep internal consitency.
+                RegisterFile.updateRegister("a0",-1, hart);
+                return;
+            }
+            try {
+                for (int index = 0; index < utf8BytesList.length; index++) {
+                    Globals.memory.setByte(buf + index,
+                            utf8BytesList[index]);
+                }
+                Globals.memory.setByte(buf + utf8BytesList.length, 0);
+            } catch (AddressErrorException e) {
+                throw new ExitingException(statement, e);
+            }
         }
     }
 }

@@ -806,7 +806,7 @@ public class TextSegmentWindow extends JInternalFrame implements Observer {
             Settings settings = Globals.getSettings();
             boolean highlighting = textSegment.getCodeHighlighting();
 
-            if (highlighting && textSegment.getIntCodeAddressAtRow(row) == highlightAddress) {
+            if (highlighting && intAddresses != null && textSegment.getIntCodeAddressAtRow(row) == highlightAddress) {
                 cell.setBackground(settings.getColorSettingByPosition(Settings.TEXTSEGMENT_HIGHLIGHT_BACKGROUND));
                 cell.setForeground(settings.getColorSettingByPosition(Settings.TEXTSEGMENT_HIGHLIGHT_FOREGROUND));
                 cell.setFont(settings.getFontByPosition(Settings.TEXTSEGMENT_HIGHLIGHT_FONT));

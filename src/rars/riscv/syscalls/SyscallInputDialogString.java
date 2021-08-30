@@ -71,44 +71,85 @@ public class SyscallInputDialogString extends AbstractSyscall {
         // means that OK was chosen but no string was input.
         String inputString = null;
         inputString = JOptionPane.showInputDialog(message);
-        int byteAddress = RegisterFile.getValue("a1"); // byteAddress of string is in a1
-        int maxLength = RegisterFile.getValue("a2"); // input buffer size for input string is in a2
+        int hart = statement.getCurrentHart();
+        if(hart == -1){
+            int byteAddress = RegisterFile.getValue("a1"); // byteAddress of string is in a1
+            int maxLength = RegisterFile.getValue("a2"); // input buffer size for input string is in a2
 
-        try {
-            if (inputString == null)  // Cancel was chosen
-            {
-                RegisterFile.updateRegister("a1", -2);
-            } else if (inputString.length() == 0)  // OK was chosen but there was no input
-            {
-                RegisterFile.updateRegister("a1", -3);
-            } else {
-                byte[] utf8BytesList = inputString.getBytes(StandardCharsets.UTF_8);
-                // The buffer will contain characters, a '\n' character, and the null character
-                // Copy the input data to buffer as space permits
-                int stringLength = Math.min(maxLength-1, utf8BytesList.length);
-                for (int index = 0; index < stringLength; index++) {
-                    Globals.memory.setByte(byteAddress+ index,
-                            utf8BytesList[index]);
-                }
-                if (stringLength < maxLength-1) {
-                    Globals.memory.setByte(byteAddress + stringLength, '\n');
-                    stringLength++;
-                }
-                Globals.memory.setByte(byteAddress + stringLength, 0);
-
-                if (utf8BytesList.length > maxLength - 1) {
-                    //  length of the input string exceeded the specified maximum
-                    RegisterFile.updateRegister("a1", -4);
+            try {
+                if (inputString == null)  // Cancel was chosen
+                {
+                    RegisterFile.updateRegister("a1", -2);
+                } else if (inputString.length() == 0)  // OK was chosen but there was no input
+                {
+                    RegisterFile.updateRegister("a1", -3);
                 } else {
-                    RegisterFile.updateRegister("a1", 0);
-                }
-            } // end else
+                    byte[] utf8BytesList = inputString.getBytes(StandardCharsets.UTF_8);
+                    // The buffer will contain characters, a '\n' character, and the null character
+                    // Copy the input data to buffer as space permits
+                    int stringLength = Math.min(maxLength-1, utf8BytesList.length);
+                    for (int index = 0; index < stringLength; index++) {
+                        Globals.memory.setByte(byteAddress+ index,
+                                utf8BytesList[index]);
+                    }
+                    if (stringLength < maxLength-1) {
+                        Globals.memory.setByte(byteAddress + stringLength, '\n');
+                        stringLength++;
+                    }
+                    Globals.memory.setByte(byteAddress + stringLength, 0);
 
-        } // end try
-        catch (AddressErrorException e) {
-            throw new ExitingException(statement, e);
+                    if (utf8BytesList.length > maxLength - 1) {
+                        //  length of the input string exceeded the specified maximum
+                        RegisterFile.updateRegister("a1", -4);
+                    } else {
+                        RegisterFile.updateRegister("a1", 0);
+                    }
+                } // end else
+
+            } // end try
+            catch (AddressErrorException e) {
+                throw new ExitingException(statement, e);
+            }
         }
+        else{
+            int byteAddress = RegisterFile.getValue("a1", hart); // byteAddress of string is in a1
+            int maxLength = RegisterFile.getValue("a2", hart); // input buffer size for input string is in a2
 
+            try {
+                if (inputString == null)  // Cancel was chosen
+                {
+                    RegisterFile.updateRegister("a1", -2, hart);
+                } else if (inputString.length() == 0)  // OK was chosen but there was no input
+                {
+                    RegisterFile.updateRegister("a1", -3, hart);
+                } else {
+                    byte[] utf8BytesList = inputString.getBytes(StandardCharsets.UTF_8);
+                    // The buffer will contain characters, a '\n' character, and the null character
+                    // Copy the input data to buffer as space permits
+                    int stringLength = Math.min(maxLength-1, utf8BytesList.length);
+                    for (int index = 0; index < stringLength; index++) {
+                        Globals.memory.setByte(byteAddress+ index,
+                                utf8BytesList[index]);
+                    }
+                    if (stringLength < maxLength-1) {
+                        Globals.memory.setByte(byteAddress + stringLength, '\n');
+                        stringLength++;
+                    }
+                    Globals.memory.setByte(byteAddress + stringLength, 0);
+
+                    if (utf8BytesList.length > maxLength - 1) {
+                        //  length of the input string exceeded the specified maximum
+                        RegisterFile.updateRegister("a1", -4, hart);
+                    } else {
+                        RegisterFile.updateRegister("a1", 0, hart);
+                    }
+                } // end else
+
+            } // end try
+            catch (AddressErrorException e) {
+                throw new ExitingException(statement, e);
+            }
+        }
 
     }
 

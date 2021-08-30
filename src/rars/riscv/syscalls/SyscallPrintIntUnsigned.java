@@ -40,7 +40,11 @@ public class SyscallPrintIntUnsigned extends AbstractSyscall {
     }
 
     public void simulate(ProgramStatement statement) {
-        SystemIO.printString(
-                Binary.unsignedIntToIntString(RegisterFile.getValue("a0")));
+        if(statement.getCurrentHart() == -1)
+            SystemIO.printString(
+                    Binary.unsignedIntToIntString(RegisterFile.getValue("a0")));
+        else
+            SystemIO.printString(
+                    Binary.unsignedIntToIntString(RegisterFile.getValue("a0", statement.getCurrentHart())));
     }
 }

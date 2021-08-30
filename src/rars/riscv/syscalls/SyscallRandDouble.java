@@ -50,12 +50,19 @@ public class SyscallRandDouble extends AbstractSyscall {
                 "a0 = index of pseudorandom number generator","fa0 = the next pseudorandom");
     }
     public void simulate(ProgramStatement statement) throws ExitingException {
-        Integer index = RegisterFile.getValue("a0");
+        Integer index;
+        if(statement.getCurrentHart() == -1)
+            index = RegisterFile.getValue("a0");
+        else
+            index = RegisterFile.getValue("a0", statement.getCurrentHart());
         Random stream = RandomStreams.randomStreams.get(index);
         if (stream == null) {
             stream = new Random(); // create a non-seeded stream
             RandomStreams.randomStreams.put(index, stream);
         }
-        FloatingPointRegisterFile.updateRegisterLong(10, Double.doubleToRawLongBits(stream.nextDouble()));
+        if(statement.getCurrentHart() == -1)
+            FloatingPointRegisterFile.updateRegisterLong(10, Double.doubleToRawLongBits(stream.nextDouble()));
+        else
+            FloatingPointRegisterFile.updateRegisterLong(10, Double.doubleToRawLongBits(stream.nextDouble()), statement.getCurrentHart());
     }
 }

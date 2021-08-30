@@ -41,7 +41,10 @@ public class SyscallReadChar extends AbstractSyscall {
 
     public void simulate(ProgramStatement statement) throws ExitingException {
         try {
-            RegisterFile.updateRegister("a0", SystemIO.readChar(this.getNumber()));
+            if(statement.getCurrentHart() == -1)
+                RegisterFile.updateRegister("a0", SystemIO.readChar(this.getNumber()));
+            else
+                RegisterFile.updateRegister("a0", SystemIO.readChar(this.getNumber()), statement.getCurrentHart());
         } catch (IndexOutOfBoundsException e) // means null input
         {
             throw new ExitingException(statement,

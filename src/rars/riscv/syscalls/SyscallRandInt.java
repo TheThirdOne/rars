@@ -40,8 +40,15 @@ public class SyscallRandInt extends AbstractSyscall {
     }
 
     public void simulate(ProgramStatement statement) {
-        Random stream = RandomStreams.get("a0");
-        RegisterFile.updateRegister("a0", stream.nextInt());
+        int hart  = statement.getCurrentHart();
+        if(hart == -1){
+            Random stream = RandomStreams.get("a0");
+            RegisterFile.updateRegister("a0", stream.nextInt());
+        }
+        else{
+            Random stream = RandomStreams.get("a0", hart);
+            RegisterFile.updateRegister("a0", stream.nextInt(), hart);
+        }
     }
 }
 

@@ -5,6 +5,7 @@ import rars.ProgramStatement;
 import rars.riscv.AbstractSyscall;
 import rars.riscv.hardware.RegisterFile;
 
+import javax.lang.model.util.ElementScanner14;
 import javax.swing.*;
 
 /*
@@ -45,7 +46,11 @@ public class SyscallMessageDialog extends AbstractSyscall {
 
     public void simulate(ProgramStatement statement) throws ExitingException {
         // Display the dialog.
-        int msgType = RegisterFile.getValue("a1");
+        int hart = statement.getCurrentHart(), msgType;
+        if(hart == -1)
+            msgType = RegisterFile.getValue("a1");
+        else
+            msgType = RegisterFile.getValue("a1", hart);
         if (msgType < 0 || msgType > 3)
             msgType = -1; // See values in http://java.sun.com/j2se/1.5.0/docs/api/constant-values.html
         JOptionPane.showMessageDialog(null, NullString.get(statement), null, msgType);

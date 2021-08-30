@@ -39,7 +39,11 @@ public class SyscallPrintFloat extends AbstractSyscall {
     }
 
     public void simulate(ProgramStatement statement) {
-        SystemIO.printString(Float.toString(Float.intBitsToFloat(
-                FloatingPointRegisterFile.getValue("fa0"))));
+        if(statement.getCurrentHart() == -1)
+            SystemIO.printString(Float.toString(Float.intBitsToFloat(
+                    FloatingPointRegisterFile.getValue("fa0"))));
+        else
+            SystemIO.printString(Float.toString(Float.intBitsToFloat(
+                FloatingPointRegisterFile.getValue("fa0", statement.getCurrentHart())))); 
     }
 }

@@ -58,7 +58,10 @@ public class NullString {
      * @throws ExitingException if it hits a #AddressErrorException
      */
     public static String get(ProgramStatement statement, String reg) throws ExitingException {
-        int byteAddress = RegisterFile.getValue(reg);
+        int hart = statement.getCurrentHart();
+        int byteAddress = hart == -1
+                ? RegisterFile.getValue(reg)
+                : RegisterFile.getValue(reg, hart);
         ArrayList<Byte> utf8BytesList = new ArrayList<>(); // Need an array to hold bytes
         try {
             utf8BytesList.add((byte) Globals.memory.getByte(byteAddress));

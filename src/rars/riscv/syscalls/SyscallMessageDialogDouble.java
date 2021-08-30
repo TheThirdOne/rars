@@ -57,7 +57,11 @@ public class SyscallMessageDialogDouble extends AbstractSyscall {
     public void simulate(ProgramStatement statement) throws ExitingException {
         // TODO: maybe refactor this, other null strings are handled in a central place now
         String message = new String(); // = "";
-        int byteAddress = RegisterFile.getValue("a0");
+        int byteAddress;
+        if(statement.getCurrentHart() == -1)
+            byteAddress = RegisterFile.getValue("a0");
+        else    
+            byteAddress = RegisterFile.getValue("a0", statement.getCurrentHart());
         char ch[] = {' '}; // Need an array to convert to String
         try {
             ch[0] = (char) Globals.memory.getByte(byteAddress);
@@ -70,10 +74,15 @@ public class SyscallMessageDialogDouble extends AbstractSyscall {
         } catch (AddressErrorException e) {
             throw new ExitingException(statement, e);
         }
-
-        JOptionPane.showMessageDialog(null,
-                message + Double.longBitsToDouble(FloatingPointRegisterFile.getValueLong(10)),
-                null,
-                JOptionPane.INFORMATION_MESSAGE);
+        if(statement.getCurrentHart() == -1)
+            JOptionPane.showMessageDialog(null,
+                    message + Double.longBitsToDouble(FloatingPointRegisterFile.getValueLong(10)),
+                    null,
+                    JOptionPane.INFORMATION_MESSAGE);
+        else
+            JOptionPane.showMessageDialog(null,
+                    message + Double.longBitsToDouble(FloatingPointRegisterFile.getValueLong(10, statement.getCurrentHart())),
+                    null,
+                    JOptionPane.INFORMATION_MESSAGE);
     }
 }
