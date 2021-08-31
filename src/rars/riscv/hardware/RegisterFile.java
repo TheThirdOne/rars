@@ -72,18 +72,16 @@ public class RegisterFile {
     private static ArrayList<Register> gProgramCounter = new ArrayList<>();
 
     public static void initProgramCounter() {
-        gProgramCounter.clear();
-        for (int i = 1; i < Globals.getHarts(); i++) {
+        for (int i = gProgramCounter.size(); i < Globals.getHarts(); i++) {
             Register temp = new Register("pc", -1, Memory.textBaseAddress);
             gProgramCounter.add(temp);
         }
     }
 
     public static void initGRegisterBlock() {
-        if (gInstance != null)
-            return;
-        gInstance = new ArrayList<>();
-        for(int i = 0; i < Globals.getHarts(); i++){
+        if (gInstance == null)
+            gInstance = new ArrayList<>();
+        for(int i = gInstance.size(); i < Globals.getHarts(); i++) {
             RegisterBlock temp = new RegisterBlock('x', new Register[]{
                 new Register("zero", 0, 0, i), new Register("ra", 1, 0, i),
                 new Register("sp", STACK_POINTER_REGISTER, Memory.stackPointer, i),
@@ -102,7 +100,7 @@ public class RegisterFile {
                 new Register("s10", 26, 0,i), new Register("s11", 27, 0, i),
                 new Register("t3", 28, 0, i), new Register("t4", 29, 0, i),
                 new Register("t5", 30, 0, i), new Register("t6", 31, 0, i)
-        });
+            });
             gInstance.add(temp);
         }
 
@@ -306,9 +304,9 @@ public class RegisterFile {
     public static int setProgramCounter(int value, int hart) {
         int old = (int)gProgramCounter.get(hart).getValue();
         gProgramCounter.get(hart).setValue(value);
-        if (Globals.getSettings().getBackSteppingEnabled()) {
-            Globals.program.getBackStepper().addPCRestore(old);
-        }
+        // if (Globals.getSettings().getBackSteppingEnabled()) {
+        //     Globals.program.getBackStepper().addPCRestore(old);
+        // }
         return old;
     }
     /**

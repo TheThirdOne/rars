@@ -93,7 +93,7 @@ public class Simulator extends Observable {
         if (gSimulator == null) {
             gSimulator = new ArrayList<>();
             gSimulatorThread = new ArrayList<>();
-            for(int i = 0; i < Globals.getHarts() - 1 ; i++){
+            for(int i = 0; i < Globals.getHarts(); i++){
                 gSimulatorThread.add(null);
                 gSimulator.add(new Simulator(i));
             }

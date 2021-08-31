@@ -152,10 +152,9 @@ public class Globals {
 
     private static ArrayList<GeneralVenusUI> hartWindows =  new ArrayList<>();
 
-    public static void setHartWindows(){
+    public static void setHartWindows() {
         for (int i = 1; i < Globals.getHarts(); i++) {
-            GeneralVenusUI temp = new GeneralVenusUI(i - 1);
-            hartWindows.add(temp);
+            hartWindows.add(new GeneralVenusUI(i - 1));
         }
     }
 
