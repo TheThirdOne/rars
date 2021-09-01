@@ -62,29 +62,56 @@ public class SyscallInputDialogInt extends AbstractSyscall {
         // means that OK was chosen but no string was input.
         String inputValue = null;
         inputValue = JOptionPane.showInputDialog(message);
-        if (inputValue == null)  // Cancel was chosen
-        {
-            RegisterFile.updateRegister("a0", 0);
-            RegisterFile.updateRegister("a1", -2);
-        } else if (inputValue.length() == 0)  // OK was chosen but there was no input
-        {
-            RegisterFile.updateRegister("a0", 0);
-            RegisterFile.updateRegister("a1", -3);
-        } else {
-            try {
-                int i = Integer.parseInt(inputValue);
-
-                // Successful parse of valid input data
-                RegisterFile.updateRegister("a0", i);  // set to the data read
-                RegisterFile.updateRegister("a1", 0);  // set to valid flag
-            } catch (NumberFormatException e) {
-                // Unsuccessful parse of input data
+        int hart = statement.getCurrentHart();
+        if(hart == -1){
+            if (inputValue == null)  // Cancel was chosen
+            {
                 RegisterFile.updateRegister("a0", 0);
-                RegisterFile.updateRegister("a1", -1);
+                RegisterFile.updateRegister("a1", -2);
+            } else if (inputValue.length() == 0)  // OK was chosen but there was no input
+            {
+                RegisterFile.updateRegister("a0", 0);
+                RegisterFile.updateRegister("a1", -3);
+            } else {
+                try {
+                    int i = Integer.parseInt(inputValue);
 
-            }
+                    // Successful parse of valid input data
+                    RegisterFile.updateRegister("a0", i);  // set to the data read
+                    RegisterFile.updateRegister("a1", 0);  // set to valid flag
+                } catch (NumberFormatException e) {
+                    // Unsuccessful parse of input data
+                    RegisterFile.updateRegister("a0", 0);
+                    RegisterFile.updateRegister("a1", -1);
 
-        } // end else
+                }
+
+            } // end else
+        }
+        else{
+            if (inputValue == null)  // Cancel was chosen
+            {
+                RegisterFile.updateRegister("a0", 0, hart);
+                RegisterFile.updateRegister("a1", -2, hart);
+            } else if (inputValue.length() == 0)  // OK was chosen but there was no input
+            {
+                RegisterFile.updateRegister("a0", 0, hart);
+                RegisterFile.updateRegister("a1", -3, hart);
+            } else {
+                try {
+                    int i = Integer.parseInt(inputValue);
+    
+                    // Successful parse of valid input data
+                    RegisterFile.updateRegister("a0", i, hart);  // set to the data read
+                    RegisterFile.updateRegister("a1", 0, hart);  // set to valid flag
+                } catch (NumberFormatException e) {
+                    // Unsuccessful parse of input data
+                    RegisterFile.updateRegister("a0", 0, hart);
+                    RegisterFile.updateRegister("a1", -1, hart);
+                }
+    
+            } // end else
+        }
 
     }
 

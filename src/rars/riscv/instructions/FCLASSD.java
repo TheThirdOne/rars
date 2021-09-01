@@ -14,7 +14,13 @@ public class FCLASSD extends BasicInstruction {
 
     public void simulate(ProgramStatement statement) {
         int[] operands = statement.getOperands();
-        Float64 in = new Float64(FloatingPointRegisterFile.getValueLong(operands[1]));
-        FCLASSS.fclass(in,operands[0]);
+        int hart = statement.getCurrentHart();
+        Float64 in = (hart == -1)
+                ? new Float64(FloatingPointRegisterFile.getValueLong(operands[1]))
+                : new Float64(FloatingPointRegisterFile.getValueLong(operands[1], hart));
+        if (hart == -1)
+            FCLASSS.fclass(in, operands[0]);
+        else
+            FCLASSS.fclass(in, operands[0], hart);
     }
 }

@@ -2,6 +2,7 @@ package rars.riscv.instructions;
 
 import rars.Globals;
 import rars.riscv.hardware.AddressErrorException;
+import rars.riscv.hardware.ReservationTable.bitWidth;
 
 /*
 Copyright (c) 2017,  Benjamin Landers
@@ -35,10 +36,8 @@ public class SW extends Store {
         super("sw t1, -100(t2)", "Store word : Store contents of t1 into effective memory word address", "010");
     }
 
-    public void store(int address, long data) throws AddressErrorException {
+    public void store(int address, long data, int hart) throws AddressErrorException {
+        Globals.reservationTables.unreserveAddress(hart + 1, address, bitWidth.word);
         Globals.memory.setWord(address, (int) data);
     }
 }
-
-
-

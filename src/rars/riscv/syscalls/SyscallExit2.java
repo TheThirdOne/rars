@@ -40,7 +40,10 @@ public class SyscallExit2 extends AbstractSyscall {
     }
 
     public void simulate(ProgramStatement statement) throws ExitingException {
-        Globals.exitCode = RegisterFile.getValue("a0");
+        if(statement.getCurrentHart() == -1)
+            Globals.exitCode = RegisterFile.getValue("a0");
+        else    
+            Globals.exitCode = RegisterFile.getValue("a0", statement.getCurrentHart());
         throw new ExitingException(); // empty error list
     }
 }

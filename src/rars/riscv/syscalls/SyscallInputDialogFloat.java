@@ -62,31 +62,59 @@ public class SyscallInputDialogFloat extends AbstractSyscall {
         // An empty string returned (that is, inputValue.length() of zero)
         // means that OK was chosen but no string was input.
         String inputValue = null;
+        int hart = statement.getCurrentHart();
         inputValue = JOptionPane.showInputDialog(message);
+        if(hart == -1){
+            try {
+                FloatingPointRegisterFile.setRegisterToFloat(0, (float) 0.0);  // set f0 to zero
+                if (inputValue == null)  // Cancel was chosen
+                {
+                    RegisterFile.updateRegister("a1", -2);
+                } else if (inputValue.length() == 0)  // OK was chosen but there was no input
+                {
+                    RegisterFile.updateRegister("a1", -3);
+                } else {
 
-        try {
-            FloatingPointRegisterFile.setRegisterToFloat(0, (float) 0.0);  // set f0 to zero
-            if (inputValue == null)  // Cancel was chosen
+                    float floatValue = Float.parseFloat(inputValue);
+
+                    //System.out.println("SyscallInputDialogFloat: floatValue is " + floatValue);
+
+                    // Successful parse of valid input data
+                    FloatingPointRegisterFile.setRegisterToFloat(0, floatValue);  // set f0 to input data
+                    RegisterFile.updateRegister("a1", 0);  // set to valid flag
+
+                }
+
+            } catch (NumberFormatException e)    // Unsuccessful parse of input data
             {
-                RegisterFile.updateRegister("a1", -2);
-            } else if (inputValue.length() == 0)  // OK was chosen but there was no input
-            {
-                RegisterFile.updateRegister("a1", -3);
-            } else {
-
-                float floatValue = Float.parseFloat(inputValue);
-
-                //System.out.println("SyscallInputDialogFloat: floatValue is " + floatValue);
-
-                // Successful parse of valid input data
-                FloatingPointRegisterFile.setRegisterToFloat(0, floatValue);  // set f0 to input data
-                RegisterFile.updateRegister("a1", 0);  // set to valid flag
-
+                RegisterFile.updateRegister("a1", -1);
             }
+        }
+        else{
+            try {
+                FloatingPointRegisterFile.setRegisterToFloat(0, (float) 0.0, hart);  // set f0 to zero
+                if (inputValue == null)  // Cancel was chosen
+                {
+                    RegisterFile.updateRegister("a1", -2, hart);
+                } else if (inputValue.length() == 0)  // OK was chosen but there was no input
+                {
+                    RegisterFile.updateRegister("a1", -3, hart);
+                } else {
 
-        } catch (NumberFormatException e)    // Unsuccessful parse of input data
-        {
-            RegisterFile.updateRegister("a1", -1);
+                    float floatValue = Float.parseFloat(inputValue);
+
+                    //System.out.println("SyscallInputDialogFloat: floatValue is " + floatValue);
+
+                    // Successful parse of valid input data
+                    FloatingPointRegisterFile.setRegisterToFloat(0, floatValue, hart);  // set f0 to input data
+                    RegisterFile.updateRegister("a1", 0, hart);  // set to valid flag
+
+                }
+
+            } catch (NumberFormatException e)    // Unsuccessful parse of input data
+            {
+                RegisterFile.updateRegister("a1", -1, hart);
+            }
         }
     }
 }

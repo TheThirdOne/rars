@@ -40,7 +40,11 @@ public class SyscallPrintChar extends AbstractSyscall {
     }
 
     public void simulate(ProgramStatement statement) {
-        char t = (char) (RegisterFile.getValue("a0") & 0x000000ff);
+        char t;
+        if(statement.getCurrentHart() == -1)
+            t = (char) (RegisterFile.getValue("a0") & 0x000000ff);
+        else
+            t = (char) (RegisterFile.getValue("a0", statement.getCurrentHart()) & 0x000000ff);
         SystemIO.printString(Character.toString(t));
     }
 

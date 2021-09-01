@@ -2,6 +2,7 @@ package rars.riscv.hardware;
 
 import rars.Globals;
 
+import java.util.ArrayList;
 import java.util.Observer;
 
 /*
@@ -70,14 +71,46 @@ public class ControlAndStatusRegisterFile {
                 null, // cycleh
                 null, // timeh
                 null, // instreth
+                null, // mhartid
         };
         tmp[1] = new LinkedRegister("fflags", 0x001, tmp[3], 0x1F);
         tmp[2] = new LinkedRegister("frm", 0x002, tmp[3], 0xE0);
 
         tmp[14] = new LinkedRegister("cycleh", 0xC80,tmp[11], 0xFFFFFFFF_00000000L);
         tmp[15] = new LinkedRegister("timeh", 0xC81, tmp[12],0xFFFFFFFF_00000000L);
-        tmp[16] = new LinkedRegister("instreth",0xC82, tmp[13],0xFFFFFFFF_00000000L);
+        tmp[16] = new LinkedRegister("instreth", 0xC82, tmp[13], 0xFFFFFFFF_00000000L);
+        tmp[17] = new ReadOnlyRegister("mhartid", 0xF10, 0);
         instance = new RegisterBlock('_', tmp); // prefix not used
+    }
+
+    public static ArrayList<RegisterBlock> gInstance = new ArrayList<>();
+
+    public static void changeHarts(int sign) {
+        if (sign > 0) {
+            Register[] tmp = new Register[] { new MaskedRegister("ustatus", 0x000, 0, ~0x11), null, // fflags
+                    null, // frm
+                    new MaskedRegister("fcsr", 0x003, 0, ~0xFF), new Register("uie", 0x004, 0),
+                    new Register("utvec", 0x005, 0), new Register("uscratch", 0x040, 0),
+                    new Register("uepc", 0x041, 0), new Register("ucause", 0x042, 0),
+                    new Register("utval", 0x043, 0), new Register("uip", 0x044, 0),
+                    new ReadOnlyRegister("cycle", 0xC00, 0), new ReadOnlyRegister("time", 0xC01, 0),
+                    new ReadOnlyRegister("instret", 0xC02, 0), null, // cycleh
+                    null, // timeh
+                    null, // instreth
+                    null, // mhartid
+            };
+            tmp[1] = new LinkedRegister("fflags", 0x001, tmp[3], 0x1F);
+            tmp[2] = new LinkedRegister("frm", 0x002, tmp[3], 0xE0);
+            tmp[14] = new LinkedRegister("cycleh", 0xC80, tmp[11], 0xFFFFFFFF_00000000L);
+            tmp[15] = new LinkedRegister("timeh", 0xC81, tmp[12], 0xFFFFFFFF_00000000L);
+            tmp[16] = new LinkedRegister("instreth", 0xC82, tmp[13], 0xFFFFFFFF_00000000L);
+            tmp[17] = new ReadOnlyRegister("mhartid", 0xF10, Globals.getHarts() - 1);
+            RegisterBlock temp = new RegisterBlock('_', tmp);
+            gInstance.add(temp);
+        }
+        if (sign < 0) {
+            gInstance.remove(gInstance.size() - 1);
+        }
     }
 
     /**
@@ -103,6 +136,22 @@ public class ControlAndStatusRegisterFile {
         return false;
     }
 
+    public static boolean updateRegister(int num, long val, int hart) {
+        if (gInstance.get(hart).getRegister(num) instanceof ReadOnlyRegister) {
+            return true;
+        }
+        if (num >= 0xC80 && num <= 0xC82) {
+            return true;
+        }
+        if ((Globals.getSettings().getBackSteppingEnabled())) {
+            Globals.program.getBackStepper().addControlAndStatusRestore(num, 
+                    gInstance.get(hart).updateRegister(num, val));
+        } else {
+            gInstance.get(hart).updateRegister(num, val);
+        }
+        return false;
+    }
+
     /**
      * This method updates the register value
      *
@@ -112,6 +161,10 @@ public class ControlAndStatusRegisterFile {
      **/
     public static void updateRegister(String name, long val) {
         updateRegister(instance.getRegister(name).getNumber(), val);
+    }
+
+    public static void updateRegister(String name, long val, int hart) {
+        updateRegister(gInstance.get(hart).getRegister(name).getNumber(), val, hart);
     }
 
     /**
@@ -129,6 +182,15 @@ public class ControlAndStatusRegisterFile {
         }
     }
 
+    public static void updateRegisterBackdoor(int num, long val, int hart) {
+        if ((Globals.getSettings().getBackSteppingEnabled())) {
+            Globals.program.getBackStepper().addControlAndStatusBackdoor(num,
+                    gInstance.get(hart).getRegister(num).setValueBackdoor(val));
+        } else {
+            gInstance.get(hart).getRegister(num).setValueBackdoor(val);
+        }
+    }
+
     /**
      * This method updates the register value silently and bypasses read only
      *
@@ -138,6 +200,11 @@ public class ControlAndStatusRegisterFile {
      **/
     public static void updateRegisterBackdoor(String name, long val) {
         updateRegisterBackdoor(instance.getRegister(name).getNumber(), val);
+    }
+
+    public static void updateRegisterBackdoor(String name, long val, int hart) {
+        System.out.printf("Getting secondary hart %d out of %d total secondary harts\n", hart, gInstance.size());
+        updateRegisterBackdoor(gInstance.get(hart).getRegister(name).getNumber(), val, hart);
     }
 
     /**
@@ -150,6 +217,10 @@ public class ControlAndStatusRegisterFile {
         return updateRegister(num, instance.getValue(num) | val);
     }
 
+    public static boolean orRegister(int num, long val, int hart) {
+        return updateRegister(num, gInstance.get(hart).getValue(num) | val, hart);
+    }
+
     /**
      * ORs a register with a value
      *
@@ -158,6 +229,10 @@ public class ControlAndStatusRegisterFile {
      **/
     public static void orRegister(String name, long val) {
         updateRegister(name, instance.getValue(name) | val);
+    }
+
+    public static void orRegister(String name, long val, int hart) {
+        updateRegister(name, gInstance.get(hart).getValue(name) | val, hart);
     }
 
     /**
@@ -170,6 +245,10 @@ public class ControlAndStatusRegisterFile {
         return updateRegister(num, instance.getValue(num) & ~val);
     }
 
+    public static boolean clearRegister(int num, long val, int hart) {
+        return updateRegister(num, gInstance.get(hart).getValue(num) & ~val, hart);
+    }
+
     /**
      * Clears bits from a register according to a value
      *
@@ -180,6 +259,10 @@ public class ControlAndStatusRegisterFile {
         updateRegister(name, instance.getValue(name) & ~val);
     }
 
+    public static void clearRegister(String name, long val, int hart) {
+        updateRegister(name, gInstance.get(hart).getValue(name) & ~val, hart);
+    }
+
     /**
      * Returns the value of the register
      *
@@ -188,7 +271,11 @@ public class ControlAndStatusRegisterFile {
      **/
 
     public static int getValue(int num) {
-        return (int)instance.getValue(num);
+        return (int) instance.getValue(num);
+    }
+
+    public static int getValue(int num, int hart) {
+        return (int) gInstance.get(hart).getValue(num);
     }
 
     /**
@@ -201,6 +288,11 @@ public class ControlAndStatusRegisterFile {
     public static long getValueLong(int num) {
         return instance.getValue(num);
     }
+
+    public static long getValueLong(int num, int hart) {
+        return gInstance.get(hart).getValue(num);
+    }
+
     /**
      * Returns the value of the register
      *
@@ -209,7 +301,11 @@ public class ControlAndStatusRegisterFile {
      **/
 
     public static int getValue(String name) {
-        return (int)instance.getValue(name);
+        return (int) instance.getValue(name);
+    }
+
+    public static int getValue(String name, int hart) {
+        return (int) gInstance.get(hart).getValue(name);
     }
 
     /**
@@ -223,6 +319,10 @@ public class ControlAndStatusRegisterFile {
         return instance.getRegister(name).getValueNoNotify();
     }
 
+    public static long getValueNoNotify(String name, int hart) {
+        return gInstance.get(hart).getRegister(name).getValueNoNotify();
+    }
+
     /**
      * For returning the set of registers.
      *
@@ -231,6 +331,10 @@ public class ControlAndStatusRegisterFile {
 
     public static Register[] getRegisters() {
         return instance.getRegisters();
+    }
+
+    public static Register[] getRegisters(int hart) {
+        return gInstance.get(hart).getRegisters();
     }
 
 

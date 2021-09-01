@@ -42,7 +42,10 @@ public class SyscallSbrk extends AbstractSyscall {
 
     public void simulate(ProgramStatement statement) throws ExitingException {
         try {
-            RegisterFile.updateRegister("a0", Globals.memory.allocateBytesFromHeap(RegisterFile.getValue("a0")));
+            if(statement.getCurrentHart() == -1)
+                RegisterFile.updateRegister("a0", Globals.memory.allocateBytesFromHeap(RegisterFile.getValue("a0")));
+            else
+                RegisterFile.updateRegister("a0", Globals.memory.allocateBytesFromHeap(RegisterFile.getValue("a0", statement.getCurrentHart())), statement.getCurrentHart());
         } catch (IllegalArgumentException iae) {
             throw new ExitingException(statement,
                     iae.getMessage() + " (syscall " + this.getNumber() + ")");

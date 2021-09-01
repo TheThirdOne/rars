@@ -52,27 +52,48 @@ public abstract class Floating extends BasicInstruction {
     protected Floating(String name, String description, String funct, String rm) {
         super(name + " f1, f2, f3", description, BasicInstructionFormat.R_FORMAT, funct + "ttttt sssss " + rm + " fffff 1010011");
     }
-    public void simulate(ProgramStatement statement) throws SimulationException{
+
+    public void simulate(ProgramStatement statement) throws SimulationException {
         int[] operands = statement.getOperands();
+        int hart = statement.getCurrentHart();
         Environment e = new Environment();
-        e.mode = getRoundingMode(operands[3],statement);
-        Float32 result = compute(new Float32(FloatingPointRegisterFile.getValue(operands[1])),new Float32(FloatingPointRegisterFile.getValue(operands[2])),e);
-        setfflags(e);
-        FloatingPointRegisterFile.updateRegister(operands[0], result.bits);
+        e.mode = getRoundingMode(operands[3], statement);
+        Float32 result = compute(
+                new Float32((hart == -1)
+                        ? FloatingPointRegisterFile.getValue(operands[1])
+                        : FloatingPointRegisterFile.getValue(operands[1], hart)
+                    ),
+                new Float32((hart == -1)
+                        ? FloatingPointRegisterFile.getValue(operands[2])
+                        : FloatingPointRegisterFile.getValue(operands[2], hart)
+                    ),
+                e);
+        setfflags(e, hart);
+        if (hart == -1)
+            FloatingPointRegisterFile.updateRegister(operands[0], result.bits);
+        else
+            FloatingPointRegisterFile.updateRegister(operands[0], result.bits, hart);
     }
 
-    public static void setfflags(Environment e){
+    public static void setfflags(Environment e, int hart){
         int fflags =(e.flags.contains(Flags.inexact)?1:0)+
                 (e.flags.contains(Flags.underflow)?2:0)+
                 (e.flags.contains(Flags.overflow)?4:0)+
                 (e.flags.contains(Flags.divByZero)?8:0)+
                 (e.flags.contains(Flags.invalid)?16:0);
-        if(fflags != 0) ControlAndStatusRegisterFile.orRegister("fflags",fflags);
+        if (fflags != 0)
+            if (hart == -1)
+                ControlAndStatusRegisterFile.orRegister("fflags", fflags);
+            else
+                ControlAndStatusRegisterFile.orRegister("fflags", fflags, hart);
     }
 
     public static RoundingMode getRoundingMode(int RM, ProgramStatement statement) throws SimulationException {
         int rm = RM;
-        int frm = ControlAndStatusRegisterFile.getValue("frm");
+        int hart = statement.getCurrentHart();
+        int frm = (hart == -1)
+                ? ControlAndStatusRegisterFile.getValue("frm")
+                : ControlAndStatusRegisterFile.getValue("frm", hart);
         if (rm == 7) rm = frm;
         switch (rm){
             case 0: // RNE
@@ -92,7 +113,11 @@ public abstract class Floating extends BasicInstruction {
 
     public abstract Float32 compute(Float32 f1, Float32 f2, Environment e);
 
-    public static Float32 getFloat(int num){
+    public static Float32 getFloat(int num) {
         return new Float32(FloatingPointRegisterFile.getValue(num));
+    }
+
+    public static Float32 getFloat(int num, int hart) {
+        return new Float32(FloatingPointRegisterFile.getValue(num, hart));
     }
 }

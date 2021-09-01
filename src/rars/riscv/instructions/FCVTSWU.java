@@ -1,6 +1,7 @@
 package rars.riscv.instructions;
 
 import jsoftfloat.Environment;
+import jsoftfloat.operations.Conversions;
 import jsoftfloat.types.Float32;
 import rars.ProgramStatement;
 import rars.SimulationException;
@@ -46,12 +47,18 @@ public class FCVTSWU extends BasicInstruction {
 
     public void simulate(ProgramStatement statement) throws SimulationException {
         int[] operands = statement.getOperands();
+        int hart = statement.getCurrentHart();
         Environment e = new Environment();
         e.mode = Floating.getRoundingMode(operands[2],statement);
         Float32 tmp = new Float32(0);
-        Float32 converted = jsoftfloat.operations.Conversions.convertFromInt(BigInteger.valueOf(RegisterFile.getValue(operands[1]) &0xFFFFFFFFL),e,tmp);
-        Floating.setfflags(e);
-        FloatingPointRegisterFile.updateRegister(operands[0],converted.bits);
+        Float32 converted = Conversions.convertFromInt(BigInteger.valueOf(((hart == -1)
+                ? RegisterFile.getValue(operands[1])
+                : RegisterFile.getValue(operands[1], hart)) & 0xFFFFFFFFL),
+                e, tmp);
+        Floating.setfflags(e, hart);
+        if (hart == -1)
+            FloatingPointRegisterFile.updateRegister(operands[0], converted.bits);
+        else
+            FloatingPointRegisterFile.updateRegister(operands[0], converted.bits, hart);
     }
 }
-

@@ -47,14 +47,21 @@ public abstract class Store extends BasicInstruction {
     }
     public Store(String usage, String description, String funct, boolean rv64) {
         super(usage, description, BasicInstructionFormat.S_FORMAT,
-                "sssssss fffff ttttt " + funct + " sssss 0100011",rv64);
+                "sssssss fffff ttttt " + funct + " sssss 0100011", rv64);
     }
 
     public void simulate(ProgramStatement statement) throws SimulationException {
         int[] operands = statement.getOperands();
+        int hart = statement.getCurrentHart();
         operands[1] = (operands[1] << 20) >> 20;
         try {
-            store(RegisterFile.getValue(operands[2]) + operands[1], RegisterFile.getValueLong(operands[0]));
+            int base = (hart == -1)
+                    ? RegisterFile.getValue(operands[2])
+                    : RegisterFile.getValue(operands[2], hart);
+            long value = (hart == -1)
+                    ? RegisterFile.getValueLong(operands[0])
+                    : RegisterFile.getValueLong(operands[0], hart);
+            store(base + operands[1], value, hart);
         } catch (AddressErrorException e) {
             throw new SimulationException(statement, e);
         }
@@ -63,6 +70,7 @@ public abstract class Store extends BasicInstruction {
     /**
      * @param address the address to store to
      * @param value   the value to store
+     * @param hart    the hart to store from
      */
-    protected abstract void store(int address, long value) throws AddressErrorException;
+    protected abstract void store(int address, long value, int hart) throws AddressErrorException;
 }

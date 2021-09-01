@@ -16,6 +16,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.net.URL;
+import java.util.ArrayList;
 
 /*
 Copyright (c) 2003-2013,  Pete Sanderson and Kenneth Vollmar
@@ -84,7 +85,7 @@ public class VenusUI extends JFrame {
     private JMenuItem runGo, runStep, runBackstep, runReset, runAssemble, runStop, runPause, runClearBreakpoints, runToggleBreakpoints;
     private JCheckBoxMenuItem settingsLabel, settingsPopupInput, settingsValueDisplayBase, settingsAddressDisplayBase,
             settingsExtended, settingsAssembleOnOpen, settingsAssembleAll, settingsAssembleOpen, settingsWarningsAreErrors,
-            settingsStartAtMain, settingsProgramArguments, settingsSelfModifyingCode,settingsRV64;
+            settingsStartAtMain, settingsProgramArguments, settingsSelfModifyingCode, settingsRV64, settingsPerHartExecution;
     private JMenuItem settingsExceptionHandler, settingsEditor, settingsHighlighting, settingsMemoryConfiguration;
     private JMenuItem helpHelp, helpAbout;
 
@@ -108,10 +109,11 @@ public class VenusUI extends JFrame {
     private Action settingsLabelAction, settingsPopupInputAction, settingsValueDisplayBaseAction, settingsAddressDisplayBaseAction,
             settingsExtendedAction, settingsAssembleOnOpenAction, settingsAssembleOpenAction, settingsAssembleAllAction,
             settingsWarningsAreErrorsAction, settingsStartAtMainAction, settingsProgramArgumentsAction,
-            settingsExceptionHandlerAction, settingsEditorAction,
-            settingsHighlightingAction, settingsMemoryConfigurationAction, settingsSelfModifyingCodeAction,settingsRV64Action;
+            settingsExceptionHandlerAction, settingsEditorAction, settingsHighlightingAction,settingsMemoryConfigurationAction,
+            settingsSelfModifyingCodeAction, settingsRV64Action, settingsPerHartExecutionAction;
     private Action helpHelpAction, helpAboutAction;
 
+    protected static ArrayList<GeneralVenusUI> observers;
 
     /**
      * Constructor for the Class. Sets up a window object for the UI
@@ -124,6 +126,7 @@ public class VenusUI extends JFrame {
         mainUI = this;
         Globals.setGui(this);
         this.editor = new Editor(this);
+        observers = new ArrayList<GeneralVenusUI>();
 
         double screenWidth = Toolkit.getDefaultToolkit().getScreenSize().getWidth();
         double screenHeight = Toolkit.getDefaultToolkit().getScreenSize().getHeight();
@@ -449,6 +452,9 @@ public class VenusUI extends JFrame {
             settingsSelfModifyingCodeAction = new SettingsAction("Self-modifying code",
                     "If set, the program can write and branch to both text and data segments.",
                     Settings.Bool.SELF_MODIFYING_CODE_ENABLED);
+            settingsPerHartExecutionAction = new SettingsAction("Each run steps button runs only assigned hart",
+                    "If set, the run step, single step, and backward buttons will only affect the hart corelated to the window",
+                    Settings.Bool.PER_HART_EXECUTION);
 
             // TODO: review this
             settingsRV64Action = new SettingsAction("64 bit",
@@ -615,6 +621,8 @@ public class VenusUI extends JFrame {
         settingsSelfModifyingCode.setSelected(Globals.getSettings().getBooleanSetting(Settings.Bool.SELF_MODIFYING_CODE_ENABLED));
         settingsRV64 = new JCheckBoxMenuItem(settingsRV64Action);
         settingsRV64.setSelected(Globals.getSettings().getBooleanSetting(Settings.Bool.RV64_ENABLED));
+        settingsPerHartExecution = new JCheckBoxMenuItem(settingsPerHartExecutionAction);
+        settingsPerHartExecution.setSelected(Globals.getSettings().getBooleanSetting(Settings.Bool.PER_HART_EXECUTION));
         settingsAssembleOnOpen = new JCheckBoxMenuItem(settingsAssembleOnOpenAction);
         settingsAssembleOnOpen.setSelected(Globals.getSettings().getBooleanSetting(Settings.Bool.ASSEMBLE_ON_OPEN));
         settingsAssembleAll = new JCheckBoxMenuItem(settingsAssembleAllAction);
@@ -647,6 +655,7 @@ public class VenusUI extends JFrame {
         settings.add(settingsExtended);
         settings.add(settingsSelfModifyingCode);
         settings.add(settingsRV64);
+        settings.add(settingsPerHartExecution);
         settings.addSeparator();
         settings.add(settingsEditor);
         settings.add(settingsHighlighting);
@@ -799,6 +808,7 @@ public class VenusUI extends JFrame {
                 System.out.println("Invalid File Status: " + status);
                 break;
         }
+        notifyObservers();
     }
 
 
@@ -1184,5 +1194,11 @@ public class VenusUI extends JFrame {
 
     private KeyStroke makeShortcut(int key) {
         return KeyStroke.getKeyStroke(key, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());
+    }
+
+    public void notifyObservers() {
+        for (GeneralVenusUI ui : observers) {
+            ui.setMenuState();
+        }
     }
 }

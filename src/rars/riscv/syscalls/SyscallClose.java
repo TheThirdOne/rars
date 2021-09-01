@@ -39,6 +39,9 @@ public class SyscallClose extends AbstractSyscall {
     }
 
     public void simulate(ProgramStatement statement) {
-        SystemIO.closeFile(RegisterFile.getValue("a0"));
+        if(statement.getCurrentHart() == -1)
+            SystemIO.closeFile(RegisterFile.getValue("a0"));
+        else
+            SystemIO.closeFile(RegisterFile.getValue("a0", statement.getCurrentHart()));
     }
 }

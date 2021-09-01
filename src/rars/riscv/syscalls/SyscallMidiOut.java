@@ -58,10 +58,17 @@ public class SyscallMidiOut extends AbstractSyscall {
      * use the range 1-128.
      */
     public void simulate(ProgramStatement statement) {
-        int pitch = RegisterFile.getValue("a0");
-        int duration = RegisterFile.getValue("a1");
-        int instrument = RegisterFile.getValue("a2");
-        int volume = RegisterFile.getValue("a3");
+        int hart = statement.getCurrentHart();
+        int pitch, duration , instrument, volume;
+        if(hart == -1){
+            pitch = RegisterFile.getValue("a0"); duration = RegisterFile.getValue("a1"); instrument = RegisterFile.getValue("a2");
+            volume = RegisterFile.getValue("a3");
+        }
+        else{
+            pitch = RegisterFile.getValue("a0", hart); duration = RegisterFile.getValue("a1", hart) ; 
+            instrument = RegisterFile.getValue("a2", hart);
+            volume = RegisterFile.getValue("a3", hart);
+        }
         if (pitch < rangeLowEnd || pitch > rangeHighEnd) pitch = ToneGenerator.DEFAULT_PITCH;
         if (duration < 0) duration = ToneGenerator.DEFAULT_DURATION;
         if (instrument < rangeLowEnd || instrument > rangeHighEnd) instrument = ToneGenerator.DEFAULT_INSTRUMENT;
@@ -70,4 +77,3 @@ public class SyscallMidiOut extends AbstractSyscall {
     }
 
 }
-

@@ -1,11 +1,10 @@
 package rars.riscv.instructions;
 
 import jsoftfloat.Environment;
+import jsoftfloat.operations.Conversions;
 import jsoftfloat.types.Float32;
 import rars.ProgramStatement;
 import rars.SimulationException;
-import rars.assembler.DataTypes;
-import rars.riscv.hardware.ControlAndStatusRegisterFile;
 import rars.riscv.hardware.FloatingPointRegisterFile;
 import rars.riscv.hardware.RegisterFile;
 import rars.riscv.BasicInstruction;
@@ -46,11 +45,17 @@ public class FCVTWUS extends BasicInstruction {
 
     public void simulate(ProgramStatement statement) throws SimulationException {
         int[] operands = statement.getOperands();
+        int hart = statement.getCurrentHart();
         Environment e = new Environment();
         e.mode = Floating.getRoundingMode(operands[2],statement);
-        Float32 in = new Float32(FloatingPointRegisterFile.getValue(operands[1]));
-        int out = jsoftfloat.operations.Conversions.convertToUnsignedInt(in,e,false);
-        Floating.setfflags(e);
-        RegisterFile.updateRegister(operands[0],out);
+        Float32 in = new Float32((hart == -1)
+                ? FloatingPointRegisterFile.getValue(operands[1])
+                : FloatingPointRegisterFile.getValue(operands[1]));
+        int out = Conversions.convertToUnsignedInt(in,e,false);
+        Floating.setfflags(e, hart);
+        if (hart == -1)
+            RegisterFile.updateRegister(operands[0],out);
+        else
+            RegisterFile.updateRegister(operands[0], out);
     }
 }

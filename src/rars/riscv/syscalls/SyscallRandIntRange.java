@@ -42,12 +42,25 @@ public class SyscallRandIntRange extends AbstractSyscall {
     }
 
     public void simulate(ProgramStatement statement) throws ExitingException {
-        Random stream = RandomStreams.get("a0");
-        try {
-            RegisterFile.updateRegister("a0", stream.nextInt(RegisterFile.getValue("a1")));
-        } catch (IllegalArgumentException iae) {
-            throw new ExitingException(statement,
-                    "Upper bound of range cannot be negative (syscall " + this.getNumber() + ")");
+        int hart = statement.getCurrentHart();
+        Random stream;
+        if(hart == -1){
+            stream = RandomStreams.get("a0");
+            try {
+                RegisterFile.updateRegister("a0", stream.nextInt(RegisterFile.getValue("a1")));
+            } catch (IllegalArgumentException iae) {
+                throw new ExitingException(statement,
+                        "Upper bound of range cannot be negative (syscall " + this.getNumber() + ")");
+            }
+        }
+        else{
+            stream = RandomStreams.get("a0", hart);
+            try {
+                RegisterFile.updateRegister("a0", stream.nextInt(RegisterFile.getValue("a1", hart)));
+            } catch (IllegalArgumentException iae) {
+                throw new ExitingException(statement,
+                        "Upper bound of range cannot be negative (syscall " + this.getNumber() + ")");
+            }
         }
     }
 }

@@ -41,8 +41,11 @@ public class SyscallReadInt extends AbstractSyscall {
     }
 
     public void simulate(ProgramStatement statement) throws ExitingException {
-        try {
-            RegisterFile.updateRegister("a0", SystemIO.readInteger(this.getNumber()));
+        try{
+            if(statement.getCurrentHart() == -1)
+                RegisterFile.updateRegister("a0", SystemIO.readInteger(this.getNumber()));
+            else
+                RegisterFile.updateRegister("a0", SystemIO.readInteger(this.getNumber()), statement.getCurrentHart());
         } catch (NumberFormatException e) {
             throw new ExitingException(statement,
                     "invalid integer input (syscall " + this.getNumber() + ")");

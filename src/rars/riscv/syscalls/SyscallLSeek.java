@@ -42,9 +42,18 @@ public class SyscallLSeek extends AbstractSyscall {
     }
 
     public void simulate(ProgramStatement statement) throws ExitingException {
+        int hart = statement.getCurrentHart();
+        if(hart == -1){
         int result = SystemIO.seek(RegisterFile.getValue("a0"),
                 RegisterFile.getValue("a1"),
                 RegisterFile.getValue("a2"));
         RegisterFile.updateRegister("a0", result);
+        }
+        else{
+            int result = SystemIO.seek(RegisterFile.getValue("a0", hart),
+            RegisterFile.getValue("a1", hart),
+            RegisterFile.getValue("a2", hart));
+        RegisterFile.updateRegister("a0", result, hart); 
+        }
     }
 }

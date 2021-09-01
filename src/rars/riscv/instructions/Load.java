@@ -42,21 +42,24 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 public abstract class Load extends BasicInstruction {
     public Load(String usage, String description, String funct) {
-        super(usage, description, BasicInstructionFormat.I_FORMAT,
-                "ssssssssssss ttttt " + funct + " fffff 0000011");
+        super(usage, description, BasicInstructionFormat.I_FORMAT, "ssssssssssss ttttt " + funct + " fffff 0000011");
     }
+
     public Load(String usage, String description, String funct, boolean rv64) {
         super(usage, description, BasicInstructionFormat.I_FORMAT,
                 "ssssssssssss ttttt " + funct + " fffff 0000011",rv64);
-
     }
 
 
     public void simulate(ProgramStatement statement) throws SimulationException {
         int[] operands = statement.getOperands();
         operands[1] = (operands[1] << 20) >> 20;
+        int hart = statement.getCurrentHart();
         try {
-            RegisterFile.updateRegister(operands[0], load(RegisterFile.getValue(operands[2]) + operands[1]));
+            if (hart == -1)
+                RegisterFile.updateRegister(operands[0], load(RegisterFile.getValue(operands[2]) + operands[1]));
+            else
+                RegisterFile.updateRegister(operands[0], load(RegisterFile.getValue(operands[2], hart) + operands[1]), hart);
         } catch (AddressErrorException e) {
             throw new SimulationException(statement, e);
         }

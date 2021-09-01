@@ -7,6 +7,7 @@ import rars.riscv.hardware.Register;
 import rars.venus.NumberDisplayBaseChooser;
 
 public class ControlAndStatusWindow extends RegisterBlockWindow {
+    private int hart;
     /*
      * The tips to show when hovering over the names of the registers
      * TODO: Maintain order if any new CSRs are added
@@ -28,11 +29,18 @@ public class ControlAndStatusWindow extends RegisterBlockWindow {
             /*instret*/"Instructions retired (same as cycle in RARS)",
             /*cycleh*/ "High 32 bits of cycle",
             /*timeh*/  "High 32 bits of time",
-            /*instreth*/ "High 32 bits of instret"
+            /*instreth*/ "High 32 bits of instret",
+            /*mhartid*/"ID of the hardware thread running the code"
     };
 
     public ControlAndStatusWindow() {
         super(ControlAndStatusRegisterFile.getRegisters(), regToolTips, "Current 32 bit value");
+        hart = -1;
+    }
+
+    public ControlAndStatusWindow(int hart) {
+        super(ControlAndStatusRegisterFile.getRegisters(hart), regToolTips, "Current 32 bit value", hart);
+        this.hart = hart;
     }
 
     protected String formatRegister(Register value, int base) {
@@ -44,6 +52,10 @@ public class ControlAndStatusWindow extends RegisterBlockWindow {
     }
 
     protected void beginObserving() {
+        ControlAndStatusRegisterFile.addRegistersObserver(this);
+    }
+
+    protected void beginObserving(int hart) {
         ControlAndStatusRegisterFile.addRegistersObserver(this);
     }
 

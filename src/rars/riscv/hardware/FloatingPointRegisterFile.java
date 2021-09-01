@@ -2,6 +2,7 @@ package rars.riscv.hardware;
 
 import rars.Globals;
 
+import java.util.ArrayList;
 import java.util.Observer;
 
 /*
@@ -64,6 +65,26 @@ public class FloatingPointRegisterFile {
             new Register("ft8", 28, 0), new Register("ft9", 29, 0),
             new Register("ft10", 30, 0), new Register("ft11", 31, 0)
     });
+    private static final ArrayList<RegisterBlock> gInstance = new ArrayList<>();
+
+    public static void increaseHarts() {
+        gInstance.add(new RegisterBlock('f',
+                new Register[] { new Register("ft0", 0, 0), new Register("ft1", 1, 0), new Register("ft2", 2, 0),
+                        new Register("ft3", 3, 0), new Register("ft4", 4, 0), new Register("ft5", 5, 0),
+                        new Register("ft6", 6, 0), new Register("ft7", 7, 0), new Register("fs0", 8, 0),
+                        new Register("fs1", 9, 0), new Register("fa0", 10, 0), new Register("fa1", 11, 0),
+                        new Register("fa2", 12, 0), new Register("fa3", 13, 0), new Register("fa4", 14, 0),
+                        new Register("fa5", 15, 0), new Register("fa6", 16, 0), new Register("fa7", 17, 0),
+                        new Register("fs2", 18, 0), new Register("fs3", 19, 0), new Register("fs4", 20, 0),
+                        new Register("fs5", 21, 0), new Register("fs6", 22, 0), new Register("fs7", 23, 0),
+                        new Register("fs8", 24, 0), new Register("fs9", 25, 0), new Register("fs10", 26, 0),
+                        new Register("fs11", 27, 0), new Register("ft8", 28, 0), new Register("ft9", 29, 0),
+                        new Register("ft10", 30, 0), new Register("ft11", 31, 0) }));
+    }
+
+    public static void decreaseHarts() {
+        gInstance.remove(gInstance.size() - 1);
+    }
 
     /**
      * Sets the value of the FPU register given to the value given.
@@ -71,9 +92,12 @@ public class FloatingPointRegisterFile {
      * @param reg Register to set the value of.
      * @param val The desired float value for the register.
      **/
-
     public static void setRegisterToFloat(int reg, float val) {
         updateRegister(reg, Float.floatToRawIntBits(val));
+    }
+
+    public static void setRegisterToFloat(int reg, float val, int hart) {
+        updateRegister(reg, Float.floatToRawIntBits(val), hart);
     }
 
     /**
@@ -82,8 +106,11 @@ public class FloatingPointRegisterFile {
      * @param name Register to get the value of.
      * @return The  float value stored by that register.
      **/
-
     public static float getFloatFromRegister(String name) {
+        return Float.intBitsToFloat(getValue(name));
+    }
+
+    public static float getFloatFromRegister(String name, int hart) {
         return Float.intBitsToFloat(getValue(name));
     }
 
@@ -95,13 +122,22 @@ public class FloatingPointRegisterFile {
      * @param num FPU register to set the value of.
      * @param val The desired int value for the register.
      **/
-
     public static void updateRegister(int num, int val) {
         long lval = val | 0xFFFFFFFF_00000000L; // NAN box if used as float
         if ((Globals.getSettings().getBackSteppingEnabled())) {
             Globals.program.getBackStepper().addFloatingPointRestore(num, instance.updateRegister(num, lval));
         } else {
             instance.updateRegister(num, lval);
+        }
+    }
+
+    public static void updateRegister(int num, int val, int hart) {
+        long lval = val | 0xFFFFFFFF_00000000L; // NAN box if used as float
+        if ((Globals.getSettings().getBackSteppingEnabled())) {
+            // TODO: enable multithreaded backstepping
+            Globals.program.getBackStepper().addFloatingPointRestore(num, instance.updateRegister(num, lval));
+        } else {
+            gInstance.get(hart).updateRegister(num, lval);
         }
     }
 
@@ -112,6 +148,16 @@ public class FloatingPointRegisterFile {
             instance.updateRegister(num, val);
         }
     }
+
+    public static void updateRegisterLong(int num, long val, int hart) {
+        if ((Globals.getSettings().getBackSteppingEnabled())) {
+            // TODO: enable multithreaded backstepping
+            Globals.program.getBackStepper().addFloatingPointRestore(num, instance.updateRegister(num, val));
+        } else {
+            gInstance.get(hart).updateRegister(num, val);
+        }
+    }
+
     /**
      * Gets the raw int value actually stored in a Register.  If you need a
      * float, use Float.intBitsToFloat() to get the equivent float.
@@ -119,18 +165,30 @@ public class FloatingPointRegisterFile {
      * @param num The FPU register number.
      * @return The int value of the given register.
      **/
-
     public static int getValue(int num) {
         long lval = instance.getValue(num);
-        if((lval & 0xFFFFFFFF_00000000L) == 0xFFFFFFFF_00000000L){
-            return (int)lval; // If NaN-Boxed return value
+        if ((lval & 0xFFFFFFFF_00000000L) == 0xFFFFFFFF_00000000L) {
+            return (int) lval; // If NaN-Boxed return value
         }else{
+            return 0x7FC00000; // Otherwise NaN
+        }
+    }
+
+    public static int getValue(int num, int hart) {
+        long lval = gInstance.get(hart).getValue(num);
+        if ((lval & 0xFFFFFFFF_00000000L) == 0xFFFFFFFF_00000000L) {
+            return (int) lval; // If NaN-Boxed return value
+        } else {
             return 0x7FC00000; // Otherwise NaN
         }
     }
 
     public static long getValueLong(int num) {
         return instance.getValue(num);
+    }
+
+    public static long getValueLong(int num, int hart) {
+        return gInstance.get(hart).getValue(num);
     }
 
     /**
@@ -140,12 +198,20 @@ public class FloatingPointRegisterFile {
      * @param name The FPU register name.
      * @return The int value of the given register.
      **/
-
     public static int getValue(String name) {
         long lval = instance.getValue(name);
-        if((lval & 0xFFFFFFFF_00000000L) == 0xFFFFFFFF_00000000L){
-            return (int)lval;
-        }else{
+        if ((lval & 0xFFFFFFFF_00000000L) == 0xFFFFFFFF_00000000L) {
+            return (int) lval;
+        } else {
+            return 0x7FC00000;
+        }
+    }
+
+    public static int getValue(String name, int hart) {
+        long lval = gInstance.get(hart).getValue(name);
+        if ((lval & 0xFFFFFFFF_00000000L) == 0xFFFFFFFF_00000000L) {
+            return (int) lval;
+        } else {
             return 0x7FC00000;
         }
     }
@@ -155,9 +221,12 @@ public class FloatingPointRegisterFile {
      *
      * @return The set of registers.
      **/
-
     public static Register[] getRegisters() {
         return instance.getRegisters();
+    }
+
+    public static Register[] getRegisters(int hart) {
+        return gInstance.get(hart).getRegisters();
     }
 
     /**
@@ -166,18 +235,22 @@ public class FloatingPointRegisterFile {
      * @param name The FPU register name, must be "f0" through "f31".
      * @return The register object,or null if not found.
      **/
-
     public static Register getRegister(String name) {
         return instance.getRegister(name);
+    }
+
+    public static Register getRegister(String name, int hart) {
+        return gInstance.get(hart).getRegister(name);
     }
 
 
     /**
      * Method to reinitialize the values of the registers.
      **/
-
     public static void resetRegisters() {
         instance.resetRegisters();
+        for (RegisterBlock i : gInstance)
+            i.resetRegisters();
     }
 
 

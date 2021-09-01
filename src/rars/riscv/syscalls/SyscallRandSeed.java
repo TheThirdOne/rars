@@ -41,12 +41,23 @@ public class SyscallRandSeed extends AbstractSyscall {
     }
 
     public void simulate(ProgramStatement statement) {
-        Integer index = RegisterFile.getValue("a0");
+        int hart = statement.getCurrentHart();
+        Integer index;
+        if(hart == -1)
+            index = RegisterFile.getValue("a0");
+        else
+            index = RegisterFile.getValue("a0", hart);
         Random stream = RandomStreams.randomStreams.get(index);
         if (stream == null) {
-            RandomStreams.randomStreams.put(index, new Random(RegisterFile.getValue("a1")));
-        } else {
-            stream.setSeed(RegisterFile.getValue("a1"));
+            if(hart == -1)
+                RandomStreams.randomStreams.put(index, new Random(RegisterFile.getValue("a1")));
+            else
+                RandomStreams.randomStreams.put(index, new Random(RegisterFile.getValue("a1", hart)));
+            } else {
+                if(hart == -1)
+                    stream.setSeed(RegisterFile.getValue("a1"));
+                else
+                    stream.setSeed(RegisterFile.getValue("a1", hart));
         }
     }
 }

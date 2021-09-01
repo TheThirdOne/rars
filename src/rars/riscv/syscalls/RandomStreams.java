@@ -61,5 +61,15 @@ public class RandomStreams {
             RandomStreams.randomStreams.put(index, stream);
         }
         return stream;
+  
+    }
+    static Random get(String reg, int hart) {
+        int index = RegisterFile.getValue(reg, hart);
+        Random stream = randomStreams.get(index);
+        if (stream == null) {
+            stream = new Random(); // create a non-seeded stream
+            RandomStreams.randomStreams.put(index, stream);
+        }
+        return stream;
     }
 }

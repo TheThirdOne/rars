@@ -44,9 +44,16 @@ public class FLW extends BasicInstruction {
 
     public void simulate(ProgramStatement statement) throws SimulationException {
         int[] operands = statement.getOperands();
+        int hart = statement.getCurrentHart();
         operands[1] = (operands[1] << 20) >> 20;
         try {
-            FloatingPointRegisterFile.updateRegister(operands[0], Globals.memory.getWord(RegisterFile.getValue(operands[2]) + operands[1]));
+            if (hart == -1)
+                FloatingPointRegisterFile.updateRegister(operands[0],
+                        Globals.memory.getWord(RegisterFile.getValue(operands[2]) + operands[1]));
+            else
+                FloatingPointRegisterFile.updateRegister(operands[0],
+                        Globals.memory.getWord(RegisterFile.getValue(operands[2], hart) + operands[1]),
+                        hart);
         } catch (AddressErrorException e) {
             throw new SimulationException(statement, e);
         }

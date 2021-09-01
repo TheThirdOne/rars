@@ -41,7 +41,14 @@ public class SyscallRandFloat extends AbstractSyscall {
     }
 
     public void simulate(ProgramStatement statement) {
-        Random stream = RandomStreams.get("a0");
-        FloatingPointRegisterFile.setRegisterToFloat(10, stream.nextFloat());// TODO: make this a string method fa0
+        int hart = statement.getCurrentHart();
+        if(hart == -1){
+            Random stream = RandomStreams.get("a0");
+            FloatingPointRegisterFile.setRegisterToFloat(10, stream.nextFloat());// TODO: make this a string method fa0
+        }
+        else{
+            Random stream = RandomStreams.get("a0", hart);
+            FloatingPointRegisterFile.setRegisterToFloat(10, stream.nextFloat(), hart);// TODO: make this a string method fa0
+        }
     }
 }

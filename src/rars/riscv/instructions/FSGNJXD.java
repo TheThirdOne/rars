@@ -13,8 +13,17 @@ public class FSGNJXD extends BasicInstruction {
 
     public void simulate(ProgramStatement statement) {
         int[] operands = statement.getOperands();
-        long f2 = FloatingPointRegisterFile.getValueLong(operands[1]), f3 = FloatingPointRegisterFile.getValueLong(operands[2]);
+        int hart = statement.getCurrentHart();
+        long f2 = (hart == -1)
+                ? FloatingPointRegisterFile.getValueLong(operands[1])
+                : FloatingPointRegisterFile.getValueLong(operands[1], hart);
+        long f3 = (hart == -1)
+                ? FloatingPointRegisterFile.getValueLong(operands[2])
+                : FloatingPointRegisterFile.getValueLong(operands[2], hart);
         long result = (f2 & 0x7FFFFFFF_FFFFFFFFL) | ((f2 ^ f3) & 0x80000000_00000000L);
-        FloatingPointRegisterFile.updateRegisterLong(operands[0], result);
+        if (hart == -1)
+            FloatingPointRegisterFile.updateRegisterLong(operands[0], result);
+        else
+            FloatingPointRegisterFile.updateRegisterLong(operands[0], result, hart);
     }
 }
