@@ -1,7 +1,5 @@
 package rars.riscv.syscalls;
 
-import javax.lang.model.util.ElementScanner14;
-
 import rars.ProgramStatement;
 import rars.riscv.AbstractSyscall;
 import rars.riscv.hardware.RegisterFile;

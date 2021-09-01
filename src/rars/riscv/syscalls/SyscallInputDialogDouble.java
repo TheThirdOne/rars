@@ -8,7 +8,6 @@ import rars.riscv.hardware.FloatingPointRegisterFile;
 import rars.riscv.hardware.RegisterFile;
 import rars.riscv.AbstractSyscall;
 
-import javax.lang.model.util.ElementScanner14;
 import javax.swing.*;
 
 /*
