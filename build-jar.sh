@@ -1,7 +1,12 @@
+#!/bin/bash
 if git submodule status | grep \( > /dev/null ; then 
     mkdir -p build
     find src -name "*.java" | xargs javac -d build
-    find src -type f -not -name "*.java" -exec cp --parents {} build \;
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        find src -type f -not -name "*.java" -exec rsync -R {} build \;
+    else
+        find src -type f -not -name "*.java" -exec cp --parents {} build \;
+    fi
     cp -rf build/src/* build
     rm -r build/src
     cp README.md License.txt build
