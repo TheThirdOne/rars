@@ -2,7 +2,15 @@ out
 .idea
 *.class
 
+# Build products
+build
+rars.jar
+
 # Eclipse project files
 .classpath
 .project
 examples/riscv
+
+# MacOS
+.DS_Store
+*/.DS_Store
