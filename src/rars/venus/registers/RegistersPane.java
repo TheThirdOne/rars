@@ -60,9 +60,9 @@ public class RegistersPane extends JTabbedPane {
         regsTab.setVisible(true);
         fpTab.setVisible(true);
         csrTab.setVisible(true);
-        this.addTab("Registers", regsTab);
-        this.addTab("Floating Point", fpTab);
-        this.addTab("Control and Status", csrTab);
+        this.addTab("<html><center><p>Registers</p></center></html>", regsTab);
+        this.addTab("<html><center><p>Floating Point</p></center></html>", fpTab);
+        this.addTab("<html><center><p>Control and Status</p></center></html>", csrTab);
         this.setToolTipTextAt(0, "CPU registers");
         this.setToolTipTextAt(1, "Floating point unit registers");
         this.setToolTipTextAt(2, "Control and Status registers");

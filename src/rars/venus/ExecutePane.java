@@ -118,6 +118,7 @@ public class ExecutePane extends JDesktopPane {
         Dimension textFullDim = new Dimension((int) (fullWidth), halfHeight);
         dataSegment.setBounds(0, textDim.height + 1, dataDim.width, dataDim.height);
         if (labelWindowVisible) {
+            System.out.println("YEA");
             textSegment.setBounds(0, 0, textDim.width, textDim.height);
             labelValues.setBounds(textDim.width + 1, 0, lablDim.width, lablDim.height);
         } else {
