@@ -170,8 +170,8 @@ public class MessagesPane extends JTabbedPane {
         runTab.add(createBoxForButton(runTabClearButton), BorderLayout.WEST);
         runTab.add(new JScrollPane(run, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
                 ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED), BorderLayout.CENTER);
-        this.addTab("Messages", assembleTab);
-        this.addTab("Run I/O", runTab);
+        this.addTab("<html><center><p>Messages</p></center></html>", assembleTab);
+        this.addTab("<html><center><p>Run I/O</p></center></html>", runTab);
         this.setToolTipTextAt(0, "Messages produced by Run menu. Click on assemble error message to select erroneous line");
         this.setToolTipTextAt(1, "Simulated console input and output");
     }

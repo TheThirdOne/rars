@@ -389,6 +389,7 @@ public class VenusUI extends JFrame {
                     "Disable/enable all breakpoints without clearing (can also click Bkpt column header)",
                     KeyEvent.VK_T, makeShortcut(KeyEvent.VK_T)) {
                 public void actionPerformed(ActionEvent e) {
+                    //settingsLabelAction.actionPerformed(e); 
                     mainPane.getExecutePane().getTextSegmentWindow().toggleBreakpoints();
                 }
             };
@@ -397,6 +398,7 @@ public class VenusUI extends JFrame {
                     Settings.Bool.LABEL_WINDOW_VISIBILITY) {
                 public void handler(boolean visibility) {
                     mainPane.getExecutePane().setLabelWindowVisibility(visibility);
+                    System.out.println("ExecutePane reference 2");
                 }
             };
             settingsPopupInputAction = new SettingsAction("Popup dialog for input syscalls (5,6,7,8,12)",

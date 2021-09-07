@@ -1,0 +1,267 @@
+# Copyright (c) 2003-2010,  Pete Sanderson and Kenneth Vollmar
+#
+# Developed by Pete Sanderson (psanderson@otterbein.edu)
+# and Kenneth Vollmar (kenvollmar@missouristate.edu)
+#
+# Permission is hereby granted, free of charge, to any person obtaining 
+# a copy of this software and associated documentation files (the 
+# "Software"), to deal in the Software without restriction, including 
+# without limitation the rights to use, copy, modify, merge, publish, 
+# distribute, sublicense, and/or sell copies of the Software, and to 
+# permit persons to whom the Software is furnished to do so, subject 
+# to the following conditions:
+#
+# The above copyright notice and this permission notice shall be 
+# included in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF 
+# MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
+# IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR 
+# ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF 
+# CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION 
+# WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+#
+# (MIT license, http://www.opensource.org/licenses/mit-license.html)
+
+
+# File containing definitions of MIPS pseudo-ops
+
+# File format:
+#   Each line contains specification for one pseudo-op, including optional description.
+#   First item is source statement syntax, specified in same "example" parser format used for regular instructions.
+#   Source statement specification ends with a tab.  It is followed by a tab-separated list of basic instruction
+#   templates to complete and substitute for the pseudo-op.
+#   Format for specifying syntax of templates is different from specifying syntax of source statement:
+#      (n=0,1,2,3,...) is token position in source statement (operator is token 0, parentheses are tokens but commas aren't)
+#      RGn means substitute register found in n'th token of source statement
+#      LLn means substitute low order 16-bits from label address in source token n.
+#      LHn means substitute high order 16-bits from label address in source token n. Must add 1 if address bit 11 is 1.
+#      PCLn is similar to LLn except the value substituted will be relative to PC of the psuedo-op.
+#      PCHn is similar to LHn except the value substituted will be relative to PC of the psuedo-op.
+#      VLn means substitute low order 16-bits from 32-bit value in source token n.
+#      VHn means substitute high order 16-bits from 32-bit value in source token n, then add 1 if value's bit 11 is 1.
+#      LAB means substitute textual label from last token of source statement.  Used for various branches.
+#   Everything else is copied as is into the generated statement (you must use register numbers not mnemonics)
+#   The list of basic instruction templates is optionally followed a description of the instruction for help purposes.
+#   To add optional description, append a tab then the '#' character followed immediately (no spaces) by the description.
+#
+#  See documentation for ExtendedInstruction.makeTemplateSubstitutions() for more details.
+#
+#  Matching for a given instruction mnemonic is first-fit not best-fit.  If an instruction has both 16 and 32-bit
+#  immediate operand options, they should be listed in that order (16-bit version first).  Otherwise the 16-bit
+#  version will never be matched since the 32-bit version fits small immediate values first.
+#
+#  The pseudo-op specification must start in the first column.  If first column is blank, the line will be skipped!
+#
+#  When specifying the example instruction (first item on line), the conventions I follow are:
+#  - for a register operand, specify a numbered register (e.g. $t1 or $f1) to represent any register in the set. 
+#    The numerical value is not significant.  This is NOT the case when writing the templates that follow!
+#    In the templates, numbered registers are parsed as is (use only $0 and $1, which are $zero and $at).
+#  - for an immediate operand, specify a positive value indicative of the expected range.  I use 10 to represent
+#    a 5 bit value, 100 to represent a 16-bit value, and 100000 to represent a 32-bit value.
+#  - for a label operand, I use the string "label" (without the quotes). 
+#  The idea is to give the parser an example that will be parsed into the desired token sequence.  Syntax checking
+#  is done by comparing the source token sequence to list of token sequences generated from the examples.
+#  IMPORTANT NOTE:  The use of $t1,$t2, etc in the instruction sample means that any CPU register reference
+#                   can be used in that position.  It is simply a placeholder.  By contrast, when
+#                   $1 is used in the template specification, $1 ($at) is literally placed into the generated
+#                   instruction!  If you want the generated code to echo the source register, use RG1,RG2, etc.
+
+#######################  arithmetic and branch pseudo-ops #####################
+
+nop ;addi x0, x0, 0 ;#NO OPeration
+
+not t1,t2 ;xori RG1, RG2, -1 ;#Bitwise NOT (bit inversion)
+mv  t1,t2 ;add RG1, x0, RG2  ;#MoVe : Set t1 to contents of t2
+neg t1,t2 ;sub RG1, x0, RG2  ;#NEGate : Set t1 to negation of t2
+
+# non-(load and store) pseudo-instructions for floating point (coprocessor 1) registers
+fmv.s  f1, f2 ;fsgnj.s  RG1, RG2, RG2;# Move the value of f2 to f1
+fabs.s f1, f2 ;fsgnjx.s RG1, RG2, RG2;# Set f1 to the absolute value of f2
+fneg.s f1, f2 ;fsgnjn.s RG1, RG2, RG2;# Set f1 to the negation of f2
+fmv.d  f1, f2 ;fsgnj.d  RG1, RG2, RG2;# Move the value of f2 to f1 (64 bit)
+fabs.d f1, f2 ;fsgnjx.d RG1, RG2, RG2;# Set f1 to the absolute value of f2 (64 bit)
+fneg.d f1, f2 ;fsgnjn.d RG1, RG2, RG2;# Set f1 to the negation of f2 (64 bit)
+
+sgt  t1,t2,t3 ;slt  RG1, RG3, RG2 ;#Set Greater Than : if t2 greater than t3 then set t1 to 1 else 0
+sgtu t1,t2,t3 ;sltu RG1, RG3, RG2 ;#Set Greater Than Unsigned : if t2 greater than t3 (unsigned compare) then set t1 to 1 else 0
+seqz t1,t2    ;sltiu RG1, RG2, 1  ;#Set EQual to Zero :     if t2 == 0 then set t1 to 1 else 0
+snez t1,t2    ;sltu RG1, x0, RG2  ;#Set Not Equal to Zero : if t2 != 0 then set t1 to 1 else 0
+sgtz t1,t2    ;slt RG1, x0, RG2   ;#Set Greater Than Zero : if t2 >  0 then set t1 to 1 else 0
+sltz t1,t2    ;slt RG1, RG2, x0   ;#Set Less Than Zero :    if t2 <  0 then set t1 to 1 else 0
+
+b label       ;jal x0, LAB      ;#Branch : Branch to statement at label unconditionally
+beqz t1,label ;beq RG1, x0, LAB ;#Branch if EQual Zero : Branch to statement at label if t1 == 0
+bnez t1,label ;bne RG1, x0, LAB ;#Branch if Not Equal Zero : Branch to statement at label if t1 != 0
+bgez t1,label ;bge RG1, x0, LAB ;#Branch if Greater than or Equal to Zero : Branch to statement at label if t1 >= 0
+bltz t1,label ;blt RG1, x0, LAB ;#Branch if Less Than Zero : Branch to statement at label if t1 < 0
+bgtz t1,label ;blt x0, RG1, LAB ;#Branch if Greater Than Zero: Branch to statement at label if t1 > 0
+blez t1,label ;bge x0, RG1, LAB ;#Branch if Less than or Equal to Zero : Branch to statement at label if t1 <= 0
+bgt  t1,t2,label ;blt  RG2, RG1, LAB ;#Branch if Greater Than : Branch to statement at label if t1 > t2
+bgtu t1,t2,label ;bltu RG2, RG1, LAB ;#Branch if Greater Than Unsigned: Branch to statement at label if t1 > t2 (unsigned compare)
+ble  t1,t2,label ;bge  RG2, RG1, LAB ;#Branch if Less or Equal : Branch to statement at label if t1 <= t2
+bleu t1,t2,label ;bgeu RG2, RG1, LAB ;#Branch if Less or Equal Unsigned : Branch to statement at label if t1 <= t2 (unsigned compare)
+
+j label         ;jal  x0, LAB      ;#Jump : Jump to statement at label
+jal label       ;jal  x1, LAB      ;#Jump And Link: Jump to statement at label and set the return address to ra
+jr t0           ;jalr x0, RG1, 0   ;#Jump Register: Jump to address in t0
+jalr t0         ;jalr x1, RG1, 0   ;#Jump And Link Register: Jump to address in t0 and set the return address to ra
+jr t0, -100     ;jalr x0, RG1, VL2 ;#Jump Register: Jump to address in t0
+jalr t0, -100   ;jalr x1, RG1, VL2 ;#Jump And Link Register: Jump to address in t0 and set the return address to ra
+jalr t0,-100(t1);jalr RG1, RG4, VL2;#Jump And Link Register: Jump to address in t1 and set the return address to t0
+ret             ;jalr x0, x1, 0    ;#Return: return from a subroutine
+call label      ;auipc x6,PCH1     ;jalr x1, x6, PCL1;#CALL: call a far-away subroutine
+tail label      ;auipc x6,PCH1     ;jalr x0, x6, PCL1;#TAIL call: tail call (call without saving return address)a far-away subroutine
+
+#########################  load/store pseudo-ops start here  ##########################
+#
+#  Most of these simply provide a variety of convenient memory addressing modes for 
+#  specifying load/store address.
+#
+
+li t1,-100     ;addi RG1, x0, VL2                ;#Load Immediate : Set t1 to 12-bit immediate (sign-extended)
+li t1,10000000 ;lui RG1, VH2 ;addi RG1, RG1, VL2 ;#Load Immediate : Set t1 to 32-bit immediate
+la t1,label  ;auipc RG1, PCH2 ; addi RG1, RG1, PCL2;#Load Address : Set t1 to label's address
+
+lw t1,(t2)     ;lw RG1,0(RG3)   ;#Load Word : Set t1 to contents of effective memory word address
+lw t1,-100     ;lw RG1, VL2(x0) ;#Load Word : Set t1 to contents of effective memory word address
+lw t1,10000000 ;lui   RG1, VH2  ;lw RG1, VL2(RG1)  ;#Load Word : Set t1 to contents of effective memory word address
+lw t1,label	   ;auipc RG1, PCH2 ;lw RG1, PCL2(RG1) ;#Load Word : Set t1 to contents of memory word at label's address
+
+sw t1,(t2)        ;sw RG1,0(RG3)   ;#Store Word : Store t1 contents into effective memory word address
+sw t1,-100        ;sw RG1, VL2(x0) ;#Store Word : Store $t1 contents into effective memory word address
+sw t1,10000000,t2 ;lui   RG3, VH2  ;sw RG1, VL2(RG3)  ;#Store Word : Store $t1 contents into effective memory word address using t2 as a temporary
+sw t1,label,t2    ;auipc RG3, PCH2 ;sw RG1, PCL2(RG3) ;#Store Word : Store $t1 contents into memory word at label's address using t2 as a temporary
+
+lh t1,(t2)     ;lh RG1,  0(RG3) ;#Load Halfword : Set t1 to sign-extended 16-bit value from effective memory halfword address
+lh t1,-100     ;lh RG1, VL2(x0) ;#Load Halfword : Set t1 to sign-extended 16-bit value from effective memory halfword address
+lh t1,10000000 ;lui RG1, VH2    ;lh RG1, VL2(RG1)  ;#Load Halfword : Set t1 to sign-extended 16-bit value from effective memory halfword address
+lh t1,label	   ;auipc RG1, PCH2 ;lh RG1, PCL2(RG1) ;#Load Halfword : Set t1 to sign-extended 16-bit value from effective memory halfword address
+
+sh t1,(t2)        ;sh RG1,0(RG3)   ;#Store Halfword : Store the low-order 16 bits of $1 into the effective memory halfword address
+sh t1,-100        ;sh RG1, VL2(x0) ;#Store Halfword : Store the low-order 16 bits of $t1 into the effective memory halfword address
+sh t1,10000000,t2 ;lui   RG3, VH2  ;sh RG1, VL2(RG3)  ;#Store Halfword : Store the low-order 16 bits of t1 into the effective memory halfword address using t2 as a temporary
+sh t1,label,t2    ;auipc RG3, PCH2 ;sh RG1, PCL2(RG3) ;#Store Halfword : Store the low-order 16 bits of t1 into the effective memory halfword address using t2 as a temporary
+
+lb t1,(t2)     ;lb RG1,0(RG3)   ;#Load Byte : Set t1 to sign-extended 8-bit value from effective memory byte address
+lb t1,-100     ;lb RG1, VL2(x0) ;#Load Byte : Set $1 to sign-extended 8-bit value from effective memory byte address
+lb t1,10000000 ;lui RG1, VH2    ;lb RG1, VL2(RG1)  ;#Load Byte : Set $t1 to sign-extended 8-bit value from effective memory byte address
+lb t1,label	   ;auipc RG1, PCH2 ;lb RG1, PCL2(RG1) ;#Load Byte : Set $t1 to sign-extended 8-bit value from effective memory byte address
+
+sb t1,(t2)        ;sb RG1,0(RG3)   ;#Store Byte : Store the low-order 8 bits of t1 into the effective memory byte address
+sb t1,-100        ;sb RG1, VL2(x0) ;#Store Byte : Store the low-order 8 bits of $t1 into the effective memory byte address
+sb t1,10000000,t2 ;lui   RG3, VH2  ;sb RG1, VL2(RG3)  ;#Store Byte : Store the low-order 8 bits of $t1 into the effective memory byte address
+sb t1,label,t2    ;auipc RG3, PCH2 ;sb RG1, PCL2(RG3) ;#Store Byte : Store the low-order 8 bits of $t1 into the effective memory byte address
+
+lhu t1,(t2)     ;lhu RG1,0(RG3)   ;#Load Halfword Unsigned : Set t1 to zero-extended 16-bit value from effective memory halfword address
+lhu t1,-100     ;lhu RG1, VL2(x0) ;#Load Halfword Unsigned : Set t1 to zero-extended 16-bit value from effective memory halfword address
+lhu t1,10000000 ;lui RG1, VH2     ;lhu RG1, VL2(RG1)  ;#Load Halfword Unsigned : Set t1 to zero-extended 16-bit value from effective memory halfword address
+lhu t1,label	;auipc RG1, PCH2  ;lhu RG1, PCL2(RG1) ;#Load Halfword Unsigned : Set t1 to zero-extended 16-bit value from effective memory halfword address
+
+lbu t1,(t2)     ;lbu RG1,0(RG3)   ;#Load Byte Unsigned : Set $t1 to zero-extended 8-bit value from effective memory byte address
+lbu t1,-100     ;lbu RG1, VL2(x0) ;#Load Byte Unsigned : Set $t1 to zero-extended 8-bit value from effective memory byte address
+lbu t1,10000000 ;lui RG1, VH2    ;lbu RG1, VL2(RG1)  ;#Load Byte Unsigned : Set t1 to zero-extended 8-bit value from effective memory byte address
+lbu t1,label	;auipc RG1, PCH2 ;lbu RG1, PCL2(RG1) ;#Load Byte Unsigned : Set t1 to zero-extended 8-bit value from effective memory byte address
+
+# load and store pseudo-instructions for floating point (coprocessor 1) registers
+flw f1,(t2)     ;flw RG1,0(RG3)  ;#Load Word Coprocessor 1 : Set f1 to 32-bit value from effective memory word address
+flw f1,-100     ;flw RG1, VL2(x0);#Load Word Coprocessor 1 : Set f1 to 32-bit value from effective memory word address
+flw f1,10000000,t3;lui RG3, VH2    ;flw RG1, VL2(RG3) ;#Load Word Coprocessor 1 : Set f1 to 32-bit value from effective memory word address using t3 as a temporary
+flw f1,label, t3;auipc RG3, PCH2 ;flw RG1, PCL2(RG3);#Load Word Coprocessor 1 : Set f1 to 32-bit value from effective memory word address using t3 as a temporary
+
+fsw f1,(t2)       ;fsw RG1,0(RG3)  ;#Store Word Coprocessor 1 : Store 32-bit value from f1 to effective memory word address
+fsw f1,-100       ;fsw RG1, VL2(x0);#Store Word Coprocessor 1 : Store 32-bit value from f1 to effective memory word address
+fsw f1,10000000,t3;lui RG3, VH2    ;fsw RG1, VL2(RG3) ;#Store Word Coprocessor 1 : Store 32-bit value from f1 to effective memory word address using t3 as a temporary
+fsw f1,label, t3  ;auipc RG3, PCH2 ;fsw RG1, PCL2(RG3);#Store Word Coprocessor 1 : Store 32-bit value from f1 to effective memory word address using t3 as a temporary
+
+fld f1,(t2)       ;fld RG1,0(RG3)  ;#Load Word: Set f1 to 64-bit value from effective memory word address
+fld f1,-100       ;fld RG1, VL2(x0);#Load Word: Set f1 to 64-bit value from effective memory word address
+fld f1,10000000,t3;lui RG3, VH2    ;fld RG1, VL2(RG3) ;#Load Word: Set f1 to 64-bit value from effective memory word address using t3 as a temporary
+fld f1,label, t3  ;auipc RG3, PCH2 ;fld RG1, PCL2(RG3);#Load Word: Set f1 to 64-bit value from effective memory word address using t3 as a temporary
+fsd f1,(t2)       ;fsd RG1,0(RG3)  ;#Store Word: Store 64-bit value from f1 to effective memory word address
+fsd f1,-100       ;fsd RG1, VL2(x0);#Store Word: Store 64-bit value from f1 to effective memory word address
+fsd f1,10000000,t3;lui RG3, VH2    ;fsd RG1, VL2(RG3) ;#Store Word: Store 64-bit value from f1 to effective memory word address using t3 as a temporary
+fsd f1,label, t3  ;auipc RG3, PCH2 ;fsd RG1, PCL2(RG3);#Store Word: Store 64-bit value from f1 to effective memory word address using t3 as a temporary
+
+#######################  CSR pseudo-ops #####################
+
+csrr t1, fcsr ;csrrs RG1, RG2, x0 ;#Read control and status register
+csrw t1, fcsr ;csrrw x0, RG2, RG1 ;#Write control and status register
+csrs t1, fcsr ;csrrs x0, RG2, RG1 ;#Set bits in control and status register
+csrc t1, fcsr ;csrrc x0, RG2, RG1 ;#Clear bits in control and status register
+
+csrwi fcsr, 100 ;csrrwi x0, RG1, RG2 ;#Write control and status register
+csrsi fcsr, 100 ;csrrsi x0, RG1, RG2 ;#Set bits in control and status register
+csrci fcsr, 100 ;csrrci x0, RG1, RG2 ;#Clear bits in control and status register
+
+frcsr t1     ; csrrs RG1, 0x003, x0  ;#Read FP control/status register
+fscsr t1, t2 ; csrrw RG1, 0x003, RG2 ;#Swap FP control/status register
+fscsr t1     ; csrrw  x0, 0x003, RG1 ;#Write FP control/status register
+
+frsr t1     ; csrrs RG1, 0x003, x0  ;#Alias for frcsr t1
+fssr t1, t2 ; csrrw RG1, 0x003, RG2 ;#Alias for fscsr t1, t2
+fssr t1     ; csrrw  x0, 0x003, RG1 ;#Alias for fscsr t1 
+
+frrm t1      ; csrrs RG1, 0x002, x0  ;#Read FP rounding mode
+fsrm t1, t2  ; csrrw RG1, 0x002, RG2 ;#Swap FP rounding mode
+fsrm t1      ; csrrw  x0, 0x002, RG1 ;#Write FP rounding mode
+
+frflags t1      ; csrrs RG1, 0x001, x0  ;#Read FP exception flags
+fsflags t1, t2  ; csrrw RG1, 0x001, RG2 ;#Swap FP exception flags
+fsflags t1      ; csrrw  x0, 0x001, RG1 ;#Write FP exception flags
+
+rdcycle t1    ; csrrs RG1, 0xC00, x0 ;# Read from cycle
+rdtime t1     ; csrrs RG1, 0xC01, x0 ;# Read from time
+rdinstret t1  ; csrrs RG1, 0xC02, x0 ;# Read from instret
+rdcycleh t1   ; csrrs RG1, 0xC80, x0 ;# Read from cycleh
+rdtimeh t1    ; csrrs RG1, 0xC81, x0 ;# Read from timeh
+rdinstreth t1 ; csrrs RG1, 0xC82, x0 ;# Read from instreth
+
+# Floating point rounding mode removal
+
+fsqrt.s   f1, f2         ; fsqrt.s   RG1, RG2, dyn          ;#Floating SQuare RooT: Assigns f1 to the square root of f2
+fsub.s    f1, f2, f3     ; fsub.s    RG1, RG2, RG3, dyn     ;#Floating SUBtract: assigns f1 to f2 - f3
+fadd.s    f1, f2, f3     ; fadd.s    RG1, RG2, RG3, dyn     ;#Floating ADD: assigns f1 to f2 + f3
+fmul.s    f1, f2, f3     ; fmul.s    RG1, RG2, RG3, dyn     ;#Floating MULtiply: assigns f1 to f2 * f3
+fdiv.s    f1, f2, f3     ; fdiv.s    RG1, RG2, RG3, dyn     ;#Floating DIVide: assigns f1 to f2 / f3
+fmadd.s   f1, f2, f3, f4 ; fmadd.s   RG1, RG2, RG3, RG4, dyn ;#Fused Multiply Add: Assigns f2*f3+f4 to f1
+fnmadd.s  f1, f2, f3, f4 ; fnmadd.s  RG1, RG2, RG3, RG4, dyn ;#Fused Negate Multiply Add: Assigns -(f2*f3+f4) to f1
+fmsub.s   f1, f2, f3, f4 ; fmsub.s   RG1, RG2, RG3, RG4, dyn ;#Fused Multiply Subatract: Assigns f2*f3-f4 to f1
+fnmsub.s  f1, f2, f3, f4 ; fnmsub.s  RG1, RG2, RG3, RG4, dyn ;#Fused Negated Multiply Subatract: Assigns -(f2*f3-f4) to f1
+fcvt.s.wu f1, t1         ; fcvt.s.wu RG1, RG2, dyn         ;#Convert float from unsigned integer: Assigns the value of t1 to f1
+fcvt.s.w  f1, t1         ; fcvt.s.w  RG1, RG2, dyn         ;#Convert float from signed integer: Assigns the value of t1 to f1
+fcvt.w.s  t1, f1         ; fcvt.w.s  RG1, RG2, dyn         ;#Convert signed integer from float: Assigns the value of f1 (rounded) to t1
+fcvt.wu.s t1, f1         ; fcvt.wu.s RG1, RG2, dyn         ;#Convert unsigned integer from float: Assigns the value of f1 (rounded) to t1
+
+fsqrt.d   f1, f2         ; fsqrt.d   RG1, RG2, dyn          ;#Floating SQuare RooT (64 bit): Assigns f1 to the square root of f2
+fsub.d    f1, f2, f3     ; fsub.d    RG1, RG2, RG3, dyn     ;#Floating SUBtract (64 bit): assigns f1 to f2 - f3
+fadd.d    f1, f2, f3     ; fadd.d    RG1, RG2, RG3, dyn     ;#Floating ADD (64 bit): assigns f1 to f2 + f3
+fmul.d    f1, f2, f3     ; fmul.d    RG1, RG2, RG3, dyn     ;#Floating MULtiply (64 bit): assigns f1 to f2 * f3
+fdiv.d    f1, f2, f3     ; fdiv.d    RG1, RG2, RG3, dyn     ;#Floating DIVide (64 bit): assigns f1 to f2 / f3
+fmadd.d   f1, f2, f3, f4 ; fmadd.d   RG1, RG2, RG3, RG4, dyn ;#Fused Multiply Add (64 bit): Assigns f2*f3+f4 to f1
+fnmadd.d  f1, f2, f3, f4 ; fnmadd.d  RG1, RG2, RG3, RG4, dyn ;#Fused Negate Multiply Add (64 bit): Assigns -(f2*f3+f4) to f1
+fmsub.d   f1, f2, f3, f4 ; fmsub.d   RG1, RG2, RG3, RG4, dyn ;#Fused Multiply Subatract (64 bit): Assigns f2*f3-f4 to f1
+fnmsub.d  f1, f2, f3, f4 ; fnmsub.d  RG1, RG2, RG3, RG4, dyn ;#Fused Negated Multiply Subatract (64 bit): Assigns -(f2*f3-f4) to f1
+fcvt.d.wu f1, t1         ; fcvt.d.wu RG1, RG2, dyn         ;#Convert double from unsigned integer: Assigns the value of t1 to f1
+fcvt.d.w  f1, t1         ; fcvt.d.w  RG1, RG2, dyn         ;#Convert double from signed integer: Assigns the value of t1 to f1
+fcvt.w.d  t1, f1         ; fcvt.w.d  RG1, RG2, dyn         ;#Convert signed integer from double: Assigns the value of f1 (rounded) to t1
+fcvt.wu.d t1, f1         ; fcvt.wu.d RG1, RG2, dyn         ;#Convert unsigned integer from double: Assigns the value of f1 (rounded) to t1
+fcvt.s.d f1, f2          ; fcvt.s.d RG1, RG2, dyn          ;#Convert double to float: Assigned the value of f2 to f1
+fcvt.d.s f1, f2          ; fcvt.d.s RG1, RG2 , dyn         ;#Convert float to double: Assigned the value of f2 to f1
+
+### TODO: maybe it makes sense to rename the instructions and flip these pseudo-instructions
+fmv.x.w t1, f1 ; fmv.x.s RG1, RG2  ;#Move float (New mnemonic): move bits representing a float to an integer register
+fmv.w.x t1, f1 ; fmv.s.x RG1, RG2  ;#Move float (New mnemonic): move bits representing a float from an integer register
+
+### GCC compatability
+lui t1,%hi(label)     ;lui RG1,LH4      ;#Load Upper Address : Set t1 to upper 20-bit label's address
+addi t1,t2,%lo(label) ;addi RG1,RG2,LL5 ;#Load Lower Address : Set t1 to t2 + lower 12-bit label's address
+lw t1,%lo(label)(t2)  ;lw RG1,LL4(RG7)  ;#Load from Address
+flw f1,%lo(label)(t2) ;flw RG1,LL4(RG7) ;#Load from Address
+flwd f1,%lo(label)(t2) ;fld RG1,LL4(RG7) ;#Load from Address
+
+fgt.s t1, f2, f3      ;fle.s RG1, RG2, RG3 ;#Floating Greater Than: if f1 > f2, set t1 to 1, else set t1 to 0
+fge.s t1, f2, f3      ;flt.s RG1, RG2, RG3 ;#Floating Greater Than or Equal: if f1 >= f2, set t1 to 1, else set t1 to 0
+fgt.d t1, f2, f3      ;fle.d RG1, RG2, RG3 ;#Floating Greater Than (64 bit): if f1 > f2, set t1 to 1, else set t1 to 0
+fge.d t1, f2, f3      ;flt.d RG1, RG2, RG3 ;#Floating Greater Than or Equal (64 bit): if f1 >= f2, set t1 to 1, else set t1 to 0
