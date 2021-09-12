@@ -261,7 +261,7 @@ lw t1,%lo(label)(t2)  ;lw RG1,LL4(RG7)  ;#Load from Address
 flw f1,%lo(label)(t2) ;flw RG1,LL4(RG7) ;#Load from Address
 flwd f1,%lo(label)(t2) ;fld RG1,LL4(RG7) ;#Load from Address
 
-fgt.s t1, f2, f3      ;fle.s RG1, RG2, RG3 ;#Floating Greater Than: if f1 > f2, set t1 to 1, else set t1 to 0
-fge.s t1, f2, f3      ;flt.s RG1, RG2, RG3 ;#Floating Greater Than or Equal: if f1 >= f2, set t1 to 1, else set t1 to 0
-fgt.d t1, f2, f3      ;fle.d RG1, RG2, RG3 ;#Floating Greater Than (64 bit): if f1 > f2, set t1 to 1, else set t1 to 0
-fge.d t1, f2, f3      ;flt.d RG1, RG2, RG3 ;#Floating Greater Than or Equal (64 bit): if f1 >= f2, set t1 to 1, else set t1 to 0
+fgt.s t1, f2, f3      ;fle.s RG1, RG3, RG2 ;#Floating Greater Than: if f2 > f3, set t1 to 1, else set t1 to 0
+fge.s t1, f2, f3      ;flt.s RG1, RG3, RG2 ;#Floating Greater Than or Equal: if f2 >= f3, set t1 to 1, else set t1 to 0
+fgt.d t1, f2, f3      ;fle.d RG1, RG3, RG2 ;#Floating Greater Than (64 bit): if f2 > f3, set t1 to 1, else set t1 to 0
+fge.d t1, f2, f3      ;flt.d RG1, RG3, RG2 ;#Floating Greater Than or Equal (64 bit): if f2 >= f3, set t1 to 1, else set t1 to 0
