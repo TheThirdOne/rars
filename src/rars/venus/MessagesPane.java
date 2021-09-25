@@ -171,11 +171,6 @@ public class MessagesPane extends JTabbedPane {
         runTab.add(new JScrollPane(run, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
                 ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED), BorderLayout.CENTER);
 
-        /* Bad HTML fix
-        this.addTab("<html><center><p>Messages</p></center></html>", assembleTab);
-        this.addTab("<html><center><p>Run I/O</p></center></html>", runTab);
-        */
-
         this.addTab("Messages", assembleTab);
         this.addTab("Run I/O", runTab);
         this.setForeground(Color.BLACK);
