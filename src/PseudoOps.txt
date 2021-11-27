@@ -252,7 +252,7 @@ fcvt.d.s f1, f2          ; fcvt.d.s RG1, RG2 , dyn         ;#Convert float to do
 
 ### TODO: maybe it makes sense to rename the instructions and flip these pseudo-instructions
 fmv.x.w t1, f1 ; fmv.x.s RG1, RG2  ;#Move float (New mnemonic): move bits representing a float to an integer register
-fmv.w.x t1, f1 ; fmv.s.x RG1, RG2  ;#Move float (New mnemonic): move bits representing a float from an integer register
+fmv.w.x f1, t1 ; fmv.s.x RG1, RG2  ;#Move float (New mnemonic): move bits representing a float from an integer register
 
 ### GCC compatability
 lui t1,%hi(label)     ;lui RG1,LH4      ;#Load Upper Address : Set t1 to upper 20-bit label's address
