@@ -126,10 +126,9 @@ public class OperandFormat {
             if (specType == TokenTypes.REGISTER_NAME &&
                     candType == TokenTypes.REGISTER_NUMBER)
                 continue;
-            // TODO: this shouldn't really accept INTEGER_20, only unsigned 12 is ok
             if(specType == TokenTypes.CSR_NAME &&
                     (candType==TokenTypes.INTEGER_5 || candType==TokenTypes.INTEGER_6 || candType == TokenTypes.INTEGER_12
-                            || candType ==TokenTypes.INTEGER_20 || candType == TokenTypes.CSR_NAME))
+                            || candType ==TokenTypes.INTEGER_12U || candType == TokenTypes.CSR_NAME))
                 continue;
             if ((specType == TokenTypes.INTEGER_6 && candType == TokenTypes.INTEGER_5) ||
                     (specType == TokenTypes.INTEGER_12 && candType == TokenTypes.INTEGER_5) ||
@@ -137,16 +136,24 @@ public class OperandFormat {
                     (specType == TokenTypes.INTEGER_12 && candType == TokenTypes.INTEGER_6) ||
                     (specType == TokenTypes.INTEGER_20 && candType == TokenTypes.INTEGER_6) ||
                     (specType == TokenTypes.INTEGER_20 && candType == TokenTypes.INTEGER_12) ||
+                    (specType == TokenTypes.INTEGER_20 && candType == TokenTypes.INTEGER_12U) ||
                     (specType == TokenTypes.INTEGER_32 && candType == TokenTypes.INTEGER_5) ||
                     (specType == TokenTypes.INTEGER_32 && candType == TokenTypes.INTEGER_6) ||
                     (specType == TokenTypes.INTEGER_32 && candType == TokenTypes.INTEGER_12) ||
+                    (specType == TokenTypes.INTEGER_32 && candType == TokenTypes.INTEGER_12U) ||
                     (specType == TokenTypes.INTEGER_32 && candType == TokenTypes.INTEGER_20))
                 continue;
+            if (specType == TokenTypes.INTEGER_12 && candType == TokenTypes.INTEGER_12U) {
+                generateMessage(candToken, "Unsigned value is too large to fit into a sign-extended immediate", errors);
+                return false;
+            }
             if ((specType == TokenTypes.INTEGER_5 && candType == TokenTypes.INTEGER_6) ||
                     (specType == TokenTypes.INTEGER_5 && candType == TokenTypes.INTEGER_12) ||
+                    (specType == TokenTypes.INTEGER_5 && candType == TokenTypes.INTEGER_12U) ||
                     (specType == TokenTypes.INTEGER_5 && candType == TokenTypes.INTEGER_20) ||
                     (specType == TokenTypes.INTEGER_5 && candType == TokenTypes.INTEGER_32) ||
                     (specType == TokenTypes.INTEGER_6 && candType == TokenTypes.INTEGER_12) ||
+                    (specType == TokenTypes.INTEGER_6 && candType == TokenTypes.INTEGER_12U) ||
                     (specType == TokenTypes.INTEGER_6 && candType == TokenTypes.INTEGER_20) ||
                     (specType == TokenTypes.INTEGER_6 && candType == TokenTypes.INTEGER_32) ||
                     (specType == TokenTypes.INTEGER_12 && candType == TokenTypes.INTEGER_20) ||
