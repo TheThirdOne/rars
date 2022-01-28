@@ -251,6 +251,11 @@ public class ControlAndStatusRegisterFile {
         return -1;
     }
 
+    
+    public static Register getRegister(String name) {
+        return instance.getRegister(name);
+    }
+
     /**
      * Method to reinitialize the values of the registers.
      **/

@@ -401,7 +401,8 @@ public class Launch {
             }
             // check for register name w/o $.  added 14-July-2008 DPS
             if (RegisterFile.getRegister(args[i]) != null ||
-                    FloatingPointRegisterFile.getRegister(args[i]) != null) {
+                    FloatingPointRegisterFile.getRegister(args[i]) != null ||
+                    ControlAndStatusRegisterFile.getRegister(args[i]) != null) {
                 registerDisplayList.add(args[i]);
                 continue;
             }
@@ -582,9 +583,11 @@ public class Launch {
                 } else { // displayFormat == ASCII
                     out.println(Binary.intToAscii(ivalue));
                 }
-            } else { // Integer register or CSR
-                if (verbose)
-                    out.print(reg + "\t");
+            } else if (ControlAndStatusRegisterFile.getRegister(reg) != null){
+                out.print(reg + "\t");
+                out.println(formatIntForDisplay((int)ControlAndStatusRegisterFile.getRegister(reg).getValue()));
+            } else if (verbose) {
+                out.print(reg + "\t");
                 out.println(formatIntForDisplay((int)RegisterFile.getRegister(reg).getValue()));
             }
         }
