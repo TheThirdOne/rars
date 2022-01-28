@@ -17,3 +17,20 @@ fcvt.d.lu f1, t1         ; fcvt.d.lu RG1, RG2, dyn         ;#Convert double from
 fcvt.d.l  f1, t1         ; fcvt.d.l  RG1, RG2, dyn         ;#Convert double from signed 64 bit integer: Assigns the value of t1 to f1
 fcvt.l.d  t1, f1         ; fcvt.l.d  RG1, RG2, dyn         ;#Convert signed 64 bit integer from double: Assigns the value of f1 (rounded) to t1
 fcvt.lu.d t1, f1         ; fcvt.lu.d RG1, RG2, dyn         ;#Convert unsigned 64 bit integer from double: Assigns the value of f1 (rounded) to t1
+
+negw t1, t2   ; subw RG1, zero, RG2 ;#NEGate Word: Set t1 to negation of t2 (only lower 32 bits)
+
+sext.b t1, t2 ; slli RG1, RG2, 56 ;srai RG1, RG1, 56 ;#Sign EXTend Byte: extract the low byte from t2 and sign extend it into t1
+sext.h t1, t2 ; slli RG1, RG2, 48 ;srai RG1, RG1, 48 ;#Sign EXTend Half: extract the low 16 bit from t2 and sign extend it into t1
+sext.w t1, t2 ; addiw RG1, RG2, 0 ;#Sign EXTend Word: extract the low 32-bits from t2 and sign extend it into t1
+
+zext.b t1, t2 ; andi RG1, RG2, 255 ;#Zero EXTend Byte: extract the low byte into t1
+zext.h t1, t2 ; slli RG1, RG2, 48  ;srli RG1, RG1, 48 ;#Zero EXTend Half: extract the low 16 bit into t1
+zext.w t1, t2 ; slli RG1, RG2, 32  ;srli RG1, RG1, 32 ;#Zero EXTend Word: extract the low 32-bits from t2 into t1
+
+
+ld t1,(t2)     ;ld RG1,0(RG3)   ;#Load Double word : Set t1 to contents of effective memory word address
+ld t1,-100     ;ld RG1, VL2(x0) ;#Load Double word : Set t1 to contents of effective memory word address
+ld t1,10000000 ;lui   RG1, VH2  ;ld RG1, VL2(RG1)  ;#Load Double word : Set t1 to contents of effective memory word address
+ld t1,label	   ;auipc RG1, PCH2 ;ld RG1, PCL2(RG1) ;#Load Double word : Set t1 to contents of memory word at label's address
+ld t1,%lo(label)(t2)  ;ld RG1,LL4(RG7)  ;#Load from Address

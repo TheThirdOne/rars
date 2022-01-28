@@ -250,6 +250,14 @@ fcvt.wu.d t1, f1         ; fcvt.wu.d RG1, RG2, dyn         ;#Convert unsigned in
 fcvt.s.d f1, f2          ; fcvt.s.d RG1, RG2, dyn          ;#Convert double to float: Assigned the value of f2 to f1
 fcvt.d.s f1, f2          ; fcvt.d.s RG1, RG2 , dyn         ;#Convert float to double: Assigned the value of f2 to f1
 
+sext.b t1, t2 ; slli RG1, RG2, 24 ;srai RG1, RG1, 24 ;#Sign EXTend Byte: extract the low byte from t2 and sign extend it into t1
+sext.h t1, t2 ; slli RG1, RG2, 16 ;srai RG1, RG1, 16 ;#Sign EXTend Half: extract the low 16 bit from t2 and sign extend it into t1
+
+zext.b t1, t2 ; andi RG1, RG2, 255 ;#Zero EXTend Byte: extract the low byte into t1
+zext.h t1, t2 ; slli RG1, RG2, 16 ;srli RG1, RG1, 16 ;#Zero EXTend Half: extract the low 16 bit into t1
+
+
+
 ### TODO: maybe it makes sense to rename the instructions and flip these pseudo-instructions
 fmv.x.w t1, f1 ; fmv.x.s RG1, RG2  ;#Move float (New mnemonic): move bits representing a float to an integer register
 fmv.w.x f1, t1 ; fmv.s.x RG1, RG2  ;#Move float (New mnemonic): move bits representing a float from an integer register
@@ -257,9 +265,11 @@ fmv.w.x f1, t1 ; fmv.s.x RG1, RG2  ;#Move float (New mnemonic): move bits repres
 ### GCC compatability
 lui t1,%hi(label)     ;lui RG1,LH4      ;#Load Upper Address : Set t1 to upper 20-bit label's address
 addi t1,t2,%lo(label) ;addi RG1,RG2,LL5 ;#Load Lower Address : Set t1 to t2 + lower 12-bit label's address
+lb t1,%lo(label)(t2)  ;lb RG1,LL4(RG7)  ;#Load from Address
+lh t1,%lo(label)(t2)  ;lh RG1,LL4(RG7)  ;#Load from Address
 lw t1,%lo(label)(t2)  ;lw RG1,LL4(RG7)  ;#Load from Address
 flw f1,%lo(label)(t2) ;flw RG1,LL4(RG7) ;#Load from Address
-flwd f1,%lo(label)(t2) ;fld RG1,LL4(RG7) ;#Load from Address
+fld f1,%lo(label)(t2) ;fld RG1,LL4(RG7) ;#Load from Address
 
 fgt.s t1, f2, f3      ;fle.s RG1, RG3, RG2 ;#Floating Greater Than: if f2 > f3, set t1 to 1, else set t1 to 0
 fge.s t1, f2, f3      ;flt.s RG1, RG3, RG2 ;#Floating Greater Than or Equal: if f2 >= f3, set t1 to 1, else set t1 to 0
