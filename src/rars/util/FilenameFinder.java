@@ -371,7 +371,7 @@ public class FilenameFinder {
         if (path.toLowerCase().startsWith(FILE_URL)) {
             path = path.substring(FILE_URL.length());
         }
-        int jarPosition = path.toLowerCase().indexOf(JAR_EXTENSION);
+        int jarPosition = path.toLowerCase().lastIndexOf(JAR_EXTENSION);
         return (jarPosition >= 0) ? path.substring(0, jarPosition + JAR_EXTENSION.length()) : path;
     }
 
