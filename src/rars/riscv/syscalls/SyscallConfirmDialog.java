@@ -44,8 +44,10 @@ public class SyscallConfirmDialog extends AbstractSyscall {
 
     public void simulate(ProgramStatement statement) throws ExitingException {
         String message = NullString.get(statement);
-        RegisterFile.updateRegister("a0", JOptionPane.showConfirmDialog(null, message));
-
+        int result = JOptionPane.showConfirmDialog(null, message);
+        if (result == JOptionPane.CLOSED_OPTION) {
+            result = JOptionPane.CANCEL_OPTION;
+        }
+        RegisterFile.updateRegister("a0", result);
     }
-
 }
