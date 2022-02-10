@@ -158,18 +158,10 @@ public class TextSegmentWindow extends JInternalFrame implements Observer {
             tableModel.fireTableDataChanged();// initialize listener
         }
         table = new MyTippedJTable(tableModel);
+        updateRowHeight();
 
         // prevents cells in row from being highlighted when user clicks on breakpoint checkbox
         table.setRowSelectionAllowed(false);
-
-        table.getColumnModel().getColumn(BREAK_COLUMN).setMinWidth(40);
-        table.getColumnModel().getColumn(ADDRESS_COLUMN).setMinWidth(80);
-        table.getColumnModel().getColumn(CODE_COLUMN).setMinWidth(80);
-
-        table.getColumnModel().getColumn(BREAK_COLUMN).setMaxWidth(50);
-        table.getColumnModel().getColumn(ADDRESS_COLUMN).setMaxWidth(90);
-        table.getColumnModel().getColumn(CODE_COLUMN).setMaxWidth(90);
-        table.getColumnModel().getColumn(BASIC_COLUMN).setMaxWidth(200);
 
         table.getColumnModel().getColumn(BREAK_COLUMN).setPreferredWidth(40);
         table.getColumnModel().getColumn(ADDRESS_COLUMN).setPreferredWidth(80);
@@ -322,6 +314,7 @@ public class TextSegmentWindow extends JInternalFrame implements Observer {
             if (Globals.getSettings().getBooleanSetting(Settings.Bool.SELF_MODIFYING_CODE_ENABLED)) {
                 addAsTextSegmentObserver();
             }
+            updateRowHeight();
         } else if (obj instanceof MemoryAccessNotice) {
             // NOTE: observable != Memory.getInstance() because Memory class delegates notification duty.
             // This will occur only if running program has written to text segment (self-modifying code)
@@ -649,6 +642,23 @@ public class TextSegmentWindow extends JInternalFrame implements Observer {
             //return addressRow;// if address not in map, do nothing.
         }
         return addressRow;
+    }
+
+
+    private void updateRowHeight() {
+        Font possibleFonts[] = {
+            Globals.getSettings().getFontByPosition(Settings.TEXTSEGMENT_HIGHLIGHT_FONT),
+            Globals.getSettings().getFontByPosition(Settings.EVEN_ROW_FONT),
+            Globals.getSettings().getFontByPosition(Settings.ODD_ROW_FONT),
+        };
+        int maxHeight = 0;
+        for (int i = 0; i < possibleFonts.length; i++) {
+            int height = getFontMetrics(possibleFonts[i]).getHeight();
+            if (height > maxHeight) {
+                maxHeight = height;
+            }
+        }
+        table.setRowHeight(maxHeight);
     }
 
 

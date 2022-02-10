@@ -896,10 +896,8 @@ public class Settings extends Observable {
             saveFontSetting(fontSettingPosition, fontStyleSettingsKeys, fontStyleSettingsValues);
             saveFontSetting(fontSettingPosition, fontSizeSettingsKeys, fontSizeSettingsValues);
         }
-        if (fontSettingPosition == EDITOR_FONT) {
-            setChanged();
-            notifyObservers();
-        }
+        setChanged();
+        notifyObservers();
     }
 
 

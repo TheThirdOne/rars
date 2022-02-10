@@ -176,7 +176,6 @@ public class DataSegmentWindow extends JInternalFrame implements Observer {
         contentPane.add(features, BorderLayout.SOUTH);
     }
 
-
     public void updateBaseAddressComboBox() {
         displayBaseAddressArray[EXTERN_BASE_ADDRESS_INDEX] = Memory.externBaseAddress;
         displayBaseAddressArray[GLOBAL_POINTER_ADDRESS_INDEX] = -1; /*Memory.globalPointer*/
@@ -431,6 +430,7 @@ public class DataSegmentWindow extends JInternalFrame implements Observer {
             names[i] = getHeaderStringForColumn(i, addressBase);
         }
         dataTable = new MyTippedJTable(new DataTableModel(dataData, names));
+        updateRowHeight();
         // Do not allow user to re-order columns; column order corresponds to MIPS memory order
         dataTable.getTableHeader().setReorderingAllowed(false);
         dataTable.setRowSelectionAllowed(false);
@@ -827,6 +827,8 @@ public class DataSegmentWindow extends JInternalFrame implements Observer {
             // Suspended work in progress. Intended to disable combobox item for text segment. DPS 9-July-2013.
             //baseAddressSelector.getModel().getElementAt(TEXT_BASE_ADDRESS_INDEX)
             //*.setEnabled(settings.getBooleanSetting(Settings.SELF_MODIFYING_CODE_ENABLED));
+
+            updateRowHeight();
         } else if (obj instanceof MemoryAccessNotice) {            // NOTE: observable != Memory.getInstance() because Memory class delegates notification duty.
             MemoryAccessNotice access = (MemoryAccessNotice) obj;
             if (access.getAccessType() == AccessNotice.WRITE) {
@@ -836,6 +838,25 @@ public class DataSegmentWindow extends JInternalFrame implements Observer {
                 this.highlightCellForAddress(address);
             }
         }
+    }
+
+    private void updateRowHeight() {
+        if (dataTable == null) {
+            return;
+        }
+        Font possibleFonts[] = {
+            settings.getFontByPosition(Settings.DATASEGMENT_HIGHLIGHT_FONT),
+            settings.getFontByPosition(Settings.EVEN_ROW_FONT),
+            settings.getFontByPosition(Settings.ODD_ROW_FONT),
+        };
+        int maxHeight = 0;
+        for (int i = 0; i < possibleFonts.length; i++) {
+            int height = getFontMetrics(possibleFonts[i]).getHeight();
+            if (height > maxHeight) {
+                maxHeight = height;
+            }
+        }
+        dataTable.setRowHeight(maxHeight);
     }
 
 
