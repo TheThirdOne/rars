@@ -646,6 +646,9 @@ public class TextSegmentWindow extends JInternalFrame implements Observer {
 
 
     private void updateRowHeight() {
+        if (table == null) {
+            return;
+        }
         Font possibleFonts[] = {
             Globals.getSettings().getFontByPosition(Settings.TEXTSEGMENT_HIGHLIGHT_FONT),
             Globals.getSettings().getFontByPosition(Settings.EVEN_ROW_FONT),
