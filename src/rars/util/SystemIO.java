@@ -99,6 +99,8 @@ public class SystemIO {
         if (Globals.getGui() == null) {
             try {
                 input = getInputReader().readLine();
+                if (input == null)
+                    input = "";
             } catch (IOException e) {
             }
         } else {
