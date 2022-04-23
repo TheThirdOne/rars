@@ -1,0 +1,71 @@
+.data
+	A : .word 10
+	B : .word 15
+	C : .word 6
+	D : .word 0
+	Z : .word 0
+	.text
+	
+
+	lw $t0,A #load value of A B and C
+	lw $t1,B
+	lw $t2,C
+	lw $t3,D
+	lw $t4,Z
+	
+
+	bgt $t0,$t1,zOne #if A<B
+	blt $t2,5,zOne #if A<B
+	
+
+	bgt $t0,$t1,temp #if A<B
+	j nextCheck
+	temp:
+	add $a0,$t2,1
+	beq $a0,7,zTwo
+	nextCheck:
+	#else condition
+	li $t4,3 #set z = 3
+	j exit
+	
+
+	zOne:
+	li $t4,1 #set z = 1
+	j exit
+	
+
+	zTwo:
+	li $t4,2 #set z = 2
+	j exit
+	
+
+	exit:
+	beq $t4,1,case1
+	beq $t4,2,case2
+	j default
+	
+
+	case1:
+	li $t4,-1 # z = -1
+	j exit2
+	
+
+	case2:
+	add $t4,$t4,-2 # z = -2
+	j exit2
+	
+
+	case 3:
+	li $t4, -3 # z = -3
+	
+
+	default:
+	li $t4,0 #set z = 0
+	j exit2
+	
+
+	
+
+	exit2:
+	sw $t4,Z
+
