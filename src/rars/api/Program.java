@@ -143,15 +143,15 @@ public class Program {
         Memory.swapInstance(tmpMem);
 
         // To capture the IO we need to replace stdin and friends
-	if (STDIN!=null){
-		stdout=new ByteArrayOutputStream();
-		stderr=new ByteArrayOutputStream();
-		fds=new SystemIO.Data(
-				new ByteArrayInputStream(STDIN.getBytes()),stdout,stderr
-			);
-	} else {
-		fds=new SystemIO.Data(true);
-	}
+        if (STDIN != null){
+            stdout = new ByteArrayOutputStream();
+            stderr = new ByteArrayOutputStream();
+            fds = new SystemIO.Data(
+                new ByteArrayInputStream(STDIN.getBytes()),stdout,stderr
+            );
+        } else {
+            fds = new SystemIO.Data(true);
+        }
     }
 
     /**
