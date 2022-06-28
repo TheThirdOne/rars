@@ -75,11 +75,13 @@ public abstract class RegisterBlockWindow extends JPanel implements Observer {
     public RegisterBlockWindow(Register[] registers, String[] registerDescriptions, String valueTip) {
         Simulator.getInstance().addObserver(this);
         settings = Globals.getSettings();
+        settings.addObserver(this);
         this.registers = registers;
         clearHighlighting();
         table = new MyTippedJTable(new RegTableModel(setupWindow()), registerDescriptions,
                 new String[]{"Each register has a tool tip describing its usage convention", "Corresponding register number", valueTip}) {
         };
+        updateRowHeight();
         table.getColumnModel().getColumn(NAME_COLUMN).setPreferredWidth(50);
         table.getColumnModel().getColumn(NUMBER_COLUMN).setPreferredWidth(25);
         table.getColumnModel().getColumn(VALUE_COLUMN).setPreferredWidth(60);
@@ -195,6 +197,8 @@ public abstract class RegisterBlockWindow extends JPanel implements Observer {
                 // Simulated MIPS execution stops.  Stop responding.
                 endObserving();
             }
+        } else if (observable == settings) {
+            updateRowHeight();
         } else if (obj instanceof RegisterAccessNotice) {
             // NOTE: each register is a separate Observable
             RegisterAccessNotice access = (RegisterAccessNotice) obj;
@@ -206,6 +210,22 @@ public abstract class RegisterBlockWindow extends JPanel implements Observer {
                 Globals.getGui().getRegistersPane().setSelectedComponent(this);
             }
         }
+    }
+
+    private void updateRowHeight() {
+        Font possibleFonts[] = {
+            settings.getFontByPosition(Settings.REGISTER_HIGHLIGHT_FONT),
+            settings.getFontByPosition(Settings.EVEN_ROW_FONT),
+            settings.getFontByPosition(Settings.ODD_ROW_FONT),
+        };
+        int maxHeight = 0;
+        for (int i = 0; i < possibleFonts.length; i++) {
+            int height = getFontMetrics(possibleFonts[i]).getHeight();
+            if (height > maxHeight) {
+                maxHeight = height;
+            }
+        }
+        table.setRowHeight(maxHeight);
     }
 
 
