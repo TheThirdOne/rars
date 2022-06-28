@@ -741,7 +741,7 @@ public class Assembler {
                         true, errors);
                 this.externAddress += size;
             }
-        } else if (direct == Directives.GLOBL) {
+        } else if (direct == Directives.GLOBL || direct == Directives.GLOBAL) {
             if (tokens.size() < 2) {
                 errors.add(new ErrorMessage(token.getSourceProgram(), token.getSourceLine(),
                         token.getStartPos(), "\"" + token.getValue()
