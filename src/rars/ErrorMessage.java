@@ -114,8 +114,7 @@ public class ErrorMessage {
     // Added January 2013
     public ErrorMessage(ProgramStatement statement, String message) {
         this.isWarning = ERROR;
-        this.filename = (statement.getSourceProgram() == null)
-                ? "" : statement.getSourceProgram().getFilename();
+        this.filename = statement.getSourceFile();
         this.position = 0;
         this.message = message;
         // Somewhere along the way we lose the macro history, but can

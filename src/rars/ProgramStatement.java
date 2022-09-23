@@ -63,6 +63,7 @@ public class ProgramStatement implements Comparable<ProgramStatement> {
     private int numOperands;
     private Instruction instruction;
     private int textAddress;
+    private String sourceFilename;
     private int sourceLine;
     private int binaryStatement;
     private boolean altered;
@@ -83,7 +84,7 @@ public class ProgramStatement implements Comparable<ProgramStatement> {
      *                          is stored.
      **/
     public ProgramStatement(RISCVprogram sourceProgram, String source, TokenList origTokenList, TokenList strippedTokenList,
-                            Instruction inst, int textAddress, int sourceLine) {
+                            Instruction inst, int textAddress, String filename, int sourceLine) {
         this.sourceProgram = sourceProgram;
         this.source = source;
         this.originalTokenList = origTokenList;
@@ -92,6 +93,7 @@ public class ProgramStatement implements Comparable<ProgramStatement> {
         this.numOperands = 0;
         this.instruction = inst;
         this.textAddress = textAddress;
+        this.sourceFilename = filename;
         this.sourceLine = sourceLine;
         this.basicAssemblyStatement = null;
         this.basicStatementList = new BasicStatementList();
@@ -533,7 +535,7 @@ public class ProgramStatement implements Comparable<ProgramStatement> {
      * @return The file name.
      **/
     public String getSourceFile() {
-        return (sourceProgram == null) ? "" : sourceProgram.getFilename();
+        return sourceFilename;
     }
 
 
