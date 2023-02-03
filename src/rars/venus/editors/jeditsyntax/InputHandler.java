@@ -54,6 +54,7 @@ public abstract class InputHandler extends KeyAdapter {
     public static final ActionListener SELECT_DOC_END = new document_end(true);
     public static final ActionListener INSERT_BREAK = new insert_break();
     public static final ActionListener INSERT_TAB = new insert_tab();
+    public static final ActionListener DELETE_TAB = new delete_tab();
     public static final ActionListener HOME = new home(false);
     public static final ActionListener DOCUMENT_HOME = new document_home(false);
     public static final ActionListener SELECT_HOME = new home(true);
@@ -100,6 +101,7 @@ public abstract class InputHandler extends KeyAdapter {
         actions.put("select-doc-end", SELECT_DOC_END);
         actions.put("insert-break", INSERT_BREAK);
         actions.put("insert-tab", INSERT_TAB);
+        actions.put("delete-tab", DELETE_TAB);
         actions.put("home", HOME);
         actions.put("select-home", SELECT_HOME);
         actions.put("document-home", DOCUMENT_HOME);
@@ -672,7 +674,93 @@ public abstract class InputHandler extends KeyAdapter {
                 return;
             }
 
-            textArea.overwriteSetSelectedText("\t");
+            int startOffset = textArea.getSelectionStart();
+            int startLine = textArea.getSelectionStartLine();
+            int startLineOffset = textArea.getLineStartOffset(startLine);
+            int endOffset = textArea.getSelectionEnd();
+            int endLine = textArea.getSelectionEndLine();
+            int endLineOffset = textArea.getLineEndOffset(endLine);
+
+            if (startLineOffset != endLineOffset && startLine != endLine) {
+                String text = textArea.getText();
+                String selected = text.substring(startLineOffset, endLineOffset - 1);
+                String prefixed = TextUtilities.addLinePrefixes(selected, "\t");
+
+                try {
+                    textArea.document.replace(startLineOffset, endLineOffset - startLineOffset - 1, prefixed, null);
+                } catch (BadLocationException bl) {
+                    bl.printStackTrace();
+                }
+                textArea.select(startOffset + 1, endOffset + (prefixed.length() - selected.length()));
+            } else {
+                textArea.overwriteSetSelectedText("\t");
+            }
+        }
+    }
+
+    public static class delete_tab implements ActionListener {
+        public void actionPerformed(ActionEvent evt) {
+            JEditTextArea textArea = getTextArea(evt);
+
+            if (!textArea.isEditable()) {
+                textArea.getToolkit().beep();
+                return;
+            }
+
+            int startOffset = textArea.getSelectionStart();
+            int startLine = textArea.getSelectionStartLine();
+            int startLineOffset = textArea.getLineStartOffset(startLine);
+            int endOffset = textArea.getSelectionEnd();
+            int endLine = textArea.getSelectionEndLine();
+            int endLineOffset = textArea.getLineEndOffset(endLine);
+
+            if (startOffset != endOffset) {
+                String text = textArea.getText();
+                String selected = text.substring(startLineOffset, endLineOffset - 1);
+                String stripped = TextUtilities.deleteLinePrefixes(selected, "\t");
+
+                if (selected.equals(stripped)) {
+                    textArea.getToolkit().beep();
+                    return;
+                }
+
+                try {
+                    textArea.document.replace(startLineOffset, endLineOffset - startLineOffset - 1, stripped, null);
+                } catch (BadLocationException bl) {
+                    bl.printStackTrace();
+                }
+
+                textArea.select(startOffset - 1 < 0 ? 0 : startOffset - 1, endOffset + (stripped.length() - selected.length()));
+            } else {
+                int caretOffset = textArea.getCaretPosition();
+                int caretLine = textArea.getCaretLine();
+                int caretLineOffset = textArea.getLineStartOffset(caretLine);
+
+                if (caretOffset == 0) {
+                    textArea.getToolkit().beep();
+                    return;
+                }
+                try {
+                    String lineText = textArea.getLineText(caretLine);
+                    int tabLineIndex = -1;
+                    for (int i = 0; i < lineText.length(); i++) {
+                        if (lineText.charAt(i) != '\t') {
+                            break;
+                        }
+                        tabLineIndex = i;
+                    }
+
+                    if (tabLineIndex == -1) {
+                        textArea.getToolkit().beep();
+                        return;
+                    }
+
+                    int tabIndex = caretLineOffset + tabLineIndex;
+                    textArea.getDocument().remove(tabIndex, 1);
+                } catch (BadLocationException bl) {
+                    bl.printStackTrace();
+                }
+            }
         }
     }
 

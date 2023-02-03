@@ -189,4 +189,36 @@ public class TextUtilities {
         }
         return wordEnd;
     }
+
+    /**
+     * Prefix all lines with the specified prefix.
+     * 
+     * @param text The text
+     * @param prefix The prefix
+     */
+    public static String addLinePrefixes(String text, String prefix) {
+        String[] lines = text.split("\n", -1);
+
+        for (int i = 0; i < lines.length; i++) {
+            lines[i] = prefix + lines[i];
+        }
+
+        return String.join("\n", lines);
+    }
+
+    /**
+     * Delete all lines of the specified prefix.
+     * 
+     * @param text The text
+     * @param prefix The prefix
+     */
+    public static String deleteLinePrefixes(String text, String prefix) {
+        String[] lines = text.split("\n", -1);
+
+        for (int i = 0; i < lines.length; i++) {
+            lines[i] = lines[i].replaceFirst(prefix, "");
+        }
+
+        return String.join("\n", lines);
+    }
 }

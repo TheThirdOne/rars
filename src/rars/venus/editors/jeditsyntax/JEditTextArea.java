@@ -141,7 +141,7 @@ public class JEditTextArea extends JComponent {
         caretTimer.setDelay(caretBlinkRate);
 
         // Intercept keystrokes before focus manager gets them.  If in editing window,
-        // pass TAB keystrokes on to the key processor instead of letting focus
+        // pass (SHIFT) TAB keystrokes on to the key processor instead of letting focus
         // manager use them for focus traversal.
         // One can also accomplish this using: setFocusTraversalKeysEnabled(false);
         // but that seems heavy-handed.
@@ -149,7 +149,9 @@ public class JEditTextArea extends JComponent {
         KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(
                 new KeyEventDispatcher() {
                     public boolean dispatchKeyEvent(KeyEvent e) {
-                        if (JEditTextArea.this.isFocusOwner() && e.getKeyCode() == KeyEvent.VK_TAB && e.getModifiers() == 0) {
+                        int modifiers = e.getModifiers();
+                        if (JEditTextArea.this.isFocusOwner() && e.getKeyCode() == KeyEvent.VK_TAB
+                            && (modifiers == 0 || (modifiers & InputEvent.SHIFT_MASK) != 0)) {
                             processKeyEvent(e);
                             return true;
                         } else {
