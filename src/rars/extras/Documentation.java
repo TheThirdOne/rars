@@ -19,7 +19,7 @@ import java.util.HashSet;
 public class Documentation {
 
     public static void main(String[] args){
-        Globals.initialize(false);
+        Globals.initialize();
         System.out.println(createDirectiveMarkdown());
         System.out.println(createSyscallMarkdown());
         System.out.println(createInstructionMarkdown(BasicInstruction.class));

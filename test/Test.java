@@ -10,7 +10,7 @@ import java.util.Iterator;
 
 public class Test {
     public static void main(String[] args){
-        Globals.initialize(false);
+        Globals.initialize();
         Globals.getSettings().setBooleanSettingNonPersistent(Settings.Bool.RV64_ENABLED,false);
         InstructionSet.rv64 = false;
         Globals.instructionSet.populate();

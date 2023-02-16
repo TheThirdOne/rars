@@ -134,9 +134,8 @@ public class Launch {
         new Launch(args);
     }
     private Launch(String[] args) {
-        boolean gui = (args.length == 0);
-        Globals.initialize(gui);
-        if (gui) {
+        Globals.initialize();
+        if (args.length == 0) {
             launchIDE();
         } else { // running from command line.
             // assure command mode works in headless environment (generates exception if not)

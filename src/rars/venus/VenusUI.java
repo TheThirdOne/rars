@@ -143,7 +143,7 @@ public class VenusUI extends JFrame {
         // I want to keep it large, with enough room for user to get handles
         //this.setSize((int)(screenWidth*.8),(int)(screenHeight*.8));
 
-        Globals.initialize(true);
+        Globals.initialize();
 
         //  image courtesy of NASA/JPL.
         URL im = this.getClass().getResource(Globals.imagesPath + "RISC-V.png");

@@ -53,7 +53,7 @@ public class Program {
     }
 
     public Program(Options set){
-        Globals.initialize(false);
+        Globals.initialize();
         this.set = set;
         code = new RISCVprogram();
         assembled = new Memory();
