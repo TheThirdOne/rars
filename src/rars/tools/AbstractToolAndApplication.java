@@ -149,7 +149,7 @@ public abstract class AbstractToolAndApplication extends JFrame implements Tool,
         theWindow = this;
         this.isBeingUsedAsATool = false;
         this.setTitle(this.title);
-        rars.Globals.initialize(true);
+        rars.Globals.initialize();
         // assure the dialog goes away if user clicks the X
         this.addWindowListener(
                 new WindowAdapter() {
