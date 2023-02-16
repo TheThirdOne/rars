@@ -77,6 +77,7 @@ public class Launch {
      * an address range (see <i>m-n</i> below).  Current supported <br>
      * segments are <tt>.text</tt> and <tt>.data</tt>.  Current supported dump formats <br>
      * are <tt>Binary</tt>, <tt>HexText</tt>, <tt>BinaryText</tt>.<br>
+     * g  -- force GUI mode
      * h  -- display help.  Use by itself and with no filename</br>
      * hex  -- display memory or register contents in hexadecimal (default)<br>
      * ic  -- display count of basic instructions 'executed'");
@@ -109,6 +110,7 @@ public class Launch {
      **/
 
     private Options options;
+    private boolean gui;
     private boolean simulate;
     private boolean rv64;
     private int displayFormat;
@@ -135,28 +137,34 @@ public class Launch {
     }
     private Launch(String[] args) {
         Globals.initialize();
-        if (args.length == 0) {
+
+        options = new Options();
+        gui = args.length == 0;
+        simulate = true;
+        displayFormat = HEXADECIMAL;
+        verbose = true;
+        assembleProject = false;
+        countInstructions = false;
+        instructionCount = 0;
+        assembleErrorExitCode = 0;
+        simulateErrorExitCode = 0;
+        registerDisplayList = new ArrayList<>();
+        memoryDisplayList = new ArrayList<>();
+        filenameList = new ArrayList<>();
+        MemoryConfigurations.setCurrentConfiguration(MemoryConfigurations.getDefaultConfiguration());
+        out = System.out;
+
+        if (!parseCommandArgs(args)) {
+            System.exit(Globals.exitCode);
+        }
+        
+        if (gui) {
             launchIDE();
         } else { // running from command line.
             // assure command mode works in headless environment (generates exception if not)
             System.setProperty("java.awt.headless", "true");
-            options = new Options();
-            simulate = true;
-            displayFormat = HEXADECIMAL;
-            verbose = true;
-            assembleProject = false;
-            countInstructions = false;
-            instructionCount = 0;
-            assembleErrorExitCode = 0;
-            simulateErrorExitCode = 0;
-            registerDisplayList = new ArrayList<>();
-            memoryDisplayList = new ArrayList<>();
-            filenameList = new ArrayList<>();
-            MemoryConfigurations.setCurrentConfiguration(MemoryConfigurations.getDefaultConfiguration());
-            out = System.out;
-            if (parseCommandArgs(args)) {
-                dumpSegments(runCommand());
-            }
+            
+            dumpSegments(runCommand());
             System.exit(Globals.exitCode);
         }
     }
@@ -228,7 +236,7 @@ public class Launch {
                     public void run() {
                         //Turn off metal's use of bold fonts
                         //UIManager.put("swing.boldMetal", Boolean.FALSE);
-                        new VenusUI("RARS " + Globals.version);
+                        new VenusUI("RARS " + Globals.version, filenameList);
                     }
                 });
     }
@@ -345,6 +353,10 @@ public class Launch {
             }
             if (args[i].toLowerCase().equals("dec")) {
                 displayFormat = DECIMAL;
+                continue;
+            }
+            if (args[i].toLowerCase().equals("g")) {
+                gui = true;
                 continue;
             }
             if (args[i].toLowerCase().equals("hex")) {
@@ -714,6 +726,7 @@ public class Launch {
         out.println("            Segment and format are case-sensitive and possible values are:");
         out.println("            <segment> = " + segments+", or a range like 0x400000-0x10000000");
         out.println("            <format> = " + formats);
+        out.println("      g  -- force GUI mode");
         out.println("      h  -- display this help.  Use by itself with no filename.");
         out.println("    hex  -- display memory or register contents in hexadecimal (default)");
         out.println("     ic  -- display count of basic instructions 'executed'");

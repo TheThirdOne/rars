@@ -1,6 +1,7 @@
 package rars.venus;
 
 import java.io.File;
+import java.util.ArrayList;
  
  /*
 Copyright (c) 2003-2007,  Pete Sanderson and Kenneth Vollmar
@@ -243,6 +244,21 @@ public class Editor {
         return editTabbedPane.openFile();
     }
 
+    /**
+     * Open files in new tabs.
+     * @param paths File paths to open
+     * @return true if succeeded, else false.
+     */
+    public boolean open(ArrayList<String> paths) {
+        for (String path : paths) {
+            File file = new File(path);
+            if (!editTabbedPane.openFile(file)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
 
     /**
      * Called by several of the Action objects when there is potential
