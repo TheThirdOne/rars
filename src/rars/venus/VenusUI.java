@@ -16,6 +16,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.net.URL;
+import java.util.ArrayList;
 
 /*
 Copyright (c) 2003-2013,  Pete Sanderson and Kenneth Vollmar
@@ -116,11 +117,12 @@ public class VenusUI extends JFrame {
     /**
      * Constructor for the Class. Sets up a window object for the UI
      *
-     * @param s Name of the window to be created.
+     * @param name Name of the window to be created.
+     * @param paths File paths to open width
      **/
 
-    public VenusUI(String s) {
-        super(s);
+    public VenusUI(String name, ArrayList<String> paths) {
+        super(name);
         mainUI = this;
         Globals.setGui(this);
         this.editor = new Editor(this);
@@ -238,6 +240,12 @@ public class VenusUI extends JFrame {
 
         this.pack();
         this.setVisible(true);
+
+        // Open files
+        if (!this.editor.open(paths)) {
+            System.out.println("Internal Error: could not open files" + String.join(", ", paths));
+            System.exit(1);
+        }
     }
 
 
