@@ -142,6 +142,7 @@ public class SystemIO {
         if (Globals.getGui() == null) {
             try {
                 SystemIO.getOutputWriter().write(string);
+                SystemIO.getOutputWriter().flush();
             } catch (IOException e){
             }
         } else {
