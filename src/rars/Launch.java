@@ -1,5 +1,6 @@
 package rars;
 
+import com.formdev.flatlaf.FlatLightLaf;
 import rars.api.Program;
 import rars.riscv.InstructionSet;
 import rars.riscv.dump.DumpFormat;
@@ -112,7 +113,7 @@ public class Launch {
     private Options options;
     private boolean gui;
     private boolean simulate;
-    private boolean rv64;
+    private boolean rv64 = true;
     private int displayFormat;
     private boolean verbose;  // display register name or address along with contents
     private boolean assembleProject; // assemble only the given file or all files in its directory
@@ -230,6 +231,7 @@ public class Launch {
     // launching the GUI-fronted integrated development environment.
 
     private void launchIDE() {
+        FlatLightLaf.setup();
         // System.setProperty("apple.laf.useScreenMenuBar", "true"); // Puts RARS menu on Mac OS menu bar
         SwingUtilities.invokeLater(
                 new Runnable() {
@@ -387,8 +389,8 @@ public class Launch {
                 options.selfModifyingCode = true;
                 continue;
             }
-            if (args[i].toLowerCase().equals("rv64")) {
-                rv64 = true;
+            if (args[i].toLowerCase().equals("rv32")) {
+                rv64 = false;
                 continue;
             }
             if (args[i].toLowerCase().equals("ic")) { // added 19-Jul-2012 DPS
@@ -743,7 +745,7 @@ public class Launch {
         out.println("  se<n>  -- terminate RARS with integer exit code <n> if a simulation (run) error occurs.");
         out.println("     sm  -- start execution at statement with global label main, if defined");
         out.println("    smc  -- Self Modifying Code - Program can write and branch to either text or data segment");
-        out.println("    rv64 -- Enables 64 bit assembly and executables (Not fully compatible with rv32)");
+        out.println("    rv32 -- Enables 32 bit assembly and executables");
         out.println("    <n>  -- where <n> is an integer maximum count of steps to simulate.");
         out.println("            If 0, negative or not specified, there is no maximum.");
         out.println(" x<reg>  -- where <reg> is number or name (e.g. 5, t3, f10) of register whose ");

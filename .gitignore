@@ -4,7 +4,7 @@ out
 
 # Build products
 build
-rars.jar
+rars-flatlaf.jar
 
 # Eclipse project files
 .classpath

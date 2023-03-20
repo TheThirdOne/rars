@@ -1,5 +1,13 @@
 RARS -- RISC-V Assembler and Runtime Simulator
 ----------------------------------------------
+> This fork is basically the same as the original, **with two differences**:
+> * RISCV64 is default, 32 bit may be enabled with the ``-rv32`` flag
+> * Modern flat ui, using ``FlatLaflight``
+> * Wrapped inside an Intellij Idea project
+> 
+> _Bugs_:
+> * The source pane sometimes must be toggled to be visible when a file is opened
+> * Annoying layout issue with program speed slider
 
 RARS, the RISC-V Assembler, Simulator, and Runtime, will assemble and simulate
 the execution of RISC-V assembly language programs. Its primary goal is to be
