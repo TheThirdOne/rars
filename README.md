@@ -9,8 +9,7 @@ RARS -- RISC-V Assembler and Runtime Simulator
 > _Bugs_ (on linux):
 > * The source pane sometimes must be toggled to be visible when a file is opened
 > * Annoying layout issue with program speed slider
-> 
-
+>
 RARS, the RISC-V Assembler, Simulator, and Runtime, will assemble and simulate
 the execution of RISC-V assembly language programs. Its primary goal is to be
 an effective development environment for people getting started with RISC-V. 
@@ -41,7 +40,7 @@ Running the script `./build-jar.sh` on a Unix system will build `rars.jar`.
 ## Screenshot
 
 ![Screenshot of sample program](screenshot.png)
-![Dark mode](screendark.png)
+![Dark mode](screenshotdark.png)
 
 ## Changes from MARS 4.5
 
