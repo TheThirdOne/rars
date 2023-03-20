@@ -40,7 +40,7 @@ Running the script `./build-jar.sh` on a Unix system will build `rars.jar`.
 ## Screenshot
 
 ![Screenshot of sample program](screenshot.png)
-![Dark mode](screenshotdark.png)
+![Dark mode](screendark.png)
 
 ## Changes from MARS 4.5
 
