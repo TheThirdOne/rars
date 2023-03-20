@@ -17,6 +17,7 @@ import javax.swing.table.JTableHeader;
 import javax.swing.table.TableModel;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.image.BufferedImage;
 import java.util.Date;
 import java.util.Observable;
 import java.util.Observer;
@@ -109,6 +110,8 @@ public class DataSegmentWindow extends JInternalFrame implements Observer {
 
     public DataSegmentWindow(NumberDisplayBaseChooser[] choosers) {
         super("Data Segment", true, false, true, true);
+        Image icon = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB_PRE);
+        setFrameIcon((new ImageIcon(icon)));
 
         Simulator.getInstance().addObserver(this);
         settings = Globals.getSettings();

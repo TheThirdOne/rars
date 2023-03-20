@@ -13,6 +13,7 @@ import javax.swing.table.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.image.BufferedImage;
 import java.util.*;
 
 	/*
@@ -91,6 +92,10 @@ public class TextSegmentWindow extends JInternalFrame implements Observer {
 
     public TextSegmentWindow() {
         super("Text Segment", true, false, true, true);
+
+        Image icon = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB_PRE);
+        setFrameIcon((new ImageIcon(icon)));
+
         Simulator.getInstance().addObserver(this);
         Globals.getSettings().addObserver(this);
         contentPane = this.getContentPane();

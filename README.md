@@ -4,10 +4,12 @@ RARS -- RISC-V Assembler and Runtime Simulator
 > * RISCV64 is default, 32 bit may be enabled with the ``-rv32`` flag
 > * Modern flat ui, using ``FlatLaflight``
 > * Wrapped inside an Intellij Idea project
+> * Dark theme: just create a ``dark.txt`` in the same folder of the jar file to enable dark theme
 > 
-> _Bugs_:
+> _Bugs_ (on linux):
 > * The source pane sometimes must be toggled to be visible when a file is opened
 > * Annoying layout issue with program speed slider
+> 
 
 RARS, the RISC-V Assembler, Simulator, and Runtime, will assemble and simulate
 the execution of RISC-V assembly language programs. Its primary goal is to be

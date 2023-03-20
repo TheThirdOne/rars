@@ -6,6 +6,7 @@ out
 build
 rars-flatlaf.jar
 
+dark.txt
 # Eclipse project files
 .classpath
 .project

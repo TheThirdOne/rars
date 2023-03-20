@@ -76,7 +76,8 @@ public class MainPane extends JTabbedPane {
 
         this.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
         this.addTab(editTabTitle, editTabIcon, editTabbedPane);
-        this.setForeground(Color.black);
+        //
+        // this.setForeground(Color.black);
 
         this.addTab(executeTabTitle, executeTabIcon, executeTab);
 

@@ -1,5 +1,6 @@
 package rars;
 
+import com.formdev.flatlaf.FlatDarkLaf;
 import com.formdev.flatlaf.FlatLightLaf;
 import rars.api.Program;
 import rars.riscv.InstructionSet;
@@ -231,7 +232,8 @@ public class Launch {
     // launching the GUI-fronted integrated development environment.
 
     private void launchIDE() {
-        FlatLightLaf.setup();
+        if((new File("dark.txt")).exists()) FlatDarkLaf.setup();
+        else FlatLightLaf.setup();
         // System.setProperty("apple.laf.useScreenMenuBar", "true"); // Puts RARS menu on Mac OS menu bar
         SwingUtilities.invokeLater(
                 new Runnable() {

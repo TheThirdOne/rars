@@ -15,6 +15,7 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -134,6 +135,10 @@ public class LabelsWindow extends JInternalFrame {
 
     public LabelsWindow() {
         super("Labels", true, false, true, true);
+
+        Image icon = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB_PRE);
+        setFrameIcon((new ImageIcon(icon)));
+
         try {
             sortState = Integer.parseInt(Globals.getSettings().getLabelSortState());
         } catch (NumberFormatException nfe) {
