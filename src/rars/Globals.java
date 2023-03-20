@@ -145,7 +145,7 @@ public class Globals {
     }
 
     private static String getCopyrightHolders() {
-        return "Pete Sanderson, Kenneth Vollmar, modern ui fork by Mattia Mascarello";
+        return "Pete Sanderson, Kenneth Vollmar";
     }
 
     public static void setGui(VenusUI g) {
