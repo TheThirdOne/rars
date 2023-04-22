@@ -192,7 +192,7 @@ public class Macro {
     }
 
     /**
-     * replaces token <code>tokenToBeReplaced</code> which is occured in <code>source</code> with <code>substitute</code>.
+     * replaces token <code>tokenToBeReplaced</code> which is occurred in <code>source</code> with <code>substitute</code>.
      *
      * @param source
      * @param tokenToBeReplaced

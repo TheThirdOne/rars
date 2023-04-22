@@ -10,7 +10,7 @@ an effective development environment for people getting started with RISC-V.
   - RISC-V IMFDN Base (riscv32 and riscv64)
   - Several system calls that match behaviour from MARS or SPIKE.
   - Support for debugging using breakpoints and/or `ebreak`
-  - Side by side comparison from psuedo-instruction to machine code with
+  - Side by side comparison from pseudo-instruction to machine code with
     intermediate steps
   - Multifile assembly using either files open or a directory
 
@@ -43,5 +43,5 @@ there are several general changes worth noting.
   - ScreenMagnifier, MARS Bot, Intro to Tools, Scavenger Hunt, and MARS Xray were removed from the included tools. ScreenMagnifier, MARS Bot, Intro to Tools, and Scavenger Hunt were removed because they provide little benefit. And MARS Xray was removed because it is not set up to work with RISC-V, however if someone ports it, it could be merged in.
   - Removed delayed branching
   - Removed the print feature
-  - Added a testing framework to verify compatability with the RISC-V specification
+  - Added a testing framework to verify compatibility with the RISC-V specification
   - Significant internal restructuring and refactoring.

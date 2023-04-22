@@ -38,6 +38,6 @@ public class FENCEI extends BasicInstruction {
     }
 
     public void simulate(ProgramStatement statement) {
-        // Do nothing, currently all stores are immediately availible to instruction fetches
+        // Do nothing, currently all stores are immediately available to instruction fetches
     }
 }

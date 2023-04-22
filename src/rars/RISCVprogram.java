@@ -254,7 +254,7 @@ public class RISCVprogram {
     /**
      * Tokenizes the RISCV source program. Program must have already been read from file.
      *
-     * @throws AssemblyException Will throw exception if errors occured while tokenizing.
+     * @throws AssemblyException Will throw exception if errors occurred while tokenizing.
      **/
 
     public void tokenize() throws AssemblyException {
@@ -276,7 +276,7 @@ public class RISCVprogram {
      *                         empty String to indicate there is no such designated exception handler.
      * @return ArrayList containing one RISCVprogram object for each file to assemble.
      * objects for any additional files (send ArrayList to assembler)
-     * @throws AssemblyException Will throw exception if errors occured while reading or tokenizing.
+     * @throws AssemblyException Will throw exception if errors occurred while reading or tokenizing.
      **/
 
     public ArrayList<RISCVprogram> prepareFilesForAssembly(ArrayList<String> filenames, String leadFilename, String exceptionHandler) throws AssemblyException {
@@ -308,7 +308,7 @@ public class RISCVprogram {
      * @param extendedAssemblerEnabled A boolean value - true means extended (pseudo) instructions
      *                                 are permitted in source code and false means they are to be flagged as errors.
      * @return ErrorList containing nothing or only warnings (otherwise would have thrown exception).
-     * @throws AssemblyException Will throw exception if errors occured while assembling.
+     * @throws AssemblyException Will throw exception if errors occurred while assembling.
      **/
 
     public ErrorList assemble(ArrayList<RISCVprogram> programsToAssemble, boolean extendedAssemblerEnabled)
@@ -326,7 +326,7 @@ public class RISCVprogram {
      * @param warningsAreErrors        A boolean value - true means assembler warnings will be considered errors and terminate
      *                                 the assemble; false means the assembler will produce warning message but otherwise ignore warnings.
      * @return ErrorList containing nothing or only warnings (otherwise would have thrown exception).
-     * @throws AssemblyException Will throw exception if errors occured while assembling.
+     * @throws AssemblyException Will throw exception if errors occurred while assembling.
      **/
 
     public ErrorList assemble(ArrayList<RISCVprogram> programsToAssemble, boolean extendedAssemblerEnabled,
@@ -346,7 +346,7 @@ public class RISCVprogram {
      *
      * @param maxSteps the maximum maximum number of steps to simulate.
      * @return true if execution completed and false otherwise
-     * @throws SimulationException Will throw exception if errors occured while simulating.
+     * @throws SimulationException Will throw exception if errors occurred while simulating.
      */
     public Simulator.Reason simulate(int maxSteps) throws SimulationException {
         Simulator sim = Simulator.getInstance();

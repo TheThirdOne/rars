@@ -150,7 +150,7 @@ public class ExtendedInstruction extends Instruction {
                 int vall = (int)lval;
                 // this shouldn't happen if is is for LL .. VH
                 if (instruction.contains("LIA" + op)) {
-                    int extra = Binary.bitValue(val, 11); // add extra to compesate for sign extention
+                    int extra = Binary.bitValue(val, 11); // add extra to compesate for sign extension
                     instruction = substitute(instruction, "LIA" + op, String.valueOf((val >> 12) + extra));
                 }else if (instruction.contains("LIB" + op)) {
                     instruction = substitute(instruction, "LIB" + op, String.valueOf(val << 20 >> 20));
@@ -166,7 +166,7 @@ public class ExtendedInstruction extends Instruction {
 
             int relative = val - PC;
             if (instruction.contains("PCH" + op)) {
-                int extra = Binary.bitValue(relative, 11);// add extra to compesate for sign extention
+                int extra = Binary.bitValue(relative, 11);// add extra to compesate for sign extension
                 instruction = substitute(instruction, "PCH" + op, String.valueOf((relative >> 12) + extra));
             }
             if (instruction.contains("PCL" + op)) {
@@ -174,7 +174,7 @@ public class ExtendedInstruction extends Instruction {
             }
 
             if (instruction.contains("LH" + op)) {
-                int extra = Binary.bitValue(val, 11);// add extra to compesate for sign extention
+                int extra = Binary.bitValue(val, 11);// add extra to compesate for sign extension
                 instruction = substitute(instruction, "LH" + op, String.valueOf((val >> 12) + extra));
             }
             if (instruction.contains("LL" + op)) {
@@ -182,7 +182,7 @@ public class ExtendedInstruction extends Instruction {
             }
 
             if (instruction.contains("VH" + op)) {
-                int extra = Binary.bitValue(val, 11); // add extra to compesate for sign extention
+                int extra = Binary.bitValue(val, 11); // add extra to compesate for sign extension
                 instruction = substitute(instruction, "VH" + op, String.valueOf((val >> 12) + extra));
             }
             if (instruction.contains("VL" + op)) {
