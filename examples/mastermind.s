@@ -82,7 +82,7 @@ user:
 noSecretString:
         la a0, userNumber
         jal ra, strlen					# get string length
-        addi a0, a0, -5					# and substract 5
+        addi a0, a0, -5					# and subtract 5
         bnez a0, userError				# if not 0, length isn't 5 so error
 
 # Next check if each digit is between 0 and DIGIT_MAX-1
@@ -143,7 +143,7 @@ noMatch:
         li a7, 1						# PrintInt
         ecall							# syscall
         printLn  						# print carriage-return
-        addi s11, s11, -4				# substract 4 to number of correct matches
+        addi s11, s11, -4				# subtract 4 to number of correct matches
         beqz s11, userWin				# and if null, it's a win!
 
 

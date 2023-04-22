@@ -9,7 +9,7 @@ buf:
 main:   
 	beqz a0, error
 	
-	# trim off the name off the exectuable
+	# trim off the name off the executable
 	addi a0, a0, -1
 	addi a1, a1,  4
 	beqz a0, error

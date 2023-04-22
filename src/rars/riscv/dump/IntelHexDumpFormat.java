@@ -18,7 +18,7 @@ import java.io.PrintStream;
 public class IntelHexDumpFormat extends AbstractDumpFormat {
 
     /**
-     * Constructor.  File extention is "hex".
+     * Constructor.  File extension is "hex".
      */
     public IntelHexDumpFormat() {
         super("Intel hex format", "HEX", "Written as Intel Hex Memory File", "hex");
