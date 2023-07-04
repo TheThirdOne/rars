@@ -276,6 +276,7 @@ public class Test {
         }
         // 12 was the value when this test was written, if instructions are added that intentionally
         // don't have those registers in them add to the register list above or add to the count.
-        if(skips != 12) System.out.println("Unexpected number of psuedo-instructions skipped.");
+        // Updated to 10: because fsrmi and fsflagsi were removed
+        if(skips != 10) System.out.println("Unexpected number of psuedo-instructions skipped.");
     }
 }
