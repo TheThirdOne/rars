@@ -414,6 +414,18 @@ public class Binary {
                     return null;
                 }
             }
+        }else if(s.length() > 2+i && s.charAt(i) == '0' && (s.charAt(i+1) == 'b' || s.charAt(i+1) == 'B')) { // Binary case
+            if(s.length() > 32+2+i) return null; // This must overflow or contain invalid characters
+            i += 2;
+            for(; i < s.length(); i++) {
+                char c = s.charAt(i);
+                result *= 2;
+                if ('0' <= c && c <= '1') {
+                    result += c - '0';
+                } else {
+                    return null;
+                }
+            }
         }else if (first == '0'){ // Octal case
             if(s.length() > 12+i) return null; // This must overflow or contain invalid characters
             for(; i < s.length(); i++){
