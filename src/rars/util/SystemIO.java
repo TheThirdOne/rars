@@ -177,24 +177,29 @@ public class SystemIO {
      * Implements syscall having 12 in $v0, to read a char value.
      *
      * @param serviceNumber the number assigned to Read Char syscall (default 12)
-     * @return int value with lowest byte corresponding to user input
+     * @return int value with lowest byte corresponding to user input or -1 on EOF
      */
     public static int readChar(int serviceNumber) {
-        int returnValue = 0;
+        int returnValue;
 
-        String input = readStringInternal("0", "Enter a character value (syscall " + serviceNumber + ")", 1);
-        // The whole try-catch is not really necessary in this case since I'm
-        // just propagating the runtime exception (the default behavior), but
-        // I want to make it explicit.  The client needs to catch it.
-        try {
-            returnValue = (int) (input.charAt(0)); // first character input
-        } catch (IndexOutOfBoundsException e) // no chars present
-        {
-            throw e;  // was: returnValue = 0;
+        // Need a popup?
+        if (Globals.getGui() != null && Globals.getSettings().getBooleanSetting(Settings.Bool.POPUP_SYSCALL_INPUT)) {
+            String input = readStringInternal("0", "Enter a character value (syscall " + serviceNumber + ")", 1);
+            if (input.length()>0)
+                returnValue = input.charAt(0); // truncate
+            else
+                returnValue = -1; // assume EOF on empty string
+        } else {
+            // Otherwise delegate to the Read syscall
+            byte[] input = new byte[1];
+            int len = readFromFile(0, input, 1);
+            if (len>0)
+                returnValue = input[0];
+            else
+                returnValue = -1;
         }
 
         return returnValue;
-
     }
 
 
