@@ -119,7 +119,10 @@ public class RegisterFile {
 
     public static long getValueLong(int num) {
         return instance.getValue(num);
+    }
 
+    public static long getValueLong(String name) {
+        return instance.getValue(name);
     }
 
     /**
