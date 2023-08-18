@@ -39,6 +39,6 @@ public class SyscallPrintInt extends AbstractSyscall {
     }
 
     public void simulate(ProgramStatement statement) {
-        SystemIO.printString(Integer.toString(RegisterFile.getValue("a0")));
+        SystemIO.printString(Long.toString(RegisterFile.getValueLong("a0")));
     }
 }
