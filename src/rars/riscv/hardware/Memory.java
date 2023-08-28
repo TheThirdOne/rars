@@ -5,6 +5,7 @@ import rars.ProgramStatement;
 import rars.Settings;
 import rars.SimulationException;
 import rars.riscv.Instruction;
+import rars.riscv.InstructionSet;
 import rars.util.Binary;
 
 import java.util.Collection;
@@ -337,7 +338,7 @@ public class Memory extends Observable {
      * Returns the next available word-aligned heap address.  There is no recycling and
      * no heap management!  There is however nearly 4MB of heap space available in Rars.
      *
-     * @param numBytes Number of bytes requested.  Should be multiple of 4, otherwise next higher multiple of 4 allocated.
+     * @param numBytes Number of bytes requested.  Should be multiple of the architecture size (4 in RV32 or 8 in RV64) , otherwise next higher multiple of the arch size allocated.
      * @return address of allocated heap storage.
      * @throws IllegalArgumentException if number of requested bytes is negative or exceeds available heap storage
      */
@@ -347,8 +348,9 @@ public class Memory extends Observable {
             throw new IllegalArgumentException("request (" + numBytes + ") is negative heap amount");
         }
         int newHeapAddress = heapAddress + numBytes;
-        if (newHeapAddress % 4 != 0) {
-            newHeapAddress = newHeapAddress + (4 - newHeapAddress % 4); // next higher multiple of 4
+        int size = InstructionSet.rv64 ? 8 : 4;
+        if (newHeapAddress % size != 0) {
+            newHeapAddress = newHeapAddress + (size - newHeapAddress % size); // next higher multiple of 4
         }
         if (newHeapAddress >= dataSegmentLimitAddress) {
             throw new IllegalArgumentException("request (" + numBytes + ") exceeds available heap storage");
