@@ -377,6 +377,10 @@ public class Memory extends Observable {
 
     // Allocates blocks if necessary.
     public int set(int address, int value, int length) throws AddressErrorException {
+        // This method is very complex and produce wrong results if length>4
+        // So clamp the length to 4
+        if (length > 4) length = 4;
+
         int oldValue = 0;
         if (Globals.debug) System.out.println("memory[" + address + "] set to " + value + "(" + length + " bytes)");
         int relativeByteAddress;
