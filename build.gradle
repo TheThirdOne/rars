@@ -1,0 +1,15 @@
+plugins {
+    id 'java'
+}
+
+group = 'io.github.thethirdone'
+version = '1.0-SNAPSHOT'
+
+sourceSets.main.java.srcDirs += ['src']
+sourceSets.main.resources.srcDirs += ['src']
+
+jar {
+    manifest {
+        from 'src/META-INF/MANIFEST.MF'
+    }
+}
