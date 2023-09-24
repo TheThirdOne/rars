@@ -76,6 +76,8 @@ public class SystemIO {
     private static final int STDOUT = 1;
     private static final int STDERR = 2;
 
+    private static String inputBuffer = "";
+
     /**
      * Implements syscall to read an integer value.
      * Client is responsible for catching NumberFormatException.
@@ -94,7 +96,13 @@ public class SystemIO {
         String input = init;
         if (Globals.getGui() == null) {
             try {
-                input = getInputReader().readLine();
+                if (!inputBuffer.isEmpty()) {
+                    input = String.valueOf(inputBuffer);
+                    inputBuffer = "";
+                } else {
+                    input = getInputReader().readLine();
+                }
+
                 if (input == null)
                     input = "";
             } catch (IOException e) {
@@ -182,12 +190,23 @@ public class SystemIO {
     public static int readChar(int serviceNumber) {
         int returnValue = 0;
 
-        String input = readStringInternal("0", "Enter a character value (syscall " + serviceNumber + ")", 1);
+        String input;
+        if (Globals.getGui() == null) {
+            input = readStringInternal("0", "Enter a character value (syscall " + serviceNumber + ")", -1);
+        } else {
+            input = readStringInternal("0", "Enter a character value (syscall " + serviceNumber + ")", 1);
+        }
         // The whole try-catch is not really necessary in this case since I'm
         // just propagating the runtime exception (the default behavior), but
         // I want to make it explicit.  The client needs to catch it.
+
         try {
             returnValue = (int) (input.charAt(0)); // first character input
+            if (input.length() > 1) {
+                inputBuffer = input.substring(1);
+            } else {
+                inputBuffer = "";
+            }
         } catch (IndexOutOfBoundsException e) // no chars present
         {
             throw e;  // was: returnValue = 0;
