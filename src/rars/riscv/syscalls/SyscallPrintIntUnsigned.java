@@ -2,6 +2,7 @@ package rars.riscv.syscalls;
 
 import rars.ProgramStatement;
 import rars.riscv.AbstractSyscall;
+import rars.riscv.InstructionSet;
 import rars.riscv.hardware.RegisterFile;
 import rars.util.Binary;
 import rars.util.SystemIO;
@@ -40,7 +41,10 @@ public class SyscallPrintIntUnsigned extends AbstractSyscall {
     }
 
     public void simulate(ProgramStatement statement) {
-        SystemIO.printString(
-                Binary.unsignedIntToIntString(RegisterFile.getValue("a0")));
+        if (InstructionSet.rv64) {
+            SystemIO.printString(Long.toUnsignedString(RegisterFile.getValueLong("a0")));
+        } else {
+            SystemIO.printString(Integer.toUnsignedString(RegisterFile.getValue("a0")));
+        }
     }
 }
