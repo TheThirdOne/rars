@@ -231,6 +231,11 @@ public class Launch {
 
     private void launchIDE() {
         // System.setProperty("apple.laf.useScreenMenuBar", "true"); // Puts RARS menu on Mac OS menu bar
+        try {
+            UIManager.setLookAndFeel("com.formdev.flatlaf.FlatIntelliJLaf");
+        } catch( Exception ex ) {
+            System.err.println( "Failed to initialize LaF. Continue with default LaF." );
+        }
         SwingUtilities.invokeLater(
                 new Runnable() {
                     public void run() {
