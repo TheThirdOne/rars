@@ -1,6 +1,7 @@
 package rars.simulator;
 
 import rars.Globals;
+import rars.riscv.InstructionSet;
 import rars.riscv.hardware.AddressErrorException;
 import rars.riscv.hardware.Memory;
 import rars.riscv.hardware.RegisterFile;
@@ -131,7 +132,7 @@ public class ProgramArgumentList {
         if (programArgumentList == null || programArgumentList.size() == 0) {
             return;
         }
-        // Runtime stack initialization from stack top-down (each is 4 bytes) :
+        // Runtime stack initialization from stack top-down (each is 4 bytes, or 8 byte in 64bit mode) :
         //    programArgumentList.size()
         //    address of first character of first program argument
         //    address of first character of second program argument
@@ -152,6 +153,7 @@ public class ProgramArgumentList {
         // Etc down to first character of second arg.
         // Follow this pattern for all remaining arguments.
 
+        int xlen = InstructionSet.rv64 ? 8 : Memory.WORD_LENGTH_BYTES; // width of an integer register (pointer size)
 
         int highAddress = Memory.stackBaseAddress;  // highest non-kernel address, sits "under" stack
         String programArgument;
@@ -175,22 +177,22 @@ public class ProgramArgumentList {
                 // 0x7ffffffc - 0x7fffeffc = 0x00001000 = 4096 bytes.  In this case, set
                 // stackAddress to next lower word boundary minus 4 for clearance (since every
                 // byte from highAddress+1 is filled).
-                stackAddress = highAddress - (highAddress % Memory.WORD_LENGTH_BYTES) - Memory.WORD_LENGTH_BYTES;
+                stackAddress = highAddress - (highAddress % xlen) - xlen;
             }
-            Globals.memory.set(stackAddress, 0, Memory.WORD_LENGTH_BYTES);  // null word for end of argv array
-            stackAddress -= Memory.WORD_LENGTH_BYTES;
+            Globals.memory.set(stackAddress, 0, xlen);  // null word for end of argv array
+            stackAddress -= xlen;
             for (int i = argStartAddress.length - 1; i >= 0; i--) {
-                Globals.memory.set(stackAddress, argStartAddress[i], Memory.WORD_LENGTH_BYTES);
-                stackAddress -= Memory.WORD_LENGTH_BYTES;
+                Globals.memory.set(stackAddress, argStartAddress[i], xlen);
+                stackAddress -= xlen;
             }
-            Globals.memory.set(stackAddress, argStartAddress.length, Memory.WORD_LENGTH_BYTES); // argc
-            stackAddress -= Memory.WORD_LENGTH_BYTES;
+            Globals.memory.set(stackAddress, argStartAddress.length, xlen); // argc
+            stackAddress -= xlen;
 
             // Need to set $sp register to stack address, $a0 to argc, $a1 to argv
             // Need to by-pass the backstepping mechanism so go directly to Register instead of RegisterFile
-            RegisterFile.getRegister("sp").setValue(stackAddress + Memory.WORD_LENGTH_BYTES);
+            RegisterFile.getRegister("sp").setValue(stackAddress + xlen);
             RegisterFile.getRegister("a0").setValue(argStartAddress.length); // argc
-            RegisterFile.getRegister("a1").setValue(stackAddress + Memory.WORD_LENGTH_BYTES + Memory.WORD_LENGTH_BYTES); // argv
+            RegisterFile.getRegister("a1").setValue(stackAddress + xlen + xlen); // argv
         } catch (AddressErrorException aee) {
             System.out.println("Internal Error: Memory write error occurred while storing program arguments! " + aee);
             System.exit(0);
