@@ -262,7 +262,7 @@ public class Assembler {
                         ProgramStatement ps = new ProgramStatement(
                                 this.fileCurrentlyBeingAssembled,
                                 (instrNumber == 0) ? statement.getSource() : "", newTokenList,
-                                newTokenList, instr, textAddress.get(), statement.getSourceLine());
+                                newTokenList, instr, textAddress.get(), statement.getSourceFile(), statement.getSourceLine());
                         textAddress.increment(Instruction.INSTRUCTION_LENGTH);
                         ps.buildBasicStatementFromBasicInstruction(errors);
                         machineList.add(ps);
@@ -488,8 +488,9 @@ public class Assembler {
                         "Extended (pseudo) instruction or format not permitted.  See Settings."));
             }
             if (OperandFormat.tokenOperandMatch(tokens, inst, errors)) {
-                programStatement = new ProgramStatement(this.fileCurrentlyBeingAssembled, source,
-                        tokenList, tokens, inst, textAddress.get(), sourceLineNumber);
+                programStatement = new ProgramStatement(this.fileCurrentlyBeingAssembled,
+                                                        source,
+                                                        tokenList, tokens, inst, textAddress.get(), token.getOriginalProgram().getFilename(), sourceLineNumber);
                 // instruction length is 4 for all basic instruction, varies for extended instruction
                 // Modified to permit use of compact expansion if address fits
                 // in 15 bits. DPS 4-Aug-2009
