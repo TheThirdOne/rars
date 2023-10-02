@@ -36,7 +36,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 public class SyscallReadChar extends AbstractSyscall {
     public SyscallReadChar() {
-        super("ReadChar", "Reads a character from input console", "N/A", "a0 = the character");
+        super("ReadChar", "Reads a character from input console", "N/A", "a0 = the character or -1 if end of input.");
     }
 
     public void simulate(ProgramStatement statement) throws ExitingException {

@@ -50,7 +50,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 public class SyscallReadString extends AbstractSyscall {
     public SyscallReadString() {
         super("ReadString", "Reads a string from the console",
-                "a0 = address of input buffer<br>a1 = maximum number of characters to read", "N/A");
+                "a0 = address of input buffer<br>a1 = size of the buffer", "N/A");
     }
 
     public void simulate(ProgramStatement statement) throws ExitingException {

@@ -89,7 +89,7 @@ public class Test {
                     for(int i = 0; i < linenumbers.length; i++){
                         errorlines[i] = Integer.parseInt(linenumbers[i].trim());
                     }
-                } else if (line.startsWith("stdin:")) {
+                } else if (line.startsWith("#stdin:")) {
                     stdin = line.replaceFirst("#stdin:", "").replaceAll("\\\\n","\n");
                 } else if (line.startsWith("#stdout:")) {
                     stdout = line.replaceFirst("#stdout:", "").replaceAll("\\\\n","\n");
