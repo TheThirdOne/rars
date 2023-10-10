@@ -66,7 +66,7 @@ public class FloatRepresentation extends AbstractToolAndApplication {
     private static final int maxLengthBinaryFraction = 23;
     private static final int maxLengthBinaryTotal = maxLengthBinarySign + maxLengthBinaryExponent + maxLengthBinaryFraction;
     private static final int maxLengthDecimal = 20;
-    private static final String denormalizedLabel = "                 significand (denormalized - no 'hidden bit')";
+    private static final String denormalizedLabel = "                 significand (subnormal - no 'hidden bit')";
     private static final String normalizedLabel = "                 significand ('hidden bit' underlined)       ";
     private static final Font instructionsFont = new Font("Arial", Font.PLAIN, 14);
     private static final Font hexDisplayFont = new Font("Courier", Font.PLAIN, 32);
@@ -530,7 +530,7 @@ public class FloatRepresentation extends AbstractToolAndApplication {
         public String buildExpansionFromBinaryString(String binaryString) {
             int biasedExponent = Binary.binaryStringToInt(
                     binaryString.substring(maxLengthBinarySign, maxLengthBinarySign + maxLengthBinaryExponent));
-            String stringExponent = Integer.toString(biasedExponent - exponentBias);
+            String stringExponent = Integer.toString(biasedExponent == 0 ? -126 : biasedExponent - exponentBias);
             // stringExponent length will range from 1 to 4 (e.g. "0" to "-128") characters.
             // Right-pad with HTML spaces ("&nbsp;") to total length 5 displayed characters.
             return "<html><head></head><body>" + expansionFontTag
@@ -822,6 +822,7 @@ public class FloatRepresentation extends AbstractToolAndApplication {
     //
     class BinaryToDecimalFormulaGraphic extends JPanel {
         final String subtractLabelTrailer = " - 127";
+        final String subnormalSubtractLabelTrailer = " - 126";
         final int arrowHeadOffset = 5;
         final int lowerY = 0;
         final int upperY = 50;
@@ -884,7 +885,7 @@ public class FloatRepresentation extends AbstractToolAndApplication {
 
         // format the label for a given integer exponent value...
         private String buildSubtractLabel(int value) {
-            return Integer.toString(value) + subtractLabelTrailer;
+            return Integer.toString(value) + ((value == 0) ? subnormalSubtractLabelTrailer : subtractLabelTrailer);
         }
 
     }
