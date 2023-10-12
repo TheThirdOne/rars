@@ -822,7 +822,7 @@ public class FloatRepresentation extends AbstractToolAndApplication {
     //
     class BinaryToDecimalFormulaGraphic extends JPanel {
         final String subtractLabelTrailer = " - 127";
-        final String subnormalSubtractLabelTrailer = " - 126";
+        final String subnormalLabel = "-126";
         final int arrowHeadOffset = 5;
         final int lowerY = 0;
         final int upperY = 50;
@@ -885,7 +885,7 @@ public class FloatRepresentation extends AbstractToolAndApplication {
 
         // format the label for a given integer exponent value...
         private String buildSubtractLabel(int value) {
-            return Integer.toString(value) + ((value == 0) ? subnormalSubtractLabelTrailer : subtractLabelTrailer);
+            return (value == 0) ? subnormalLabel : Integer.toString(value) + subtractLabelTrailer;
         }
 
     }
