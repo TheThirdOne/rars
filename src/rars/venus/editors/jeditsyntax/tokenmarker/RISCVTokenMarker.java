@@ -43,6 +43,7 @@ public class RISCVTokenMarker extends TokenMarker {
         if (tokenLabels == null) {
             tokenLabels = new String[Token.ID_COUNT];
             tokenLabels[Token.COMMENT1] = "Comment";
+            tokenLabels[Token.COMMENT2] = "Block comment";
             tokenLabels[Token.LITERAL1] = "String literal";
             tokenLabels[Token.LITERAL2] = "Character literal";
             tokenLabels[Token.LABEL] = "Label";
@@ -59,6 +60,7 @@ public class RISCVTokenMarker extends TokenMarker {
         if (tokenExamples == null) {
             tokenExamples = new String[Token.ID_COUNT];
             tokenExamples[Token.COMMENT1] = "# Load";
+            tokenExamples[Token.COMMENT2] = "/* Save */";
             tokenExamples[Token.LITERAL1] = "\"First\"";
             tokenExamples[Token.LITERAL2] = "'\\n'";
             tokenExamples[Token.LABEL] = "main:";
@@ -142,31 +144,26 @@ public class RISCVTokenMarker extends TokenMarker {
                             }
                             break;
                         case '/': // '/' might be a start of block comment (/* comment */)
-                            if (length > i + 1 && array[i + 1] == '*') {
+                            if (length >= i + 1 && array[i + 1] == '*') {
                                 backslash = false;
                                 doKeyword(line, i, c);
 
-                                if (length - i >= 1) {
-                                    // Try finding the end of this line's highlight
-                                    for (int jj = i + 2; jj < length; ++jj) {
-                                        if (jj + 1 < length && array[jj] == '*' && array[jj+1] == '/') {
-                                            addToken(i - lastOffset, token);
-                                            addToken(jj - i + 2, Token.COMMENT2);
-                                            lastOffset = lastKeyword = jj + 2;
-                                            token = Token.NULL;
-                                            break loop;
-                                        }
-                                        if (array[jj] == '\n' || jj + 1 >= length) {
-                                            addToken(i - lastOffset, token);
-                                            addToken(length - i, Token.COMMENT2);
-                                            lastOffset = lastKeyword = length;
-                                            token = Token.COMMENT2;
-                                            break loop;
-                                        }
+                                // Try finding the end of the comment
+                                for (int jj = i + 2; jj < length; ++jj) {
+                                    if (jj + 1 < length && array[jj] == '*' && array[jj+1] == '/') {
+                                        addToken(i - lastOffset, token);
+                                        addToken(jj - i + 2, Token.COMMENT2);
+                                        lastOffset = lastKeyword = jj + 2;
+                                        i = jj + 1;
+                                        continue loop;
                                     }
-                                    break loop;
                                 }
-                                break;
+                                // Otherwise highlight the rest of the line and continue
+                                addToken(i - lastOffset, token);
+                                addToken(length - i, Token.COMMENT2);
+                                i = lastOffset = lastKeyword = length;
+                                token = Token.COMMENT2;
+                                break loop;
                             }
                         default:
                             backslash = false;
@@ -182,27 +179,23 @@ public class RISCVTokenMarker extends TokenMarker {
                     backslash = false;
                     doKeyword(line, i, c);
 
-                    if (length - i >= 1) {
-                        // Try finding the end of this line's highlight
-                        for (int jj = i + 2; jj < length; ++jj) {
-                            if (jj + 1 < length && array[jj] == '*' && array[jj+1] == '/') {
-                                addToken(i - lastOffset, token);
-                                addToken(jj - i + 2, Token.COMMENT2);
-                                lastOffset = lastKeyword = jj + 2;
-                                token = Token.NULL;
-                                break loop;
-                            }
-                            if (array[jj] == '\n' || jj + 1 >= length) {
-                                addToken(i - lastOffset, token);
-                                addToken(length - i, Token.COMMENT2);
-                                lastOffset = lastKeyword = length;
-                                token = Token.COMMENT2;
-                                break loop;
-                            }
+                    // Try finding the end of the comment
+                    for (int jj = i + 2; jj < length; ++jj) {
+                        if (jj + 1 < length && array[jj] == '*' && array[jj+1] == '/') {
+                            addToken(i - lastOffset, token);
+                            addToken(jj - i + 2, Token.COMMENT2);
+                            lastOffset = lastKeyword = jj + 2;
+                            i = jj + 1;
+                            token = Token.NULL;
+                            continue loop;
                         }
-                        break loop;
                     }
-                    break;
+                    // Otherwise highlight the whole line and continue
+                    addToken(i - lastOffset, token);
+                    addToken(length - i, Token.COMMENT2);
+                    i = lastOffset = lastKeyword = length;
+                    token = Token.COMMENT2;
+                    break loop;
                 case Token.LITERAL1:
                     if (backslash)
                         backslash = false;
