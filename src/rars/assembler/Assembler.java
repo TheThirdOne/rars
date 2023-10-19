@@ -229,8 +229,9 @@ public class Assembler {
                     ExtendedInstruction inst = (ExtendedInstruction) statement.getInstruction();
                     String basicAssembly = statement.getBasicAssemblyStatement();
                     int sourceLine = statement.getSourceLine();
-                    TokenList theTokenList = new Tokenizer().tokenizeLine(sourceLine,
-                            basicAssembly, errors, false);
+                    Tokenizer.TokenizationResult tr = new Tokenizer().tokenizeLine(
+                                    sourceLine, basicAssembly, errors, false, false);
+                    boolean inMultilineComment = tr.unterminatedMultilineComment;
 
                     // ////////////////////////////////////////////////////////////////////////////
                     // If we are using compact memory config and there is a compact expansion, use it
@@ -245,7 +246,7 @@ public class Assembler {
                     for (int instrNumber = 0; instrNumber < templateList.size(); instrNumber++) {
                         String instruction = ExtendedInstruction.makeTemplateSubstitutions(
                                 this.fileCurrentlyBeingAssembled,
-                                templateList.get(instrNumber), theTokenList, PC);
+                                templateList.get(instrNumber), tr.tokenList, PC);
 
                         // All substitutions have been made so we have generated
                         // a valid basic instruction!
@@ -253,19 +254,21 @@ public class Assembler {
                             System.out.println("PSEUDO generated: " + instruction);
                         // For generated instruction: tokenize, build program
                         // statement, add to list.
-                        TokenList newTokenList = new Tokenizer().tokenizeLine(sourceLine,
-                                instruction, errors, false);
-                        ArrayList<Instruction> instrMatches = this.matchInstruction(newTokenList.get(0));
-                        Instruction instr = OperandFormat.bestOperandMatch(newTokenList,
+                        Tokenizer.TokenizationResult newTR = new Tokenizer().tokenizeLine(sourceLine, instruction,
+                                                                                errors, false, inMultilineComment);
+
+                        ArrayList<Instruction> instrMatches = this.matchInstruction(newTR.tokenList.get(0));
+                        Instruction instr = OperandFormat.bestOperandMatch(newTR.tokenList,
                                 instrMatches);
                         // Only first generated instruction is linked to original source
                         ProgramStatement ps = new ProgramStatement(
                                 this.fileCurrentlyBeingAssembled,
-                                (instrNumber == 0) ? statement.getSource() : "", newTokenList,
-                                newTokenList, instr, textAddress.get(), statement.getSourceLine());
+                                (instrNumber == 0) ? statement.getSource() : "", newTR.tokenList,
+                                newTR.tokenList, instr, textAddress.get(), statement.getSourceLine());
                         textAddress.increment(Instruction.INSTRUCTION_LENGTH);
                         ps.buildBasicStatementFromBasicInstruction(errors);
                         machineList.add(ps);
+                        inMultilineComment = newTR.unterminatedMultilineComment;
                     } // end of FOR loop, repeated for each template in list.
                 } // end of ELSE part for extended instruction.
 
@@ -352,7 +355,7 @@ public class Assembler {
         ArrayList<ProgramStatement> ret = new ArrayList<>();
 
         ProgramStatement programStatement;
-        TokenList tokens = this.stripComment(tokenList);
+        TokenList tokens = this.stripComments(tokenList);
 
         // Labels should not be processed in macro definition segment.
         MacroPool macroPool = fileCurrentlyBeingAssembled.getLocalMacroPool();
@@ -413,16 +416,17 @@ public class Assembler {
                 for (int i = macro.getFromLine() + 1; i < macro.getToLine(); i++) {
 
                     String substituted = macro.getSubstitutedLine(i, tokens, counter, errors);
-                    TokenList tokenList2 = fileCurrentlyBeingAssembled.getTokenizer().tokenizeLine(
-                            i, substituted, errors);
+                    Tokenizer.TokenizationResult tokenizationResult2 = fileCurrentlyBeingAssembled.getTokenizer().tokenizeLine(
+                                                                        i, substituted, errors);
 
                     // If token list getProcessedLine() is not empty, then .eqv was performed and it contains the modified source.
                     // Put it into the line to be parsed, so it will be displayed properly in text segment display. DPS 23 Jan 2013
-                    if (tokenList2.getProcessedLine().length() > 0)
-                        substituted = tokenList2.getProcessedLine();
+                    if (tokenizationResult2.tokenList.getProcessedLine().length() > 0)
+                        substituted = tokenizationResult2.tokenList.getProcessedLine();
 
                     // recursively parse lines of expanded macro
-                    ArrayList<ProgramStatement> statements = parseLine(tokenList2, "<" + (i - macro.getFromLine() + macro.getOriginalFromLine()) + "> "
+                    ArrayList<ProgramStatement> statements = parseLine(tokenizationResult2.tokenList,
+                            "<" + (i - macro.getFromLine() + macro.getOriginalFromLine()) + "> "
                             + substituted.trim(), sourceLineNumber, extendedAssemblerEnabled);
                     if (statements != null)
                         ret.addAll(statements);
@@ -511,17 +515,19 @@ public class Assembler {
     // Pre-process the token list for a statement by stripping off any comment.
     // NOTE: the ArrayList parameter is not modified; a new one is cloned and
     // returned.
-    private TokenList stripComment(TokenList tokenList) {
+    private TokenList stripComments(TokenList tokenList) {
         if (tokenList.isEmpty())
             return tokenList;
         TokenList tokens = (TokenList) tokenList.clone();
-        // If there is a comment, strip it off.
-        int last = tokens.size() - 1;
-        if (tokens.get(last).getType() == TokenTypes.COMMENT) {
-            tokens.remove(last);
+        // Remove all comments
+        for (int ii = 0; ii < tokens.size(); ++ii) {
+            if (tokens.get(ii).getType() == TokenTypes.COMMENT) {
+                tokens.remove(ii);
+                --ii;
+            }
         }
         return tokens;
-    } // stripComment()
+    } // stripComments()
 
     /**
      * Pre-process the token list for a statement by stripping off any label, if
