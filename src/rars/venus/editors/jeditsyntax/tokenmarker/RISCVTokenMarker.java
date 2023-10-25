@@ -180,7 +180,7 @@ public class RISCVTokenMarker extends TokenMarker {
                     doKeyword(line, i, c);
 
                     // Try finding the end of the comment
-                    for (int jj = i + 2; jj < length; ++jj) {
+                    for (int jj = i; jj < length; ++jj) {
                         if (jj + 1 < length && array[jj] == '*' && array[jj+1] == '/') {
                             addToken(i - lastOffset, token);
                             addToken(jj - i + 2, Token.COMMENT2);

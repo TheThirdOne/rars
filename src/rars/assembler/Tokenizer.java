@@ -320,10 +320,10 @@ public class Tokenizer {
                 tokenPos = line.length - linePos;
 
                 int last = line.length;
-                for (int ii = linePos + 2; ii + 1 < line.length; ++ii) {
+                for (int ii = linePos; ii + 1 < line.length; ++ii) {
                     if (line[ii] == '*' && line[ii+1] == '/') {
                         last = ii + 1;
-                        tokenPos = last - linePos - 2;
+                        tokenPos = last - linePos;
                         currentlyInsideMultilineComment = false;
                         break;
                     }
