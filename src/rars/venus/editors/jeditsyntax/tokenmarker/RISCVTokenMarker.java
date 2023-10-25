@@ -43,6 +43,7 @@ public class RISCVTokenMarker extends TokenMarker {
         if (tokenLabels == null) {
             tokenLabels = new String[Token.ID_COUNT];
             tokenLabels[Token.COMMENT1] = "Comment";
+            tokenLabels[Token.COMMENT2] = "Block comment";
             tokenLabels[Token.LITERAL1] = "String literal";
             tokenLabels[Token.LITERAL2] = "Character literal";
             tokenLabels[Token.LABEL] = "Label";
@@ -59,6 +60,7 @@ public class RISCVTokenMarker extends TokenMarker {
         if (tokenExamples == null) {
             tokenExamples = new String[Token.ID_COUNT];
             tokenExamples[Token.COMMENT1] = "# Load";
+            tokenExamples[Token.COMMENT2] = "/* Save */";
             tokenExamples[Token.LITERAL1] = "\"First\"";
             tokenExamples[Token.LITERAL2] = "'\\n'";
             tokenExamples[Token.LABEL] = "main:";
@@ -141,6 +143,28 @@ public class RISCVTokenMarker extends TokenMarker {
                                 break loop;
                             }
                             break;
+                        case '/': // '/' might be a start of block comment (/* comment */)
+                            if (length >= i + 1 && array[i + 1] == '*') {
+                                backslash = false;
+                                doKeyword(line, i, c);
+
+                                // Try finding the end of the comment
+                                for (int jj = i + 2; jj < length; ++jj) {
+                                    if (jj + 1 < length && array[jj] == '*' && array[jj+1] == '/') {
+                                        addToken(i - lastOffset, token);
+                                        addToken(jj - i + 2, Token.COMMENT2);
+                                        lastOffset = lastKeyword = jj + 2;
+                                        i = jj + 1;
+                                        continue loop;
+                                    }
+                                }
+                                // Otherwise highlight the rest of the line and continue
+                                addToken(i - lastOffset, token);
+                                addToken(length - i, Token.COMMENT2);
+                                i = lastOffset = lastKeyword = length;
+                                token = Token.COMMENT2;
+                                break loop;
+                            }
                         default:
                             backslash = false;
                             // . and $ added 4/6/10 DPS; % added 12/12 M.Sekhavat
@@ -150,6 +174,28 @@ public class RISCVTokenMarker extends TokenMarker {
                             break;
                     }
                     break;
+                case Token.COMMENT2:
+                    // This means the previous line ended with an unterminated block comment
+                    backslash = false;
+                    doKeyword(line, i, c);
+
+                    // Try finding the end of the comment
+                    for (int jj = i; jj < length; ++jj) {
+                        if (jj + 1 < length && array[jj] == '*' && array[jj+1] == '/') {
+                            addToken(i - lastOffset, token);
+                            addToken(jj - i + 2, Token.COMMENT2);
+                            lastOffset = lastKeyword = jj + 2;
+                            i = jj + 1;
+                            token = Token.NULL;
+                            continue loop;
+                        }
+                    }
+                    // Otherwise highlight the whole line and continue
+                    addToken(i - lastOffset, token);
+                    addToken(length - i, Token.COMMENT2);
+                    i = lastOffset = lastKeyword = length;
+                    token = Token.COMMENT2;
+                    break loop;
                 case Token.LITERAL1:
                     if (backslash)
                         backslash = false;

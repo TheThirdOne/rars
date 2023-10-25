@@ -52,6 +52,14 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  **/
 
 public class Tokenizer {
+    public class TokenizationResult {
+        public TokenList tokenList;
+        public boolean unterminatedMultilineComment;
+        public TokenizationResult(TokenList tokenList, boolean unterminatedMultilineComment) {
+            this.tokenList = tokenList;
+            this.unterminatedMultilineComment = unterminatedMultilineComment;
+        }
+    }
 
     private ErrorList errors;
     private RISCVprogram sourceRISCVprogram;
@@ -95,19 +103,22 @@ public class Tokenizer {
         //ArrayList source = p.getSourceList();
         ArrayList<SourceLine> source = processIncludes(p, new HashMap<>()); // DPS 9-Jan-2013
         p.setSourceLineList(source);
-        TokenList currentLineTokens;
+        TokenizationResult currentLineResult = new TokenizationResult(null, false);
         String sourceLine;
         for (int i = 0; i < source.size(); i++) {
             sourceLine = source.get(i).getSource();
-            currentLineTokens = this.tokenizeLine(i + 1, sourceLine);
-            tokenList.add(currentLineTokens);
+            currentLineResult = this.tokenizeLine(
+                                    sourceRISCVprogram, i + 1, sourceLine, true,
+                                    currentLineResult.unterminatedMultilineComment);
+            tokenList.add(currentLineResult.tokenList);
             // DPS 03-Jan-2013. Related to 11-July-2012. If source code substitution was made
             // based on .eqv directive during tokenizing, the processed line, a String, is
             // not the same object as the original line.  Thus I can use != instead of !equals()
             // This IF statement will replace original source with source modified by .eqv substitution.
             // Not needed by assembler, but looks better in the Text Segment Display.
-            if (sourceLine.length() > 0 && sourceLine != currentLineTokens.getProcessedLine()) {
-                source.set(i, new SourceLine(currentLineTokens.getProcessedLine(), source.get(i).getRISCVprogram(), source.get(i).getLineNumber()));
+            if (sourceLine.length() > 0 && sourceLine != currentLineResult.tokenList.getProcessedLine()) {
+                source.set(i, new SourceLine(currentLineResult.tokenList.getProcessedLine(),
+                                             source.get(i).getRISCVprogram(), source.get(i).getLineNumber()));
             }
         }
         if (errors.errorsOccurred()) {
@@ -127,9 +138,11 @@ public class Tokenizer {
     private ArrayList<SourceLine> processIncludes(RISCVprogram program, Map<String, String> inclFiles) throws AssemblyException {
         ArrayList<String> source = program.getSourceList();
         ArrayList<SourceLine> result = new ArrayList<>(source.size());
+        boolean inMultilineComment = false;
         for (int i = 0; i < source.size(); i++) {
             String line = source.get(i);
-            TokenList tl = tokenizeLine(program, i + 1, line, false);
+            TokenizationResult tr = tokenizeLine(program, i + 1, line, false, inMultilineComment);
+            TokenList tl = tr.tokenList;
             boolean hasInclude = false;
             for (int ii = 0; ii < tl.size(); ii++) {
                 if (tl.get(ii).getValue().equalsIgnoreCase(Directives.INCLUDE.getName())
@@ -167,6 +180,7 @@ public class Tokenizer {
             if (!hasInclude) {
                 result.add(new SourceLine(line, program, i + 1));//line);
             }
+            inMultilineComment = tr.unterminatedMultilineComment;
         }
         return result;
     }
@@ -182,8 +196,8 @@ public class Tokenizer {
      *                           contains one or more lexical (i.e. token) errors.
      **/
 
-    public TokenList tokenizeExampleInstruction(String example) throws AssemblyException {
-        TokenList result = tokenizeLine(sourceRISCVprogram, 0, example, false);
+    public TokenizationResult tokenizeExampleInstruction(String example) throws AssemblyException {
+        TokenizationResult result = tokenizeLine(sourceRISCVprogram, 0, example, false, false);
         if (errors.errorsOccurred()) {
             throw new AssemblyException(errors);
         }
@@ -218,8 +232,8 @@ public class Tokenizer {
     */
 
     // Modified for release 4.3, to preserve existing API.
-    public TokenList tokenizeLine(int lineNum, String theLine) {
-        return tokenizeLine(sourceRISCVprogram, lineNum, theLine, true);
+    public TokenizationResult tokenizeLine(int lineNum, String theLine) {
+        return tokenizeLine(sourceRISCVprogram, lineNum, theLine, true, false);
     }
 
     /**
@@ -232,12 +246,12 @@ public class Tokenizer {
      * @param callerErrorList errors will go into this list instead of tokenizer's list.
      * @return the generated token list for that line
      **/
-    public TokenList tokenizeLine(int lineNum, String theLine, ErrorList callerErrorList) {
+    public TokenizationResult tokenizeLine(int lineNum, String theLine, ErrorList callerErrorList) {
         ErrorList saveList = this.errors;
         this.errors = callerErrorList;
-        TokenList tokens = this.tokenizeLine(lineNum, theLine);
+        TokenizationResult tr = this.tokenizeLine(lineNum, theLine);
         this.errors = saveList;
-        return tokens;
+        return tr;
     }
 
 
@@ -252,12 +266,13 @@ public class Tokenizer {
      * @param doEqvSubstitutes boolean param set true to perform .eqv substitutions, else false
      * @return the generated token list for that line
      **/
-    public TokenList tokenizeLine(int lineNum, String theLine, ErrorList callerErrorList, boolean doEqvSubstitutes) {
+    public TokenizationResult tokenizeLine(int lineNum, String theLine, ErrorList callerErrorList,
+                                           boolean doEqvSubstitutes, boolean startsAsMultilineComment) {
         ErrorList saveList = this.errors;
         this.errors = callerErrorList;
-        TokenList tokens = this.tokenizeLine(sourceRISCVprogram, lineNum, theLine, doEqvSubstitutes);
+        TokenizationResult tr = this.tokenizeLine(sourceRISCVprogram, lineNum, theLine, doEqvSubstitutes, startsAsMultilineComment);
         this.errors = saveList;
-        return tokens;
+        return tr;
     }
 
     /**
@@ -271,11 +286,13 @@ public class Tokenizer {
      * @param doEqvSubstitutes boolean param set true to perform .eqv substitutions, else false
      * @return the generated token list for that line
      **/
-    public TokenList tokenizeLine(RISCVprogram program, int lineNum, String theLine, boolean doEqvSubstitutes) {
+    public TokenizationResult tokenizeLine(RISCVprogram program, int lineNum, String theLine,
+                                           boolean doEqvSubstitutes, boolean startsAsMultilineComment) {
         TokenTypes tokenType;
-        TokenList result = new TokenList();
+        TokenList resultList = new TokenList();
+        boolean currentlyInsideMultilineComment = startsAsMultilineComment;
         if (theLine.length() == 0)
-            return result;
+            return new TokenizationResult(resultList, currentlyInsideMultilineComment);
         // will be faster to work with char arrays instead of strings
         char c;
         char[] line = theLine.toCharArray();
@@ -289,31 +306,73 @@ public class Tokenizer {
         // Each iteration of this loop processes one character in the source line.
         while (linePos < line.length) {
             c = line[linePos];
+
             if (insideQuotedString) { // everything goes into token
                 token[tokenPos++] = c;
                 if (c == '"' && token[tokenPos - 2] != '\\') { // If quote not preceded by backslash, this is end
-                    this.processCandidateToken(token, program, lineNum, theLine, tokenPos, tokenStartPos, result);
+                    this.processCandidateToken(token, program, lineNum, theLine, tokenPos, tokenStartPos, resultList);
                     tokenPos = 0;
                     insideQuotedString = false;
                 }
+            } else if (currentlyInsideMultilineComment) {
+                // Try finding the closing "*/", otherwise return the whole line as comment
+                tokenStartPos = linePos;
+                tokenPos = line.length - linePos;
+
+                int last = line.length;
+                for (int ii = linePos; ii + 1 < line.length; ++ii) {
+                    if (line[ii] == '*' && line[ii+1] == '/') {
+                        last = ii + 1;
+                        tokenPos = last - linePos;
+                        currentlyInsideMultilineComment = false;
+                        break;
+                    }
+                }
+
+                resultList.add(new Token(TokenTypes.COMMENT, new String(line, tokenStartPos, tokenPos), program, lineNum, linePos));
+                linePos = last;
+                tokenPos = 0;
             } else { // not inside a quoted string, so be sensitive to delimiters
                 switch (c) {
                     case '#':  // # denotes comment that takes remainder of line
                         if (tokenPos > 0) {
-                            this.processCandidateToken(token, program, lineNum, theLine, tokenPos, tokenStartPos, result);
+                            this.processCandidateToken(token, program, lineNum, theLine, tokenPos, tokenStartPos, resultList);
                         }
                         tokenStartPos = linePos + 1;
                         tokenPos = line.length - linePos;
                         System.arraycopy(line, linePos, token, 0, tokenPos);
-                        this.processCandidateToken(token, program, lineNum, theLine, tokenPos, tokenStartPos, result);
+                        this.processCandidateToken(token, program, lineNum, theLine, tokenPos, tokenStartPos, resultList);
                         linePos = line.length;
                         tokenPos = 0;
                         break;
+                    case '/':  // '/' might be a start of block comment (/* comment */)
+                        if (line.length > linePos + 1 && line[linePos + 1] == '*') {
+
+                            tokenStartPos = linePos + 2;
+                            tokenPos = line.length - linePos - 2;
+                            currentlyInsideMultilineComment = true;
+
+                            // Try finding closing "*/"
+                            int last = line.length;
+                            for (int ii = linePos + 2; ii + 1 < line.length; ++ii) {
+                                if (line[ii] == '*' && line[ii+1] == '/') {
+                                    last = ii + 1;
+                                    tokenPos = last - linePos - 3;
+                                    currentlyInsideMultilineComment = false;
+                                    break;
+                                }
+                            }
+
+                            resultList.add(new Token(TokenTypes.COMMENT, new String(line, tokenStartPos, tokenPos), program, lineNum, linePos));
+                            linePos = last;
+                            tokenPos = 0;
+                            break;
+                        }
                     case ' ':
                     case '\t':
                     case ',': // space, tab or comma is delimiter
                         if (tokenPos > 0) {
-                            this.processCandidateToken(token, program, lineNum, theLine, tokenPos, tokenStartPos, result);
+                            this.processCandidateToken(token, program, lineNum, theLine, tokenPos, tokenStartPos, resultList);
                             tokenPos = 0;
                         }
                         break;
@@ -332,22 +391,22 @@ public class Tokenizer {
                         }
                         // End of REAL hack.
                         if (tokenPos > 0) {
-                            this.processCandidateToken(token, program, lineNum, theLine, tokenPos, tokenStartPos, result);
+                            this.processCandidateToken(token, program, lineNum, theLine, tokenPos, tokenStartPos, resultList);
                             tokenPos = 0;
                         }
 
                         tokenStartPos = linePos + 1;
                         token[tokenPos++] = c;
                         if (line.length > linePos + 3 && line[linePos + 1] == 'I' && line[linePos + 2] == 'n' && line[linePos + 3] == 'f') {
-                            result.add(new Token(TokenTypes.REAL_NUMBER, "-Inf", program, lineNum, tokenStartPos));
+                            resultList.add(new Token(TokenTypes.REAL_NUMBER, "-Inf", program, lineNum, tokenStartPos));
                             linePos += 3;
                             tokenPos = 0;
                             break;
                         }
-                        if (!((result.isEmpty() || result.get(result.size() - 1).getType() != TokenTypes.IDENTIFIER) &&
+                        if (!((resultList.isEmpty() || resultList.get(resultList.size() - 1).getType() != TokenTypes.IDENTIFIER) &&
                                 (line.length >= linePos + 2 && Character.isDigit(line[linePos + 1])))) {
                             // treat it as binary.....
-                            this.processCandidateToken(token, program, lineNum, theLine, tokenPos, tokenStartPos, result);
+                            this.processCandidateToken(token, program, lineNum, theLine, tokenPos, tokenStartPos, resultList);
                             tokenPos = 0;
                         }
                         break;
@@ -356,17 +415,17 @@ public class Tokenizer {
                     case '(':
                     case ')':
                         if (tokenPos > 0) {
-                            this.processCandidateToken(token, program, lineNum, theLine, tokenPos, tokenStartPos, result);
+                            this.processCandidateToken(token, program, lineNum, theLine, tokenPos, tokenStartPos, resultList);
                             tokenPos = 0;
                         }
                         tokenStartPos = linePos + 1;
                         token[tokenPos++] = c;
-                        this.processCandidateToken(token, program, lineNum, theLine, tokenPos, tokenStartPos, result);
+                        this.processCandidateToken(token, program, lineNum, theLine, tokenPos, tokenStartPos, resultList);
                         tokenPos = 0;
                         break;
                     case '"': // we're not inside a quoted string, so start a new token...
                         if (tokenPos > 0) {
-                            this.processCandidateToken(token, program, lineNum, theLine, tokenPos, tokenStartPos, result);
+                            this.processCandidateToken(token, program, lineNum, theLine, tokenPos, tokenStartPos, resultList);
                             tokenPos = 0;
                         }
                         tokenStartPos = linePos + 1;
@@ -375,7 +434,7 @@ public class Tokenizer {
                         break;
                     case '\'': // start of character constant (single quote).
                         if (tokenPos > 0) {
-                            this.processCandidateToken(token, program, lineNum, theLine, tokenPos, tokenStartPos, result);
+                            this.processCandidateToken(token, program, lineNum, theLine, tokenPos, tokenStartPos, resultList);
                             tokenPos = 0;
                         }
                         // Our strategy is to process the whole thing right now...
@@ -393,7 +452,7 @@ public class Tokenizer {
                         token[tokenPos++] = c; // grab third character, put it in token[2]
                         // Process if we've either reached second, non-escaped, quote or end of line.
                         if (c == '\'' && token[1] != '\\' || lookaheadChars == 2) {
-                            this.processCandidateToken(token, program, lineNum, theLine, tokenPos, tokenStartPos, result);
+                            this.processCandidateToken(token, program, lineNum, theLine, tokenPos, tokenStartPos, resultList);
                             tokenPos = 0;
                             tokenStartPos = linePos + 1;
                             break;
@@ -405,7 +464,7 @@ public class Tokenizer {
                         token[tokenPos++] = c; // grab fourth character, put it in token[3]
                         // Process, if this is ending quote for escaped character or if at end of line
                         if (c == '\'' || lookaheadChars == 3) {
-                            this.processCandidateToken(token, program, lineNum, theLine, tokenPos, tokenStartPos, result);
+                            this.processCandidateToken(token, program, lineNum, theLine, tokenPos, tokenStartPos, resultList);
                             tokenPos = 0;
                             tokenStartPos = linePos + 1;
                             break;
@@ -422,7 +481,7 @@ public class Tokenizer {
                             }
                         }
                         // process no matter what...we either have a valid character by now or not
-                        this.processCandidateToken(token, program, lineNum, theLine, tokenPos, tokenStartPos, result);
+                        this.processCandidateToken(token, program, lineNum, theLine, tokenPos, tokenStartPos, resultList);
                         tokenPos = 0;
                         tokenStartPos = linePos + 1;
                         break;
@@ -440,13 +499,14 @@ public class Tokenizer {
                 errors.add(new ErrorMessage(program, lineNum, tokenStartPos,
                         "String is not terminated."));
             }
-            this.processCandidateToken(token, program, lineNum, theLine, tokenPos, tokenStartPos, result);
+            this.processCandidateToken(token, program, lineNum, theLine, tokenPos, tokenStartPos, resultList);
             tokenPos = 0;
         }
         if (doEqvSubstitutes) {
-            result = processEqv(program, lineNum, theLine, result); // DPS 11-July-2012
+            // DPS 11-July-2012
+            return processEqv(program, lineNum, theLine, new TokenizationResult(resultList, currentlyInsideMultilineComment), startsAsMultilineComment);
         }
-        return result;
+        return new TokenizationResult(resultList, currentlyInsideMultilineComment);
     }
 
     // Process the .eqv directive, which needs to be applied prior to tokenizing of subsequent statements.
@@ -455,10 +515,12 @@ public class Tokenizer {
     // contains a symbol that was previously defined in an .eqv directive, in which case
     // the substitution needs to be made.
     // DPS 11-July-2012
-    private TokenList processEqv(RISCVprogram program, int lineNum, String theLine, TokenList tokens) {
+    private TokenizationResult processEqv(RISCVprogram program, int lineNum, String theLine, TokenizationResult resultSoFar,
+                                            boolean startsAsMultilineComment) {
         // See if it is .eqv directive.  If so, record it...
         // Have to assure it is a well-formed statement right now (can't wait for assembler).
 
+        TokenList tokens = resultSoFar.tokenList;
         if (tokens.size() > 2 && (tokens.get(0).getType() == TokenTypes.DIRECTIVE || tokens.get(2).getType() == TokenTypes.DIRECTIVE)) {
             // There should not be a label but if there is, the directive is in token position 2 (ident, colon, directive).
             int dirPos = (tokens.get(0).getType() == TokenTypes.DIRECTIVE) ? 0 : 2;
@@ -469,13 +531,13 @@ public class Tokenizer {
                 if (tokenPosLastOperand < dirPos + 2) {
                     errors.add(new ErrorMessage(program, lineNum, tokens.get(dirPos).getStartPos(),
                             "Too few operands for " + Directives.EQV.getName() + " directive"));
-                    return tokens;
+                    return resultSoFar;
                 }
                 // Token following the directive has to be IDENTIFIER
                 if (tokens.get(dirPos + 1).getType() != TokenTypes.IDENTIFIER) {
                     errors.add(new ErrorMessage(program, lineNum, tokens.get(dirPos).getStartPos(),
                             "Malformed " + Directives.EQV.getName() + " directive"));
-                    return tokens;
+                    return resultSoFar;
                 }
                 String symbol = tokens.get(dirPos + 1).getValue();
                 // Make sure the symbol is not contained in the expression.  Not likely to occur but if left
@@ -484,7 +546,7 @@ public class Tokenizer {
                     if (tokens.get(i).getValue().equals(symbol)) {
                         errors.add(new ErrorMessage(program, lineNum, tokens.get(dirPos).getStartPos(),
                                 "Cannot substitute " + symbol + " for itself in " + Directives.EQV.getName() + " directive"));
-                        return tokens;
+                        return resultSoFar;
                     }
                 }
                 // Expected syntax is symbol, expression.  I'm allowing the expression to comprise
@@ -497,10 +559,10 @@ public class Tokenizer {
                 if (equivalents.containsKey(symbol) && !equivalents.get(symbol).equals(expression)) {
                     errors.add(new ErrorMessage(program, lineNum, tokens.get(dirPos + 1).getStartPos(),
                             "\"" + symbol + "\" is already defined"));
-                    return tokens;
+                    return resultSoFar;
                 }
                 equivalents.put(symbol, expression);
-                return tokens;
+                return resultSoFar;
             }
         }
         // Check if a substitution from defined .eqv is to be made.  If so, make one.
@@ -518,7 +580,7 @@ public class Tokenizer {
         }
         tokens.setProcessedLine(theLine); // DPS 03-Jan-2013. Related to changes of 11-July-2012.
 
-        return (substitutionMade) ? tokenizeLine(lineNum, theLine) : tokens;
+        return (substitutionMade) ? tokenizeLine(sourceRISCVprogram, lineNum, theLine, true, startsAsMultilineComment) : resultSoFar;
     }
 
 

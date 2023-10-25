@@ -145,7 +145,7 @@ public abstract class Instruction {
      **/
     protected void createExampleTokenList() {
         try {
-            tokenList = ((new Tokenizer()).tokenizeExampleInstruction(exampleFormat));
+            tokenList = ((new Tokenizer()).tokenizeExampleInstruction(exampleFormat)).tokenList;
         } catch (AssemblyException pe) {
             System.out.println("CONFIGURATION ERROR: Instruction example \"" + exampleFormat + "\" contains invalid token(s).");
         }
