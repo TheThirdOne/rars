@@ -288,54 +288,64 @@ public class KeyboardAndDisplaySimulator extends AbstractToolAndApplication {
     // Once the latter is performed, the display mode changes to random
     // access, which has repercussions for the implementation of character display.
     private void displayCharacter(int intWithCharacterToDisplay) {
-        char characterToDisplay = (char) (intWithCharacterToDisplay & 0x000000FF);
-        if (characterToDisplay == CLEAR_SCREEN) {
-            initializeDisplay(displayRandomAccessMode);
-        } else if (characterToDisplay == SET_CURSOR_X_Y) {
-            // First call will activate random access mode.
-            // We're using JTextArea, where caret has to be within text.
-            // So initialize text to all spaces to fill the JTextArea to its
-            // current capacity.  Then set caret.  Subsequent character
-            // displays will replace, not append, in the text.
-            if (!displayRandomAccessMode) {
-                displayRandomAccessMode = true;
-                initializeDisplay(displayRandomAccessMode);
-            }
-            // For SET_CURSOR_X_Y, we need data from the rest of the word.
-            // High order 3 bytes are split in half to store (X,Y) value.
-            // High 12 bits contain X value, next 12 bits contain Y value.
-            int x = (intWithCharacterToDisplay & 0xFFF00000) >>> 20;
-            int y = (intWithCharacterToDisplay & 0x000FFF00) >>> 8;
-            // If X or Y values are outside current range, set to range limit.
-            if (x < 0) x = 0;
-            if (x >= columns) x = columns - 1;
-            if (y < 0) y = 0;
-            if (y >= rows) y = rows - 1;
-            // display is a JTextArea whose character positioning in the text is linear.
-            // Converting (row,column) to linear position requires knowing how many columns
-            // are in each row.  I add one because each row except the last ends with '\n' that
-            // does not count as a column but occupies a position in the text string.
-            // The values of rows and columns is set in initializeDisplay().
-            display.setCaretPosition(y * (columns + 1) + x);
-        } else {
-            if (displayRandomAccessMode) {
-                try {
-                    int caretPosition = display.getCaretPosition();
-                    // if caret is positioned at the end of a line (at the '\n'), skip over the '\n'
-                    if ((caretPosition + 1) % (columns + 1) == 0) {
-                        caretPosition++;
-                        display.setCaretPosition(caretPosition);
+        // using invokeLater as a way to queue up appending character to display, if there is a reason why this shoudn't be done, please let me know! Hi from Jesus A!
+        SwingUtilities.invokeLater(
+            new Runnable(){
+              public void run() {
+                
+                char characterToDisplay = (char) (intWithCharacterToDisplay & 0x000000FF);
+                if (characterToDisplay == CLEAR_SCREEN) {
+                    initializeDisplay(displayRandomAccessMode);
+                } else if (characterToDisplay == SET_CURSOR_X_Y) {
+                    // First call will activate random access mode.
+                    // We're using JTextArea, where caret has to be within text.
+                    // So initialize text to all spaces to fill the JTextArea to its
+                    // current capacity.  Then set caret.  Subsequent character
+                    // displays will replace, not append, in the text.
+                    if (!displayRandomAccessMode) {
+                        displayRandomAccessMode = true;
+                        initializeDisplay(displayRandomAccessMode);
                     }
-                    display.replaceRange("" + characterToDisplay, caretPosition, caretPosition + 1);
-                } catch (IllegalArgumentException e) {
-                    // tried to write off the end of the defined grid.
-                    display.setCaretPosition(display.getCaretPosition() - 1);
-                    display.replaceRange("" + characterToDisplay, display.getCaretPosition(), display.getCaretPosition() + 1);
-                }
-            } else {
-                display.append("" + characterToDisplay);
-            }
-        }
+                    // For SET_CURSOR_X_Y, we need data from the rest of the word.
+                    // High order 3 bytes are split in half to store (X,Y) value.
+                    // High 12 bits contain X value, next 12 bits contain Y value.
+                    int x = (intWithCharacterToDisplay & 0xFFF00000) >>> 20;
+                    int y = (intWithCharacterToDisplay & 0x000FFF00) >>> 8;
+                    // If X or Y values are outside current range, set to range limit.
+                    if (x < 0) x = 0;
+                    if (x >= columns) x = columns - 1;
+                    if (y < 0) y = 0;
+                    if (y >= rows) y = rows - 1;
+                    // display is a JTextArea whose character positioning in the text is linear.
+                    // Converting (row,column) to linear position requires knowing how many columns
+                    // are in each row.  I add one because each row except the last ends with '\n' that
+                    // does not count as a column but occupies a position in the text string.
+                    // The values of rows and columns is set in initializeDisplay().
+                    display.setCaretPosition(y * (columns + 1) + x);
+                } 
+                else {
+                    if (displayRandomAccessMode) {
+                        try {
+                            int caretPosition = display.getCaretPosition();
+                            // if caret is positioned at the end of a line (at the '\n'), skip over the '\n'
+                            if ((caretPosition + 1) % (columns + 1) == 0) {
+                                caretPosition++;
+                                display.setCaretPosition(caretPosition);
+                            }
+                            display.replaceRange("" + characterToDisplay, caretPosition, caretPosition + 1);
+                        } catch (IllegalArgumentException e) {
+                            // tried to write off the end of the defined grid.
+                            display.setCaretPosition(display.getCaretPosition() - 1);
+                            display.replaceRange("" + characterToDisplay, display.getCaretPosition(), display.getCaretPosition() + 1);
+                        }
+                    }
+                    else {
+                        display.append("" + characterToDisplay);
+                        }
+                    }
+              }
+            }    
+        );
     }
 
     @Override
