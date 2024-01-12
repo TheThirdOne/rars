@@ -13,42 +13,46 @@ import java.util.Iterator;
 public class TestRARS {
 
     @Test
-    public void FullCoverage(){
+    public void FullCoverage() {
         Globals.initialize();
-        Globals.getSettings().setBooleanSettingNonPersistent(Settings.Bool.RV64_ENABLED,false);
+        Globals.getSettings().setBooleanSettingNonPersistent(Settings.Bool.RV64_ENABLED, false);
         InstructionSet.rv64 = false;
         Globals.instructionSet.populate();
         Options opt = new Options();
         opt.startAtMain = true;
         opt.maxSteps = 1000;
         Program p = new Program(opt);
-        File[] tests = new File("./test").listFiles(), riscv_tests = new File("./test/riscv-tests").listFiles(), riscv_tests_64 = new File("./test/riscv-tests-64").listFiles();
-        if(tests == null){
-            System.out.println("./test doesn't exist");
+
+        File[] basicTests = new File(this.getClass().getResource("/basic").getFile()).listFiles();
+        File[] riscvTests = new File(this.getClass().getResource("/riscv-tests").getFile()).listFiles();
+        File[] riscvTests64 = new File(this.getClass().getResource("/riscv-tests-64").getFile()).listFiles();
+
+        if (basicTests == null) {
+            System.out.println("resources/test doesn't exist");
             return;
         }
         StringBuilder total = new StringBuilder("\n");
-        for(File test : tests){
-            if(test.isFile() && test.getName().endsWith(".s")){
-                String errors = run(test.getPath(),p);
-                if(errors.equals("")) {
+        for (File test : basicTests) {
+            if (test.isFile() && test.getName().endsWith(".s")) {
+                String errors = run(test.getPath(), p);
+                if (errors.equals("")) {
                     System.out.print('.');
-                }else{
+                } else {
                     System.out.print('X');
                     total.append(errors).append('\n');
                 }
             }
         }
-        if(riscv_tests == null){
-            System.out.println("./test/riscv-tests doesn't exist");
+        if (riscvTests == null) {
+            System.out.println("resources/riscv-tests doesn't exist");
             return;
         }
-        for(File test : riscv_tests){
-            if(test.isFile() && test.getName().endsWith(".s")){
-                String errors = run(test.getPath(),p);
-                if(errors.equals("")) {
+        for (File test : riscvTests) {
+            if (test.isFile() && test.getName().endsWith(".s")) {
+                String errors = run(test.getPath(), p);
+                if (errors.isEmpty()) {
                     System.out.print('.');
-                }else{
+                } else {
                     System.out.print('X');
                     total.append(errors).append('\n');
                 }
@@ -56,19 +60,19 @@ public class TestRARS {
         }
 
 
-        if(riscv_tests_64 == null){
-            System.out.println("./test/riscv-tests-64 doesn't exist");
+        if (riscvTests64 == null) {
+            System.out.println("resources/riscv-tests-64 doesn't exist");
             return;
         }
-        Globals.getSettings().setBooleanSettingNonPersistent(Settings.Bool.RV64_ENABLED,true);
+        Globals.getSettings().setBooleanSettingNonPersistent(Settings.Bool.RV64_ENABLED, true);
         InstructionSet.rv64 = true;
         Globals.instructionSet.populate();
-        for(File test : riscv_tests_64){
-            if(test.isFile() && test.getName().toLowerCase().endsWith(".s")){
-                String errors = run(test.getPath(),p);
-                if(errors.equals("")) {
+        for (File test : riscvTests64) {
+            if (test.isFile() && test.getName().toLowerCase().endsWith(".s")) {
+                String errors = run(test.getPath(), p);
+                if (errors.isEmpty()) {
                     System.out.print('.');
-                }else{
+                } else {
                     System.out.print('X');
                     total.append(errors).append('\n');
                 }
@@ -76,80 +80,81 @@ public class TestRARS {
         }
         System.out.println(total);
         checkBinary();
-        checkPsuedo();
+        checkPseudo();
     }
-    public static String run(String path, Program p){
+
+    public static String run(String path, Program p) {
         int[] errorlines = null;
-        String stdin = "", stdout = "", stderr ="";
+        String stdin = "", stdout = "", stderr = "";
         // TODO: better config system
         // This is just a temporary solution that should work for the tests I want to write
         try {
             BufferedReader br = new BufferedReader(new FileReader(path));
             String line = br.readLine();
-            while(line.startsWith("#")){
+            while (line.startsWith("#")) {
                 if (line.startsWith("#error on lines:")) {
                     String[] linenumbers = line.replaceFirst("#error on lines:", "").split(",");
                     errorlines = new int[linenumbers.length];
-                    for(int i = 0; i < linenumbers.length; i++){
+                    for (int i = 0; i < linenumbers.length; i++) {
                         errorlines[i] = Integer.parseInt(linenumbers[i].trim());
                     }
                 } else if (line.startsWith("stdin:")) {
-                    stdin = line.replaceFirst("#stdin:", "").replaceAll("\\\\n","\n");
+                    stdin = line.replaceFirst("#stdin:", "").replaceAll("\\\\n", "\n");
                 } else if (line.startsWith("#stdout:")) {
-                    stdout = line.replaceFirst("#stdout:", "").replaceAll("\\\\n","\n");
+                    stdout = line.replaceFirst("#stdout:", "").replaceAll("\\\\n", "\n");
                 } else if (line.startsWith("#stderr:")) {
-                    stderr = line.replaceFirst("#stderr:", "").replaceAll("\\\\n","\n");
+                    stderr = line.replaceFirst("#stderr:", "").replaceAll("\\\\n", "\n");
                 }
                 line = br.readLine();
             }
-        }catch(FileNotFoundException fe){
+        } catch (FileNotFoundException fe) {
             return "Could not find " + path;
-        }catch(IOException io){
+        } catch (IOException io) {
             return "Error reading " + path;
         }
         try {
             p.assemble(path);
-            if(errorlines != null){
+            if (errorlines != null) {
                 return "Expected asssembly error, but successfully assembled " + path;
             }
-            p.setup(null,stdin);
+            p.setup(null, stdin);
             Simulator.Reason r = p.simulate();
-            if(r != Simulator.Reason.NORMAL_TERMINATION){
+            if (r != Simulator.Reason.NORMAL_TERMINATION) {
                 return "Ended abnormally while executing " + path;
-            }else{
-                if(p.getExitCode() != 42) {
+            } else {
+                if (p.getExitCode() != 42) {
                     return "Final exit code was wrong for " + path;
                 }
-                if(!p.getSTDOUT().equals(stdout)){
-                    return "STDOUT was wrong for " + path + "\n Expected \""+stdout+"\" got \""+p.getSTDOUT()+"\"";
+                if (!p.getSTDOUT().equals(stdout)) {
+                    return "STDOUT was wrong for " + path + "\n Expected \"" + stdout + "\" got \"" + p.getSTDOUT() + "\"";
                 }
-                if(!p.getSTDERR().equals(stderr)){
+                if (!p.getSTDERR().equals(stderr)) {
                     return "STDERR was wrong for " + path;
                 }
                 return "";
             }
-        } catch (AssemblyException ae){
-            if(errorlines == null) {
+        } catch (AssemblyException ae) {
+            if (errorlines == null) {
                 return "Failed to assemble " + path;
             }
-            if(ae.errors().errorCount() != errorlines.length){
+            if (ae.errors().errorCount() != errorlines.length) {
                 return "Mismatched number of assembly errors in" + path;
             }
             Iterator<ErrorMessage> errors = ae.errors().getErrorMessages().iterator();
-            for(int number : errorlines){
+            for (int number : errorlines) {
                 ErrorMessage error = errors.next();
-                while(error.isWarning()) error = errors.next();
-                if(error.getLine() != number){
-                    return "Expected error on line " + number + ". Found error on line " + error.getLine()+" in " + path;
+                while (error.isWarning()) error = errors.next();
+                if (error.getLine() != number) {
+                    return "Expected error on line " + number + ". Found error on line " + error.getLine() + " in " + path;
                 }
             }
             return "";
-        } catch (SimulationException se){
+        } catch (SimulationException se) {
             return "Crashed while executing " + path;
         }
     }
 
-    public static void checkBinary(){
+    public static void checkBinary() {
         Options opt = new Options();
         opt.startAtMain = true;
         opt.maxSteps = 500;
@@ -158,20 +163,19 @@ public class TestRARS {
         Globals.getSettings().setBooleanSettingNonPersistent(Settings.Bool.SELF_MODIFYING_CODE_ENABLED, true);
 
         ArrayList<Instruction> insts = Globals.instructionSet.getInstructionList();
-        for(Instruction inst : insts){
-            if(inst instanceof BasicInstruction){
-                BasicInstruction binst = (BasicInstruction) inst;
-                if(binst.getInstructionFormat() == BasicInstructionFormat.B_FORMAT ||
+        for (Instruction inst : insts) {
+            if (inst instanceof BasicInstruction binst) {
+                if (binst.getInstructionFormat() == BasicInstructionFormat.B_FORMAT ||
                         binst.getInstructionFormat() == BasicInstructionFormat.J_FORMAT)
                     continue;
 
                 String program = inst.getExampleFormat();
                 try {
                     p.assembleString(program);
-                    p.setup(null,"");
+                    p.setup(null, "");
                     int word = p.getMemory().getWord(0x400000);
                     ProgramStatement assembled = p.getMemory().getStatement(0x400000);
-                    ProgramStatement ps = new ProgramStatement(word,0x400000);
+                    ProgramStatement ps = new ProgramStatement(word, 0x400000);
                     if (ps.getInstruction() == null) {
                         System.out.println("Error 1 on: " + program);
                         continue;
@@ -183,14 +187,14 @@ public class TestRARS {
                     String decompiled = ps.getPrintableBasicAssemblyStatement();
 
                     p.assembleString(program);
-                    p.setup(null,"");
+                    p.setup(null, "");
                     int word2 = p.getMemory().getWord(0x400000);
                     if (word != word2) {
                         System.out.println("Error 3 on: " + program);
                     }
 
 
-                    if(!ps.getInstruction().equals(binst)){
+                    if (!ps.getInstruction().equals(binst)) {
                         System.out.println("Error 4 on: " + program);
                     }
 
@@ -232,7 +236,8 @@ public class TestRARS {
             }
         }
     }
-    public static void checkPsuedo(){
+
+    public static void checkPseudo() {
         Options opt = new Options();
         opt.startAtMain = true;
         opt.maxSteps = 500;
@@ -242,15 +247,15 @@ public class TestRARS {
 
         ArrayList<Instruction> insts = Globals.instructionSet.getInstructionList();
         int skips = 0;
-        for(Instruction inst : insts){
-            if(inst instanceof ExtendedInstruction){
-                String program = "label:"+inst.getExampleFormat();
+        for (Instruction inst : insts) {
+            if (inst instanceof ExtendedInstruction) {
+                String program = "label:" + inst.getExampleFormat();
                 try {
                     p.assembleString(program);
-                    p.setup(null,"");
+                    p.setup(null, "");
                     int first = p.getMemory().getWord(0x400000);
                     int second = p.getMemory().getWord(0x400004);
-                    ProgramStatement ps = new ProgramStatement(first,0x400000);
+                    ProgramStatement ps = new ProgramStatement(first, 0x400000);
                     if (ps.getInstruction() == null) {
                         System.out.println("Error 11 on: " + program);
                         continue;
@@ -259,7 +264,7 @@ public class TestRARS {
                         System.out.println("Error 12 on: " + program);
                         continue;
                     }
-                    if(program.contains("t0") || program.contains("t1") ||program.contains("t2") ||program.contains("f1")) {
+                    if (program.contains("t0") || program.contains("t1") || program.contains("t2") || program.contains("f1")) {
                         // TODO: test that each register individually is meaningful and test every register.
                         // Currently this covers all instructions and is an alert if I made a trivial mistake.
                         String register_substitute = program.replaceAll("t0", "x0").replaceAll("t1", "x0").replaceAll("t2", "x0").replaceAll("f1", "f0");
@@ -270,7 +275,7 @@ public class TestRARS {
                         if (word1 == first && word2 == second) {
                             System.out.println("Error 13 on: " + program);
                         }
-                    }else{
+                    } else {
                         skips++;
                     }
                 } catch (Exception e) {
@@ -281,6 +286,6 @@ public class TestRARS {
         // 12 was the value when this test was written, if instructions are added that intentionally
         // don't have those registers in them add to the register list above or add to the count.
         // Updated to 10: because fsrmi and fsflagsi were removed
-        if(skips != 10) System.out.println("Unexpected number of psuedo-instructions skipped.");
+        if (skips != 10) System.out.println("Unexpected number of psuedo-instructions skipped.");
     }
 }
