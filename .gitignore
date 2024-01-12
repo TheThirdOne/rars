@@ -6,10 +6,13 @@ out
 build
 rars.jar
 
+# Gradle project cache
+.gradle
+
 # Eclipse project files
 .classpath
 .project
-examples/riscv
+docs/examples/riscv
 
 # MacOS
 .DS_Store

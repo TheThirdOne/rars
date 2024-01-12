@@ -1,4 +1,0 @@
-[submodule "src/jsoftfloat"]
-	path = src/jsoftfloat
-	url = https://github.com/thethirdone/jsoftfloat/
-	branch = submodule

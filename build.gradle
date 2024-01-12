@@ -1,0 +1,48 @@
+plugins {
+    id 'application'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
+}
+
+group = 'com.github.unaimillan'
+version = '0.6.0'
+
+repositories {
+    mavenCentral()
+    maven { url 'https://jitpack.io' }
+}
+
+dependencies {
+    implementation 'com.github.rars-reborn:JSoftFloat:0.2.1'
+
+	testImplementation platform('org.junit:junit-bom:5.10.1')
+	testImplementation 'org.junit.jupiter:junit-jupiter'
+}
+
+mainClassName = 'com.github.unaimillan.rars.Launch'
+
+application {
+    mainClass = "$mainClassName"
+}
+
+test {
+    useJUnitPlatform()
+}
+
+java {
+    toolchain {
+        // TODO: Check and verify JRE compatibility
+//        languageVersion = JavaLanguageVersion.of(8)
+    }
+}
+
+jar {
+    manifest {
+        attributes(
+                'Main-Class': "$mainClassName",
+        )
+    }
+}
+
+shadowJar {
+
+}

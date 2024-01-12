@@ -30,7 +30,7 @@ Running the script `./build-jar.sh` on a Unix system will build `rars.jar`.
 
 ## Screenshot
 
-![Screenshot of sample program](screenshot.png)
+![Screenshot of sample program](docs/images/screenshot.png)
 
 ## Changes from MARS 4.5
 
