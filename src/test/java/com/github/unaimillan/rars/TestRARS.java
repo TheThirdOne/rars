@@ -12,8 +12,16 @@ import java.util.Iterator;
 
 public class TestRARS {
 
+    /**
+     * {@code FullCoverage} checks that programs from basic, riscv32, and riscv64 folders
+     * can be successfully executed.
+     * <p></p>
+     * TODO: fix 2 basic tests: selfmod.s and unicode.s
+     * <p></p>
+     * TODO: Refactor tests to use the JUnit Dynamic Tests Factory
+     */
     @Test
-    public void FullCoverage() {
+    void FullCoverage() {
         Globals.initialize();
         Globals.getSettings().setBooleanSettingNonPersistent(Settings.Bool.RV64_ENABLED, false);
         InstructionSet.rv64 = false;
@@ -23,31 +31,27 @@ public class TestRARS {
         opt.maxSteps = 1000;
         Program p = new Program(opt);
 
-        File[] basicTests = new File(this.getClass().getResource("/basic").getFile()).listFiles();
-        File[] riscvTests = new File(this.getClass().getResource("/riscv-tests").getFile()).listFiles();
-        File[] riscvTests64 = new File(this.getClass().getResource("/riscv-tests-64").getFile()).listFiles();
+        String basicPath = this.getClass().getResource("/basic").getFile();
+        String riscv32Path = this.getClass().getResource("/riscv32").getFile();
+        String riscv64Path = this.getClass().getResource("/riscv32").getFile();
 
-        if (basicTests == null) {
-            System.out.println("resources/test doesn't exist");
+        if (basicPath == null) {
+            System.out.println("resources/basic doesn't exist");
             return;
         }
+        if (riscv32Path == null) {
+            System.out.println("resources/riscv32 doesn't exist");
+            return;
+        }
+        if (riscv64Path == null) {
+            System.out.println("resources/riscv64 doesn't exist");
+            return;
+        }
+
+        File[] basicTests = new File(basicPath).listFiles();
+
         StringBuilder total = new StringBuilder("\n");
         for (File test : basicTests) {
-            if (test.isFile() && test.getName().endsWith(".s")) {
-                String errors = run(test.getPath(), p);
-                if (errors.equals("")) {
-                    System.out.print('.');
-                } else {
-                    System.out.print('X');
-                    total.append(errors).append('\n');
-                }
-            }
-        }
-        if (riscvTests == null) {
-            System.out.println("resources/riscv-tests doesn't exist");
-            return;
-        }
-        for (File test : riscvTests) {
             if (test.isFile() && test.getName().endsWith(".s")) {
                 String errors = run(test.getPath(), p);
                 if (errors.isEmpty()) {
@@ -59,15 +63,24 @@ public class TestRARS {
             }
         }
 
-
-        if (riscvTests64 == null) {
-            System.out.println("resources/riscv-tests-64 doesn't exist");
-            return;
+        File[] riscv32Tests = new File(riscv32Path).listFiles();
+        for (File test : riscv32Tests) {
+            if (test.isFile() && test.getName().endsWith(".s")) {
+                String errors = run(test.getPath(), p);
+                if (errors.isEmpty()) {
+                    System.out.print('.');
+                } else {
+                    System.out.print('X');
+                    total.append(errors).append('\n');
+                }
+            }
         }
+
+        File[] riscv64Tests = new File(riscv64Path).listFiles();
         Globals.getSettings().setBooleanSettingNonPersistent(Settings.Bool.RV64_ENABLED, true);
         InstructionSet.rv64 = true;
         Globals.instructionSet.populate();
-        for (File test : riscvTests64) {
+        for (File test : riscv64Tests) {
             if (test.isFile() && test.getName().toLowerCase().endsWith(".s")) {
                 String errors = run(test.getPath(), p);
                 if (errors.isEmpty()) {
@@ -79,8 +92,6 @@ public class TestRARS {
             }
         }
         System.out.println(total);
-        checkBinary();
-        checkPseudo();
     }
 
     public static String run(String path, Program p) {
@@ -154,7 +165,8 @@ public class TestRARS {
         }
     }
 
-    public static void checkBinary() {
+    @Test
+    void checkBinary() {
         Options opt = new Options();
         opt.startAtMain = true;
         opt.maxSteps = 500;
@@ -237,7 +249,8 @@ public class TestRARS {
         }
     }
 
-    public static void checkPseudo() {
+    @Test
+    void checkPseudo() {
         Options opt = new Options();
         opt.startAtMain = true;
         opt.maxSteps = 500;
