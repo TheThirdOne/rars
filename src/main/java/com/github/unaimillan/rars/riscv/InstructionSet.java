@@ -16,6 +16,9 @@ import java.io.InputStreamReader;
 import java.lang.reflect.Modifier;
 import java.util.*;
 
+import static com.github.unaimillan.rars.Globals.GLOBAL_CLASS_PREFIX;
+import static com.github.unaimillan.rars.Globals.GLOBAL_DIRECTORY_PATH;
+
 	/*
 Copyright (c) 2003-2013,  Pete Sanderson and Kenneth Vollmar
 
@@ -54,8 +57,8 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 public class InstructionSet {
-    private static final String CLASS_PREFIX = "rars.riscv.instructions.";
-    private static final String INSTRUCTIONS_DIRECTORY_PATH = "rars/riscv/instructions";
+    private static final String CLASS_PREFIX = GLOBAL_CLASS_PREFIX + "rars.riscv.instructions.";
+    private static final String INSTRUCTIONS_DIRECTORY_PATH = GLOBAL_DIRECTORY_PATH + "rars/riscv/instructions";
     private static final String CLASS_EXTENSION = "class";
     public static boolean rv64 = Globals.getSettings().getBooleanSetting(Settings.Bool.RV64_ENABLED);
 

@@ -6,6 +6,9 @@ import com.github.unaimillan.rars.util.FilenameFinder;
 import java.util.ArrayList;
 import java.util.HashSet;
 
+import static com.github.unaimillan.rars.Globals.GLOBAL_CLASS_PREFIX;
+import static com.github.unaimillan.rars.Globals.GLOBAL_DIRECTORY_PATH;
+
 /*
 Copyright (c) 2003-2006,  Pete Sanderson and Kenneth Vollmar
 
@@ -46,8 +49,8 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 public class SyscallLoader {
 
-    private static final String CLASS_PREFIX = "rars.riscv.syscalls.";
-    private static final String SYSCALLS_DIRECTORY_PATH = "rars/riscv/syscalls";
+    private static final String CLASS_PREFIX = GLOBAL_CLASS_PREFIX + "rars.riscv.syscalls.";
+    private static final String SYSCALLS_DIRECTORY_PATH = GLOBAL_DIRECTORY_PATH + "rars/riscv/syscalls";
     private static final String CLASS_EXTENSION = "class";
 
     private static ArrayList<AbstractSyscall> syscallList;

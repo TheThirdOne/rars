@@ -84,6 +84,23 @@ public class Globals {
      * String to GUI's RunI/O text area when echoing user input from pop-up dialog.
      */
     public static String userInputAlert = "**** user input : ";
+
+    /**
+     * Special constant for proper resource loading from the ClassPath.
+     * Used for dynamic loading of Instructions, Syscalls, DumpFormatLoader and ToolLoader.
+     * <p></p>
+     * Check 4 usages for better understanding.
+     */
+    public static final String GLOBAL_CLASS_PREFIX = "com.github.unaimillan.";
+
+    /**
+     * Special constant for proper resource loading from the ClassPath.
+     * Used for dynamic loading of Instructions, Syscalls, DumpFormatLoader and ToolLoader.
+     * <p></p>
+     * Check 4 usages for better understanding.
+     */
+    public static final String GLOBAL_DIRECTORY_PATH = "com/github/unaimillan/";
+
     /**
      * Path to folder that contains images
      */

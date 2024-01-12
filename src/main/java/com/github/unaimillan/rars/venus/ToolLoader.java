@@ -9,6 +9,9 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashSet;
 
+import static com.github.unaimillan.rars.Globals.GLOBAL_CLASS_PREFIX;
+import static com.github.unaimillan.rars.Globals.GLOBAL_DIRECTORY_PATH;
+
 	/*
 Copyright (c) 2003-2006,  Pete Sanderson and Kenneth Vollmar
 
@@ -52,8 +55,8 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 public class ToolLoader {
 
-    private static final String CLASS_PREFIX = "rars.tools.";
-    private static final String TOOLS_DIRECTORY_PATH = "rars/tools";
+    private static final String CLASS_PREFIX = GLOBAL_CLASS_PREFIX + "rars.tools.";
+    private static final String TOOLS_DIRECTORY_PATH = GLOBAL_DIRECTORY_PATH + "rars/tools";
     private static final String TOOLS_MENU_NAME = "Tools";
     private static final String TOOL_INTERFACE = "Tool.class";
     private static final String CLASS_EXTENSION = "class";

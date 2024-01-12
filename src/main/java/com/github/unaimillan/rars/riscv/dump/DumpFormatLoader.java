@@ -5,6 +5,9 @@ import com.github.unaimillan.rars.util.FilenameFinder;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 
+import static com.github.unaimillan.rars.Globals.GLOBAL_CLASS_PREFIX;
+import static com.github.unaimillan.rars.Globals.GLOBAL_DIRECTORY_PATH;
+
 /*
 Copyright (c) 2003-2008,  Pete Sanderson and Kenneth Vollmar
 
@@ -41,8 +44,8 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 public class DumpFormatLoader {
 
-    private static final String CLASS_PREFIX = "rars.riscv.dump.";
-    private static final String DUMP_DIRECTORY_PATH = "rars/riscv/dump";
+    private static final String CLASS_PREFIX = GLOBAL_CLASS_PREFIX + "rars.riscv.dump.";
+    private static final String DUMP_DIRECTORY_PATH = GLOBAL_DIRECTORY_PATH + "rars/riscv/dump";
     private static final String CLASS_EXTENSION = "class";
 
     private static ArrayList<DumpFormat> formatList = null;
