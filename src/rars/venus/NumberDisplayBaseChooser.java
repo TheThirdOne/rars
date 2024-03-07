@@ -221,7 +221,7 @@ public class NumberDisplayBaseChooser extends JCheckBox {
         if (base == NumberDisplayBaseChooser.HEXADECIMAL) {
             return Binary.intToHexString(value);
         } else {
-            return new Integer(value).toString();
+            return String.valueOf(value);
         }
     }
 
