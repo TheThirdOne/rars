@@ -1,5 +1,7 @@
 package rars.riscv.hardware;
 
+import rars.Settings;
+import rars.Globals;
 import rars.util.Binary;
 
 import java.util.Observer;
@@ -44,10 +46,12 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 public class RegisterBlock {
     private final Register[] regFile;
     private final char prefix;
+    private final boolean truncate;
 
-    protected RegisterBlock(char prefix, Register[] registers) {
+    protected RegisterBlock(char prefix, Register[] registers, boolean always64) {
         this.prefix = prefix;
         this.regFile = registers;
+        this.truncate = !Globals.getSettings().getBooleanSetting(Settings.Bool.RV64_ENABLED) && !always64;
     }
 
     /**
@@ -70,6 +74,8 @@ public class RegisterBlock {
      **/
     public long updateRegister(Register r, long val) {
         if (r == null) return 0;
+        if (this.truncate)
+            val &= 0xffffffffL;
         return r.setValue(val);
     }
 

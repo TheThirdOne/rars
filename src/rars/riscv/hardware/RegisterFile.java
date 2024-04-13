@@ -64,7 +64,7 @@ public class RegisterFile {
             new Register("s10", 26, 0), new Register("s11", 27, 0),
             new Register("t3", 28, 0), new Register("t4", 29, 0),
             new Register("t5", 30, 0), new Register("t6", 31, 0)
-    });
+    }, false);
 
     private static Register programCounter = new Register("pc", -1, Memory.textBaseAddress);
 

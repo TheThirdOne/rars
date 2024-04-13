@@ -77,7 +77,7 @@ public class ControlAndStatusRegisterFile {
         tmp[14] = new LinkedRegister("cycleh", 0xC80,tmp[11], 0xFFFFFFFF_00000000L);
         tmp[15] = new LinkedRegister("timeh", 0xC81, tmp[12],0xFFFFFFFF_00000000L);
         tmp[16] = new LinkedRegister("instreth",0xC82, tmp[13],0xFFFFFFFF_00000000L);
-        instance = new RegisterBlock('_', tmp); // prefix not used
+        instance = new RegisterBlock('_', tmp, false); // prefix not used
     }
 
     /**

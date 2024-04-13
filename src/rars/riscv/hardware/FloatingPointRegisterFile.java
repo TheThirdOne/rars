@@ -63,7 +63,7 @@ public class FloatingPointRegisterFile {
             new Register("fs10", 26, 0), new Register("fs11", 27, 0),
             new Register("ft8", 28, 0), new Register("ft9", 29, 0),
             new Register("ft10", 30, 0), new Register("ft11", 31, 0)
-    });
+    }, true);
 
     /**
      * Sets the value of the FPU register given to the value given.
