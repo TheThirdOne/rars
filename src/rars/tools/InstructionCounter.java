@@ -283,13 +283,13 @@ public class InstructionCounter extends AbstractToolAndApplication {
         int a = m.getAddress();
         if (a == lastAddress) return;
         lastAddress = a;
-        counter++;
         try {
             ProgramStatement stmt = Memory.getInstance().getStatement(a);
             
             // If the program is finished, getStatement() will return null,
             // a null statement will cause the simulator to stall.
             if(stmt != null) {
+                    counter++; 		    
 	            BasicInstruction instr = (BasicInstruction) stmt.getInstruction();
 	            BasicInstructionFormat format = instr.getInstructionFormat();
 	            if (format == BasicInstructionFormat.R_FORMAT)
