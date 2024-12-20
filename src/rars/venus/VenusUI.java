@@ -2,9 +2,12 @@ package rars.venus;
 
 import rars.Globals;
 import rars.Settings;
+import rars.SimulationException;
 import rars.riscv.InstructionSet;
 import rars.riscv.dump.DumpFormatLoader;
 import rars.simulator.Simulator;
+import rars.simulator.SimulatorNotice;
+import rars.tools.ConversionTool;
 import rars.venus.registers.ControlAndStatusWindow;
 import rars.venus.registers.FloatingPointWindow;
 import rars.venus.registers.RegistersPane;
@@ -18,44 +21,16 @@ import java.awt.event.*;
 import java.net.URL;
 import java.util.ArrayList;
 
-/*
-Copyright (c) 2003-2013,  Pete Sanderson and Kenneth Vollmar
-
-Developed by Pete Sanderson (psanderson@otterbein.edu)
-and Kenneth Vollmar (kenvollmar@missouristate.edu)
-
-Permission is hereby granted, free of charge, to any person obtaining 
-a copy of this software and associated documentation files (the 
-"Software"), to deal in the Software without restriction, including 
-without limitation the rights to use, copy, modify, merge, publish, 
-distribute, sublicense, and/or sell copies of the Software, and to 
-permit persons to whom the Software is furnished to do so, subject 
-to the following conditions:
-
-The above copyright notice and this permission notice shall be 
-included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF 
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR 
-ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF 
-CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION 
-WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-(MIT license, http://www.opensource.org/licenses/mit-license.html)
- */
-
 /**
  * Top level container for Venus GUI.
  *
  * @author Sanderson and Team JSpim
  **/
 
-	  /* Heavily modified by Pete Sanderson, July 2004, to incorporate JSPIMMenu and JSPIMToolbar
-       * not as subclasses of JMenuBar and JToolBar, but as instances of them.  They are both
-		* here primarily so both can share the Action objects.
-		*/
+/* Heavily modified by Pete Sanderson, July 2004, to incorporate JSPIMMenu and JSPIMToolbar
+ * not as subclasses of JMenuBar and JToolBar, but as instances of them.  They are both
+ * here primarily so both can share the Action objects.
+ */
 
 public class VenusUI extends JFrame {
     VenusUI mainUI;
@@ -83,9 +58,9 @@ public class VenusUI extends JFrame {
     private JMenuItem fileNew, fileOpen, fileClose, fileCloseAll, fileSave, fileSaveAs, fileSaveAll, fileDumpMemory, fileExit;
     private JMenuItem editUndo, editRedo, editCut, editCopy, editPaste, editFindReplace, editSelectAll;
     private JMenuItem runGo, runStep, runBackstep, runReset, runAssemble, runStop, runPause, runClearBreakpoints, runToggleBreakpoints;
-    private JCheckBoxMenuItem settingsLabel, settingsPopupInput, settingsValueDisplayBase, settingsAddressDisplayBase,
+    private JCheckBoxMenuItem settingsLabel, settingsValueDisplayBase, settingsAddressDisplayBase,
             settingsExtended, settingsAssembleOnOpen, settingsAssembleAll, settingsAssembleOpen, settingsWarningsAreErrors,
-            settingsStartAtMain, settingsProgramArguments, settingsSelfModifyingCode, settingsRV64, settingsDeriveCurrentWorkingDirectory;
+            settingsStartAtMain, settingsSelfModifyingCode, settingsRV64, settingsDeriveCurrentWorkingDirectory, settingsDarkMode;
     private JMenuItem settingsExceptionHandler, settingsEditor, settingsHighlighting, settingsMemoryConfiguration;
     private JMenuItem helpHelp, helpAbout;
 
@@ -94,6 +69,7 @@ public class VenusUI extends JFrame {
     private JButton New, Open, Save, SaveAs, SaveAll, DumpMemory;
     private JButton Run, Assemble, Reset, Step, Backstep, Stop, Pause;
     private JButton Help;
+    ConversionTool conversionTool = new ConversionTool();
 
     // The "action" objects, which include action listeners.  One of each will be created then
     // shared between a menu item and its corresponding toolbar button.  This is a very cool
@@ -106,11 +82,11 @@ public class VenusUI extends JFrame {
     private Action editCutAction, editCopyAction, editPasteAction, editFindReplaceAction, editSelectAllAction;
     private Action runAssembleAction, runGoAction, runStepAction, runBackstepAction, runResetAction,
             runStopAction, runPauseAction, runClearBreakpointsAction, runToggleBreakpointsAction;
-    private Action settingsLabelAction, settingsPopupInputAction, settingsValueDisplayBaseAction, settingsAddressDisplayBaseAction,
+    private Action settingsLabelAction, settingsValueDisplayBaseAction, settingsAddressDisplayBaseAction,
             settingsExtendedAction, settingsAssembleOnOpenAction, settingsAssembleOpenAction, settingsAssembleAllAction,
-            settingsWarningsAreErrorsAction, settingsStartAtMainAction, settingsProgramArgumentsAction,
+            settingsWarningsAreErrorsAction, settingsStartAtMainAction,
             settingsExceptionHandlerAction, settingsEditorAction, settingsHighlightingAction, settingsMemoryConfigurationAction,
-            settingsSelfModifyingCodeAction, settingsRV64Action, settingsDeriveCurrentWorkingDirectoryAction;
+            settingsSelfModifyingCodeAction, settingsRV64Action, settingsDeriveCurrentWorkingDirectoryAction, settingsDarkModeAction;
     private Action helpHelpAction, helpAboutAction;
 
 
@@ -126,9 +102,9 @@ public class VenusUI extends JFrame {
         mainUI = this;
         Globals.setGui(this);
         this.editor = new Editor(this);
-
-        double screenWidth = Toolkit.getDefaultToolkit().getScreenSize().getWidth();
-        double screenHeight = Toolkit.getDefaultToolkit().getScreenSize().getHeight();
+        Rectangle maximumWindowBounds = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
+        double screenWidth = maximumWindowBounds.getWidth();
+        double screenHeight = maximumWindowBounds.getHeight();
         // basically give up some screen space if running at 800 x 600
         double messageWidthPct = (screenWidth < 1000.0) ? 0.67 : 0.73;
         double messageHeightPct = (screenWidth < 1000.0) ? 0.12 : 0.15;
@@ -202,6 +178,7 @@ public class VenusUI extends JFrame {
         JPanel jp = new JPanel(new FlowLayout(FlowLayout.LEFT));
         jp.add(toolbar);
         jp.add(RunSpeedPanel.getInstance());
+        jp.add(conversionTool.createConversionToolPanel());
         JPanel center = new JPanel(new BorderLayout());
         center.add(jp, BorderLayout.NORTH);
         center.add(horizonSplitter);
@@ -411,9 +388,6 @@ public class VenusUI extends JFrame {
                     System.out.println("ExecutePane reference 2");
                 }
             };
-            settingsPopupInputAction = new SettingsAction("Popup dialog for input syscalls (5,6,7,8,12)",
-                    "If set, use popup dialog for input syscalls (5,6,7,8,12) instead of cursor in Run I/O window",
-                    Settings.Bool.POPUP_SYSCALL_INPUT);
 
             settingsValueDisplayBaseAction = new SettingsAction("Values displayed in hexadecimal",
                     "Toggle between hexadecimal and decimal display of memory/register values",
@@ -447,17 +421,6 @@ public class VenusUI extends JFrame {
             settingsStartAtMainAction = new SettingsAction("Initialize Program Counter to global 'main' if defined",
                     "If set, assembler will initialize Program Counter to text address globally labeled 'main', if defined.",
                     Settings.Bool.START_AT_MAIN);
-            settingsProgramArgumentsAction = new SettingsAction("Program arguments provided to program",
-                    "If set, program arguments for the program can be entered in border of Text Segment window.",
-                    Settings.Bool.PROGRAM_ARGUMENTS) {
-                public void handler(boolean selected) {
-                    if (selected) {
-                        mainPane.getExecutePane().getTextSegmentWindow().addProgramArgumentsPanel();
-                    } else {
-                        mainPane.getExecutePane().getTextSegmentWindow().removeProgramArgumentsPanel();
-                    }
-                }
-            };
             settingsSelfModifyingCodeAction = new SettingsAction("Self-modifying code",
                     "If set, the program can write and branch to both text and data segments.",
                     Settings.Bool.SELF_MODIFYING_CODE_ENABLED);
@@ -476,7 +439,8 @@ public class VenusUI extends JFrame {
             settingsDeriveCurrentWorkingDirectoryAction = new SettingsAction("Derive current working directory",
                     "If set, the working directory is derived from the main file instead of the RARS executable directory.",
                     Settings.Bool.DERIVE_CURRENT_WORKING_DIRECTORY);
-
+            settingsDarkModeAction = new SettingsAction("Dark mode", "If set, RARS will be in dark mode at the next opening. Uncheck for light mode",
+                    Settings.Bool.DARK_MODE_ENABLED);
 
             settingsEditorAction = new SettingsEditorAction("Editor...", null,
                     "View and modify text editor settings.", null, null
@@ -613,8 +577,6 @@ public class VenusUI extends JFrame {
 
         settingsLabel = new JCheckBoxMenuItem(settingsLabelAction);
         settingsLabel.setSelected(Globals.getSettings().getBooleanSetting(Settings.Bool.LABEL_WINDOW_VISIBILITY));
-        settingsPopupInput = new JCheckBoxMenuItem(settingsPopupInputAction);
-        settingsPopupInput.setSelected(Globals.getSettings().getBooleanSetting(Settings.Bool.POPUP_SYSCALL_INPUT));
         settingsValueDisplayBase = new JCheckBoxMenuItem(settingsValueDisplayBaseAction);
         settingsValueDisplayBase.setSelected(Globals.getSettings().getBooleanSetting(Settings.Bool.DISPLAY_VALUES_IN_HEX));//mainPane.getExecutePane().getValueDisplayBaseChooser().isSelected());
         // Tell the corresponding JCheckBox in the Execute Pane about me -- it has already been created.
@@ -631,6 +593,25 @@ public class VenusUI extends JFrame {
         settingsRV64.setSelected(Globals.getSettings().getBooleanSetting(Settings.Bool.RV64_ENABLED));
         settingsDeriveCurrentWorkingDirectory = new JCheckBoxMenuItem(settingsDeriveCurrentWorkingDirectoryAction);
         settingsDeriveCurrentWorkingDirectory.setSelected(Globals.getSettings().getBooleanSetting(Settings.Bool.DERIVE_CURRENT_WORKING_DIRECTORY));
+        settingsDarkMode = new JCheckBoxMenuItem(settingsDarkModeAction);
+        settingsDarkMode.setSelected(Globals.getSettings().getBooleanSetting(Settings.Bool.DARK_MODE_ENABLED));
+        settingsDarkMode.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    if (settingsDarkMode.isSelected()) {
+                        UIManager.setLookAndFeel("com.formdev.flatlaf.FlatDarkLaf");
+                        SwingUtilities.updateComponentTreeUI(mainUI);
+                        Globals.getSettings().setDarkMode();
+                    } else {
+                        UIManager.setLookAndFeel("com.formdev.flatlaf.FlatIntelliJLaf");
+                        SwingUtilities.updateComponentTreeUI(mainUI);
+                        Globals.getSettings().setLightMode();
+                    }
+                } catch (Exception ex) {
+                    System.err.println( "Failed to initialize LaF. Continue with default LaF." );
+                }
+            }
+        });
         settingsAssembleOnOpen = new JCheckBoxMenuItem(settingsAssembleOnOpenAction);
         settingsAssembleOnOpen.setSelected(Globals.getSettings().getBooleanSetting(Settings.Bool.ASSEMBLE_ON_OPEN));
         settingsAssembleAll = new JCheckBoxMenuItem(settingsAssembleAllAction);
@@ -641,16 +622,12 @@ public class VenusUI extends JFrame {
         settingsWarningsAreErrors.setSelected(Globals.getSettings().getBooleanSetting(Settings.Bool.WARNINGS_ARE_ERRORS));
         settingsStartAtMain = new JCheckBoxMenuItem(settingsStartAtMainAction);
         settingsStartAtMain.setSelected(Globals.getSettings().getBooleanSetting(Settings.Bool.START_AT_MAIN));
-        settingsProgramArguments = new JCheckBoxMenuItem(settingsProgramArgumentsAction);
-        settingsProgramArguments.setSelected(Globals.getSettings().getBooleanSetting(Settings.Bool.PROGRAM_ARGUMENTS));
         settingsEditor = new JMenuItem(settingsEditorAction);
         settingsHighlighting = new JMenuItem(settingsHighlightingAction);
         settingsExceptionHandler = new JMenuItem(settingsExceptionHandlerAction);
         settingsMemoryConfiguration = new JMenuItem(settingsMemoryConfigurationAction);
 
         settings.add(settingsLabel);
-        settings.add(settingsProgramArguments);
-        settings.add(settingsPopupInput);
         settings.add(settingsAddressDisplayBase);
         settings.add(settingsValueDisplayBase);
         settings.addSeparator();
@@ -665,6 +642,7 @@ public class VenusUI extends JFrame {
         settings.add(settingsSelfModifyingCode);
         settings.add(settingsRV64);
         settings.addSeparator();
+        settings.add(settingsDarkMode);
         settings.add(settingsEditor);
         settings.add(settingsHighlighting);
         settings.add(settingsExceptionHandler);
@@ -1062,6 +1040,120 @@ public class VenusUI extends JFrame {
 
     public static int getMenuState() {
         return menuState;
+    }
+
+    /**
+     * Method called when a simulation is started to update the UI.
+     *
+     * @return true if the ui was updated to start the simulation.
+     */
+    public boolean onStartedSimulation(String name) {
+        ExecutePane executePane = getMainPane().getExecutePane();
+
+        if (!FileStatus.isAssembled()) {
+            // note: this should never occur since "Go" and "Step" are only enabled after successful assembly.
+            JOptionPane.showMessageDialog(this, "The program must be assembled before it can be run.");
+            return false;
+        }
+
+        if (!getStarted()) {
+            getMessagesPane().processProgramArgumentsIfAny();
+        }
+
+        if (!getReset() && !getStarted()) {
+            // This should never occur because at termination the Go and Step buttons are disabled.
+            JOptionPane.showMessageDialog(this, "reset " + mainUI.getReset() + " started " + mainUI.getStarted());//"You must reset before you can execute the program again.");
+            return false;
+        }
+
+        setStarted(true);  // added 8/27/05
+
+        getMessagesPane().postMessage(name + ": running " + FileStatus.getFile().getName() + "\n\n");
+        getMessagesPane().selectRunMessageTab();
+        executePane.getTextSegmentWindow().setCodeHighlighting(false);
+        executePane.getTextSegmentWindow().unhighlightAllSteps();
+        //clears highlight of registers and data segment if the run step was used before
+        executePane.getRegistersWindow().clearHighlighting();
+        executePane.getFloatingPointWindow().clearHighlighting();
+        executePane.getControlAndStatusWindow().clearHighlighting();
+        executePane.getDataSegmentWindow().clearHighlighting();
+
+        return true;
+    }
+
+    /**
+     * Method called when a simulation is stopped to update the UI.
+     */
+    public void onStoppedSimulation(String name, SimulatorNotice notice) {
+        ExecutePane executePane = getMainPane().getExecutePane();
+        executePane.getRegistersWindow().updateRegisters();
+        executePane.getFloatingPointWindow().updateRegisters();
+        executePane.getControlAndStatusWindow().updateRegisters();
+        executePane.getDataSegmentWindow().updateValues();
+
+        if (notice.getDone()) {
+            RunGoAction.resetMaxSteps();
+            executePane.getTextSegmentWindow().unhighlightAllSteps();
+            executePane.getTextSegmentWindow().setCodeHighlighting(false);
+            FileStatus.set(FileStatus.TERMINATED);
+        } else {
+            executePane.getTextSegmentWindow().setCodeHighlighting(true);
+            executePane.getTextSegmentWindow().highlightStepAtPC();
+            FileStatus.set(FileStatus.RUNNABLE);
+        }
+
+        Simulator.Reason reason = notice.getReason();
+        switch (reason) {
+            case NORMAL_TERMINATION:
+                mainUI.getMessagesPane().postMessage(
+                        "\n" + name + ": execution completed successfully.\n\n");
+                mainUI.getMessagesPane().postRunMessage(
+                        "\n-- program is finished running (" + Globals.exitCode + ") --\n\n");
+                mainUI.getMessagesPane().selectRunMessageTab();
+                break;
+            case CLIFF_TERMINATION:
+                mainUI.getMessagesPane().postMessage(
+                        "\n" + name + ": execution terminated by null instruction.\n\n");
+                mainUI.getMessagesPane().postRunMessage(
+                        "\n-- program is finished running (dropped off bottom) --\n\n");
+                mainUI.getMessagesPane().selectRunMessageTab();
+                break;
+            case EXCEPTION:
+                SimulationException pe = notice.getException();
+                mainUI.getMessagesPane().postMessage(
+                        pe.error().generateReport());
+                mainUI.getMessagesPane().postMessage(
+                        "\n" + name + ": execution terminated with errors.\n\n");
+                mainUI.getMessagesPane().postRunMessage("\n"+pe.error().getMessage());
+                break;
+            case STOP:
+                mainUI.getMessagesPane().postMessage(
+                        "\n" + name + ": execution terminated by user.\n\n");
+                mainUI.getMessagesPane().selectMessageTab();
+                break;
+            case MAX_STEPS:
+                int maxSteps = notice.getMaxSteps();
+                if (maxSteps != 1) {
+                    // do not display something on Step Action
+                    mainUI.getMessagesPane().postMessage(
+                            "\n" + name + ": execution step limit of " + maxSteps + " exceeded.\n\n");
+                    mainUI.getMessagesPane().selectMessageTab();
+                }
+                break;
+            case BREAKPOINT:
+                mainUI.getMessagesPane().postMessage(
+                        "\n" + name + ": execution paused at breakpoint: " + FileStatus.getFile().getName() + "\n\n");
+                break;
+            case PAUSE:
+                mainUI.getMessagesPane().postMessage(
+                        "\n" + name + ": execution paused by user: " + FileStatus.getFile().getName() + "\n\n");
+                break;
+            default:
+                // Ne devrait pas arriver
+                throw new IllegalStateException("Unexpected value: " + reason);
+        }
+
+        mainUI.setReset(false);
     }
 
     /**

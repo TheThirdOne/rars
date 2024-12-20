@@ -1,6 +1,6 @@
 package rars.tools;
 
-import rars.Globals;
+import rars.*;
 import rars.riscv.hardware.AccessNotice;
 import rars.riscv.hardware.FloatingPointRegisterFile;
 import rars.riscv.hardware.Register;
@@ -14,34 +14,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.Observable;
-
-	/*
-Copyright (c) 2003-2006,  Pete Sanderson and Kenneth Vollmar
-
-Developed by Pete Sanderson (psanderson@otterbein.edu)
-and Kenneth Vollmar (kenvollmar@missouristate.edu)
-
-Permission is hereby granted, free of charge, to any person obtaining 
-a copy of this software and associated documentation files (the 
-"Software"), to deal in the Software without restriction, including 
-without limitation the rights to use, copy, modify, merge, publish, 
-distribute, sublicense, and/or sell copies of the Software, and to 
-permit persons to whom the Software is furnished to do so, subject 
-to the following conditions:
-
-The above copyright notice and this permission notice shall be 
-included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF 
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR 
-ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF 
-CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION 
-WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-(MIT license, http://www.opensource.org/licenses/mit-license.html)
- */
 
 /**
  * Tool to help students learn about IEEE 754 representation of 32 bit
@@ -66,16 +38,15 @@ public class FloatRepresentation extends AbstractToolAndApplication {
     private static final int maxLengthBinaryFraction = 23;
     private static final int maxLengthBinaryTotal = maxLengthBinarySign + maxLengthBinaryExponent + maxLengthBinaryFraction;
     private static final int maxLengthDecimal = 20;
-    private static final String denormalizedLabel = "                 significand (denormalized - no 'hidden bit')";
+    private static final String denormalizedLabel = "                 significand (subnormal - no 'hidden bit')";
     private static final String normalizedLabel = "                 significand ('hidden bit' underlined)       ";
     private static final Font instructionsFont = new Font("Arial", Font.PLAIN, 14);
     private static final Font hexDisplayFont = new Font("Courier", Font.PLAIN, 32);
     private static final Font binaryDisplayFont = new Font("Courier", Font.PLAIN, 18);
     private static final Font decimalDisplayFont = new Font("Courier", Font.PLAIN, 18);
     private static final Color hexDisplayColor = Color.red;
-    private static final Color binaryDisplayColor = Color.black;
-    private static final Color decimalDisplayColor = Color.blue;
-    private static final String expansionFontTag = "<font size=\"+1\" face=\"Courier\" color=\"#000000\">";
+    private static final String expansionFontTagLight = "<font size=\"+1\" face=\"Courier\" color=\"#000000\">";
+    private static final String expansionFontTagDark = "<font size=\"+1\" face=\"Courier\" color=\"#bbbbbb\">";
     private static final String instructionFontTag = "<font size=\"+0\" face=\"Verdana, Arial, Helvetica\" color=\"#000000\">";
     private static final int exponentBias = 127;  // 32 bit floating point exponent bias
 
@@ -222,7 +193,6 @@ public class FloatRepresentation extends AbstractToolAndApplication {
 
         binarySignDisplay = new JTextField(defaultBinarySign, maxLengthBinarySign + 1);
         binarySignDisplay.setFont(binaryDisplayFont);
-        binarySignDisplay.setForeground(binaryDisplayColor);
         binarySignDisplay.setHorizontalAlignment(JTextField.RIGHT);
         binarySignDisplay.setToolTipText("The sign bit");
         binarySignDisplay.setEditable(true);
@@ -230,7 +200,6 @@ public class FloatRepresentation extends AbstractToolAndApplication {
 
         binaryExponentDisplay = new JTextField(defaultBinaryExponent, maxLengthBinaryExponent + 1);
         binaryExponentDisplay.setFont(binaryDisplayFont);
-        binaryExponentDisplay.setForeground(binaryDisplayColor);
         binaryExponentDisplay.setHorizontalAlignment(JTextField.RIGHT);
         binaryExponentDisplay.setToolTipText("" + maxLengthBinaryExponent + "-bit exponent");
         binaryExponentDisplay.setEditable(true);
@@ -238,7 +207,6 @@ public class FloatRepresentation extends AbstractToolAndApplication {
 
         binaryFractionDisplay = new BinaryFractionDisplayTextField(defaultBinaryFraction, maxLengthBinaryFraction + 1);
         binaryFractionDisplay.setFont(binaryDisplayFont);
-        binaryFractionDisplay.setForeground(binaryDisplayColor);
         binaryFractionDisplay.setHorizontalAlignment(JTextField.RIGHT);
         binaryFractionDisplay.setToolTipText("" + maxLengthBinaryFraction + "-bit fraction");
         binaryFractionDisplay.setEditable(true);
@@ -286,7 +254,7 @@ public class FloatRepresentation extends AbstractToolAndApplication {
         // Editable display for decimal version of float value.
         decimalDisplay = new JTextField(defaultDecimal, maxLengthDecimal + 1);
         decimalDisplay.setFont(decimalDisplayFont);
-        decimalDisplay.setForeground(decimalDisplayColor);
+        decimalDisplay.setForeground(Globals.getSettings().getBooleanSetting(Settings.Bool.DARK_MODE_ENABLED)? new Color(0x66,0xCC,0xFF) : Color.blue);
         decimalDisplay.setHorizontalAlignment(JTextField.RIGHT);
         decimalDisplay.setToolTipText("Decimal floating point value");
         decimalDisplay.setMargin(new Insets(0, 0, 0, 0));
@@ -303,11 +271,10 @@ public class FloatRepresentation extends AbstractToolAndApplication {
         JPanel place2 = new JPanel(rightPanelLayout);
         JPanel place3 = new JPanel(rightPanelLayout);
         JPanel place4 = new JPanel(rightPanelLayout);
-
+        String expansionFontTag = Globals.getSettings().getBooleanSetting(Settings.Bool.DARK_MODE_ENABLED) ? expansionFontTagDark : expansionFontTagLight;
         JEditorPane hexExplain = new JEditorPane("text/html", expansionFontTag + "&lt;&nbsp;&nbsp;Hexadecimal representation" + "</font>");
         hexExplain.setEditable(false);
         hexExplain.setFocusable(false);
-        hexExplain.setForeground(Color.black);
         hexExplain.setBackground(place1.getBackground());
         JEditorPane hexToBinExplain = new JEditorPane("text/html", expansionFontTag + "&lt;&nbsp;&nbsp;Each hex digit represents 4 bits" + "</font>");
         hexToBinExplain.setEditable(false);
@@ -530,10 +497,10 @@ public class FloatRepresentation extends AbstractToolAndApplication {
         public String buildExpansionFromBinaryString(String binaryString) {
             int biasedExponent = Binary.binaryStringToInt(
                     binaryString.substring(maxLengthBinarySign, maxLengthBinarySign + maxLengthBinaryExponent));
-            String stringExponent = Integer.toString(biasedExponent - exponentBias);
+            String stringExponent = Integer.toString(biasedExponent == 0 ? -126 : biasedExponent - exponentBias);
             // stringExponent length will range from 1 to 4 (e.g. "0" to "-128") characters.
             // Right-pad with HTML spaces ("&nbsp;") to total length 5 displayed characters.
-            return "<html><head></head><body>" + expansionFontTag
+            return "<html><head></head><body>" + (Globals.getSettings().getBooleanSetting(Settings.Bool.DARK_MODE_ENABLED) ? expansionFontTagDark : expansionFontTagLight)
                     + "-1<sup>" + binaryString.substring(0, maxLengthBinarySign) + "</sup> &nbsp;*&nbsp; 2<sup>"
                     + stringExponent + HTMLspaces.substring(0, (5 - stringExponent.length()) * 6)
                     + "</sup> &nbsp;* &nbsp;"
@@ -822,6 +789,7 @@ public class FloatRepresentation extends AbstractToolAndApplication {
     //
     class BinaryToDecimalFormulaGraphic extends JPanel {
         final String subtractLabelTrailer = " - 127";
+        final String subnormalLabel = "-126";
         final int arrowHeadOffset = 5;
         final int lowerY = 0;
         final int upperY = 50;
@@ -884,7 +852,7 @@ public class FloatRepresentation extends AbstractToolAndApplication {
 
         // format the label for a given integer exponent value...
         private String buildSubtractLabel(int value) {
-            return Integer.toString(value) + subtractLabelTrailer;
+            return (value == 0) ? subnormalLabel : Integer.toString(value) + subtractLabelTrailer;
         }
 
     }

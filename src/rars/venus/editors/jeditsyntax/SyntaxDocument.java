@@ -1,12 +1,3 @@
-/*
- * SyntaxDocument.java - Document that can be tokenized
- * Copyright (C) 1999 Slava Pestov
- *
- * You may use and modify this package for any purpose. Redistribution is
- * permitted, in both source and binary form, provided that this notice
- * remains intact in all source distributions of this package.
- */
-
 package rars.venus.editors.jeditsyntax;
 
 import rars.venus.editors.jeditsyntax.tokenmarker.TokenMarker;
@@ -135,6 +126,7 @@ public class SyntaxDocument extends PlainDocument {
                         ch.getChildrenAdded().length -
                                 ch.getChildrenRemoved().length);
             }
+            tokenMarker.updated(evt);
         }
 
         super.fireInsertUpdate(evt);
@@ -154,6 +146,7 @@ public class SyntaxDocument extends PlainDocument {
                         ch.getChildrenRemoved().length -
                                 ch.getChildrenAdded().length);
             }
+            tokenMarker.updated(evt);
         }
 
         super.fireRemoveUpdate(evt);

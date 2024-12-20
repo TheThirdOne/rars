@@ -13,34 +13,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Observable;
 
-	/*
-Copyright (c) 2003-2010,  Pete Sanderson and Kenneth Vollmar
-
-Developed by Pete Sanderson (psanderson@otterbein.edu)
-and Kenneth Vollmar (kenvollmar@missouristate.edu)
-
-Permission is hereby granted, free of charge, to any person obtaining 
-a copy of this software and associated documentation files (the 
-"Software"), to deal in the Software without restriction, including 
-without limitation the rights to use, copy, modify, merge, publish, 
-distribute, sublicense, and/or sell copies of the Software, and to 
-permit persons to whom the Software is furnished to do so, subject 
-to the following conditions:
-
-The above copyright notice and this permission notice shall be 
-included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF 
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR 
-ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF 
-CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION 
-WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-(MIT license, http://www.opensource.org/licenses/mit-license.html)
- */
-
 /**
  * Used to simulate the execution of an assembled source program.
  *
@@ -393,6 +365,7 @@ public class Simulator extends Observable {
                 // lock variable, then full (albeit heavy-handed) protection of memory and
                 // registers is assured.  Not as critical for reading from those resources.
                 Globals.memoryAndRegistersLock.lock();
+                boolean checkHandlerBkpt = false;
                 try {
                     // Handle pending interupts and traps first
                     long uip = ControlAndStatusRegisterFile.getValueNoNotify("uip"), uie = ControlAndStatusRegisterFile.getValueNoNotify("uie");
@@ -408,12 +381,14 @@ public class Simulator extends Observable {
                             if (handleInterrupt(InterruptController.claimExternal(), SimulationException.EXTERNAL_INTERRUPT, pc)) {
                                 pendingExternal = false;
                                 uip &= ~0x100;
+                                checkHandlerBkpt = true;
                             } else {
                                 return; // if the interrupt can't be handled, but the interrupt enable bit is high, thats an error
                             }
                         } else if (IE && (uip & 0x1) != 0 && (uie & ControlAndStatusRegisterFile.SOFTWARE_INTERRUPT) != 0) {
                             if (handleInterrupt(0, SimulationException.SOFTWARE_INTERRUPT, pc)) {
                                 uip &= ~0x1;
+                                checkHandlerBkpt = true;
                             } else {
                                 return; // if the interrupt can't be handled, but the interrupt enable bit is high, thats an error
                             }
@@ -421,11 +396,13 @@ public class Simulator extends Observable {
                             if (handleInterrupt(InterruptController.claimTimer(), SimulationException.TIMER_INTERRUPT, pc)) {
                                 pendingTimer = false;
                                 uip &= ~0x10;
+                                checkHandlerBkpt = true;
                             } else {
                                 return; // if the interrupt can't be handled, but the interrupt enable bit is high, thats an error
                             }
                         } else if (pendingTrap) { // if we have a pending trap and aren't handling an interrupt it must be handled
                             if (handleTrap(InterruptController.claimTrap(), pc - Instruction.INSTRUCTION_LENGTH)) { // account for that the PC has already been incremented
+                                checkHandlerBkpt = true;
                             } else {
                                 return;
                             }
@@ -434,6 +411,15 @@ public class Simulator extends Observable {
                     }
                     if (uip != ControlAndStatusRegisterFile.getValueNoNotify("uip")) {
                         ControlAndStatusRegisterFile.updateRegister("uip", uip);
+                    }
+
+                    if (checkHandlerBkpt) {
+                        //     Return if we've reached a breakpoint on the handler's entry point.
+                        if (ebreak || (breakPoints != null) &&
+                                (Arrays.binarySearch(breakPoints, RegisterFile.getProgramCounter()) >= 0)) {
+                            stopExecution(false, Reason.BREAKPOINT);
+                            return;
+                        }
                     }
 
                     // always handle interrupts and traps before quiting
@@ -492,6 +478,10 @@ public class Simulator extends Observable {
                         if (Globals.getSettings().getBackSteppingEnabled()) {
                             Globals.program.getBackStepper().addDoNothing(pc);
                         }
+                        ebreak = true;
+                    } catch (CancelException b) {
+                        // Reset the pc in front of the instruction
+                        RegisterFile.setProgramCounter(pc);
                         ebreak = true;
                     } catch (WaitException w) {
                         if (Globals.getSettings().getBackSteppingEnabled()) {

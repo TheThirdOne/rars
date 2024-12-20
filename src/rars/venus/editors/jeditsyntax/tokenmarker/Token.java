@@ -1,12 +1,3 @@
-/*
- * Token.java - Generic token
- * Copyright (C) 1998, 1999 Slava Pestov
- *
- * You may use and modify this package for any purpose. Redistribution is
- * permitted, in both source and binary form, provided that this notice
- * remains intact in all source distributions of this package.
- */
-
 package rars.venus.editors.jeditsyntax.tokenmarker;
 
 /**
@@ -65,48 +56,54 @@ public class Token {
     public static final byte LABEL = 5;
 
     /**
+     * Symbol token id. This can be used to mark symbols
+     * This should be used to mark symbols declared with .eqv
+     */
+    public static final byte SYMBOL = 6;
+
+    /**
      * Keyword 1 token id. This can be used to mark a
      * keyword. This should be used for general language
      * constructs.
      */
-    public static final byte KEYWORD1 = 6;
+    public static final byte KEYWORD1 = 7;
 
     /**
      * Keyword 2 token id. This can be used to mark a
      * keyword. This should be used for preprocessor
      * commands, or variables.
      */
-    public static final byte KEYWORD2 = 7;
+    public static final byte KEYWORD2 = 8;
 
     /**
      * Keyword 3 token id. This can be used to mark a
      * keyword. This should be used for data types.
      */
-    public static final byte KEYWORD3 = 8;
+    public static final byte KEYWORD3 = 9;
 
     /**
      * Operator token id. This can be used to mark an
      * operator. (eg, SQL mode marks +, -, etc with this
      * token type)
      */
-    public static final byte OPERATOR = 9;
+    public static final byte OPERATOR = 10;
 
     /**
      * Invalid token id. This can be used to mark invalid
      * or incomplete tokens, so the user can easily spot
      * syntax errors.
      */
-    public static final byte INVALID = 10;
+    public static final byte INVALID = 11;
 
     /**
      * Macro parameter token.  Added for MARS 4.3.
      */
-    public static final byte MACRO_ARG = 11;
+    public static final byte MACRO_ARG = 12;
 
     /**
      * The total number of defined token ids.
      */
-    public static final byte ID_COUNT = 12;
+    public static final byte ID_COUNT = 13;
 
     /**
      * The first id that can be used for internal state

@@ -1,0 +1,32 @@
+name: Makefile CI
+
+on:
+  push:
+    branches:
+    - master
+  pull_request:
+    branches:
+    - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+    - run: sudo apt-get update && sudo apt-get install openjdk-17-jdk-headless
+    - uses: actions/checkout@v4
+    - run: git fetch origin --tags --unshallow
+    - run: git submodule update --init
+    - run: ./build-jar.sh
+    - run: ./build-jar-flatlaf.sh
+    - uses: actions/upload-artifact@v4
+      with:
+        path: '*.jar'
+    - run: ./test.sh
+    - uses: softprops/action-gh-release@v2
+      if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/test-ci'
+      with:
+        files: rars-flatlaf.jar
+        tag_name: 'lastest'
+        make_latest: true

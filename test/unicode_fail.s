@@ -1,4 +1,5 @@
-#error on lines: 4
+#error on lines: 5
+#exit:42
 .data
 test1:
 .string "© █ \u0054 \u2605 \n\u37"

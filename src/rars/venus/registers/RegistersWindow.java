@@ -63,11 +63,7 @@ public class RegistersWindow extends RegisterBlockWindow {
     }
 
     protected String formatRegister(Register value, int base) {
-        if (Globals.getSettings().getBooleanSetting(Settings.Bool.RV64_ENABLED)){
-            return NumberDisplayBaseChooser.formatNumber(value.getValue(), base);
-        }else {
-            return NumberDisplayBaseChooser.formatNumber((int)value.getValue(), base);
-        }
+        return NumberDisplayBaseChooser.formatNumber(value.getValue(), base);
     }
 
     protected void beginObserving() {

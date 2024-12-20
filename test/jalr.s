@@ -1,3 +1,4 @@
+#exit:42
 .globl main
 .text
 main:

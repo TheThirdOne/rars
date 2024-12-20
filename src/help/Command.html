@@ -1,11 +1,9 @@
 <html>
-<title>RARS 1.6 help contents
+<title>RARS help contents
 </title>
 <body>
 <center>
 <h3>RARS - RISC-V Assembler and Runtime Simulator</h3>
-<h4>Release 1.0</h4>
-<h4>August 2017</h4>
 <h4>Using RARS from a command line.</h4>
 </center>
 
@@ -22,46 +20,45 @@ The format for running RARS from a command line is:<br><br>
     for potentially correct documentation</p>
 
 <table border=1 cellpadding=3>
-<tr><th>Option</th><th align="left">Description</th><th>Since</th></tr>
-<tr><td width=40 align="right"><tt>a</tt></td><td>assemble only, do not simulate</td><td>1.0</td></tr>
-<tr><td width=40 align="right"><tt>ae<i>n</i></tt></td><td>terminate RARS with integer exit code <i>n</i> if assembly error occurs</td><td>4.1</td></tr>
-<tr><td width=40 align="right"><tt>ascii</tt></td><td>display memory or register contents interpreted as ASCII codes. (alternatives are <tt>dec</tt> and <tt>hex</tt>)</td><td>4.1</td></tr>
-<tr><td width=40 align="right"><tt>b</tt></td><td>brief - do not display register/memory address along with contents</td><td>2.2</td></tr>
+<tr><th>Option</th><th align="left">Description</th></tr>
+<tr><td width=40 align="right"><tt>a</tt></td><td>assemble only, do not simulate</td></tr>
+<tr><td width=40 align="right"><tt>ae<i>n</i></tt></td><td>terminate RARS with integer exit code <i>n</i> if assembly error occurs</td></tr>
+<tr><td width=40 align="right"><tt>ascii</tt></td><td>display memory or register contents interpreted as ASCII codes. (alternatives are <tt>dec</tt> and <tt>hex</tt>)</td></tr>
+<tr><td width=40 align="right"><tt>b</tt></td><td>brief - do not display register/memory address along with contents</td></tr>
     <tr><td width=40 align="right"><tt>d</tt></td><td>display RARS debugging statements (of interest mainly to RARS developer)</td></tr>
-<tr><td width=40 align="right"><tt>dec</tt></td><td>display memory or register contents in decimal. (alternatives are <tt>ascii</tt> and <tt>hex</tt>)</td><td>2.2</td></tr>
+<tr><td width=40 align="right"><tt>dec</tt></td><td>display memory or register contents in decimal. (alternatives are <tt>ascii</tt> and <tt>hex</tt>)</td></tr>
 <tr><td width=40 align="right"><tt>dump</tt></td><td>dump memory contents to file.  
 Option has 3 arguments, e.g. <tt>dump &lt;segment&gt; &lt;format&gt; &lt;file&gt;</tt>.  Current supported segments are <tt>.text</tt>
-and <tt>.data</tt>.  Also supports an address range (see <i>m-n</i> below).  Current supported dump formats are <tt>Binary</tt>, <tt>HexText</tt>, <tt>BinaryText</tt>, <tt>AsciiText</tt>.  See examples below.</td><td>3.4</td></tr>
-<tr><td width=40 align="right"><tt>g</tt></td><td>force GUI mode</td><td>1.6</td></tr>
-<tr><td width=40 align="right"><tt>hex</tt></td><td>display memory or register contents in hexadecimal - this is the default. (alternatives are <tt>ascii</tt> and <tt>dec</tt>)</td><td>2.2</td></tr>
-<tr><td width=40 align="right"><tt>h</tt></td><td>display this help.  Use this option by itself and with no filename.</td><td>1.0</td></tr>
-<tr><td width=40 align="right"><tt>ic</tt></td><td>display instruction count; the number of basic instructions 'executed'</td><td>4.3</td></tr>
+and <tt>.data</tt>.  Also supports an address range (see <i>m-n</i> below).  Current supported dump formats are <tt>Binary</tt>, <tt>HexText</tt>, <tt>BinaryText</tt>, <tt>AsciiText</tt>.  See examples below.</td></tr>
+<tr><td width=40 align="right"><tt>g</tt></td><td>force GUI mode</td></tr>
+<tr><td width=40 align="right"><tt>hex</tt></td><td>display memory or register contents in hexadecimal - this is the default. (alternatives are <tt>ascii</tt> and <tt>dec</tt>)</td></tr>
+<tr><td width=40 align="right"><tt>h</tt></td><td>display this help.  Use this option by itself and with no filename.</td></tr>
+<tr><td width=40 align="right"><tt>ic</tt></td><td>display instruction count; the number of basic instructions 'executed'</td></tr>
 <tr><td width=40 align="right"><tt>mc</tt></td><td>set memory configuration.
 Option has 1 argument, e.g. <tt>mc &lt;config&gt;</tt>.  Argument <tt>&lt;config&gt;</tt> is case-sensitive and its
 possible values are <tt>Default</tt> for the default 32-bit address space, <tt>CompactDataAtZero</tt> for
 a 32KB address space with data segment at address 0, or <tt>CompactTextAtZero</tt>
-for a 32KB address space with text segment at address 0.</td><td>3.7</td></tr>
-<tr><td width=40 align="right"><tt>me</tt></td><td>display RARS messages to standard err instead of standard out.  Allows you to separate RARS messages from program output using redirection.</td><td>4.3</td></tr>
-<tr><td width=40 align="right"><tt>nc</tt></td><td>copyright notice will not be displayed.  Useful if redirecting or piping program output.</td><td>3.5</td></tr>
-<tr><td width=40 align="right"><tt>np</tt></td><td>pseudo-instructions or extended instruction formats are not permitted.</td><td>3.0</td></tr>
-<tr><td width=40 align="right"><tt>p</tt></td><td>project option - will assemble the specified file and all other assembly files (*.asm; *.s) in its directory.</td><td>3.1</td></tr>
-<tr><td width=40 align="right"><tt>se<i>n</i></tt></td><td>terminate RARS with exit code <i>n</i> if simulate (run) error occurs</td><td>4.1</td></tr>
-<tr><td width=40 align="right"><tt>sm</tt></td><td>start execution at statement having global label 'main' if defined</td><td>3.8</td></tr>
-<tr><td width=40 align="right"><tt>smc</tt></td><td>Self Modifying Code - Program can write and execute in either text or data segment</td><td>4.4</td></tr>
-<tr><td width=40 align="right"><tt>we</tt></td><td>assembler warnings will be considered errors.</td><td>3.5</td></tr>
+for a 32KB address space with text segment at address 0.</td></tr>
+<tr><td width=40 align="right"><tt>np</tt></td><td>pseudo-instructions or extended instruction formats are not permitted.</td></tr>
+<tr><td width=40 align="right"><tt>p</tt></td><td>project option - will assemble the specified file and all other assembly files (*.asm; *.s) in its directory.</td></tr>
+<tr><td width=40 align="right"><tt>se<i>n</i></tt></td><td>terminate RARS with exit code <i>n</i> if simulate (run) error occurs</td></tr>
+<tr><td width=40 align="right"><tt>sm</tt></td><td>start execution at statement having global label 'main' if defined</td></tr>
+<tr><td width=40 align="right"><tt>smc</tt></td><td>Self Modifying Code - Program can write and execute in either text or data segment</td></tr>
+<tr><td width=40 align="right"><tt>version</tt></td><td>show copyright notice and version will not be displayed.</td></tr>
+<tr><td width=40 align="right"><tt>we</tt></td><td>assembler warnings will be considered errors.</td></tr>
 <tr><td width=40 align="right"><i>n</i></td><td>where <i>n</i> is an integer maximum count of execution steps to simulate.
-                  If 0, negative or not specified, there is no maximum.</td><td>1.0</td></tr>
+                  If 0, negative or not specified, there is no maximum.</td></tr>
 <tr><td width=40 align="right"><tt>$</tt><i>reg</i></td><td>where <i>reg</i> is number or name (e.g. 5, t3, f10) of register whose 
                   content to display at end of run.  Even-numbered float register displays both float and double.  Option may be repeated.
-				  <em>NOTE: Depending on your command shell, you may need to escape the $, e.g. <tt>\$t3</tt></em></td><td>2.2</td></tr>
+				  <em>NOTE: Depending on your command shell, you may need to escape the $, e.g. <tt>\$t3</tt></em></td></tr>
 <tr><td width=40 align="right"><i>reg_name</i></td><td>where <i>reg_name</i> is the name (e.g. t3, f10) of register whose 
-                  content to display at end of run.  Even-numbered float register displays both float and double.  Option may be repeated. $ not required.</td><td>2.2</td></tr>
+                  content to display at end of run.  Even-numbered float register displays both float and double.  Option may be repeated. $ not required.</td></tr>
 <tr><td width=40 align="right"><i>m</i>-<i>n</i></td><td>memory address range from <i>m</i> to <i>n</i> whose contents to
                   display at end of run. <i>m</i> and <i>n</i> may be decimal or hexadecimal (starts with <tt>0x</tt>),
-                  <i>m</i> &lt;= <i>n</i>, both must be on word boundary.  Option may be repeated.</td><td>2.2</td></tr>
+                  <i>m</i> &lt;= <i>n</i>, both must be on word boundary.  Option may be repeated.</td></tr>
 <tr><td width=40 align="right"><tt>pa</tt></td><td>program arguments - all remaining space-separated items are argument values provided to the
 program via $a0 (argc - argument count) and $a1 (argv - address of array containing pointers to null-terminated argument
-strings). The count is also at the top of the runtime stack ($sp), followed by the array.<i>This option and its arguments must be the last items in the command!</i></td><td>3.5</td></tr>
+strings). The count is also at the top of the runtime stack ($sp), followed by the array.<i>This option and its arguments must be the last items in the command!</i></td></tr>
 </table>
 
 <p><b>Example: </b><tt>java -jar rars.jar h</tt> <br>

@@ -13,39 +13,8 @@ import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileFilter;
 import java.awt.*;
 import java.beans.PropertyChangeListener;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
-
-	/*
-Copyright (c) 2003-2010,  Pete Sanderson and Kenneth Vollmar
-
-Developed by Pete Sanderson (psanderson@otterbein.edu)
-and Kenneth Vollmar (kenvollmar@missouristate.edu)
-
-Permission is hereby granted, free of charge, to any person obtaining 
-a copy of this software and associated documentation files (the 
-"Software"), to deal in the Software without restriction, including 
-without limitation the rights to use, copy, modify, merge, publish, 
-distribute, sublicense, and/or sell copies of the Software, and to 
-permit persons to whom the Software is furnished to do so, subject 
-to the following conditions:
-
-The above copyright notice and this permission notice shall be 
-included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF 
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR 
-ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF 
-CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION 
-WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-(MIT license, http://www.opensource.org/licenses/mit-license.html)
- */
 
 /**
  * Tabbed pane for the editor.  Each of its tabs represents an open file.
@@ -295,7 +264,7 @@ public class EditTabbedPane extends JTabbedPane {
             }
             File theFile = new File(editPane.getPathname());
             try {
-                BufferedWriter outFileStream = new BufferedWriter(new FileWriter(theFile));
+                BufferedWriter outFileStream = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(theFile), "UTF-8"));
                 outFileStream.write(editPane.getSource(), 0, editPane.getSource().length());
                 outFileStream.close();
             } catch (java.io.IOException c) {
@@ -388,7 +357,7 @@ public class EditTabbedPane extends JTabbedPane {
             // Either file with selected name does not exist or user wants to 
             // overwrite it, so go for it!
             try {
-                BufferedWriter outFileStream = new BufferedWriter(new FileWriter(theFile));
+                BufferedWriter outFileStream = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(theFile), "UTF-8"));
                 outFileStream.write(editPane.getSource(), 0, editPane.getSource().length());
                 outFileStream.close();
             } catch (java.io.IOException c) {
@@ -555,7 +524,7 @@ public class EditTabbedPane extends JTabbedPane {
             // Note: add sequence is significant - last one added becomes default.
             fileFilterList = new ArrayList<>();
             fileFilterList.add(fileChooser.getAcceptAllFileFilter());
-            fileFilterList.add(FilenameFinder.getFileFilter(Globals.fileExtensions, "Assembler Files", true));
+            fileFilterList.add(FilenameFinder.getFileFilter(Globals.fileExtensions, "Assembly Files", true));
             fileFilterCount = 0; // this will trigger fileChooser file filter load in next line
             setChoosableFileFilters();
         }
@@ -564,6 +533,7 @@ public class EditTabbedPane extends JTabbedPane {
          * Launch a file chooser for name of file to open.  Return true if file opened, false otherwise
          */
         private boolean openFile() {
+            fileChooser.updateUI();
             // The fileChooser's list may be rebuilt from the master ArrayList if a new filter
             // has been added by the user.
             setChoosableFileFilters();

@@ -1,16 +1,6 @@
-/*
- * MIPSTokenMarker.java - MIPS Assembly token marker
- * Copyright (C) 1998, 1999 Slava Pestov, 2010 Pete Sanderson
- *
- * You may use and modify this package for any purpose. Redistribution is
- * permitted, in both source and binary form, provided that this notice
- * remains intact in all source distributions of this package.
- */
-
 package rars.venus.editors.jeditsyntax.tokenmarker;
 
-import rars.Globals;
-import rars.Settings;
+import rars.*;
 import rars.assembler.Directives;
 import rars.riscv.BasicInstruction;
 import rars.riscv.hardware.FloatingPointRegisterFile;
@@ -19,7 +9,9 @@ import rars.riscv.hardware.RegisterFile;
 import rars.riscv.Instruction;
 import rars.venus.editors.jeditsyntax.KeywordMap;
 import rars.venus.editors.jeditsyntax.PopupHelpItem;
+import rars.venus.editors.jeditsyntax.SyntaxDocument;
 
+import javax.swing.event.DocumentEvent;
 import javax.swing.text.Segment;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -46,6 +38,7 @@ public class RISCVTokenMarker extends TokenMarker {
             tokenLabels[Token.LITERAL1] = "String literal";
             tokenLabels[Token.LITERAL2] = "Character literal";
             tokenLabels[Token.LABEL] = "Label";
+            tokenLabels[Token.SYMBOL] = "Symbol";
             tokenLabels[Token.KEYWORD1] = "Instruction";
             tokenLabels[Token.KEYWORD2] = "Assembler directive";
             tokenLabels[Token.KEYWORD3] = "Register";
@@ -62,6 +55,7 @@ public class RISCVTokenMarker extends TokenMarker {
             tokenExamples[Token.LITERAL1] = "\"First\"";
             tokenExamples[Token.LITERAL2] = "'\\n'";
             tokenExamples[Token.LABEL] = "main:";
+            tokenExamples[Token.SYMBOL] = "PrintInt";
             tokenExamples[Token.KEYWORD1] = "lui";
             tokenExamples[Token.KEYWORD2] = ".text";
             tokenExamples[Token.KEYWORD3] = "zero";
@@ -69,6 +63,14 @@ public class RISCVTokenMarker extends TokenMarker {
             tokenExamples[Token.MACRO_ARG] = "%arg";
         }
         return tokenExamples;
+    }
+
+    @Override
+    public void updated(DocumentEvent evt) {
+        SyntaxDocument document = (SyntaxDocument) evt.getDocument();
+        // clear info and retokenize all to collect label definitions
+        changingKeywords.clear();
+        document.tokenizeLines();
     }
 
 
@@ -119,16 +121,22 @@ public class RISCVTokenMarker extends TokenMarker {
                             // (3) there are spaces between label name and colon, (4) label is valid
                             // MIPS identifier (otherwise would catch, say, 0 (zero) in .word 0:10)
                             backslash = false;
-                            //String lab = new String(array, lastOffset, i1-lastOffset-1).trim();
                             boolean validIdentifier = false;
+                            String label = null;
                             try {
-                                validIdentifier = rars.assembler.TokenTypes.isValidIdentifier(new String(array, lastOffset, i1 - lastOffset - 1).trim());
+                                label = new String(array, lastOffset, i1 - lastOffset - 1).trim();
+                                validIdentifier = rars.assembler.TokenTypes.isValidIdentifier(label);
                             } catch (StringIndexOutOfBoundsException e) {
                                 validIdentifier = false;
                             }
                             if (validIdentifier) {
                                 addToken(i1 - lastOffset, Token.LABEL);
                                 lastOffset = lastKeyword = i1;
+                                // Register the label, if new, to recognize its usages
+                                byte t = changingKeywords.lookup(label);
+                                if (t == Token.NULL) {
+                                    changingKeywords.add(label, Token.LABEL);
+                                }
                             }
                             break;
                         case '#':
@@ -454,26 +462,38 @@ public class RISCVTokenMarker extends TokenMarker {
     // private members
     private static KeywordMap cKeywords;
     private static String[] tokenLabels, tokenExamples;
+    private KeywordMap changingKeywords = new KeywordMap(false); //for labels and .eqv symbols
     private KeywordMap keywords;
     private int lastOffset;
     private int lastKeyword;
+    private boolean lastKeywordIsEqv = false;
 
     private void doKeyword(Segment line, int i, char c) {
         int i1 = i + 1;
 
         int len = i - lastKeyword;
         byte id = keywords.lookup(line, lastKeyword, len);
+        String keyword;
+        try {
+            keyword = line.toString().substring(lastKeyword - line.getBeginIndex(), i - line.getBeginIndex());
+        } catch (IndexOutOfBoundsException e) {
+            keyword = "";
+        }
+        if (id == Token.NULL) {
+            id = changingKeywords.lookup(line, lastKeyword, len);
+            if (id == Token.NULL && lastKeywordIsEqv) {
+                if (rars.assembler.TokenTypes.isValidIdentifier(keyword))
+                    changingKeywords.add(keyword, Token.SYMBOL);
+                lastKeywordIsEqv = false;
+            }
+        } else if (id == Token.KEYWORD2 && keyword.equals(".eqv")) {
+            lastKeywordIsEqv = true;
+        }
         if (id != Token.NULL) {
-            // If this is a Token.KEYWORD1 and line already contains a keyword,
-            // then assume this one is a label reference and ignore it.
-            //   if (id == Token.KEYWORD1 && tokenListContainsKeyword()) {
-            //    }
-            //    else {
             if (lastKeyword != lastOffset)
                 addToken(lastKeyword - lastOffset, Token.NULL);
             addToken(len, id);
             lastOffset = i;
-            //  }
         }
         lastKeyword = i1;
     }

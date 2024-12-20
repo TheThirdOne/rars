@@ -13,35 +13,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 
-
-/*
- Copyright (c) 2003-2012,  Pete Sanderson and Kenneth Vollmar
-
- Developed by Pete Sanderson (psanderson@otterbein.edu)
- and Kenneth Vollmar (kenvollmar@missouristate.edu)
-
- Permission is hereby granted, free of charge, to any person obtaining 
- a copy of this software and associated documentation files (the 
- "Software"), to deal in the Software without restriction, including 
- without limitation the rights to use, copy, modify, merge, publish, 
- distribute, sublicense, and/or sell copies of the Software, and to 
- permit persons to whom the Software is furnished to do so, subject 
- to the following conditions:
-
- The above copyright notice and this permission notice shall be 
- included in all copies or substantial portions of the Software.
-
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
- EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF 
- MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
- IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR 
- ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF 
- CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION 
- WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
- (MIT license, http://www.opensource.org/licenses/mit-license.html)
- */
-
 /**
  * An Assembler is capable of assembling a RISCV program. It has only one public
  * method, <tt>assemble()</tt>, which implements a two-pass assembler. It
@@ -58,6 +29,7 @@ public class Assembler {
     // macro definition segment
     private int externAddress;
     private boolean autoAlign;
+    private boolean instructionInDataWarningGiven;
     private Directives dataDirective;
     private RISCVprogram fileCurrentlyBeingAssembled;
     private TokenList globalDeclarationList;
@@ -88,17 +60,14 @@ public class Assembler {
      *                                 considered errors and terminate the assemble; false means the
      *                                 assembler will produce warning message but otherwise ignore
      *                                 warnings.
-     * @return An ArrayList representing the assembled program. Each member of
-     * the list is a ProgramStatement object containing the source,
-     * intermediate, and machine binary representations of a program
-     * statement. Returns null if incoming array list is null or empty.
+     * @param programAssembled         The whole program currently being assembled.
      * @see ProgramStatement
      **/
-    public ArrayList<ProgramStatement> assemble(ArrayList<RISCVprogram> tokenizedProgramFiles, boolean extendedAssemblerEnabled,
-                                                boolean warningsAreErrors) throws AssemblyException {
+    public void assemble(ArrayList<RISCVprogram> tokenizedProgramFiles, boolean extendedAssemblerEnabled,
+                                                boolean warningsAreErrors, RISCVprogram programAssembled) throws AssemblyException {
 
         if (tokenizedProgramFiles == null || tokenizedProgramFiles.size() == 0)
-            return null;
+            return;
         textAddress = new AddressSpace(Memory.textBaseAddress);
         dataAddress = new AddressSpace(Memory.dataBaseAddress);
         externAddress = Memory.externBaseAddress;
@@ -106,7 +75,8 @@ public class Assembler {
         accumulatedDataSegmentForwardReferences = new DataSegmentForwardReferences();
         Globals.symbolTable.clear();
         Globals.memory.clear();
-        ArrayList<ProgramStatement> machineList = new ArrayList<>();
+        ArrayList<ProgramStatement> machineList = programAssembled.createMachineList();
+        ArrayList<ProgramStatement> textSegmentLines = programAssembled.createTextSegmentLines();
         this.errors = new ErrorList();
         if (Globals.debug)
             System.out.println("Assembler first pass begins:");
@@ -136,6 +106,7 @@ public class Assembler {
             // tokenList is an ArrayList of TokenList objects, one per source line;
             // each ArrayList in tokenList consists of Token objects.
             ArrayList<SourceLine> sourceLineList = fileCurrentlyBeingAssembled.getSourceLineList();
+            ArrayList<String> sourceLines = fileCurrentlyBeingAssembled.getSourceList();
             ArrayList<TokenList> tokenList = fileCurrentlyBeingAssembled.getTokenList();
             ArrayList<ProgramStatement> parsedList = fileCurrentlyBeingAssembled.createParsedList();
             // each file keeps its own macro definitions
@@ -156,6 +127,11 @@ public class Assembler {
                         extendedAssemblerEnabled);
                 if (statements != null) {
                     parsedList.addAll(statements);
+                } else if (!sourceLines.get(i).isBlank()) { //not an instruction and not a blank line
+                    ProgramStatement programStatement = new ProgramStatement(sourceLineList.get(i).getRISCVprogram(),
+                            sourceLines.get(i), tokenList.get(i), null, null,
+                            -1, sourceLineList.get(i).getLineNumber());
+                    parsedList.add(programStatement);
                 }
             }
             if (inMacroSegment) {
@@ -197,13 +173,31 @@ public class Assembler {
             this.fileCurrentlyBeingAssembled = program;
             ArrayList<ProgramStatement> parsedList = fileCurrentlyBeingAssembled.getParsedList();
             for (ProgramStatement statement : parsedList) {
-                statement.buildBasicStatementFromBasicInstruction(errors);
+                if (statement.getInstruction() != null)
+                    statement.buildBasicStatementFromBasicInstruction(errors);
                 if (errors.errorsOccurred()) {
                     throw new AssemblyException(errors);
                 }
+                // add warning if instructions were written in .data
+                if (Memory.inDataSegment(statement.getAddress()) && !instructionInDataWarningGiven) {
+                    errors.add(new ErrorMessage(true, statement.getSourceProgram(), statement.getSourceLine(),
+                            statement.getStrippedTokenList().get(0).getStartPos(),
+                            "Instructions in .data !"));
+                    instructionInDataWarningGiven = true;
+                }
                 if (statement.getInstruction() instanceof BasicInstruction) {
-                    machineList.add(statement);
-                } else {
+                    //if statement is in .text, add to machineList
+                    if (Memory.inTextSegment(statement.getAddress()))
+                        machineList.add(statement);
+                    //if statement is in .data, write instruction code in data segment of memory
+                    else if (Memory.inDataSegment(statement.getAddress())) {
+                        dataAddress.set(statement.getAddress());
+                        statement.buildMachineStatementFromBasicStatement(errors);
+                        writeToDataSegment(statement.getBinaryStatement(), Instruction.INSTRUCTION_LENGTH,
+                                statement.getStrippedTokenList().get(0), errors);
+                    }
+                    textSegmentLines.add(statement);
+                } else if (statement.getInstruction() != null) {
                     // It is a pseudo-instruction:
                     // 1. Fetch its basic instruction template list
                     // 2. For each template in the list,
@@ -259,16 +253,33 @@ public class Assembler {
                         Instruction instr = OperandFormat.bestOperandMatch(newTokenList,
                                 instrMatches);
                         // Only first generated instruction is linked to original source
-                        ProgramStatement ps = new ProgramStatement(
-                                this.fileCurrentlyBeingAssembled,
-                                (instrNumber == 0) ? statement.getSource() : "", newTokenList,
-                                newTokenList, instr, textAddress.get(), statement.getSourceLine());
-                        textAddress.increment(Instruction.INSTRUCTION_LENGTH);
-                        ps.buildBasicStatementFromBasicInstruction(errors);
-                        machineList.add(ps);
+                        // Once again, need refactoring, should treat data and text segment the same way
+                        // If in text segment, add current instruction to machineList
+                        if (Memory.inTextSegment(statement.getAddress())) {
+                            ProgramStatement ps = new ProgramStatement(
+                                    this.fileCurrentlyBeingAssembled,
+                                    (instrNumber == 0) ? statement.getSource() : "", newTokenList,
+                                    newTokenList, instr, textAddress.get(), statement.getSourceLine());
+                            textAddress.increment(Instruction.INSTRUCTION_LENGTH);
+                            ps.buildBasicStatementFromBasicInstruction(errors);
+                            machineList.add(ps);
+                            textSegmentLines.add(ps);
+                        // If in data segment, write instruction code in memory
+                        } else if (Memory.inDataSegment(statement.getAddress())) {
+                            ProgramStatement ps = new ProgramStatement(
+                                    this.fileCurrentlyBeingAssembled,
+                                    (instrNumber == 0) ? statement.getSource() : "", newTokenList,
+                                    newTokenList, instr, dataAddress.get(), statement.getSourceLine());
+                            ps.buildBasicStatementFromBasicInstruction(errors);
+                            ps.buildMachineStatementFromBasicStatement(errors);
+                            writeToDataSegment(ps.getBinaryStatement(), Instruction.INSTRUCTION_LENGTH,
+                                    ps.getStrippedTokenList().get(0), errors); //also increments dataAddress
+                            textSegmentLines.add(ps);
+                        }
                     } // end of FOR loop, repeated for each template in list.
-                } // end of ELSE part for extended instruction.
-
+                } else {
+                    textSegmentLines.add(statement); //not an instruction
+                }
             } // end of assembler second pass.
         }
         if (Globals.debug)
@@ -309,7 +320,6 @@ public class Assembler {
         if (errors.errorsOccurred() || errors.warningsOccurred() && warningsAreErrors) {
             throw new AssemblyException(errors);
         }
-        return machineList;
     } // assemble()
 
     // //////////////////////////////////////////////////////////////////////
@@ -469,35 +479,36 @@ public class Assembler {
             return null;
         }
 
-        // If we are in the text segment, the variable "token" must now refer to
-        // an OPERATOR
-        // token. If not, it is either a syntax error or the specified operator
-        // is not
-        // yet implemented.
-        if (!this.inDataSegment) {
-            ArrayList<Instruction> instrMatches = this.matchInstruction(token);
-            if (instrMatches == null)
-                return ret;
-            // OK, we've got an operator match, let's check the operands.
-            Instruction inst = OperandFormat.bestOperandMatch(tokens, instrMatches);
-            // Here's the place to flag use of extended (pseudo) instructions
-            // when setting disabled.
-            if (inst instanceof ExtendedInstruction && !extendedAssemblerEnabled) {
-                errors.add(new ErrorMessage(token.getSourceProgram(), token.getSourceLine(),
-                        token.getStartPos(),
-                        "Extended (pseudo) instruction or format not permitted.  See Settings."));
-            }
-            if (OperandFormat.tokenOperandMatch(tokens, inst, errors)) {
-                programStatement = new ProgramStatement(this.fileCurrentlyBeingAssembled, source,
-                        tokenList, tokens, inst, textAddress.get(), sourceLineNumber);
-                // instruction length is 4 for all basic instruction, varies for extended instruction
-                // Modified to permit use of compact expansion if address fits
-                // in 15 bits. DPS 4-Aug-2009
+        // If we are here, the variable "token" must now refer to an OPERATOR token.
+        // If not, it is either a syntax error or the specified operator is not yet implemented.
+        ArrayList<Instruction> instrMatches = this.matchInstruction(token);
+        if (instrMatches == null)
+            return ret;
+        // OK, we've got an operator match, let's check the operands.
+        Instruction inst = OperandFormat.bestOperandMatch(tokens, instrMatches);
+        // Here's the place to flag use of extended (pseudo) instructions
+        // when setting disabled.
+        if (inst instanceof ExtendedInstruction && !extendedAssemblerEnabled) {
+            errors.add(new ErrorMessage(token.getSourceProgram(), token.getSourceLine(),
+                    token.getStartPos(),
+                    "Extended (pseudo) instruction or format not permitted.  See Settings."));
+        }
+        if (OperandFormat.tokenOperandMatch(tokens, inst, errors)) {
+            // need refactoring, shouldn't have to treat this with two cases
+            if (!this.inDataSegment) {
+                programStatement = new ProgramStatement(this.fileCurrentlyBeingAssembled, source, tokenList,
+                        tokens, inst, textAddress.get(), sourceLineNumber);
                 int instLength = inst.getInstructionLength();
                 textAddress.increment(instLength);
                 ret.add(programStatement);
-                return ret;
+            } else {
+                programStatement = new ProgramStatement(this.fileCurrentlyBeingAssembled, source, tokenList,
+                        tokens, inst, dataAddress.get(), sourceLineNumber);
+                int instLength = inst.getInstructionLength();
+                dataAddress.increment(instLength);
+                ret.add(programStatement);
             }
+            return ret;
         }
         return null;
     } // parseLine()
@@ -937,6 +948,9 @@ public class Assembler {
             }
 
             if (directive == Directives.DWORD){
+                if (this.autoAlign) {
+                    this.dataAddress.set(this.alignToBoundary(this.dataAddress.get(), 8));
+                }
                 writeToDataSegment((int)longvalue, 4, token, errors);
                 writeToDataSegment((int)(longvalue>>32), 4, token, errors);
                 return;

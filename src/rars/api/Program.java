@@ -8,6 +8,7 @@ import rars.util.SystemIO;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
 /**
@@ -58,6 +59,10 @@ public class Program {
         code = new RISCVprogram();
         assembled = new Memory();
         simulation = new Memory();
+    }
+
+    public Options getOptions() {
+        return set;
     }
 
     /**
@@ -154,6 +159,10 @@ public class Program {
         }
     }
 
+    public RISCVprogram getCode() {
+        return code;
+    }
+
     /**
      * Simulates a processor executing the machine code.
      *
@@ -195,14 +204,22 @@ public class Program {
      * @return converts the bytes sent to stdout into a string (resets to "" when setup is called)
      */
     public String getSTDOUT(){
-        return stdout.toString();
+        try {
+            return stdout.toString("UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
      * @return converts the bytes sent to stderr into a string (resets to "" when setup is called)
      */
     public String getSTDERR(){
-        return stderr.toString();
+        try {
+            return stderr.toString("UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**

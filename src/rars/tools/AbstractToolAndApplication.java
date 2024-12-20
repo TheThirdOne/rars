@@ -22,34 +22,6 @@ import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 
-/*
-Copyright (c) 2003-2008,  Pete Sanderson and Kenneth Vollmar
-
-Developed by Pete Sanderson (psanderson@otterbein.edu)
-and Kenneth Vollmar (kenvollmar@missouristate.edu)
-
-Permission is hereby granted, free of charge, to any person obtaining 
-a copy of this software and associated documentation files (the 
-"Software"), to deal in the Software without restriction, including 
-without limitation the rights to use, copy, modify, merge, publish, 
-distribute, sublicense, and/or sell copies of the Software, and to 
-permit persons to whom the Software is furnished to do so, subject 
-to the following conditions:
-
-The above copyright notice and this permission notice shall be 
-included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF 
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR 
-ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF 
-CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION 
-WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-(MIT license, http://www.opensource.org/licenses/mit-license.html)
- */
-
 /**
  * An abstract class that provides generic components to facilitate implementation of
  * a Tool and/or stand-alone Rars-based application.  Provides default definitions
@@ -76,8 +48,6 @@ public abstract class AbstractToolAndApplication extends JFrame implements Tool,
 
     // Some GUI settings
     private EmptyBorder emptyBorder = new EmptyBorder(4, 4, 4, 4);
-    private Color backgroundColor = Color.WHITE;
-
 
     private int lowMemoryAddress = Memory.dataSegmentBaseAddress;
     private int highMemoryAddress = Memory.stackBaseAddress;
@@ -375,7 +345,6 @@ public abstract class AbstractToolAndApplication extends JFrame implements Tool,
         operationStatusMessages = new MessageField("No file open.");
         operationStatusMessages.setColumns(40);
         operationStatusMessages.setMargin(new Insets(0, 3, 0, 3)); //(top, left, bottom, right)
-        operationStatusMessages.setBackground(backgroundColor);
         operationStatusMessages.setFocusable(false);
         operationStatusMessages.setToolTipText("Display operation status messages");
 

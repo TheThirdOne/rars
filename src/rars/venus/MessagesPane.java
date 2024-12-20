@@ -1,8 +1,12 @@
 package rars.venus;
 
+import rars.CancelException;
 import rars.ErrorList;
 import rars.Globals;
+import rars.Settings;
+import rars.simulator.ProgramArgumentList;
 import rars.simulator.Simulator;
+import rars.util.SystemIO;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -18,43 +22,24 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.concurrent.ArrayBlockingQueue;
 
-/*
-Copyright (c) 2003-2010,  Pete Sanderson and Kenneth Vollmar
-
-Developed by Pete Sanderson (psanderson@otterbein.edu)
-and Kenneth Vollmar (kenvollmar@missouristate.edu)
-
-Permission is hereby granted, free of charge, to any person obtaining 
-a copy of this software and associated documentation files (the 
-"Software"), to deal in the Software without restriction, including 
-without limitation the rights to use, copy, modify, merge, publish, 
-distribute, sublicense, and/or sell copies of the Software, and to 
-permit persons to whom the Software is furnished to do so, subject 
-to the following conditions:
-
-The above copyright notice and this permission notice shall be 
-included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF 
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR 
-ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF 
-CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION 
-WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-(MIT license, http://www.opensource.org/licenses/mit-license.html)
- */
-
 /**
  * Creates the message window at the bottom of the UI.
  *
  * @author Team JSpim
  **/
 
-public class MessagesPane extends JTabbedPane {
-    JTextArea assemble, run;
-    private JPanel assembleTab, runTab;
+public class MessagesPane extends JPanel {
+    private final Box runButtonBox;
+    private final JRadioButton buttonPopup;
+    private final JRadioButton buttonInteractive;
+    private final JRadioButton buttonBatch;
+    private final JButton inputTabClearButton;
+    private final Box runioContent;
+    private final JTextField programArguments;
+    private JTabbedPane leftPane;
+    private JSplitPane batchTab;
+    JTextArea assemble, run, input, output;
+    private JPanel assembleTab, runTab, inputTab, runioTab;
     // These constants are designed to keep scrolled contents of the
     // two message areas from becoming overwhelmingly large (which
     // seems to slow things down as new text is appended).  Once it
@@ -71,10 +56,16 @@ public class MessagesPane extends JTabbedPane {
     public MessagesPane() {
         super();
         this.setMinimumSize(new Dimension(0, 0));
+        leftPane = new JTabbedPane();
         assemble = new JTextArea();
         run = new JTextArea();
+        input = new JTextArea();
+        output = new JTextArea();
+        programArguments = new JTextField();
         assemble.setEditable(false);
         run.setEditable(false);
+        input.setEditable(true);
+        output.setEditable(false);
         // Set both text areas to mono font.  For assemble
         // pane, will make messages more readable.  For run
         // pane, will allow properly aligned "text graphics"
@@ -82,6 +73,9 @@ public class MessagesPane extends JTabbedPane {
         Font monoFont = new Font(Font.MONOSPACED, Font.PLAIN, 12);
         assemble.setFont(monoFont);
         run.setFont(monoFont);
+        input.setFont(monoFont);
+        output.setFont(monoFont);
+        programArguments.setFont(monoFont);
 
         JButton assembleTabClearButton = new JButton("Clear");
         assembleTabClearButton.setToolTipText("Clear the Messages area");
@@ -92,7 +86,7 @@ public class MessagesPane extends JTabbedPane {
                     }
                 });
         assembleTab = new JPanel(new BorderLayout());
-        assembleTab.add(createBoxForButton(assembleTabClearButton), BorderLayout.WEST);
+        assembleTab.add(createBoxForComponent(assembleTabClearButton), BorderLayout.WEST);
         assembleTab.add(new JScrollPane(assemble, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
                 ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED), BorderLayout.CENTER);
         assemble.addMouseListener(
@@ -159,38 +153,135 @@ public class MessagesPane extends JTabbedPane {
                     }
                 });
 
-        JButton runTabClearButton = new JButton("Clear");
-        runTabClearButton.setToolTipText("Clear the Run I/O area");
+        JButton runTabClearButton = new JButton("Clear output");
+        runTabClearButton.setToolTipText("Clear the output area");
         runTabClearButton.addActionListener(
                 new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
                         run.setText("");
+                        output.setText("");
                     }
                 });
+        inputTabClearButton = new JButton("Clear input");
+        inputTabClearButton.setToolTipText("Clear the input area (batch mode only)");
+        inputTabClearButton.addActionListener(
+                new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        input.setText("");
+                    }
+                });
+
+        /* Stack of buttons on the left */
+        runButtonBox = Box.createVerticalBox();
+        buttonPopup = new JRadioButton("Popups");
+        buttonInteractive = new JRadioButton("Interactive");
+        buttonBatch = new JRadioButton("Batch");
+        ButtonGroup bg = new ButtonGroup();
+        bg.add(buttonPopup);
+        bg.add(buttonInteractive);
+        bg.add(buttonBatch);
+        ActionListener bl = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+               updateIOTab();
+            }
+        };
+        buttonPopup.addActionListener(bl);
+        buttonInteractive.addActionListener(bl);
+        buttonBatch.addActionListener(bl);
+        runButtonBox.add(buttonPopup);
+        runButtonBox.add(buttonInteractive);
+        runButtonBox.add(buttonBatch);
+        runButtonBox.add(runTabClearButton);
+        runButtonBox.add(inputTabClearButton);
+        if (Globals.getSettings().getBooleanSetting(Settings.Bool.BATCH_IOMODE)) {
+            buttonBatch.setSelected(true);
+        } else if (Globals.getSettings().getBooleanSetting(Settings.Bool.POPUP_SYSCALL_INPUT)) {
+            buttonPopup.setSelected(true);
+        } else {
+            buttonInteractive.setSelected(true);
+        }
+
+        /* runTab: A single interactive text area */
         runTab = new JPanel(new BorderLayout());
-        runTab.add(createBoxForButton(runTabClearButton), BorderLayout.WEST);
+        runTab.add(createBoxForComponent(runButtonBox), BorderLayout.WEST);
         runTab.add(new JScrollPane(run, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
                 ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED), BorderLayout.CENTER);
 
-        this.addTab("Messages", assembleTab);
-        this.addTab("Run I/O", runTab);
-        this.setForeground(Color.BLACK);
+        /* batchTab: A dual text area */
+        JPanel inputTab = new JPanel(new BorderLayout());
+        inputTab.add(new JScrollPane(input, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+                ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED), BorderLayout.CENTER);
+        JPanel outputTab = new JPanel(new BorderLayout());
+        outputTab.add(new JScrollPane(output, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+                ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED), BorderLayout.CENTER);
+        batchTab = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, inputTab, outputTab);
+        batchTab.setOneTouchExpandable(true);
+        batchTab.resetToPreferredSizes();
+        batchTab.setResizeWeight(0.5);
 
-        this.setToolTipTextAt(0, "Messages produced by Run menu. Click on assemble error message to select erroneous line");
-        this.setToolTipTextAt(1, "Simulated console input and output");
+        /* The runio, the content is dynamic */
+        runioContent = Box.createHorizontalBox();
+        runioTab = new JPanel(new BorderLayout());
+        runioTab.add(createBoxForComponent(runButtonBox), BorderLayout.WEST);
+        runioTab.add(runioContent);
+        updateIOTab();
+
+        /* The program argument tab */
+        JButton programArgumentsClearButton = new JButton("Clear");
+        programArgumentsClearButton.setToolTipText("Clear the program arguments");
+        programArgumentsClearButton.addActionListener(
+                new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        programArguments.setText("");
+                    }
+                });
+        JPanel programArgumentsPanel = new JPanel(new BorderLayout());
+        programArgumentsPanel.add(createBoxForComponent(programArgumentsClearButton), BorderLayout.WEST);
+        programArguments.setMaximumSize(new Dimension(Integer.MAX_VALUE, programArguments.getPreferredSize().height));
+        programArgumentsPanel.add(createBoxForComponent(programArguments), BorderLayout.CENTER);
+
+        leftPane.addTab("Messages", assembleTab);
+        leftPane.addTab("Run I/O", runioTab);
+        leftPane.addTab("Program Arguments", programArgumentsPanel);
+
+        leftPane.setToolTipTextAt(0, "Messages produced by Run menu. Click on assemble error message to select erroneous line");
+        leftPane.setToolTipTextAt(1, "Simulated console input (used while running) and other run messages");
+        leftPane.setToolTipTextAt(2, "Arguments provided to program at runtime via a0 (argc) and a1 (argv)");
+
+        this.setLayout(new BorderLayout());
+        this.add(leftPane);
+    }
+
+    /** Update the content of the runio tab according to the selected radio buttons. */
+    private void updateIOTab() {
+        runioContent.removeAll();
+        if (buttonBatch.isSelected() ) {
+            Globals.getSettings().setBooleanSetting(Settings.Bool.BATCH_IOMODE, true);
+            Globals.getSettings().setBooleanSetting(Settings.Bool.POPUP_SYSCALL_INPUT, false);
+            runioContent.add(batchTab);
+            inputTabClearButton.setEnabled(true);
+        } else {
+            Globals.getSettings().setBooleanSetting(Settings.Bool.BATCH_IOMODE, false);
+            runioContent.add(runTab);
+            Globals.getSettings().setBooleanSetting(Settings.Bool.POPUP_SYSCALL_INPUT, buttonPopup.isSelected());
+            inputTabClearButton.setEnabled(false);
+        }
+        // Force the repaint and the application of the look-and-feel
+        SwingUtilities.updateComponentTreeUI(runioContent);
     }
 
     // Center given button in a box, centered vertically and 6 pixels on left and right
-    private Box createBoxForButton(JButton button) {
-        Box buttonRow = Box.createHorizontalBox();
-        buttonRow.add(Box.createHorizontalStrut(6));
-        buttonRow.add(button);
-        buttonRow.add(Box.createHorizontalStrut(6));
-        Box buttonBox = Box.createVerticalBox();
-        buttonBox.add(Box.createVerticalGlue());
-        buttonBox.add(buttonRow);
-        buttonBox.add(Box.createVerticalGlue());
-        return buttonBox;
+    private Box createBoxForComponent(Component component) {
+        Box componentRow = Box.createHorizontalBox();
+        componentRow.add(Box.createHorizontalStrut(6));
+        componentRow.add(component);
+        componentRow.add(Box.createHorizontalStrut(6));
+        Box componentBox = Box.createVerticalBox();
+        componentBox.add(Box.createVerticalGlue());
+        componentBox.add(componentRow);
+        componentBox.add(Box.createVerticalGlue());
+        return componentBox;
     }
 
     /**
@@ -277,24 +368,46 @@ public class MessagesPane extends JTabbedPane {
     }
 
     /**
+     * Return true if the execution is (or will be) in interactive mode and false for batch mode.
+     * Currently, batch mode means that the input field is not empty.
+     */
+    public Boolean isInteractiveMode() {
+        return ! Globals.getSettings().getBooleanSetting(Settings.Bool.BATCH_IOMODE);
+    }
+
+    /**
+     * Returns the text written in the input field
+     *
+     * @return input text field content
+     */
+    public String getInputField() {
+        return input.getText();
+    }
+
+    /** Append a message to a textarea and garbage collect very old text if needed. */
+    private void append(JTextArea area, String string) {
+        area.append(string);
+        // can do some crude cutting here.  If the document gets "very large",
+        // let's cut off the oldest text. This will limit scrolling but the limit
+        // can be set reasonably high.
+        if (area.getDocument().getLength() > MAXIMUM_SCROLLED_CHARACTERS) {
+            try {
+                area.getDocument().remove(0, NUMBER_OF_CHARACTERS_TO_CUT);
+            } catch (BadLocationException ble) {
+                // only if NUMBER_OF_CHARACTERS_TO_CUT > MAXIMUM_SCROLLED_CHARACTERS
+            }
+        }
+        area.setCaretPosition(area.getDocument().getLength());
+    }
+
+    /**
      * Post a message to the assembler display
      *
      * @param message String to append to assembler display text
      */
     public void postMessage(String message) {
-        assemble.append(message);
-        // can do some crude cutting here.  If the document gets "very large",
-        // let's cut off the oldest text. This will limit scrolling but the limit
-        // can be set reasonably high.
-        if (assemble.getDocument().getLength() > MAXIMUM_SCROLLED_CHARACTERS) {
-            try {
-                assemble.getDocument().remove(0, NUMBER_OF_CHARACTERS_TO_CUT);
-            } catch (BadLocationException ble) {
-                // only if NUMBER_OF_CHARACTERS_TO_CUT > MAXIMUM_SCROLLED_CHARACTERS
-            }
-        }
-        assemble.setCaretPosition(assemble.getDocument().getLength());
-        setSelectedComponent(assembleTab);
+        append(assemble, message);
+        leftPane.setSelectedComponent(assembleTab);
     }
 
     /**
@@ -313,18 +426,25 @@ public class MessagesPane extends JTabbedPane {
         SwingUtilities.invokeLater(
                 new Runnable() {
                     public void run() {
-                        setSelectedComponent(runTab);
-                        run.append(mess);
-                        // can do some crude cutting here.  If the document gets "very large",
-                        // let's cut off the oldest text. This will limit scrolling but the limit
-                        // can be set reasonably high.
-                        if (run.getDocument().getLength() > MAXIMUM_SCROLLED_CHARACTERS) {
-                            try {
-                                run.getDocument().remove(0, NUMBER_OF_CHARACTERS_TO_CUT);
-                            } catch (BadLocationException ble) {
-                                // only if NUMBER_OF_CHARACTERS_TO_CUT > MAXIMUM_SCROLLED_CHARACTERS
-                            }
-                        }
+                        selectRunMessageTab();
+                        append(run, mess);
+                        append(output, mess);
+                    }
+                });
+    }
+
+    /**
+     * Post a message to the output display
+     *
+     * @param message String to append to output display text
+     */
+    public void postOutput(String message) {
+        final String mess = message;
+        SwingUtilities.invokeLater(
+                new Runnable() {
+                    public void run() {
+                        append(run, mess);
+                        append(output, mess);
                     }
                 });
     }
@@ -333,14 +453,24 @@ public class MessagesPane extends JTabbedPane {
      * Make the assembler message tab current (up front)
      */
     public void selectMessageTab() {
-        setSelectedComponent(assembleTab);
+        leftPane.setSelectedComponent(assembleTab);
     }
 
     /**
      * Make the runtime message tab current (up front)
      */
     public void selectRunMessageTab() {
-        setSelectedComponent(runTab);
+        leftPane.setSelectedComponent(runioTab);
+    }
+
+    /**
+    * Method to store any program arguments into memory and registers before
+    * execution begins. Arguments go into the gap between $sp and kernel memory.
+    * Argument pointers and count go into runtime stack and $sp is adjusted accordingly.
+    * $a0 gets argument count (argc), $a1 gets stack address of first arg pointer (argv).
+    */
+    public void processProgramArgumentsIfAny() {
+        new ProgramArgumentList(programArguments.getText()).storeProgramArguments();
     }
 
     /**
@@ -356,20 +486,24 @@ public class MessagesPane extends JTabbedPane {
      * @param prompt Prompt to display to the user.
      * @return User input.
      */
-    public String getInputString(String prompt) {
+    public String getInputString(String prompt) throws CancelException {
         String input;
         boolean lock = Globals.memoryAndRegistersLock.isHeldByCurrentThread();
         if (lock) {
             Globals.memoryAndRegistersLock.unlock();
         }
-        JOptionPane pane = new JOptionPane(prompt, JOptionPane.QUESTION_MESSAGE, JOptionPane.DEFAULT_OPTION);
+        JOptionPane pane = new JOptionPane(prompt, JOptionPane.QUESTION_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
         pane.setWantsInput(true);
         JDialog dialog = pane.createDialog(Globals.getGui(), "Keyboard Input");
         dialog.setVisible(true);
         input = (String) pane.getInputValue();
-        this.postRunMessage(Globals.userInputAlert + input + "\n");
         if (lock) {
             Globals.memoryAndRegistersLock.lock();
+        }
+        if (input == JOptionPane.UNINITIALIZED_VALUE) {
+            throw new CancelException();
+        } else {
+            this.postRunMessage(Globals.userInputAlert + input + "\n");
         }
         return input;
     }

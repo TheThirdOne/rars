@@ -15,34 +15,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.*;
 
-	/*
-Copyright (c) 2003-2007,  Pete Sanderson and Kenneth Vollmar
-
-Developed by Pete Sanderson (psanderson@otterbein.edu)
-and Kenneth Vollmar (kenvollmar@missouristate.edu)
-
-Permission is hereby granted, free of charge, to any person obtaining 
-a copy of this software and associated documentation files (the 
-"Software"), to deal in the Software without restriction, including 
-without limitation the rights to use, copy, modify, merge, publish, 
-distribute, sublicense, and/or sell copies of the Software, and to 
-permit persons to whom the Software is furnished to do so, subject 
-to the following conditions:
-
-The above copyright notice and this permission notice shall be 
-included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF 
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR 
-ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF 
-CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION 
-WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-(MIT license, http://www.opensource.org/licenses/mit-license.html)
- */
-
 /**
  * Creates the Text Segment window in the Execute tab of the UI
  *
@@ -50,9 +22,6 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  **/
 
 public class TextSegmentWindow extends JInternalFrame implements Observer {
-    private JPanel programArgumentsPanel;  // DPS 17-July-2008
-    private JTextField programArgumentsTextField; // DPS 17-July-2008
-    private static final int PROGRAM_ARGUMENT_TEXTFIELD_COLUMNS = 40;
     private JTable table;
     private JScrollPane tableScroller;
     private Object[][] data;
@@ -96,11 +65,6 @@ public class TextSegmentWindow extends JInternalFrame implements Observer {
         contentPane = this.getContentPane();
         codeHighlighting = true;
         breakpointsEnabled = true;
-        programArgumentsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        programArgumentsPanel.add(new JLabel("Program Arguments: "));
-        programArgumentsTextField = new JTextField(PROGRAM_ARGUMENT_TEXTFIELD_COLUMNS);
-        programArgumentsTextField.setToolTipText("Arguments provided to program at runtime via a0 (argc) and a1 (argv)");
-        programArgumentsPanel.add(programArgumentsTextField);
     }
 
 
@@ -109,48 +73,14 @@ public class TextSegmentWindow extends JInternalFrame implements Observer {
      * Should convert the lines of code over to the table rows and columns.
      **/
     public void setupTable() {
-        int addressBase = Globals.getGui().getMainPane().getExecutePane().getAddressDisplayBase();
         codeHighlighting = true;
         breakpointsEnabled = true;
-        ArrayList<ProgramStatement> sourceStatementList = Globals.program.getMachineList();
+        ArrayList<ProgramStatement> sourceStatementList = Globals.program.getTextSegmentLines();
         data = new Object[sourceStatementList.size()][columnNames.length];
         intAddresses = new int[data.length];
         addressRows = new Hashtable<>(data.length);
         executeMods = new Hashtable<>(data.length);
-        // Get highest source line number to determine #leading spaces so line numbers will vertically align
-        // In multi-file situation, this will not necessarily be the last line b/c sourceStatementList contains
-        // source lines from all files.  DPS 3-Oct-10
-        int maxSourceLineNumber = 0;
-        for (int i = sourceStatementList.size() - 1; i >= 0; i--) {
-            ProgramStatement statement = sourceStatementList.get(i);
-            if (statement.getSourceLine() > maxSourceLineNumber) {
-                maxSourceLineNumber = statement.getSourceLine();
-            }
-        }
-        int sourceLineDigits = ("" + maxSourceLineNumber).length();
-        int leadingSpaces = 0;
-        int lastLine = -1;
-        for (int i = 0; i < sourceStatementList.size(); i++) {
-            ProgramStatement statement = sourceStatementList.get(i);
-            intAddresses[i] = statement.getAddress();
-            addressRows.put(intAddresses[i], i);
-            data[i][BREAK_COLUMN] = false;
-            data[i][ADDRESS_COLUMN] = NumberDisplayBaseChooser.formatUnsignedInteger(statement.getAddress(), addressBase);
-            data[i][CODE_COLUMN] = NumberDisplayBaseChooser.formatNumber(statement.getBinaryStatement(), 16);
-            data[i][BASIC_COLUMN] = statement.getPrintableBasicAssemblyStatement();
-            String sourceString = "";
-            if (!statement.getSource().equals("")) {
-                leadingSpaces = sourceLineDigits - ("" + statement.getSourceLine()).length();
-                String lineNumber = "          ".substring(0, leadingSpaces)
-                        + statement.getSourceLine() + ": ";
-                if (statement.getSourceLine() == lastLine)
-                    lineNumber = "          ".substring(0, sourceLineDigits) + "  ";
-                sourceString = lineNumber
-                        + rars.util.EditorFont.substituteSpacesForTabs(statement.getSource());
-            }
-            data[i][SOURCE_COLUMN] = sourceString;
-            lastLine = statement.getSourceLine();
-        }
+        addRows(sourceStatementList);
         contentPane.removeAll();
         tableModel = new TextTableModel(data);
         if (tableModelListener != null) {
@@ -162,12 +92,6 @@ public class TextSegmentWindow extends JInternalFrame implements Observer {
 
         // prevents cells in row from being highlighted when user clicks on breakpoint checkbox
         table.setRowSelectionAllowed(false);
-
-        table.getColumnModel().getColumn(BREAK_COLUMN).setPreferredWidth(40);
-        table.getColumnModel().getColumn(ADDRESS_COLUMN).setPreferredWidth(80);
-        table.getColumnModel().getColumn(CODE_COLUMN).setPreferredWidth(80);
-        table.getColumnModel().getColumn(BASIC_COLUMN).setPreferredWidth(160);
-        table.getColumnModel().getColumn(SOURCE_COLUMN).setPreferredWidth(280);
 
         CodeCellRenderer codeStepHighlighter = new CodeCellRenderer();
         table.getColumnModel().getColumn(BASIC_COLUMN).setCellRenderer(codeStepHighlighter);
@@ -183,9 +107,12 @@ public class TextSegmentWindow extends JInternalFrame implements Observer {
         tableScroller = new JScrollPane(table, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
                 ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
         contentPane.add(tableScroller);
-        if (Globals.getSettings().getBooleanSetting(Settings.Bool.PROGRAM_ARGUMENTS)) {
-            addProgramArgumentsPanel();
-        }
+
+        setColumnMaxWidth(table.getColumnModel().getColumn(BREAK_COLUMN), columnNames[0]);
+        setColumnMaxWidth(table.getColumnModel().getColumn(ADDRESS_COLUMN), "0x00000000");
+        setColumnMaxWidth(table.getColumnModel().getColumn(CODE_COLUMN), "0x00000000");
+        table.getColumnModel().getColumn(BASIC_COLUMN).setPreferredWidth(160);
+        table.getColumnModel().getColumn(SOURCE_COLUMN).setPreferredWidth(280);
 
         deleteAsTextSegmentObserver();
         if (Globals.getSettings().getBooleanSetting(Settings.Bool.SELF_MODIFYING_CODE_ENABLED)) {
@@ -193,33 +120,76 @@ public class TextSegmentWindow extends JInternalFrame implements Observer {
         }
     }
 
-    ////////////  Support for program arguments added DPS 17-July-2008 //////////////
+    /**
+     * Add rows in the data array from the information in the sourceStatementList.
+     *
+     * @param sourceStatementList contains the statements from de source code (comments, .eqv, instructions, ...)
+     *                            and the linked information (address, code, basic instruction, source code, ...)
+     */
+    private void addRows(ArrayList<ProgramStatement> sourceStatementList) {
+        int maxSourceLineNumber = getMaxSourceLineNumber(sourceStatementList);
+        int addressBase = Globals.getGui().getMainPane().getExecutePane().getAddressDisplayBase();
+        int sourceLineDigits = ("" + maxSourceLineNumber).length();
+        int leadingSpaces = 0;
+        int lastLine = -1;
+
+        for (int i = 0; i < sourceStatementList.size(); i++) {
+            ProgramStatement statement = sourceStatementList.get(i);
+            intAddresses[i] = statement.getAddress();
+            addressRows.put(intAddresses[i], i);
+            data[i][BREAK_COLUMN] = false;
+            String address = "";
+            String code = "";
+            String basicInstruction = "";
+            String sourceString = "";
+            if (statement.getInstruction() != null) {
+                address = NumberDisplayBaseChooser.formatUnsignedInteger(statement.getAddress(), addressBase);
+                code = NumberDisplayBaseChooser.formatNumber(statement.getBinaryStatement(), 16, 4);
+                basicInstruction = statement.getPrintableBasicAssemblyStatement();
+            }
+            if (!statement.getSource().equals("")) {
+                leadingSpaces = sourceLineDigits - ("" + statement.getSourceLine()).length();
+                String lineNumber = "          ".substring(0, leadingSpaces)
+                        + statement.getSourceLine() + ": ";
+                if (statement.getSourceLine() == lastLine)
+                    lineNumber = "          ".substring(0, sourceLineDigits) + "  ";
+                sourceString = lineNumber
+                        + rars.util.EditorFont.substituteSpacesForTabs(statement.getSource());
+            }
+            data[i][ADDRESS_COLUMN] = address;
+            data[i][CODE_COLUMN] = code;
+            data[i][BASIC_COLUMN] = basicInstruction;
+            data[i][SOURCE_COLUMN] = sourceString;
+            lastLine = statement.getSourceLine();
+        }
+    }
 
     /**
-     * Get program arguments from text field in south border of text segment window.
-     *
-     * @return String containing program arguments
+     * Get highest source line number to determine #leading spaces so line numbers will vertically align
+     * In multi-file situation, this will not necessarily be the last line b/c sourceStatementList contains
+     * source lines from all files.  DPS 3-Oct-10
      */
-    public String getProgramArguments() {
-        return programArgumentsTextField.getText();
+    private static int getMaxSourceLineNumber(ArrayList<ProgramStatement> sourceStatementList) {
+        int maxSourceLineNumber = 0;
+        for (int i = sourceStatementList.size() - 1; i >= 0; i--) {
+            ProgramStatement statement = sourceStatementList.get(i);
+            if (statement.getSourceLine() > maxSourceLineNumber) {
+                maxSourceLineNumber = statement.getSourceLine();
+            }
+        }
+        return maxSourceLineNumber;
     }
 
-    public void addProgramArgumentsPanel() {
-        // Don't add it if text segment window blank (file closed or no assemble yet)
-        if (contentPane != null && contentPane.getComponentCount() > 0) {
-            contentPane.add(programArgumentsPanel, BorderLayout.NORTH);
-            contentPane.validate();
-        }
+    /**
+     *
+     */
+    public void setColumnMaxWidth(TableColumn column, String referenceText) {
+        Component component = this; // column.getCellRenderer().getTableCellRendererComponent();
+        FontMetrics fontMetrics = component.getFontMetrics(component.getFont());
+        int width = fontMetrics.stringWidth(referenceText) + 10;
+        column.setMaxWidth(width);
+        column.setPreferredWidth(width);
     }
-
-    public void removeProgramArgumentsPanel() {
-        if (contentPane != null) {
-            contentPane.remove(programArgumentsPanel);
-            contentPane.validate();
-        }
-    }
-    //
-    ///////////////////////// end program arguments section  ////////////////////////
 
     /**
      * remove all components
@@ -247,11 +217,12 @@ public class TextSegmentWindow extends JInternalFrame implements Observer {
         if (contentPane.getComponentCount() == 0)
             return; // ignore if no content to change
         int addressBase = Globals.getGui().getMainPane().getExecutePane().getAddressDisplayBase();
-        int address;
         String formattedAddress;
         for (int i = 0; i < intAddresses.length; i++) {
-            formattedAddress = NumberDisplayBaseChooser.formatUnsignedInteger(intAddresses[i], addressBase);
-            table.getModel().setValueAt(formattedAddress, i, ADDRESS_COLUMN);
+            if (intAddresses[i] != -1) {
+                formattedAddress = NumberDisplayBaseChooser.formatUnsignedInteger(intAddresses[i], addressBase);
+                table.getModel().setValueAt(formattedAddress, i, ADDRESS_COLUMN);
+            }
         }
     }
 
@@ -442,7 +413,19 @@ public class TextSegmentWindow extends JInternalFrame implements Observer {
         breakpointCount = 0;
         for (int i = 0; i < data.length; i++) {
             if ((Boolean) data[i][BREAK_COLUMN]) {
-                breakpoints[breakpointCount++] = intAddresses[i];
+                int index = i;
+                //if a breakpoint is not on an instruction, puts a breakpoint at next instruction
+                if(intAddresses[i] == -1) {
+                    for (int j = index; j < data.length; j++)
+                        if (intAddresses[j] != -1) {
+                            index = j;
+                            break;
+                        }
+                    if (index == i) //no instruction follows the breakpoint
+                        continue;   //don't add breakpoint
+                }
+                breakpoints[breakpointCount++] = intAddresses[index];
+                //TODO: we should probably, in place of this, lock the possibility to put a breakpoint if not an instruction
             }
         }
         Arrays.sort(breakpoints);
@@ -839,13 +822,11 @@ public class TextSegmentWindow extends JInternalFrame implements Observer {
     * Cell renderer for Machine Code column.  Alternates background color by row but otherwise is
     * same as MonoRightCellRenderer.
     */
-    class MachineCodeCellRenderer extends DefaultTableCellRenderer {
+    class MachineCodeCellRenderer extends MonoRightCellRenderer {
         public Component getTableCellRendererComponent(JTable table, Object value,
                                                        boolean isSelected, boolean hasFocus, int row, int column) {
             JLabel cell = (JLabel) super.getTableCellRendererComponent(table, value,
                     isSelected, hasFocus, row, column);
-            cell.setFont(MonoRightCellRenderer.MONOSPACED_PLAIN_12POINT);
-            cell.setHorizontalAlignment(SwingConstants.RIGHT);
             if (row % 2 == 0) {
                 cell.setBackground(Globals.getSettings().getColorSettingByPosition(Settings.EVEN_ROW_BACKGROUND));
                 cell.setForeground(Globals.getSettings().getColorSettingByPosition(Settings.EVEN_ROW_FOREGROUND));

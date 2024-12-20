@@ -5,40 +5,13 @@ import rars.ProgramStatement;
 import rars.Settings;
 import rars.SimulationException;
 import rars.riscv.Instruction;
+import rars.riscv.InstructionSet;
 import rars.util.Binary;
 
 import java.util.Collection;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Vector;
-
-	/*
-Copyright (c) 2003-2009,  Pete Sanderson and Kenneth Vollmar
-
-Developed by Pete Sanderson (psanderson@otterbein.edu)
-and Kenneth Vollmar (kenvollmar@missouristate.edu)
-
-Permission is hereby granted, free of charge, to any person obtaining 
-a copy of this software and associated documentation files (the 
-"Software"), to deal in the Software without restriction, including 
-without limitation the rights to use, copy, modify, merge, publish, 
-distribute, sublicense, and/or sell copies of the Software, and to 
-permit persons to whom the Software is furnished to do so, subject 
-to the following conditions:
-
-The above copyright notice and this permission notice shall be 
-included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF 
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR 
-ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF 
-CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION 
-WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-(MIT license, http://www.opensource.org/licenses/mit-license.html)
- */
 
 /**
  * Represents memory. Different segments are represented by different data structs.
@@ -337,7 +310,7 @@ public class Memory extends Observable {
      * Returns the next available word-aligned heap address.  There is no recycling and
      * no heap management!  There is however nearly 4MB of heap space available in Rars.
      *
-     * @param numBytes Number of bytes requested.  Should be multiple of 4, otherwise next higher multiple of 4 allocated.
+     * @param numBytes Number of bytes requested.  Should be multiple of the architecture size (4 in RV32 or 8 in RV64) , otherwise next higher multiple of the arch size allocated.
      * @return address of allocated heap storage.
      * @throws IllegalArgumentException if number of requested bytes is negative or exceeds available heap storage
      */
@@ -347,8 +320,9 @@ public class Memory extends Observable {
             throw new IllegalArgumentException("request (" + numBytes + ") is negative heap amount");
         }
         int newHeapAddress = heapAddress + numBytes;
-        if (newHeapAddress % 4 != 0) {
-            newHeapAddress = newHeapAddress + (4 - newHeapAddress % 4); // next higher multiple of 4
+        int size = InstructionSet.rv64 ? 8 : 4;
+        if (newHeapAddress % size != 0) {
+            newHeapAddress = newHeapAddress + (size - newHeapAddress % size); // next higher multiple of 4
         }
         if (newHeapAddress >= dataSegmentLimitAddress) {
             throw new IllegalArgumentException("request (" + numBytes + ") exceeds available heap storage");
@@ -375,6 +349,10 @@ public class Memory extends Observable {
 
     // Allocates blocks if necessary.
     public int set(int address, int value, int length) throws AddressErrorException {
+        // This method is very complex and produce wrong results if length>4
+        // So clamp the length to 4
+        if (length > 4) length = 4;
+
         int oldValue = 0;
         if (Globals.debug) System.out.println("memory[" + address + "] set to " + value + "(" + length + " bytes)");
         int relativeByteAddress;
@@ -619,6 +597,19 @@ public class Memory extends Observable {
         return get(address, length, true);
     }
 
+    public long getRaw(int address, int length) throws AddressErrorException {
+        if (length == 8) {
+            long low = get(address, 4, false);
+            long high = get(address+4, 4, false);
+            if (low < 0) low += 0x100000000l;
+            return (high << 32) | low;
+        } else {
+            long v = get(address, length, false);
+            if (v < 0) v += 0x100000000l;
+            return v;
+        }
+    }
+
     // Does the real work, but includes option to NOT notify observers.
     private int get(int address, int length, boolean notify) throws AddressErrorException {
         int value = 0;
@@ -638,22 +629,15 @@ public class Memory extends Observable {
         } else if (inTextSegment(address)) {
             // Burch Mod (Jan 2013): replace throw with calls to getStatementNoNotify & getBinaryStatement
             // DPS adaptation 5-Jul-2013: either throw or call, depending on setting
-            if (Globals.getSettings().getBooleanSetting(Settings.Bool.SELF_MODIFYING_CODE_ENABLED)) {
-                if(address%4+length > 4){
-                    // TODO: add checks for halfword load not aligned to halfword boundary
-                    throw new AddressErrorException(
-                            "Load address not aligned to word boundary ",
-                            SimulationException.LOAD_ADDRESS_MISALIGNED, address);
-                }
-                ProgramStatement stmt = getStatementNoNotify((address/4)*4);
-                // TODO: maybe find a way to make the bit manipulation more clear
-                // It just selects the right bytes from the word loaded
-                value = stmt == null ? 0 : length == 4 ? stmt.getBinaryStatement() : stmt.getBinaryStatement()>>(8*(address%4))&((1<<length*8)-1);
-            } else {
+            if(address%4+length > 4){
+                // TODO: add checks for halfword load not aligned to halfword boundary
                 throw new AddressErrorException(
-                        "Cannot read directly from text segment!",
-                        SimulationException.LOAD_ACCESS_FAULT, address);
+                        "Load address not aligned to word boundary ", SimulationException.LOAD_ADDRESS_MISALIGNED, address);
             }
+            ProgramStatement stmt = getStatementNoNotify((address/4)*4);
+            // TODO: maybe find a way to make the bit manipulation more clear
+            // It just selects the right bytes from the word loaded
+            value = stmt == null ? 0 : length == 4 ? stmt.getBinaryStatement() : stmt.getBinaryStatement()>>(8*(address%4))&((1<<length*8)-1);
         } else {
             // falls outside addressing range
             throw new AddressErrorException("address out of range ",

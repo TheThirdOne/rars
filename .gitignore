@@ -4,12 +4,22 @@ out
 
 # Build products
 build
+tmp
+flatlaf-3.2.jar
 rars.jar
+rars-flatlaf.jar
+src/Version.properties
+
+# Maven
+target/
 
 # Eclipse project files
 .classpath
 .project
 examples/riscv
+
+# Emacs
+.settings
 
 # MacOS
 .DS_Store

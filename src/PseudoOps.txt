@@ -111,7 +111,7 @@ jr t0, -100     ;jalr x0, RG1, VL2 ;#Jump Register: Jump to address in t0
 jalr t0, -100   ;jalr x1, RG1, VL2 ;#Jump And Link Register: Jump to address in t0 and set the return address to ra
 jalr t0,-100(t1);jalr RG1, RG4, VL2;#Jump And Link Register: Jump to address in t1 and set the return address to t0
 ret             ;jalr x0, x1, 0    ;#Return: return from a subroutine
-call label      ;auipc x6,PCH1     ;jalr x1, x6, PCL1;#CALL: call a far-away subroutine
+call label      ;auipc x1,PCH1     ;jalr x1, x1, PCL1;#CALL: call a far-away subroutine
 tail label      ;auipc x6,PCH1     ;jalr x0, x6, PCL1;#TAIL call: tail call (call without saving return address)a far-away subroutine
 
 #########################  load/store pseudo-ops start here  ##########################

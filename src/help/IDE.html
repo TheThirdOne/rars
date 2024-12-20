@@ -1,77 +1,85 @@
 <html>
-<title>RARS 1.6 help contents
-</title>
+<title>RARS help contents </title>
 <body>
 <center>
-<h3>RARS - RISC-V Assembler and Runtime Simulator</h3>
-<h4>Release 1.0</h4>
-<h4>August 2017</h4>
-<h4>Using RARS through its Integrated Development Environment (IDE)</h4>
+    <h3>RARS - RISC-V Assembler and Runtime Simulator</h3>
+    <h4>Using RARS through its Integrated Development Environment (IDE)</h4>
 </center>
-
-The IDE is invoked when RARS is run with no command arguments, e.g. <tt>java -jar rars.jar</tt>.
-It may also be launched from a graphical interface by double-clicking the <tt>rars.jar</tt> icon
-that represents this executable JAR file.
-The IDE provides basic editing, assembling and execution capabilities.  Hopefully it
-is intuitive to use.  Here are comments on some features.
+The IDE is invoked when RARS is run with no command arguments, e.g. <tt>java -jar rars.jar</tt>. It may also be launched
+from a graphical interface by double-clicking the <tt>rars.jar</tt> icon that represents this executable JAR file. The
+IDE provides basic editing, assembling and execution capabilities. Hopefully it is intuitive to use. Here are comments
+on some features.
 <ul>
-<li><b>Menus and Toolbar</b>: Most menu items have equivalent toolbar icons.
-If the function of a toolbar icon is not obvious, just hover the mouse over it and
-a tool tip will soon appear.  Nearly all menu items also have keyboard shortcuts.
-Any menu item not appropriate in a given situation is disabled.</li>
-<li>
-    <b>Editor</b>: RARS includes two integrated text editors.  The default editor features syntax-aware color
-    highlighting of most language elements and popup instruction guides.  The original, generic, text
-    editor without these features is still available and can be selected in the Editor Settings dialog.
-    It supports a single font which can be modified in the Editor Settings dialog.
-    The bottom border of either editor includes the cursor line
-    and column position and there is a checkbox to display line numbers.
-    They are displayed outside the editing area.  If you use an external editor, RARS provides
-    a convenience setting that will automatically assemble a file as soon as it is opened.  See
-    the Settings menu.
-<li><b>Message Areas</b>: There are two tabbed message areas at the
-bottom of the screen.  The <i>Run I/O</i> tab is used at runtime for 
-displaying console output and entering console input as program execution progresses.  
-You have the option of entering console input into a pop-up dialog then echoes to the message area.  
-The <i>RARS Messages</i> tab is used for other messages such as assembly or
-runtime errors and informational messages.  You can click on assembly error messages to
-select the corresponding line of code in the editor.
-<li><b>Registers</b>: Registers are displayed at all times, even
-when you are editing and not running a program.  While writing your program,
-this serves as a useful reference for register names and their conventional
-uses (hover mouse over the register name to see tool tips).  There are three
-register tabs: the Register File (integer registers $0 through $31 plus LO,
-HI and the Program Counter), selected Coprocesor 0 registers (exceptions and
-interrupts), and Coprocessor 1 floating point registers.
-
-<li><b>Assembly</b>: Select <i>Assemble</i> from the <i>Run</i> menu or the
-corresponding toolbar icon to assemble the file currently in the Edit tab.
-files in current directory.</i>  With the Assemble All setting turned on the assembler will assemble
-the current file as the "main" program and also assemble all other assembly
-files (*.asm; *.s) in the same directory. And with the Assemble Open option, currently
-open the assembler will also assemble currently open files. The results are linked and if all these
-operations were successful the program can be executed.  Labels that are
-declared global with the ".globl" directive may be referenced in any of the
-other files in the project.  There is also a setting that permits
-automatic loading and assembly of a selected exception handler file.
-
-
-<li><b>Execution</b>: Once a program successfully assembles, the
-registers are initialized and three windows
-in the Execute tab are filled: <i>Text Segment</i>, <i>Data Segment</i>,
-and <i>Program Labels</i>.  The major execution-time features are described below.
-
-<li><b>Labels Window</b>: Display of the Labels window (symbol table) is
-controlled through the Settings menu.  When displayed, you can click on any label
-or its associated address to center and highlight the contents of that address 
-in the Text Segment window or Data Segment window as appropriate.
+    <li>
+        <b>Menus and Toolbar</b>: Most menu items have equivalent toolbar icons. If the function of a toolbar icon is
+        not obvious, just hover the mouse over it and a tool tip will soon appear. Nearly all menu items also have
+        keyboard shortcuts. Any menu item not appropriate in a given situation is disabled.
+    </li>
+    <li>
+        <b>Editor</b>: RARS includes two integrated text editors. The default editor features syntax-aware color
+        highlighting of most language elements and popup instruction guides. The original, generic, text editor without
+        these features is still available and can be selected in the Editor Settings dialog. It supports a single font
+        which can be modified in the Editor Settings dialog. The bottom border of either editor includes the cursor line
+        and column position and there is a checkbox to display line numbers. They are displayed outside the editing
+        area. If you use an external editor, RARS provides a convenience setting that will automatically assemble a file
+        as soon as it is opened. See the Settings menu.
+    </li>
+    <li>
+        <b>Message Areas</b>: There are three tabbed message areas at the bottom of the screen. <br> The <i>Messages</i>
+        tab is used for messages such as assembly or runtime errors and informational messages. You can click on
+        assembly error messages to select the corresponding line of code in the editor. <br> The <i>Run I/O</i> tab is
+        used at runtime for displaying console output and entering console input. In that tab, you have three options to
+        choose from.
+        <ul>
+            <li>Popups : You enter console input into a pop-up dialog that echoes to the message area. The output also
+                appears in that message area.
+            </li>
+            <li>Interactive : You enter console input directly into the message area. The output also appears in the
+                same message area.
+            </li>
+            <li>Batch : The message area is separated into two windows. The first one (left) takes the whole input that
+                you want for the program execution. The second one (right) will show the output. During execution, the
+                input will be read from the first window, character by character, as if you entered those manually one
+                by one in the interactive option when the program was asking for an entry. You have to be careful to
+                respect how the input is taken by the program. For example, Syscall ReadInt reads until there is a <tt>'\n'</tt>
+                to terminate the entry, so you have to put a line break after the number for that entry.
+            </li>
+        </ul>
+        The <i>Program Arguments</i> tab is used to provide arguments to the program. If that message area is used, a0
+        (argc) will then be initialised to the number of arguments provided, a1 (argv) will contain the address of an
+        argv array (the argv array is of size argc). This array will contain pointers to Strings corresponding to each
+        argument provided.
+    </li>
+    <li>
+        <b>Registers</b>: Registers are displayed at all times, even when you are editing and not running a program.
+        While writing your program, this serves as a useful reference for register names and their conventional uses
+        (hover mouse over the register name to see tool tips). There are three register tabs: the Register File (integer
+        registers $0 through $31 plus LO, HI and the Program Counter), selected Coprocesor 0 registers (exceptions and
+        interrupts), and Coprocessor 1 floating point registers.
+    </li>
+    <li>
+        <b>Assembly</b>: Select <i>Assemble</i> from the <i>Run</i> menu or the corresponding toolbar icon to assemble
+        the file currently in the Edit tab. With the Assemble All setting turned on the assembler will assemble the
+        current file as the "main" program and also assemble all other assembly files (*.asm; *.s) in the same
+        directory. And with the Assemble Open option, currently open the assembler will also assemble currently open
+        files. The results are linked and if all these operations were successful the program can be executed. Labels
+        that are declared global with the ".globl" directive may be referenced in any of the other files in the project.
+        There is also a setting that permits automatic loading and assembly of a selected exception handler file.
+    </li>
+    <li>
+        <b>Execution</b>: Once a program successfully assembles, the registers are initialized and three windows in the
+        Execute tab are filled: <i>Text Segment</i>, <i>Data Segment</i>, and <i>Program Labels</i>. The major
+        execution-time features are described below.
+    </li>
+    <li>
+        <b>Labels Window</b>: Display of the Labels window (symbol table) is controlled through the Settings menu. When
+        displayed, you can click on any label or its associated address to center and highlight the contents of that
+        address in the Text Segment window or Data Segment window as appropriate.
+    </li>
 </ul>
-
-<p>The assembler and simulator are invoked from the IDE
-when you select the <i>Assemble</i>, <i>Go</i>,
-or <i>Step</i> operations from the <i>Run</i> menu or their corresponding
-toolbar icons or keyboard shortcuts.  RARS messages are displayed on the
-<i>RARS Messages</i> tab of the message area at the bottom of the screen.
-Runtime console input and output is handled in the <i>Run I/O</i> tab.
+<p>The assembler and simulator are invoked from the IDE when you select the <i>Assemble</i>, <i>Go</i>, or <i>Step</i>
+    operations from the <i>Run</i> menu or their corresponding toolbar icons or keyboard shortcuts. RARS messages are
+    displayed on the <i>RARS Messages</i> tab of the message area at the bottom of the screen. Runtime console input and
+    output is handled in the <i>Run I/O</i> tab.
 </body>
 </html>

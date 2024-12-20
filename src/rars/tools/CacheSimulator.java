@@ -16,34 +16,6 @@ import java.awt.event.ItemListener;
 import java.util.Observable;
 import java.util.Random;
 
-/*
-Copyright (c) 2003-2011,  Pete Sanderson and Kenneth Vollmar
-
-Developed by Pete Sanderson (psanderson@otterbein.edu)
-and Kenneth Vollmar (kenvollmar@missouristate.edu)
-
-Permission is hereby granted, free of charge, to any person obtaining 
-a copy of this software and associated documentation files (the 
-"Software"), to deal in the Software without restriction, including 
-without limitation the rights to use, copy, modify, merge, publish, 
-distribute, sublicense, and/or sell copies of the Software, and to 
-permit persons to whom the Software is furnished to do so, subject 
-to the following conditions:
-
-The above copyright notice and this permission notice shall be 
-included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF 
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR 
-ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF 
-CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION 
-WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-(MIT license, http://www.opensource.org/licenses/mit-license.html)
- */
-
 /**
  * A data cache simulator.  It can be run either as a stand-alone Java application having
  * access to the rars package, or through RARS as an item in its Tools menu.  It makes
@@ -74,7 +46,7 @@ public class CacheSimulator extends AbstractToolAndApplication {
     // Some GUI settings
     private EmptyBorder emptyBorder = new EmptyBorder(4, 4, 4, 4);
     private Font countFonts = new Font("Times", Font.BOLD, 12);
-    private Color backgroundColor = Color.WHITE;
+    private Color backgroundColor = super.getBackground();
 
     // Values for Combo Boxes
     private int[] cacheBlockSizeChoicesInt, cacheBlockCountChoicesInt;
@@ -163,13 +135,11 @@ public class CacheSimulator extends AbstractToolAndApplication {
                         debug = e.getStateChange() == ItemEvent.SELECTED;
                         resetLogDisplay();
                         logText.setEnabled(debug);
-                        logText.setBackground(debug ? Color.WHITE : logPanel.getBackground());
                     }
                 });
         logPanel.add(logShow);
         logText = new JTextArea(5, 70);
         logText.setEnabled(debug);
-        logText.setBackground(debug ? Color.WHITE : logPanel.getBackground());
         logText.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
         logText.setToolTipText("Displays cache activity log if enabled");
         logScroll = new JScrollPane(logText, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
@@ -186,7 +156,6 @@ public class CacheSimulator extends AbstractToolAndApplication {
         organization.setBorder(otb);
         cachePlacementSelector = new JComboBox<>(placementPolicyChoices);
         cachePlacementSelector.setEditable(false);
-        cachePlacementSelector.setBackground(backgroundColor);
         cachePlacementSelector.setSelectedIndex(defaultPlacementPolicyIndex);
         cachePlacementSelector.addActionListener(
                 new ActionListener() {
@@ -198,12 +167,10 @@ public class CacheSimulator extends AbstractToolAndApplication {
 
         cacheReplacementSelector = new JComboBox<>(replacementPolicyChoices);
         cacheReplacementSelector.setEditable(false);
-        cacheReplacementSelector.setBackground(backgroundColor);
         cacheReplacementSelector.setSelectedIndex(defaultReplacementPolicyIndex);
 
         cacheBlockSizeSelector = new JComboBox<>(cacheBlockSizeChoices);
         cacheBlockSizeSelector.setEditable(false);
-        cacheBlockSizeSelector.setBackground(backgroundColor);
         cacheBlockSizeSelector.setSelectedIndex(defaultCacheBlockSizeIndex);
         cacheBlockSizeSelector.addActionListener(
                 new ActionListener() {
@@ -214,7 +181,6 @@ public class CacheSimulator extends AbstractToolAndApplication {
                 });
         cacheBlockCountSelector = new JComboBox<>(cacheBlockCountChoices);
         cacheBlockCountSelector.setEditable(false);
-        cacheBlockCountSelector.setBackground(backgroundColor);
         cacheBlockCountSelector.setSelectedIndex(defaultCacheBlockCountIndex);
         cacheBlockCountSelector.addActionListener(
                 new ActionListener() {
@@ -230,7 +196,6 @@ public class CacheSimulator extends AbstractToolAndApplication {
 
         cacheSetSizeSelector = new JComboBox<>(cacheSetSizeChoices);
         cacheSetSizeSelector.setEditable(false);
-        cacheSetSizeSelector.setBackground(backgroundColor);
         cacheSetSizeSelector.setSelectedIndex(defaultCacheSetSizeIndex);
         cacheSetSizeSelector.addActionListener(
                 new ActionListener() {
@@ -286,7 +251,6 @@ public class CacheSimulator extends AbstractToolAndApplication {
         cacheSizeDisplay = new JTextField(8);
         cacheSizeDisplay.setHorizontalAlignment(JTextField.RIGHT);
         cacheSizeDisplay.setEditable(false);
-        cacheSizeDisplay.setBackground(backgroundColor);
         cacheSizeDisplay.setFont(countFonts);
         cacheTotalSizeRow.add(cacheSizeDisplay, BorderLayout.EAST);
         updateCacheSizeDisplay();
@@ -315,7 +279,6 @@ public class CacheSimulator extends AbstractToolAndApplication {
         memoryAccessCountDisplay = new JTextField(10);
         memoryAccessCountDisplay.setHorizontalAlignment(JTextField.RIGHT);
         memoryAccessCountDisplay.setEditable(false);
-        memoryAccessCountDisplay.setBackground(backgroundColor);
         memoryAccessCountDisplay.setFont(countFonts);
         memoryAccessCountRow.add(memoryAccessCountDisplay, BorderLayout.EAST);
 
@@ -325,7 +288,6 @@ public class CacheSimulator extends AbstractToolAndApplication {
         cacheHitCountDisplay = new JTextField(10);
         cacheHitCountDisplay.setHorizontalAlignment(JTextField.RIGHT);
         cacheHitCountDisplay.setEditable(false);
-        cacheHitCountDisplay.setBackground(backgroundColor);
         cacheHitCountDisplay.setFont(countFonts);
         cacheHitCountRow.add(cacheHitCountDisplay, BorderLayout.EAST);
 
@@ -335,7 +297,6 @@ public class CacheSimulator extends AbstractToolAndApplication {
         cacheMissCountDisplay = new JTextField(10);
         cacheMissCountDisplay.setHorizontalAlignment(JTextField.RIGHT);
         cacheMissCountDisplay.setEditable(false);
-        cacheMissCountDisplay.setBackground(backgroundColor);
         cacheMissCountDisplay.setFont(countFonts);
         cacheMissCountRow.add(cacheMissCountDisplay, BorderLayout.EAST);
 
@@ -345,7 +306,6 @@ public class CacheSimulator extends AbstractToolAndApplication {
         cacheHitRateDisplay = new JProgressBar(JProgressBar.HORIZONTAL, 0, 100);
         cacheHitRateDisplay.setStringPainted(true);
         cacheHitRateDisplay.setForeground(Color.BLUE);
-        cacheHitRateDisplay.setBackground(backgroundColor);
         cacheHitRateDisplay.setFont(countFonts);
         cacheHitRateRow.add(cacheHitRateDisplay, BorderLayout.EAST);
 
@@ -854,8 +814,7 @@ public class CacheSimulator extends AbstractToolAndApplication {
         private JTextField[] blocks;
         public final Color hitColor = Color.GREEN;
         public final Color missColor = Color.RED;
-        public final Color defaultColor = Color.WHITE;
-
+        public final Color defaultColor = backgroundColor;
         public Animation() {
             animation = Box.createVerticalBox();
         }

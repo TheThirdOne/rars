@@ -1,39 +1,13 @@
 package rars.util;
 
+import rars.CancelException;
 import rars.Globals;
 import rars.Settings;
+import rars.SimulationException;
 
 import java.io.*;
 import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
-
-	/*
-Copyright (c) 2003-2013,  Pete Sanderson and Kenneth Vollmar
-
-Developed by Pete Sanderson (psanderson@otterbein.edu)
-and Kenneth Vollmar (kenvollmar@missouristate.edu)
-
-Permission is hereby granted, free of charge, to any person obtaining 
-a copy of this software and associated documentation files (the 
-"Software"), to deal in the Software without restriction, including 
-without limitation the rights to use, copy, modify, merge, publish, 
-distribute, sublicense, and/or sell copies of the Software, and to 
-permit persons to whom the Software is furnished to do so, subject 
-to the following conditions:
-
-The above copyright notice and this permission notice shall be 
-included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF 
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR 
-ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF 
-CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION 
-WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-(MIT license, http://www.opensource.org/licenses/mit-license.html)
- */
 
 /**
  * Provides standard i/o services needed to simulate the RISCV syscall
@@ -76,6 +50,12 @@ public class SystemIO {
     private static final int STDOUT = 1;
     private static final int STDERR = 2;
 
+    // special result of readChar
+    /** End of stream reached */
+    public static final int EOF = -1;
+    /** the character is not a printable ASCII  */
+    public static final int NOTASCII = -2;
+
     /**
      * Implements syscall to read an integer value.
      * Client is responsible for catching NumberFormatException.
@@ -84,13 +64,21 @@ public class SystemIO {
      * @return int value corresponding to user input
      */
 
-    public static int readInteger(int serviceNumber) {
+    public static int readInteger(int serviceNumber) throws CancelException {
         String input = readStringInternal("0", "Enter an integer value (syscall " + serviceNumber + ")", -1);
         // Client is responsible for catching NumberFormatException
+        if (input == null) throw new CancelException();
         return Integer.parseInt(input.trim());
     }
 
-    private static String readStringInternal(String init, String prompt, int maxlength) {
+    public static long readLong(int serviceNumber) throws CancelException {
+        String input = readStringInternal("0", "Enter an integer value (syscall " + serviceNumber + ")", -1);
+        // Client is responsible for catching NumberFormatException
+        if (input == null) throw new CancelException();
+        return Long.parseLong(input.trim());
+    }
+
+    private static String readStringInternal(String init, String prompt, int maxlength) throws CancelException {
         String input = init;
         if (Globals.getGui() == null) {
             try {
@@ -102,6 +90,13 @@ public class SystemIO {
         } else {
             if (Globals.getSettings().getBooleanSetting(Settings.Bool.POPUP_SYSCALL_INPUT)) {
                 input = Globals.getGui().getMessagesPane().getInputString(prompt);
+            } else if (!Globals.getGui().getMessagesPane().isInteractiveMode()) {
+                try {
+                    input = getInputReaderFromGui().readLine();
+                    if (input == null)
+                        input = "";
+                } catch (IOException e) {   // as above
+                }
             } else {
                 input = Globals.getGui().getMessagesPane().getInputString(maxlength);
             }
@@ -117,7 +112,7 @@ public class SystemIO {
      * @return float value corresponding to user input
      * Feb 14 2005 Ken Vollmar
      */
-    public static float readFloat(int serviceNumber) {
+    public static float readFloat(int serviceNumber) throws CancelException {
         String input = readStringInternal("0", "Enter a float value (syscall " + serviceNumber + ")", -1);
         return Float.parseFloat(input.trim());
     }
@@ -130,7 +125,7 @@ public class SystemIO {
      * @return double value corresponding to user input
      * Feb 14 2005 Ken Vollmar
      */
-    public static double readDouble(int serviceNumber) {
+    public static double readDouble(int serviceNumber) throws CancelException {
         String input = readStringInternal("0", "Enter a Double value (syscall " + serviceNumber + ")", -1);
         return Double.parseDouble(input.trim());
     }
@@ -158,7 +153,7 @@ public class SystemIO {
      * @param maxLength     the maximum string length
      * @return the entered string, truncated to maximum length if necessary
      */
-    public static String readString(int serviceNumber, int maxLength) {
+    public static String readString(int serviceNumber, int maxLength) throws CancelException {
         String input = readStringInternal("", "Enter a string of maximum length " + maxLength
                 + " (syscall " + serviceNumber + ")", maxLength);
         if (input.endsWith("\n")) {
@@ -175,26 +170,45 @@ public class SystemIO {
 
     /**
      * Implements syscall having 12 in $v0, to read a char value.
+     * Only printable characters are accepted (9, 10, and 32 to 126).
      *
      * @param serviceNumber the number assigned to Read Char syscall (default 12)
-     * @return int value with lowest byte corresponding to user input
+     * @return int value with lowest byte corresponding to user input, EOF on end of data, or NOTASCII on invalid ASCII character.
      */
-    public static int readChar(int serviceNumber) {
-        int returnValue = 0;
+    public static int readChar(int serviceNumber) throws CancelException {
+        int returnValue;
 
-        String input = readStringInternal("0", "Enter a character value (syscall " + serviceNumber + ")", 1);
-        // The whole try-catch is not really necessary in this case since I'm
-        // just propagating the runtime exception (the default behavior), but
-        // I want to make it explicit.  The client needs to catch it.
-        try {
-            returnValue = (int) (input.charAt(0)); // first character input
-        } catch (IndexOutOfBoundsException e) // no chars present
-        {
-            throw e;  // was: returnValue = 0;
+        if (Globals.getGui() == null) {
+            try {
+                //Read the next char from the buffered input reader
+                returnValue = getInputReader().read();
+                if (returnValue == -1)
+                    returnValue = EOF;
+            } catch (IOException e) {
+                returnValue = EOF;
+            }
+        } else if (Globals.getSettings().getBooleanSetting(Settings.Bool.POPUP_SYSCALL_INPUT)) {
+            // Need a popup?
+            String input = readStringInternal("0", "Enter a character value (syscall " + serviceNumber + ")", 1);
+            if (input.length()>0)
+                returnValue = input.getBytes(StandardCharsets.UTF_8) [0] & 0xFF; // truncate
+            else
+                returnValue = EOF; // assume EOF on empty string
+        } else {
+            // Otherwise delegate to the Read syscall
+            byte[] input = new byte[1];
+            int len = readFromFile(0, input, 1);
+            if (len>0)
+                returnValue = input[0] & 0xFF;
+            else
+                returnValue = EOF;
+        }
+
+        if ((returnValue < 32 || returnValue >= 127) && returnValue != -1 && returnValue != '\n' && returnValue != '\t') {
+            return NOTASCII;
         }
 
         return returnValue;
-
     }
 
 
@@ -254,6 +268,20 @@ public class SystemIO {
 
     } // end writeToFile
 
+    /**
+     * Read bytes from string in a byte buffer
+     *
+     * @param input input to read
+     * @param buffer byte array to contain bytes read
+     * @return number of bytes read
+     */
+    private static int readInBuffer(String input, byte[] buffer) {
+        byte[] bytesRead = input.getBytes();
+        for (int i = 0; i < buffer.length; i++) {
+            buffer[i] = (i < bytesRead.length) ? bytesRead[i] : 0;
+        }
+        return Math.min(buffer.length, bytesRead.length);
+    }
 
     /**
      * Read bytes from file.
@@ -268,13 +296,23 @@ public class SystemIO {
         /////////////// DPS 8-Jan-2013  //////////////////////////////////////////////////
         /// Read from STDIN file descriptor while using IDE - get input from Messages pane.
         if (fd == STDIN && Globals.getGui() != null) {
-            String input = Globals.getGui().getMessagesPane().getInputString(lengthRequested);
-            byte[] bytesRead = input.getBytes();
-
-            for (int i = 0; i < myBuffer.length; i++) {
-                myBuffer[i] = (i < bytesRead.length) ? bytesRead[i] : 0;
+            //asks user for input in run pane
+            if (Globals.getGui().getMessagesPane().isInteractiveMode()) {
+                String input = Globals.getGui().getMessagesPane().getInputString(lengthRequested);
+                return readInBuffer(input, myBuffer);
+            //takes input from input pane
+            } else {
+                try {
+                    char[] chars = new char[lengthRequested];
+                    int len = getInputReaderFromGui().read(chars);
+                    if (len <= 0) return len;
+                    String input = new String(chars);
+                    return readInBuffer(input, myBuffer);
+                } catch (IOException e) {
+                    fileErrorString = "IO Exception on read from the input window of GUI";
+                    return -1;
+                }
             }
-            return Math.min(myBuffer.length, bytesRead.length);
         }
         ////////////////////////////////////////////////////////////////////////////////////
         //// When running in command mode, code below works for either regular file or STDIN
@@ -420,9 +458,11 @@ public class SystemIO {
 
     /**
      * Reset all files -- clears out the file descriptor table.
+     * Reset the buffered reader from the input field of the gui.
      */
     public static void resetFiles() {
         FileIOData.resetFiles();
+        InputFromGui.reset();
     }
 
     /**
@@ -432,6 +472,17 @@ public class SystemIO {
      */
     public static String getFileErrorMessage() {
         return fileErrorString;
+    }
+
+    /**
+     * @return BufferedReader from the input field of the gui
+     */
+    private static BufferedReader getInputReaderFromGui() {
+        if (InputFromGui.inputReaderFromGui == null) {
+            InputFromGui.inputReaderFromGui =
+                    new BufferedReader(new StringReader(Globals.getGui().getMessagesPane().getInputField()));
+        }
+        return InputFromGui.inputReaderFromGui;
     }
 
     ///////////////////////////////////////////////////////////////////////
@@ -460,7 +511,7 @@ public class SystemIO {
     private static void print2Gui(String output){
         long time = System.currentTimeMillis();
         if (time > lasttime) {
-            Globals.getGui().getMessagesPane().postRunMessage(buffer+output);
+            Globals.getGui().getMessagesPane().postOutput(buffer+output);
             buffer = "";
             lasttime = time + 100;
         } else {
@@ -474,7 +525,7 @@ public class SystemIO {
     public static void flush(boolean force) {
         long time = System.currentTimeMillis();
         if (buffer != "" && (force || time > lasttime)){
-            Globals.getGui().getMessagesPane().postRunMessage(buffer);
+            Globals.getGui().getMessagesPane().postOutput(buffer);
             buffer = "";
             lasttime = time + 100;
         }
@@ -680,4 +731,24 @@ public class SystemIO {
         }
 
     } // end private class FileIOData
+
+    /**
+     * Maintain information on input from input window of GUI
+     */
+    private static class InputFromGui {
+        public static BufferedReader inputReaderFromGui;
+
+        private static void reset() {
+            if (inputReaderFromGui != null) {
+                try {
+                    inputReaderFromGui.close();
+                } catch (IOException e) {
+                    // will only read the above line if this inputReader has been opened
+                }
+                inputReaderFromGui=null;
+
+            }
+        }
+
+    }
 }

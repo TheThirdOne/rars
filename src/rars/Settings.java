@@ -13,34 +13,6 @@ import java.util.StringTokenizer;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
-/*
-Copyright (c) 2003-2013,  Pete Sanderson and Kenneth Vollmar
-
-Developed by Pete Sanderson (psanderson@otterbein.edu)
-and Kenneth Vollmar (kenvollmar@missouristate.edu)
-
-Permission is hereby granted, free of charge, to any person obtaining 
-a copy of this software and associated documentation files (the 
-"Software"), to deal in the Software without restriction, including 
-without limitation the rights to use, copy, modify, merge, publish, 
-distribute, sublicense, and/or sell copies of the Software, and to 
-permit persons to whom the Software is furnished to do so, subject 
-to the following conditions:
-
-The above copyright notice and this permission notice shall be 
-included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF 
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR 
-ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF 
-CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION 
-WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-(MIT license, http://www.opensource.org/licenses/mit-license.html)
- */
-
 /**
  * Contains various IDE settings.  Persistent settings are maintained for the
  * current user and on the current machine using
@@ -110,17 +82,13 @@ public class Settings extends Observable {
          */
         WARNINGS_ARE_ERRORS("WarningsAreErrors", false),
         /**
-         * Flag to determine whether or not to display and use program arguments
+         * Flag to control whether or not highlighting is applied when explicit writing
          */
-        PROGRAM_ARGUMENTS("ProgramArguments", false),
+        EXPLICIT_WRITE_HIGHLIGHTING("ExplicitWriteHighlighting", true),
         /**
-         * Flag to control whether or not highlighting is applied to data segment window
+         * Flag to control whether or not highlighting is applied when explicit reading
          */
-        DATA_SEGMENT_HIGHLIGHTING("DataSegmentHighlighting", true),
-        /**
-         * Flag to control whether or not highlighting is applied to register windows
-         */
-        REGISTERS_HIGHLIGHTING("RegistersHighlighting", true),
+        EXPLICIT_READ_HIGHLIGHTING("ExplicitReadHighlighting", true),
         /**
          * Flag to control whether or not assembler automatically initializes program counter to 'main's address
          */
@@ -137,6 +105,10 @@ public class Settings extends Observable {
          * Flag to control whether or not simulator will use popup dialog for input syscalls
          */
         POPUP_SYSCALL_INPUT("PopupSyscallInput", false),
+        /**
+         * Flag to controg whether or not the run I/O mode is batch (true) or interactive (false).
+         */
+        BATCH_IOMODE("BatchIOMode", false),
         /**
          * Flag to control whether or not to use generic text editor instead of language-aware styled editor
          */
@@ -158,7 +130,11 @@ public class Settings extends Observable {
          * Flag to determine whether to calculate relative paths from the current working directory
          * or from the RARS executable path.
         */
-        DERIVE_CURRENT_WORKING_DIRECTORY("DeriveCurrentWorkingDirectory", false);
+        DERIVE_CURRENT_WORKING_DIRECTORY("DeriveCurrentWorkingDirectory", false),
+        /**
+         * Flag to determine whether rars is in dark mode instead of light mode.
+         */
+        DARK_MODE_ENABLED("DarkModeEnabled", false);
 
         // TODO: add option for turning off user trap handling and interrupts
         private String name;
@@ -244,25 +220,25 @@ public class Settings extends Observable {
      */
     public static final int TEXTSEGMENT_DELAYSLOT_HIGHLIGHT_FONT = 4;
     /**
-     * Font for text segment highlighted background
+     * Font for data segment highlighted background
      */
-    public static final int DATASEGMENT_HIGHLIGHT_FONT = 5;
+    public static final int EXPLICIT_WRITE_HIGHLIGHT_FONT = 5;
     /**
-     * Font for register highlighted background
+     * Font for data segment highlighted background
      */
-    public static final int REGISTER_HIGHLIGHT_FONT = 6;
+    public static final int EXPLICIT_READ_HIGHLIGHT_FONT = 6;
 
     private static final String[] fontFamilySettingsKeys = {"EditorFontFamily", "EvenRowFontFamily",
             "OddRowFontFamily", " TextSegmentHighlightFontFamily", "TextSegmentDelayslotHighightFontFamily",
-            "DataSegmentHighlightFontFamily", "RegisterHighlightFontFamily"
+            "ExplicitWriteHighlightFontFamily","ExplicitReadHighlightFontFamily"
     };
     private static final String[] fontStyleSettingsKeys = {"EditorFontStyle", "EvenRowFontStyle",
             "OddRowFontStyle", " TextSegmentHighlightFontStyle", "TextSegmentDelayslotHighightFontStyle",
-            "DataSegmentHighlightFontStyle", "RegisterHighlightFontStyle"
+            "ExplicitWriteHighlightFontStyle", "ExplicitWriteHighlightFontStyle"
     };
     private static final String[] fontSizeSettingsKeys = {"EditorFontSize", "EvenRowFontSize",
             "OddRowFontSize", " TextSegmentHighlightFontSize", "TextSegmentDelayslotHighightFontSize",
-            "DataSegmentHighlightFontSize", "RegisterHighlightFontSize"
+            "ExplicitWriteHighlightFontSize", "ExplicitWriteHighlightFontSize"
     };
 
 
@@ -321,21 +297,21 @@ public class Settings extends Observable {
      */
     public static final int TEXTSEGMENT_DELAYSLOT_HIGHLIGHT_FOREGROUND = 7;
     /**
-     * RGB color for text segment highlighted background
+     * RGB color for highlighted background when explicitly writing data
      */
-    public static final int DATASEGMENT_HIGHLIGHT_BACKGROUND = 8;
+    public static final int EXPLICIT_WRITE_HIGHLIGHT_BACKGROUND = 8;
     /**
-     * RGB color for text segment highlighted foreground
+     * RGB color for highlighted foreground when explicitly writing data
      */
-    public static final int DATASEGMENT_HIGHLIGHT_FOREGROUND = 9;
+    public static final int EXPLICIT_WRITE_HIGHLIGHT_FOREGROUND = 9;
     /**
-     * RGB color for register highlighted background
+     * RGB color for highlighted background when explicitly reading data
      */
-    public static final int REGISTER_HIGHLIGHT_BACKGROUND = 10;
+    public static final int EXPLICIT_READ_HIGHLIGHT_BACKGROUND = 10;
     /**
-     * RGB color for register highlighted foreground
+     * RGB color for highlighted foreground when explicitly reading data
      */
-    public static final int REGISTER_HIGHLIGHT_FOREGROUND = 11;
+    public static final int EXPLICIT_READ_HIGHLIGHT_FOREGROUND = 11;
     /**
      * RGB background color of Editor
      */
@@ -371,17 +347,24 @@ public class Settings extends Observable {
             "EvenRowBackground", "EvenRowForeground", "OddRowBackground", "OddRowForeground",
             "TextSegmentHighlightBackground", "TextSegmentHighlightForeground",
             "TextSegmentDelaySlotHighlightBackground", "TextSegmentDelaySlotHighlightForeground",
-            "DataSegmentHighlightBackground", "DataSegmentHighlightForeground",
-            "RegisterHighlightBackground", "RegisterHighlightForeground",
+            "ExplicitWriteHighlightBackground", "ExplicitWriteHighlightForeground",
+            "ExplicitReadHighlightBackground", "ExplicitReadHighlightForeground",
             "EditorBackground", "EditorForeground", "EditorLineHighlight", "EditorSelection", "EditorCaretColor"};
+
+    // default light color settings for editor (not syntax) and execute/register panes
+    private static String[] defaultLightColorSettingsValues = {
+            "0x00e0e0e0", "0", "0x00ffffff", "0", "0x00ffff99", "0", "0x0033ff00", "0", "0x00ffaaaa", "0", "0x0099ccff","0", "0x00ffffff", "0x00000000", "0x00eeeeee", "0x00ccccff", "0x00000000"};
+
+    // default dark color settings for editor (not syntax) and execute/register panes
+    private static String[] defaultDarkColorSettingsValues = {
+            "0x00333333", "0x00cccccc", "0x00202020", "0x00cccccc", "0x00ffff99", "0", "0x0033ff00", "0", "0x00ffaaaa", "0", "0x0099ccff", "0", "0x00202020", "0x00bbbbbb","0x00333333", "0x00304060", "0x00bbbbbb"};
     /**
      * Last resort default values for color settings;
      * will use only if neither the Preferences nor the properties file work.
      * If you wish to change, do so before instantiating the Settings object.
      * Must match key by list position.
      */
-    private static String[] defaultColorSettingsValues = {
-            "0x00e0e0e0", "0", "0x00ffffff", "0", "0x00ffff99", "0", "0x0033ff00", "0", "0x0099ccff", "0", "0x0099cc55", "0", "0x00ffffff", "0x00000000", "0x00eeeeee", "0x00ccccff", "0x00000000"};
+    private static String[] defaultColorSettingsValues = defaultLightColorSettingsValues;
 
     interface SystemColorProvider { Color getColor();}
     private SystemColorProvider[] systemColors;
@@ -1306,6 +1289,54 @@ public class Settings extends Observable {
             return getTextSegmentColumnOrder(defaultStringSettingsValues[TEXT_COLUMN_ORDER]);
         }
         return list;
+    }
+
+    /*
+     * Sets dark default syntax styles and dark default color settings/highlights.
+     * If light default was used as current color, changes to dark default. If custom colors, doesn't change them.
+     */
+    public void setDarkMode() {
+        defaultColorSettingsValues = defaultDarkColorSettingsValues;
+        SyntaxUtilities.setDarkDefaultStyles();
+        SyntaxStyle[] syntaxStyle = SyntaxUtilities.getDefaultSyntaxStyles();
+        defaultSyntaxStyleColorSettingsValues = new String[syntaxStyle.length];
+        for (int i = 0; i < syntaxStyle.length; i++)
+            defaultSyntaxStyleColorSettingsValues[i] = syntaxStyle[i].getColorAsHexString();
+
+        oldDefaultToNew(SyntaxUtilities.getLightDefaultSyntaxStyles(), defaultSyntaxStyleColorSettingsValues,
+                defaultLightColorSettingsValues, defaultDarkColorSettingsValues);
+    }
+
+    /*
+     * Sets light default syntax styles and light default color settings/highlights.
+     * If dark default was used as current color, changes to light default. If custom colors, doesn't change them.
+     */
+    public void setLightMode() {
+        defaultColorSettingsValues = defaultLightColorSettingsValues;
+        SyntaxUtilities.setLightDefaultStyles();
+        SyntaxStyle[] syntaxStyle = SyntaxUtilities.getDefaultSyntaxStyles();
+        defaultSyntaxStyleColorSettingsValues = new String[syntaxStyle.length];
+        for (int i = 0; i < syntaxStyle.length; i++)
+            defaultSyntaxStyleColorSettingsValues[i] = syntaxStyle[i].getColorAsHexString();
+
+        oldDefaultToNew(SyntaxUtilities.getDarkDefaultSyntaxStyles(), defaultSyntaxStyleColorSettingsValues,
+                defaultDarkColorSettingsValues, defaultColorSettingsValues);
+    }
+
+    /*
+     * Sets current colors to the new default colors specified iff it was set to the opposite default before.
+     */
+    private void oldDefaultToNew(SyntaxStyle[] oppositeSyntaxDefault, String[] newDefaultSyntax,
+                                 String[] oppositeDefaultColorSettingsValues, String[] newDefaultColorSettingsValues) {
+        for (int i = 0; i < syntaxStyleColorSettingsValues.length; i++)
+            if (syntaxStyleColorSettingsValues[i].equals(oppositeSyntaxDefault[i].getColorAsHexString())) {
+                syntaxStyleColorSettingsValues[i] = newDefaultSyntax[i];
+            }
+
+        for (int i = 0; i < colorSettingsValues.length; i++)
+            if (colorSettingsValues[i].equals(oppositeDefaultColorSettingsValues[i]) || (colorSettingsValues[i].equals("0x00000000") && oppositeDefaultColorSettingsValues[i].equals("0"))) {
+                colorSettingsValues[i] = newDefaultColorSettingsValues[i];
+            }
     }
 
 }

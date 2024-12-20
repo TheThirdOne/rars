@@ -1,4 +1,5 @@
 #stdout:© █ T ★ \n
+#exit:42
 .data
 test1:
 .string "© █ \u0054 \u2605 \n"

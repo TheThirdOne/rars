@@ -2,34 +2,6 @@ package rars.assembler;
 
 import rars.RISCVprogram;
 
-/*
-Copyright (c) 2003-2008,  Pete Sanderson and Kenneth Vollmar
-
-Developed by Pete Sanderson (psanderson@otterbein.edu)
-and Kenneth Vollmar (kenvollmar@missouristate.edu)
-
-Permission is hereby granted, free of charge, to any person obtaining 
-a copy of this software and associated documentation files (the 
-"Software"), to deal in the Software without restriction, including 
-without limitation the rights to use, copy, modify, merge, publish, 
-distribute, sublicense, and/or sell copies of the Software, and to 
-permit persons to whom the Software is furnished to do so, subject 
-to the following conditions:
-
-The above copyright notice and this permission notice shall be 
-included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF 
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR 
-ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF 
-CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION 
-WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-(MIT license, http://www.opensource.org/licenses/mit-license.html)
- */
-
 /**
  * Represents one token in the input program.  Each Token carries, along with its
  * type and value, the position (line, column) in which its source appears in the program.
@@ -47,6 +19,7 @@ public class Token {
     // original program and line will differ from the above if token was defined in an included file
     private RISCVprogram originalProgram;
     private int originalSourceLine;
+    private String originalText;
 
     /**
      * Constructor for Token class.
@@ -59,7 +32,7 @@ public class Token {
      * @see TokenTypes
      **/
 
-    public Token(TokenTypes type, String value, RISCVprogram sourceProgram, int line, int start) {
+    public Token(TokenTypes type, String value, RISCVprogram sourceProgram, int line, int start, String originalText) {
         this.type = type;
         this.value = value;
         this.sourceProgram = sourceProgram;
@@ -67,6 +40,7 @@ public class Token {
         this.sourcePos = start;
         this.originalProgram = sourceProgram;
         this.originalSourceLine = line;
+        this.originalText = originalText;
     }
 
 
@@ -101,6 +75,17 @@ public class Token {
      **/
     public int getOriginalSourceLine() {
         return this.originalSourceLine;
+    }
+
+    /**
+     * Produces the token's original text. In most cases, this is equivalent to
+     * {@code Token.getValue()} but when the token is a character literal this
+     * will return {@code "'a'"} rather then {@code getValue}'s {@code "97"}.
+     *
+     * @return original text representing this token
+     **/
+    public String getOriginalText() {
+        return this.originalText;
     }
 
     /**

@@ -4,34 +4,6 @@ import rars.Globals;
 
 import java.util.Arrays;
 
-	/*
-Copyright (c) 2003-2006,  Pete Sanderson and Kenneth Vollmar
-
-Developed by Pete Sanderson (psanderson@otterbein.edu)
-and Kenneth Vollmar (kenvollmar@missouristate.edu)
-
-Permission is hereby granted, free of charge, to any person obtaining 
-a copy of this software and associated documentation files (the 
-"Software"), to deal in the Software without restriction, including 
-without limitation the rights to use, copy, modify, merge, publish, 
-distribute, sublicense, and/or sell copies of the Software, and to 
-permit persons to whom the Software is furnished to do so, subject 
-to the following conditions:
-
-The above copyright notice and this permission notice shall be 
-included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF 
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR 
-ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF 
-CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION 
-WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-(MIT license, http://www.opensource.org/licenses/mit-license.html)
- */
-
 /**
  * Some utility methods for working with binary representations.
  *
@@ -294,6 +266,34 @@ public class Binary {
         return t;
     }
 
+    public static String intToHexString(long d, int length) {
+        String leadingZero = new String("0");
+        String leadingX = new String("0x");
+        String t = Long.toUnsignedString(d, 16);
+        if (t.length() > 2*length) {
+            // drop possible leading FF when negative number are used
+            t = t.substring(t.length() - 2*length);
+        }
+        while (t.length() < 2*length)
+            t = leadingZero.concat(t);
+
+        t = leadingX.concat(t);
+        return t;
+    }
+
+    /**
+     * Perform a sign extension of `length` bytes of `d` as a whole 64bit long value.
+     * */
+    public static long signExtension(long d, int length) {
+        int l = (8-length)*8;
+        return (d << l) >> l;
+    }
+
+    public static String intToDecString(long d, int length) {
+        d = signExtension(d, length);
+        return Long.toString(d);
+    }
+
     /**
      * Returns a 6 character string representing the 16-bit hexadecimal equivalent of the
      * given integer value.  First two characters are "0x".  It assumes value will "fit"
@@ -354,8 +354,12 @@ public class Binary {
      * @return String that represents ASCII equivalent
      */
     public static String intToAscii(int d) {
+        return intToAscii(d, 4);
+    }
+
+    public static String intToAscii(long d, int length) {
         StringBuilder result = new StringBuilder(8);
-        for (int i = 3; i >= 0; i--) {
+        for (int i = length-1; i >= 0; i--) {
             int byteValue = getByte(d, i);
             result.append((byteValue < Globals.ASCII_TABLE.length) ? Globals.ASCII_TABLE[byteValue] : Globals.ASCII_NON_PRINT);
         }
@@ -410,6 +414,18 @@ public class Binary {
                     result += c - 'a' + 10;
                 } else if ('A' <= c && c <= 'F') {
                     result += c - 'A' + 10;
+                } else {
+                    return null;
+                }
+            }
+        }else if(s.length() > 2+i && s.charAt(i) == '0' && (s.charAt(i+1) == 'b' || s.charAt(i+1) == 'B')) { // Binary case
+            if(s.length() > 32+2+i) return null; // This must overflow or contain invalid characters
+            i += 2;
+            for(; i < s.length(); i++) {
+                char c = s.charAt(i);
+                result *= 2;
+                if ('0' <= c && c <= '1') {
+                    result += c - '0';
                 } else {
                     return null;
                 }
@@ -604,8 +620,10 @@ public class Binary {
      * @return zero-extended byte value in low order byte.
      **/
 
-    public static int getByte(int value, int bite) {
-        return value << ((3 - bite) << 3) >>> 24;
+    public static int getByte(long value, int bite) {
+        int v = (int)(value >>> (bite*8)) & 0xFF;
+        return v;
+        //return (int)(value << ((3 - bite) << 3) >>> 24);
     }
 
     // KENV 1/4/05

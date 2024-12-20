@@ -7,34 +7,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-/*
-Copyright (c) 2003-2013,  Pete Sanderson and Kenneth Vollmar
-
-Developed by Pete Sanderson (psanderson@otterbein.edu)
-and Kenneth Vollmar (kenvollmar@missouristate.edu)
-
-Permission is hereby granted, free of charge, to any person obtaining 
-a copy of this software and associated documentation files (the 
-"Software"), to deal in the Software without restriction, including 
-without limitation the rights to use, copy, modify, merge, publish, 
-distribute, sublicense, and/or sell copies of the Software, and to 
-permit persons to whom the Software is furnished to do so, subject 
-to the following conditions:
-
-The above copyright notice and this permission notice shall be 
-included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF 
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR 
-ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF 
-CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION 
-WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-(MIT license, http://www.opensource.org/licenses/mit-license.html)
- */
-
 /**
  * A tokenizer is capable of tokenizing a complete source program, or a given line from
  * a source program.  Since RARS assembly is line-oriented, each line defines a complete statement.
@@ -339,7 +311,7 @@ public class Tokenizer {
                         tokenStartPos = linePos + 1;
                         token[tokenPos++] = c;
                         if (line.length > linePos + 3 && line[linePos + 1] == 'I' && line[linePos + 2] == 'n' && line[linePos + 3] == 'f') {
-                            result.add(new Token(TokenTypes.REAL_NUMBER, "-Inf", program, lineNum, tokenStartPos));
+                            result.add(new Token(TokenTypes.REAL_NUMBER, "-Inf", program, lineNum, tokenStartPos, "-Inf"));
                             linePos += 3;
                             tokenPos = 0;
                             break;
@@ -491,7 +463,7 @@ public class Tokenizer {
                 // multiple tokens, so I want to get everything from the IDENTIFIER to either the
                 // COMMENT or to the end.
                 int startExpression = tokens.get(dirPos + 2).getStartPos();
-                int endExpression = tokens.get(tokenPosLastOperand).getStartPos() + tokens.get(tokenPosLastOperand).getValue().length();
+                int endExpression = tokens.get(tokenPosLastOperand).getStartPos() + tokens.get(tokenPosLastOperand).getOriginalText().length();
                 String expression = theLine.substring(startExpression - 1, endExpression - 1);
                 // Symbol cannot be redefined - the only reason for this is to act like the Gnu .eqv
                 if (equivalents.containsKey(symbol) && !equivalents.get(symbol).equals(expression)) {
@@ -536,13 +508,14 @@ public class Tokenizer {
     private void processCandidateToken(char[] token, RISCVprogram program, int line, String theLine,
                                        int tokenPos, int tokenStartPos, TokenList tokenList) {
         String value = new String(token, 0, tokenPos);
+        String original = value;
         if (value.length() > 0 && value.charAt(0) == '\'') value = preprocessCharacterLiteral(value);
         TokenTypes type = TokenTypes.matchTokenType(value);
         if (type == TokenTypes.ERROR) {
             errors.add(new ErrorMessage(program, line, tokenStartPos,
                     theLine + "\nInvalid language element: " + value));
         }
-        Token toke = new Token(type, value, program, line, tokenStartPos);
+        Token toke = new Token(type, value, program, line, tokenStartPos, original);
         tokenList.add(toke);
     }
 

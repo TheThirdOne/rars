@@ -5,7 +5,6 @@ import rars.riscv.InstructionSet;
 import rars.riscv.dump.DumpFormat;
 import rars.riscv.dump.DumpFormatLoader;
 import rars.riscv.hardware.*;
-import rars.simulator.ProgramArgumentList;
 import rars.simulator.Simulator;
 import rars.util.Binary;
 import rars.util.FilenameFinder;
@@ -20,36 +19,6 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Observable;
-import java.util.Observer;
-
-/*
-Copyright (c) 2003-2012,  Pete Sanderson and Kenneth Vollmar
-
-Developed by Pete Sanderson (psanderson@otterbein.edu)
-and Kenneth Vollmar (kenvollmar@missouristate.edu)
-
-Permission is hereby granted, free of charge, to any person obtaining 
-a copy of this software and associated documentation files (the 
-"Software"), to deal in the Software without restriction, including 
-without limitation the rights to use, copy, modify, merge, publish, 
-distribute, sublicense, and/or sell copies of the Software, and to 
-permit persons to whom the Software is furnished to do so, subject 
-to the following conditions:
-
-The above copyright notice and this permission notice shall be 
-included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF 
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR 
-ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF 
-CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION 
-WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-(MIT license, http://www.opensource.org/licenses/mit-license.html)
- */
 
 /**
  * Launch the application
@@ -131,6 +100,7 @@ public class Launch {
     private ArrayList<String> programArgumentList; // optional program args for program (becomes argc, argv)
     private int assembleErrorExitCode;  // RARS command exit code to return if assemble error occurs
     private int simulateErrorExitCode;// RARS command exit code to return if simulation error occurs
+    private int maxStepsErrorExitCode;// RARS command exit code to return if max number of instructions is reached
 
     public static void main(String[] args){
         new Launch(args);
@@ -146,13 +116,14 @@ public class Launch {
         assembleProject = false;
         countInstructions = false;
         instructionCount = 0;
-        assembleErrorExitCode = 0;
-        simulateErrorExitCode = 0;
+        assembleErrorExitCode = 1;
+        simulateErrorExitCode = 2;
+        maxStepsErrorExitCode = 3;
         registerDisplayList = new ArrayList<>();
         memoryDisplayList = new ArrayList<>();
         filenameList = new ArrayList<>();
         MemoryConfigurations.setCurrentConfiguration(MemoryConfigurations.getDefaultConfiguration());
-        out = System.out;
+        out = System.err;
 
         if (!parseCommandArgs(args)) {
             System.exit(Globals.exitCode);
@@ -231,6 +202,18 @@ public class Launch {
 
     private void launchIDE() {
         // System.setProperty("apple.laf.useScreenMenuBar", "true"); // Puts RARS menu on Mac OS menu bar
+        try {
+            if (Globals.getSettings().getBooleanSetting(Settings.Bool.DARK_MODE_ENABLED)) {
+                UIManager.setLookAndFeel("com.formdev.flatlaf.FlatDarkLaf");
+                Globals.getSettings().setDarkMode();
+            }
+            else {
+                UIManager.setLookAndFeel("com.formdev.flatlaf.FlatIntelliJLaf");
+                Globals.getSettings().setLightMode();
+            }
+        } catch( Exception ex ) {
+            System.err.println( "Failed to initialize LaF. Continue with default LaF." );
+        }
         SwingUtilities.invokeLater(
                 new Runnable() {
                     public void run() {
@@ -250,18 +233,11 @@ public class Launch {
     // Returns true if command args parse OK, false otherwise.
 
     private boolean parseCommandArgs(String[] args) {
-        String noCopyrightSwitch = "nc";
-        String displayMessagesToErrSwitch = "me";
         boolean argsOK = true;
         boolean inProgramArgumentList = false;
         programArgumentList = null;
         if (args.length == 0)
             return true; // should not get here...
-        // If the option to display RARS messages to standard erro is used,
-        // it must be processed before any others (since messages may be
-        // generated during option parsing).
-        processDisplayMessagesToErrSwitch(args, displayMessagesToErrSwitch);
-        displayCopyright(args, noCopyrightSwitch);  // ..or not..
         if (args.length == 1 && args[0].equals("h")) {
             displayHelp();
             return false;
@@ -282,12 +258,16 @@ public class Launch {
                 inProgramArgumentList = true;
                 continue;
             }
-            // messages-to-standard-error switch already processed, so ignore.
-            if (args[i].toLowerCase().equals(displayMessagesToErrSwitch)) {
+            // messages-to-standard-error removed, so ignore.
+            if (args[i].toLowerCase().equals("me")) {
                 continue;
             }
-            // no-copyright switch already processed, so ignore.
-            if (args[i].toLowerCase().equals(noCopyrightSwitch)) {
+            // no-copyright switch removed, so ignore.
+            if (args[i].toLowerCase().equals("nc")) {
+                continue;
+            }
+            if (args[i].toLowerCase().equals("version")) {
+                displayVersion();
                 continue;
             }
             if (args[i].toLowerCase().equals("dump")) {
@@ -507,6 +487,7 @@ public class Launch {
                     Simulator.Reason done = program.simulate();
                     if (done == Simulator.Reason.MAX_STEPS) {
                         out.println("\nProgram terminated when maximum step limit " + options.maxSteps + " reached.");
+                        Globals.exitCode = maxStepsErrorExitCode;
                         break;
                     } else if (done == Simulator.Reason.CLIFF_TERMINATION) {
                         out.println("\nProgram terminated by dropping off the bottom.");
@@ -666,29 +647,11 @@ public class Launch {
         }
     }
 
-    ///////////////////////////////////////////////////////////////////////
-    //  If option to display RARS messages to standard err (System.err) is
-    //  present, it must be processed before all others.  Since messages may
-    //  be output as early as during the command parse.
-    private void processDisplayMessagesToErrSwitch(String[] args, String displayMessagesToErrSwitch) {
-        for (String arg : args) {
-            if (arg.toLowerCase().equals(displayMessagesToErrSwitch)) {
-                out = System.err;
-                return;
-            }
-        }
-    }
-    ///////////////////////////////////////////////////////////////////////
-    //  Decide whether copyright should be displayed, and display
-    //  if so.
-
-    private void displayCopyright(String[] args, String noCopyrightSwitch) {
-        for (String arg : args) {
-            if (arg.toLowerCase().equals(noCopyrightSwitch)) {
-                return;
-            }
-        }
-        out.println("RARS " + Globals.version + "  Copyright " + Globals.copyrightYears + " " + Globals.copyrightHolders + "\n");
+    /**
+     * Display version and copyright.
+     * */
+    private void displayVersion() {
+        out.println("RARS " + Globals.version + " Copyright " + Globals.copyrightYears + " " + Globals.copyrightHolders + "\n");
     }
 
 
@@ -735,15 +698,13 @@ public class Launch {
         out.println("            32-bit address space, CompactDataAtZero for a 32KB memory with");
         out.println("            data segment at address 0, or CompactTextAtZero for a 32KB");
         out.println("            memory with text segment at address 0.");
-        out.println("     me  -- display RARS messages to standard err instead of standard out. ");
-        out.println("            Can separate messages from program output using redirection");
-        out.println("     nc  -- do not display copyright notice (for cleaner redirected/piped output).");
         out.println("     np  -- use of pseudo instructions and formats not permitted");
         out.println("      p  -- Project mode - assemble all files in the same directory as given file.");
         out.println("  se<n>  -- terminate RARS with integer exit code <n> if a simulation (run) error occurs.");
         out.println("     sm  -- start execution at statement with global label main, if defined");
         out.println("    smc  -- Self Modifying Code - Program can write and branch to either text or data segment");
         out.println("    rv64 -- Enables 64 bit assembly and executables (Not fully compatible with rv32)");
+        out.println(" version -- Show version and copyright");
         out.println("    <n>  -- where <n> is an integer maximum count of steps to simulate.");
         out.println("            If 0, negative or not specified, there is no maximum.");
         out.println(" x<reg>  -- where <reg> is number or name (e.g. 5, t3, f10) of register whose ");

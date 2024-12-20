@@ -34,3 +34,8 @@ ld t1,-100     ;ld RG1, VL2(x0) ;#Load Double word : Set t1 to contents of effec
 ld t1,10000000 ;lui   RG1, VH2  ;ld RG1, VL2(RG1)  ;#Load Double word : Set t1 to contents of effective memory word address
 ld t1,label	   ;auipc RG1, PCH2 ;ld RG1, PCL2(RG1) ;#Load Double word : Set t1 to contents of memory word at label's address
 ld t1,%lo(label)(t2)  ;ld RG1,LL4(RG7)  ;#Load from Address
+
+sd t1,(t2)        ;sd RG1,0(RG3)   ;#Store Double Word : Store t1 contents into effective memory word address
+sd t1,-100        ;sd RG1, VL2(x0) ;#Store Double Word : Store $t1 contents into effective memory word address
+sd t1,10000000,t2 ;lui   RG3, VH2  ;sd RG1, VL2(RG3)  ;#Store Double Word : Store $t1 contents into effective memory word address using t2 as a temporary
+sd t1,label,t2    ;auipc RG3, PCH2 ;sd RG1, PCL2(RG3) ;#Store Double Word : Store $t1 contents into memory word at label's address using t2 as a temporary

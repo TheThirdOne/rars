@@ -1,16 +1,8 @@
-/*
-* TokenMarker.java - Generic token marker
-* Copyright (C) 1998, 1999 Slava Pestov
-*
-* You may use and modify this package for any purpose. Redistribution is
-* permitted, in both source and binary form, provided that this notice
-* remains intact in all source distributions of this package.
-*/
-
 package rars.venus.editors.jeditsyntax.tokenmarker;
 
 import rars.venus.editors.jeditsyntax.PopupHelpItem;
 
+import javax.swing.event.DocumentEvent;
 import javax.swing.text.Segment;
 import java.util.ArrayList;
 
@@ -312,6 +304,12 @@ public abstract class TokenMarker {
             lastToken.length = length;
             lastToken.id = id;
         }
+    }
+
+    /**
+     * method called when there is a change in the document.
+     */
+    public void updated(DocumentEvent evt) {
     }
 
     /**

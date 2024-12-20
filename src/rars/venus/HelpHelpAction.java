@@ -1,6 +1,7 @@
 package rars.venus;
 
 import rars.Globals;
+import rars.Settings;
 import rars.assembler.Directives;
 import rars.riscv.*;
 
@@ -22,39 +23,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Vector;
 
-	/*
-Copyright (c) 2003-2008,  Pete Sanderson and Kenneth Vollmar
-
-Developed by Pete Sanderson (psanderson@otterbein.edu)
-and Kenneth Vollmar (kenvollmar@missouristate.edu)
-
-Permission is hereby granted, free of charge, to any person obtaining 
-a copy of this software and associated documentation files (the 
-"Software"), to deal in the Software without restriction, including 
-without limitation the rights to use, copy, modify, merge, publish, 
-distribute, sublicense, and/or sell copies of the Software, and to 
-permit persons to whom the Software is furnished to do so, subject 
-to the following conditions:
-
-The above copyright notice and this permission notice shall be 
-included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF 
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR 
-ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF 
-CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION 
-WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-(MIT license, http://www.opensource.org/licenses/mit-license.html)
- */
-
 /**
  * Action  for the Help -> Help menu item
  */
 public class HelpHelpAction extends GuiAction {
-    private VenusUI mainUI;
+    private final VenusUI mainUI;
 
     public HelpHelpAction(String name, Icon icon, String descrip,
                           Integer mnemonic, KeyStroke accel, VenusUI gui) {
@@ -66,9 +39,6 @@ public class HelpHelpAction extends GuiAction {
     private Dimension getSize() {
         return new Dimension(800, 600);
     }
-
-    // Light gray background color for alternating lines of the instruction lists
-    static Color altBackgroundColor = new Color(0xEE, 0xEE, 0xEE);
 
     /**
      * Separates Instruction name descriptor from detailed (operation) description
@@ -155,7 +125,7 @@ public class HelpHelpAction extends GuiAction {
         JScrollPane copyrightScrollPane;
         JEditorPane copyrightDisplay;
         try {
-            StringBuilder text = loadFiletoStringBuilder("/License.txt").append("</pre>");
+            StringBuilder text = loadFiletoStringBuilder("/LICENSE").append("</pre>");
             copyrightDisplay = new JEditorPane("text/html", "<pre>" + text.toString());
             copyrightDisplay.setEditable(false);
             copyrightDisplay.setCaretPosition(0); // assure top of document displayed
@@ -188,7 +158,11 @@ public class HelpHelpAction extends GuiAction {
     // Set up MIPS help tab.  Most contents are generated from instruction set info.
     private JPanel createHelpInfoPanel() {
         JPanel helpInfo = new JPanel(new BorderLayout());
-        String helpRemarksColor = "CCFF99";
+        String helpRemarksColor;
+        if (Globals.getSettings().getBooleanSetting(Settings.Bool.DARK_MODE_ENABLED))
+            helpRemarksColor = "006655";
+        else
+            helpRemarksColor = "CCFF99";
         // Introductory remarks go at the top as a label
         // TODO: update this to consider 12 and 20 bit numbers rather than 16
         String helpRemarks =
@@ -386,7 +360,7 @@ public class HelpHelpAction extends GuiAction {
                 setBackground(list.getSelectionBackground());
                 setForeground(list.getSelectionForeground());
             } else {
-                setBackground((index % 2 == 0) ? altBackgroundColor : list.getBackground());
+                setBackground((index % 2 == 0) ? Globals.getSettings().getColorSettingByPosition(Settings.EVEN_ROW_BACKGROUND) : list.getBackground());
                 setForeground(list.getForeground());
             }
             setEnabled(list.isEnabled());
