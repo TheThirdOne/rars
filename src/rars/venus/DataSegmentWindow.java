@@ -435,11 +435,10 @@ public class DataSegmentWindow extends JInternalFrame implements Observer {
         dataTable.getTableHeader().setReorderingAllowed(false);
         dataTable.setRowSelectionAllowed(false);
         // Addresses are column 0, render right-justified in mono font
-        MonoRightCellRenderer monoRightCellRenderer = new MonoRightCellRenderer();
-        dataTable.getColumnModel().getColumn(ADDRESS_COLUMN).setPreferredWidth(60);
-        dataTable.getColumnModel().getColumn(ADDRESS_COLUMN).setCellRenderer(monoRightCellRenderer);
-        // Data cells are columns 1 onward, render right-justitifed in mono font but highlightable.
         AddressCellRenderer addressCellRenderer = new AddressCellRenderer();
+        dataTable.getColumnModel().getColumn(ADDRESS_COLUMN).setPreferredWidth(60);
+        dataTable.getColumnModel().getColumn(ADDRESS_COLUMN).setCellRenderer(addressCellRenderer);
+        // Data cells are columns 1 onward, render right-justitifed in mono font but highlightable.
         for (int i = 1; i < NUMBER_OF_COLUMNS; i++) {
             dataTable.getColumnModel().getColumn(i).setPreferredWidth(60);
             dataTable.getColumnModel().getColumn(i).setCellRenderer(addressCellRenderer);

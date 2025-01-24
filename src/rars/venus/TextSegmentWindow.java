@@ -15,7 +15,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.*;
 
-	/*
+        /*
 Copyright (c) 2003-2007,  Pete Sanderson and Kenneth Vollmar
 
 Developed by Pete Sanderson (psanderson@otterbein.edu)
@@ -68,7 +68,7 @@ public class TextSegmentWindow extends JInternalFrame implements Observer {
     private Hashtable<Integer, ModifiedCode> executeMods;   // key is table model row, value is original code, basic, source.
     private Container contentPane;
     private TextTableModel tableModel;
-    private Font tableCellFont = new Font("Monospaced", Font.PLAIN, 12);
+    // private Font tableCellFont = new Font("Monospaced", Font.PLAIN, 12);
     private boolean codeHighlighting;
     private boolean breakpointsEnabled;  // Added 31 Dec 2009
     private int highlightAddress;
@@ -81,7 +81,7 @@ public class TextSegmentWindow extends JInternalFrame implements Observer {
     private static final int BASIC_COLUMN = 3;
     private static final int SOURCE_COLUMN = 4;
 
-    private static final Font monospacedPlain12Point = new Font("Monospaced", Font.PLAIN, 12);
+    // private static final Font monospacedPlain12Point = new Font("Monospaced", Font.PLAIN, 12);
     // The following is displayed in the Basic and Source columns if existing code is overwritten using self-modifying code feature
     private static final String modifiedCodeMarker = " ------ ";
 
@@ -173,8 +173,9 @@ public class TextSegmentWindow extends JInternalFrame implements Observer {
         table.getColumnModel().getColumn(BASIC_COLUMN).setCellRenderer(codeStepHighlighter);
         table.getColumnModel().getColumn(SOURCE_COLUMN).setCellRenderer(codeStepHighlighter);
         // to render String right-justified in mono font
-        table.getColumnModel().getColumn(ADDRESS_COLUMN).setCellRenderer(new MonoRightCellRenderer());
-        table.getColumnModel().getColumn(CODE_COLUMN).setCellRenderer(new MachineCodeCellRenderer());
+        MachineCodeCellRenderer machineCodeCellRenderer = new MachineCodeCellRenderer();
+        table.getColumnModel().getColumn(ADDRESS_COLUMN).setCellRenderer(machineCodeCellRenderer);
+        table.getColumnModel().getColumn(CODE_COLUMN).setCellRenderer(machineCodeCellRenderer);
         table.getColumnModel().getColumn(BREAK_COLUMN).setCellRenderer(new CheckBoxTableCellRenderer());
         reorderColumns(); // Re-order columns according to current preference...
         // Add listener to catch column re-ordering for updating settings.
@@ -613,7 +614,7 @@ public class TextSegmentWindow extends JInternalFrame implements Observer {
 
       /*
         *  Re-order the Text segment columns according to saved preferences.
-   	 */
+        */
 
     private void reorderColumns() {
         TableColumnModel oldtcm = table.getColumnModel();
@@ -844,14 +845,16 @@ public class TextSegmentWindow extends JInternalFrame implements Observer {
                                                        boolean isSelected, boolean hasFocus, int row, int column) {
             JLabel cell = (JLabel) super.getTableCellRendererComponent(table, value,
                     isSelected, hasFocus, row, column);
-            cell.setFont(MonoRightCellRenderer.MONOSPACED_PLAIN_12POINT);
+            // cell.setFont(MonoRightCellRenderer.MONOSPACED_PLAIN_12POINT);
             cell.setHorizontalAlignment(SwingConstants.RIGHT);
             if (row % 2 == 0) {
                 cell.setBackground(Globals.getSettings().getColorSettingByPosition(Settings.EVEN_ROW_BACKGROUND));
                 cell.setForeground(Globals.getSettings().getColorSettingByPosition(Settings.EVEN_ROW_FOREGROUND));
+                cell.setFont(Globals.getSettings().getFontByPosition(Settings.EVEN_ROW_FONT));
             } else {
                 cell.setBackground(Globals.getSettings().getColorSettingByPosition(Settings.ODD_ROW_BACKGROUND));
                 cell.setForeground(Globals.getSettings().getColorSettingByPosition(Settings.ODD_ROW_FOREGROUND));
+                cell.setFont(Globals.getSettings().getFontByPosition(Settings.ODD_ROW_FONT));
             }
             return cell;
         }
