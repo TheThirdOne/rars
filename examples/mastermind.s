@@ -237,7 +237,7 @@ loopSol:
         printLn
         ret
 
-############### String utility fonctions ###############
+############### String utility functions ###############
 
 #####
  # strlen(): compute string length
