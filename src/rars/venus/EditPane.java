@@ -92,6 +92,9 @@ public class EditPane extends JPanel implements Observer {
         }
         // sourceCode is responsible for its own scrolling
         this.add(this.sourceCode.getOuterComponent(), BorderLayout.CENTER);
+        
+        // Allow the editor to be shrunk down to a very small height
+        this.setMinimumSize(new Dimension(0, 0));
 
         // If source code is modified, will set flag to trigger/request file save.
         sourceCode.getDocument().addDocumentListener(
