@@ -392,6 +392,7 @@ public class SystemIO {
                 FileIOData.setStreamInUse(fdToUse, inputStream); // Save stream for later use
             } catch (FileNotFoundException e) {
                 fileErrorString = "File " + filename + " not found, open for input.";
+                FileIOData.close(fdToUse);
                 retValue = -1;
             }
         } else if ((flags & O_WRONLY) != 0) // Open for writing only
@@ -402,6 +403,7 @@ public class SystemIO {
                 FileIOData.setStreamInUse(fdToUse, outputStream); // Save stream for later use
             } catch (FileNotFoundException e) {
                 fileErrorString = "File " + filename + " not found, open for output.";
+                FileIOData.close(fdToUse);
                 retValue = -1;
             }
         }
